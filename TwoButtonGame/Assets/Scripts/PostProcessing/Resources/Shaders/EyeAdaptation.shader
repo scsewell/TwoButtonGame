@@ -9,9 +9,9 @@ Shader "Hidden/Post FX/Eye Adaptation"
 
         #pragma target 4.5
         #pragma multi_compile __ AUTO_KEY_VALUE
-        #include "UnityCG.cginc"
         #include "Common.cginc"
         #include "EyeAdaptation.cginc"
+        #include "UnityCG.cginc"
 
         // Eye adaptation pass
         float4 _Params; // x: lowPercent, y: highPercent, z: minBrightness, w: maxBrightness

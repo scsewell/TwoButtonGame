@@ -28,9 +28,21 @@ public class MainMenu : Menu
 
     [Header("Level Select")]
     [SerializeField] private Canvas m_levelSelectMenu;
+    [SerializeField] private Text m_levelName;
     [SerializeField] private Image m_levelPreview;
     [SerializeField] private Image m_levelHighlight;
-    [SerializeField] private PlayerConfig[] m_levelConfigs;
+    [SerializeField] private LevelConfig[] m_levelConfigs;
+
+    private int m_selectedLevel = 0;
+    
+    [Header("Loading")]
+    [SerializeField]
+    private Image m_fade;
+    [SerializeField] [Range(0, 5)]
+    private float m_loadFadeDuration = 1.0f;
+
+    private AsyncOperation m_loading;
+    private float m_loadFadeTime = float.MaxValue;
 
     private enum Menu
     {
@@ -38,6 +50,7 @@ public class MainMenu : Menu
         Root,
         PlayerSelect,
         LevelSelect,
+        Loading,
     }
 
     private Menu m_activeMenu = Menu.None;
@@ -62,30 +75,31 @@ public class MainMenu : Menu
 
     private void SetMenu(Menu menu, bool back = false)
     {
-        if (m_activeMenu != Menu.None)
-        {
-            if (back)
-            {
-                PlayBackMenuSound();
-            }
-            else
-            {
-                PlayNextMenuSound();
-            }
-        }
+        Menu previous = m_activeMenu;
 
-        if (menu != m_activeMenu)
+        if (previous != menu)
         {
             m_activeMenu = menu;
 
-            m_rootMenu.enabled = (menu == Menu.Root);
-            m_playerSelectMenu.enabled = (menu == Menu.PlayerSelect);
-
-            switch (menu)
+            if (previous != Menu.None)
             {
-                case Menu.PlayerSelect: m_playerSelectPanels.ForEach(p => p.ResetState()); break;
+                if (back) {
+                    PlayBackMenuSound();
+                } else {
+                    PlayNextMenuSound();
+                }
             }
 
+            m_rootMenu.enabled = (menu == Menu.Root);
+            m_playerSelectMenu.enabled = (menu == Menu.PlayerSelect);
+            m_levelSelectMenu.enabled = (menu == Menu.LevelSelect);
+
+            switch (m_activeMenu)
+            {
+                case Menu.PlayerSelect: ResetPlayerSelect(previous != Menu.LevelSelect); break;
+                case Menu.LevelSelect: ResetLevelSelect(); break;
+            }
+            
             EventSystem.current.SetSelectedGameObject(null);
         }
     }
@@ -95,23 +109,8 @@ public class MainMenu : Menu
         bool useCursor = Input.GetKey(KeyCode.LeftControl);
         Cursor.lockState = true ? CursorLockMode.None : CursorLockMode.Locked;
         Cursor.visible = useCursor;
-        
-        if (Input.GetButtonDown("Cancel"))
-        {
-            Menu menu = m_activeMenu;
 
-            switch (m_activeMenu)
-            {
-                case Menu.Root: SetMenu(Menu.Root); break;
-            }
-
-            if (menu != m_activeMenu)
-            {
-                PlayCancelSound();
-            }
-        }
-
-        // ensure there is always something selected so that controllers can always be used
+        // ensure there is always something selected when needed
         if (EventSystem.current.currentSelectedGameObject == null)
         {
             switch (m_activeMenu)
@@ -123,7 +122,22 @@ public class MainMenu : Menu
         switch (m_activeMenu)
         {
             case Menu.PlayerSelect: UpdatePlayerSelect(); break;
+            case Menu.LevelSelect: UpdateLevelSelect(); break;
+            case Menu.Loading: UpdateLoading(); break;
         }
+    }
+
+    private void ResetPlayerSelect(bool fullReset)
+    {
+        m_playerSelectPanels.ForEach(p => p.ResetState(fullReset));
+        m_continueBar.SetActive(false);
+    }
+
+    private void ResetLevelSelect()
+    {
+        m_selectedLevel = 0;
+        m_levelHighlight.color = new Color(1, 1, 1, 0);
+        UpdateLevelSelectGraphics();
     }
 
     private void UpdatePlayerSelect()
@@ -168,6 +182,59 @@ public class MainMenu : Menu
         if (m_playerSelectPanels.Any(p => p.Continue) && canContinue)
         {
             SetMenu(Menu.LevelSelect);
+        }
+    }
+
+    private void UpdateLevelSelect()
+    {
+        PlayerInput[] inputs = InputManager.Instance.PlayerInputs;
+
+        if (inputs.Any(i => i.Button1Up))
+        {
+            List<PlayerSelectPanel> readyPlayers = m_playerSelectPanels.Where(p => p.IsReady).ToList();
+
+            List<PlayerConfig> playerConfigs = readyPlayers.Select(p => m_playerConfigs[p.SelectedConfig]).ToList();
+            List<PlayerInput> playerInputs = readyPlayers.Select(p => p.Input).ToList();
+            
+            m_loading = Main.Instance.LoadRace(m_levelConfigs[m_selectedLevel], playerConfigs, playerInputs);
+            m_loadFadeTime = Time.time;
+            SetMenu(Menu.Loading);
+        }
+        else if (inputs.Any(i => i.Button2Up))
+        {
+            m_selectedLevel = (m_selectedLevel = 1) % m_levelConfigs.Length;
+            m_levelHighlight.color = new Color(1, 1, 1, 0.5f);
+            PlaySelectSound();
+        }
+        else if (inputs.Any(i => i.BothDown))
+        {
+            SetMenu(Menu.PlayerSelect, true);
+        }
+
+        UpdateLevelSelectGraphics();
+    }
+
+    private void UpdateLevelSelectGraphics()
+    {
+        LevelConfig config = m_levelConfigs[m_selectedLevel];
+        m_levelName.text = config.Name;
+        m_levelPreview.sprite = config.Preview;
+        m_levelHighlight.color = new Color(1, 1, 1, Mathf.Lerp(m_levelHighlight.color.a, 0, Time.deltaTime * 10f));
+    }
+
+    private void UpdateLoading()
+    {
+        if (m_loadFadeTime == float.MaxValue && m_loading.progress >= 0.9f)
+        {
+            m_loadFadeTime = Time.time;
+        }
+
+        float factor = (Time.time - m_loadFadeTime) / m_loadFadeDuration;
+        m_fade.color = new Color(0, 0, 0, Mathf.Clamp01(factor));
+
+        if (factor > 1)
+        {
+            m_loading.allowSceneActivation = true;
         }
     }
 }

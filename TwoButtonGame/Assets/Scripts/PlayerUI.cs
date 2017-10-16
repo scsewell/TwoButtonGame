@@ -5,6 +5,10 @@ using UnityEngine.UI;
 
 public class PlayerUI : MonoBehaviour
 {
+    [Header("Fade")]
+    [SerializeField]
+    private Image m_fade;
+
     [Header("Countdown")]
     [SerializeField]
     private Text m_countdownText;
@@ -87,6 +91,9 @@ public class PlayerUI : MonoBehaviour
     {
         // set the canvas scale
         m_canvasScaler.referenceResolution = new Vector2(m_canvasScaler.referenceResolution.x, m_baseScaleFactor / cam.rect.height);
+
+        // fading
+        SetAlpha(m_fade, Main.Instance.FadeFactor);
 
         // start countdown
         float countdown = Main.Instance.CountdownTime;

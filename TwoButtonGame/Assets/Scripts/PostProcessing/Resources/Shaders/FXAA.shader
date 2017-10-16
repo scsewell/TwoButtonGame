@@ -7,9 +7,9 @@ Shader "Hidden/Post FX/FXAA"
 
     CGINCLUDE
 
-        #include "UnityCG.cginc"
         #include "Common.cginc"
         #include "UberSecondPass.cginc"
+        #include "UnityCG.cginc"
         #pragma multi_compile __ GRAIN
         #pragma multi_compile __ DITHERING
 

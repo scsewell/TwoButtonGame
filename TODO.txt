@@ -1,12 +1,14 @@
 ### To Do ###
+Pause Menu
+Race End Menu
+
 Checkpoint sound
 Collision sound
 Player movement/action sounds
-Player finish sounds
+Player finish line sounds
 
 Abilities and stuff
 
-Pause Menu
 Music (Per Level)
 Menu Music
 

@@ -13,8 +13,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_name: Test Level
   m_preview: {fileID: 21300000, guid: 9867f477b256dfa46b931b7e5499eab7, type: 3}
-  m_sceneName: level1
+  m_sceneName: Scenes/level1/level1
   m_startSpacing: 2
-  m_countdownDuration: 5
+  m_countdownDuration: 7
   m_countdownSound: {fileID: 8300000, guid: 249b1823055eec542b9a26b915bdefce, type: 3}
   m_goSound: {fileID: 8300000, guid: 3bd94b4b8ec8a334b84134d52b6cab9c, type: 3}

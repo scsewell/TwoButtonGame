@@ -55,3 +55,4 @@ MonoBehaviour:
     type: 2}
   m_cameraPrefab: {fileID: 114172548826053758, guid: f6548cba694dd6f4ab07421c0a80d3f9,
     type: 2}
+  m_fadeInTime: 2

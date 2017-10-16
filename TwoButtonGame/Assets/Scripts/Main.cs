@@ -12,6 +12,9 @@ public class Main : ComponentSingleton<Main>
     private Camera m_clearCameraPrefab;
     [SerializeField]
     private CameraManager m_cameraPrefab;
+    
+    [SerializeField] [Range(0.1f, 5)]
+    private float m_fadeInTime = 1.0f;
 
     private List<Player> m_players = new List<Player>();
     private List<CameraManager> m_cameras = new List<CameraManager>();
@@ -25,6 +28,11 @@ public class Main : ComponentSingleton<Main>
     public float CountdownTime
     {
         get { return m_raceStartTime - Time.time; }
+    }
+
+    public float FadeFactor
+    {
+        get { return 1 - Mathf.Clamp01((Time.time - (m_raceStartTime - m_levelConfig.CountdownDuration)) / m_fadeInTime); }
     }
 
     private LevelConfig m_levelConfig;
@@ -74,25 +82,27 @@ public class Main : ComponentSingleton<Main>
         SceneManager.LoadScene(0);
     }
 
-    public void LoadRace(LevelConfig levelConfig, List<PlayerConfig> playerConfigs, List<PlayerInput> inputs)
+    public AsyncOperation LoadRace(LevelConfig levelConfig, List<PlayerConfig> playerConfigs, List<PlayerInput> inputs)
     {
         m_racing = true;
-        SceneManager.LoadScene(levelConfig.SceneName);
-
-        Instantiate(m_clearCameraPrefab);
-
         m_levelConfig = levelConfig;
-        StartCoroutine(StartLevel(playerConfigs, inputs));
+
+        AsyncOperation loading = SceneManager.LoadSceneAsync(levelConfig.SceneName);
+        loading.allowSceneActivation = false;
+
+        StartCoroutine(StartLevel(loading, playerConfigs, inputs));
+        return loading;
     }
     
-    private IEnumerator StartLevel(List<PlayerConfig> playerConfigs, List<PlayerInput> inputs)
+    private IEnumerator StartLevel(AsyncOperation loading, List<PlayerConfig> playerConfigs, List<PlayerInput> inputs)
     {
+        yield return new WaitWhile(() => !loading.allowSceneActivation);
         yield return null;
 
-        int playerCount = playerConfigs.Count;
-
+        Instantiate(m_clearCameraPrefab);
         m_racePath = FindObjectOfType<RacePath>();
 
+        int playerCount = playerConfigs.Count;
         List<Vector3> positions = new List<Vector3>();
         
         Vector3 spacing = 0.5f * m_levelConfig.StartSpacing * Vector3.right;
