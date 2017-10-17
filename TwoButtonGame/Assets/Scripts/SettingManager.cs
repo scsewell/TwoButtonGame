@@ -46,7 +46,7 @@ public class SettingManager : Singleton<SettingManager>
             (v) => Screen.SetResolution(v.width, v.height, Screen.fullScreen)
             );
 
-        m_fullscreen    = m_settings.Add(Categories.Screen, "Fullscreen", true, BOOL_VALS, SerializeBool, ParseBool);
+        m_fullscreen    = m_settings.Add(Categories.Screen, "Fullscreen", true, BOOL_VALS, SerializeBool, ParseBool, (v) => Screen.fullScreen = v);
         m_vsync         = m_settings.Add(Categories.Screen, "VSync", true, BOOL_VALS, SerializeBool, ParseBool, (v) => QualitySettings.vSyncCount = (v ? 1 : 0));
         m_volume        = m_settings.Add(Categories.Audio, "Volume", 100, VOLUME_VALS, (v) => v.ToString(), (s) => int.Parse(s));
     }

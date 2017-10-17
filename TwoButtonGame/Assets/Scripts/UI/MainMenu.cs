@@ -46,9 +46,7 @@ public class MainMenu : Menu
     [Header("How To Play")]
     [SerializeField] private Canvas m_howToMenu;
     [SerializeField] private Button m_howToBackButton;
-    [SerializeField] private GameObject m_howToPreviousPanel;
     [SerializeField] private Button m_howToPreviousButton;
-    [SerializeField] private GameObject m_howToNextPanel;
     [SerializeField] private Button m_howToNextButton;
 
     private int m_currentHowTo = 0;
@@ -350,12 +348,6 @@ public class MainMenu : Menu
 
     private void UpdateHowToPlay()
     {
-        m_howToPreviousPanel.SetActive(m_currentHowTo > 0);
-
-        Navigation nav = m_howToBackButton.navigation;
-        nav.selectOnLeft = m_howToPreviousPanel.activeSelf ? m_howToPreviousButton : null;
-        nav.selectOnRight = m_howToNextPanel.activeSelf ? m_howToNextButton : null;
-        m_howToBackButton.navigation = nav;
     }
 
     private void CreateSettings()
