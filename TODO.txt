@@ -1,5 +1,4 @@
 ### To Do ###
-Remeber setting from previous play
 
 Basic settings - resolution, fullscreen, vsynch, volume
 

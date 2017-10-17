@@ -21,7 +21,6 @@ GameObject:
   - component: {fileID: 4862081657709946}
   - component: {fileID: 20152883271897542}
   - component: {fileID: 124823676665735666}
-  - component: {fileID: 92526119158302240}
   m_Layer: 0
   m_Name: ClearCamera
   m_TagString: Untagged
@@ -73,18 +72,11 @@ Camera:
   m_TargetEye: 3
   m_HDR: 0
   m_AllowMSAA: 0
+  m_AllowDynamicResolution: 0
   m_ForceIntoRT: 0
   m_OcclusionCulling: 0
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
-  m_StereoMirrorMode: 0
---- !u!92 &92526119158302240
-Behaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1978334542792062}
-  m_Enabled: 1
 --- !u!124 &124823676665735666
 Behaviour:
   m_ObjectHideFlags: 1

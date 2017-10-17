@@ -59,6 +59,8 @@ public class MainMenu : Menu
     private Image m_fade;
     [SerializeField] [Range(0, 5)]
     private float m_loadFadeDuration = 1.0f;
+    [SerializeField] [Range(0, 5)]
+    private float m_fadePower = 3.0f;
 
     private AsyncOperation m_loading;
     private float m_loadFadeTime = float.MaxValue;
@@ -313,7 +315,8 @@ public class MainMenu : Menu
 
     private float GetFadeFactor()
     {
-        return m_loadFadeTime != float.MaxValue ? Mathf.Pow(Mathf.Clamp01((Time.unscaledTime - m_loadFadeTime) / m_loadFadeDuration), 2) : 0;
+        float baseFac = Mathf.Clamp01((Time.unscaledTime - m_loadFadeTime) / m_loadFadeDuration);
+        return m_loadFadeTime != float.MaxValue ? Mathf.Sin((Mathf.PI / 2) * Mathf.Pow(baseFac, m_fadePower)) : 0;
     }
 
     private void ResetHowToPlay()

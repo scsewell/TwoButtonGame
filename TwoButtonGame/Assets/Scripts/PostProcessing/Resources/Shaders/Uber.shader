@@ -27,9 +27,9 @@ Shader "Hidden/Post FX/Uber Shader"
         #pragma multi_compile __ GRAIN
         #pragma multi_compile __ VIGNETTE_CLASSIC VIGNETTE_MASKED
         #pragma multi_compile __ DITHERING
-        
-        #include "Bloom.cginc"
+
         #include "UnityCG.cginc"
+        #include "Bloom.cginc"
         #include "ColorGrading.cginc"
         #include "UberSecondPass.cginc"
 

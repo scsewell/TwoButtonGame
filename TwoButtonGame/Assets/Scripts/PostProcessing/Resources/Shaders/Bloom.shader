@@ -33,8 +33,8 @@ Shader "Hidden/Post FX/Bloom"
     CGINCLUDE
 
         #pragma target 3.0
-        #include "Bloom.cginc"
         #include "UnityCG.cginc"
+        #include "Bloom.cginc"
         #include "Common.cginc"
 
         sampler2D _BaseTex;

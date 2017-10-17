@@ -162,7 +162,7 @@ public class RaceManager : MonoBehaviour
             float quitFade = Mathf.Clamp01((Time.unscaledTime - m_fadeStartTime) / m_fadeOutTime);
             fadeFac = Mathf.Lerp(fadeFac, 1, quitFade);
         }
-        return Mathf.Pow(fadeFac, 0.71f);
+        return Mathf.Sin((Mathf.PI / 2) * fadeFac);
     }
 
     public float GetTimeSinceStart(float time)

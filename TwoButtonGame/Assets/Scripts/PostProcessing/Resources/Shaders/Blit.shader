@@ -7,8 +7,8 @@ Shader "Hidden/Post FX/Blit"
 
     CGINCLUDE
 
-        #include "Common.cginc"
         #include "UnityCG.cginc"
+        #include "Common.cginc"
 
         struct Varyings
         {

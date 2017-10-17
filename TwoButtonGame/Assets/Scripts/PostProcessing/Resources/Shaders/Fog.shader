@@ -8,8 +8,8 @@ Shader "Hidden/Post FX/Fog"
     CGINCLUDE
 
         #pragma multi_compile __ FOG_LINEAR FOG_EXP FOG_EXP2
-        #include "Common.cginc"
         #include "UnityCG.cginc"
+        #include "Common.cginc"
 
         #define SKYBOX_THREASHOLD_VALUE 0.9999
 

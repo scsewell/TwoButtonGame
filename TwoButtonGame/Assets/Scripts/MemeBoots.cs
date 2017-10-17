@@ -43,11 +43,17 @@ public class MemeBoots : MonoBehaviour
 
         if (leftButton)
         {
-            m_body.AddForceAtPosition(force, transform.position + forceOffset);
+            AddForce(force, transform.position + forceOffset);
         }
         if (rightButton)
         {
-            m_body.AddForceAtPosition(force, transform.position - forceOffset);
+            AddForce(force, transform.position - forceOffset);
         }
+    }
+
+    private void AddForce(Vector3 force, Vector3 position)
+    {
+        m_body.AddForce(force);
+        m_body.AddTorque(Vector3.Cross(position - m_body.position, force));
     }
 }

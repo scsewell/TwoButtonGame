@@ -118,7 +118,6 @@ public class PlayerUI : MonoBehaviour
         m_arrow.gameObject.SetActive(!finished);
         m_rankText.gameObject.SetActive(!finished && !isSolo);
         m_rankSubText.gameObject.SetActive(!finished && !isSolo);
-        m_lapText.gameObject.SetActive(!finished);
         m_newLapText.gameObject.SetActive(!finished);
 
         m_finalRankText.gameObject.SetActive(finished && !isSolo);
@@ -172,7 +171,7 @@ public class PlayerUI : MonoBehaviour
         m_rankSubText.text = subText;
         m_finalRankSubText.text = subText;
 
-        if (rank != m_lastRank)
+        if (rank != m_lastRank && m_raceManager.GetTimeSinceStart(Time.time) > 0)
         {
             m_rankRect.localScale = 1.2f * Vector3.one;
         }
