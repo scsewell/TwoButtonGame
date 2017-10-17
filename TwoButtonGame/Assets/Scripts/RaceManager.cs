@@ -121,7 +121,7 @@ public class RaceManager : MonoBehaviour
             m_fadeStartTime = Time.unscaledTime;
         }
 
-        AudioListener.volume = Mathf.MoveTowards(AudioListener.volume, 1 - FadeFac, Time.unscaledDeltaTime / 0.5f);
+        AudioManager.Instance.Volume = Mathf.MoveTowards(AudioManager.Instance.Volume, 1 - FadeFac, Time.unscaledDeltaTime / 0.5f);
 
         m_raceMenu.UpdateUI(this, m_state == State.Paused, m_state == State.Finished, m_loading != null);
 

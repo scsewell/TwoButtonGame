@@ -7,6 +7,16 @@ public class AudioManager : ComponentSingleton<AudioManager>
 {
     private AudioSource m_audio;
 
+    private float m_volume = 1;
+    public float Volume
+    {
+        get { return m_volume; }
+        set
+        {
+            m_volume = Mathf.Clamp01(value);
+        }
+    }
+
     protected override void Awake()
     {
         base.Awake();
@@ -21,5 +31,10 @@ public class AudioManager : ComponentSingleton<AudioManager>
         {
             m_audio.PlayOneShot(clip, volume);
         }
+    }
+
+    public void Update()
+    {
+        AudioListener.volume = Volume * (SettingManager.Instance.Volume.Value / 100.0f);
     }
 }

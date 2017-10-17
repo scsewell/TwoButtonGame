@@ -1,9 +1,11 @@
-﻿using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using Framework.SettingManagement;
+using Framework.UI;
 
 public class MainMenu : Menu
 {
@@ -11,6 +13,7 @@ public class MainMenu : Menu
     [SerializeField] private Canvas m_rootMenu;
     [SerializeField] private Button m_playButton;
     [SerializeField] private Button m_showHowToButton;
+    [SerializeField] private Button m_openSettingsButton;
     [SerializeField] private Button m_showCreditsButton;
     [SerializeField] private Button m_quitButton;
 
@@ -50,6 +53,15 @@ public class MainMenu : Menu
 
     private int m_currentHowTo = 0;
 
+    [Header("Settings")]
+    [SerializeField] private Canvas m_settingsMenu;
+    [SerializeField] private Button m_settingsApplyButton;
+    [SerializeField] private Button m_settingsBackButton;
+    [SerializeField] private RectTransform m_settingsContent;
+    [SerializeField] private SettingPanel m_settingPrefab;
+
+    private List<SettingPanel> m_settingPanels = new List<SettingPanel>();
+
     [Header("Credits")]
     [SerializeField] private Canvas m_creditsMenu;
     [SerializeField] private Button m_creditsBackButton;
@@ -72,6 +84,7 @@ public class MainMenu : Menu
         PlayerSelect,
         LevelSelect,
         HowToPlay,
+        Settings,
         Credits,
         Loading,
     }
@@ -85,6 +98,7 @@ public class MainMenu : Menu
 
         m_playButton.onClick.AddListener(() => SetMenu(Menu.PlayerSelect));
         m_showHowToButton.onClick.AddListener(() => SetMenu(Menu.HowToPlay));
+        m_openSettingsButton.onClick.AddListener(() => SetMenu(Menu.Settings));
         m_showCreditsButton.onClick.AddListener(() => SetMenu(Menu.Credits));
         m_quitButton.onClick.AddListener(() => Application.Quit());
         
@@ -92,7 +106,12 @@ public class MainMenu : Menu
         m_howToPreviousButton.onClick.AddListener(() => m_currentHowTo = Mathf.Max(m_currentHowTo - 1, 0));
         m_howToNextButton.onClick.AddListener(() => m_currentHowTo = Mathf.Min(m_currentHowTo + 1, 2));
 
+        m_settingsBackButton.onClick.AddListener(() => SetMenu(Menu.Root));
+        m_settingsApplyButton.onClick.AddListener(() => ApplySettings());
+
         m_creditsBackButton.onClick.AddListener(() => SetMenu(Menu.Root));
+
+        CreateSettings();
 
         for (int i = 0; i < 4; i++)
         {
@@ -132,6 +151,7 @@ public class MainMenu : Menu
             m_levelSelectMenu.enabled   = (menu == Menu.LevelSelect);
             m_howToMenu.enabled         = (menu == Menu.HowToPlay);
             m_creditsMenu.enabled       = (menu == Menu.Credits);
+            m_settingsMenu.enabled      = (menu == Menu.Settings);
 
             if (previous != Menu.None)
             {
@@ -150,6 +170,7 @@ public class MainMenu : Menu
                 case Menu.PlayerSelect: ResetPlayerSelect(previous == Menu.Root); break;
                 case Menu.LevelSelect: ResetLevelSelect(); break;
                 case Menu.HowToPlay: ResetHowToPlay(); break;
+                case Menu.Settings: RefreshSettings(); break;
             }
 
             EventSystem.current.SetSelectedGameObject(null);
@@ -170,6 +191,7 @@ public class MainMenu : Menu
             {
                 case Menu.Root: m_playButton.Select(); break;
                 case Menu.HowToPlay: m_howToBackButton.Select(); break;
+                case Menu.Settings: m_settingsBackButton.Select(); break;
                 case Menu.Credits: m_creditsBackButton.Select(); break;
             }
         }
@@ -182,7 +204,7 @@ public class MainMenu : Menu
             case Menu.Loading: UpdateLoading(); break;
         }
 
-        AudioListener.volume = Mathf.MoveTowards(AudioListener.volume, 1 - GetFadeFactor(), Time.unscaledDeltaTime / 0.35f);
+        AudioManager.Instance.Volume = Mathf.MoveTowards(AudioManager.Instance.Volume, 1 - GetFadeFactor(), Time.unscaledDeltaTime / 0.35f);
     }
 
     private void ResetPlayerSelect(bool fullReset)
@@ -334,5 +356,49 @@ public class MainMenu : Menu
         nav.selectOnLeft = m_howToPreviousPanel.activeSelf ? m_howToPreviousButton : null;
         nav.selectOnRight = m_howToNextPanel.activeSelf ? m_howToNextButton : null;
         m_howToBackButton.navigation = nav;
+    }
+
+    private void CreateSettings()
+    {
+        Settings settings = SettingManager.Instance.Settings;
+        foreach (string category in settings.Categories)
+        {
+            //UIHelper.Create(prefab_header, m_settingsContent).GetComponentInChildren<Text>().text = category;
+
+            foreach (ISetting setting in settings.CategoryToSettings[category])
+            {
+                if (setting.DisplayOptions != null)
+                {
+                    Func<ISetting> getSetting = () => SettingManager.Instance.Settings.GetSetting(setting.Name);
+                    m_settingPanels.Add(UIHelper.Create(m_settingPrefab, m_settingsContent).Init(getSetting));
+                }
+            }
+            //UIHelper.AddSpacer(m_settingsContent, 10);
+        }
+
+        Navigation explicitNav = new Navigation();
+        explicitNav.mode = Navigation.Mode.Explicit;
+
+        Navigation bottomNav = explicitNav;
+        bottomNav.selectOnDown = m_settingsApplyButton;
+
+        Selectable lastSetting = UIHelper.SetNavigationVertical(m_settingsContent, explicitNav, explicitNav, bottomNav).LastOrDefault();
+        Navigation tempNav;
+
+        tempNav = m_settingsApplyButton.navigation;
+        tempNav.selectOnUp = lastSetting;
+        m_settingsApplyButton.navigation = tempNav;
+    }
+
+    private void RefreshSettings()
+    {
+        m_settingPanels.ForEach(p => p.GetValue());
+    }
+
+    private void ApplySettings()
+    {
+        m_settingPanels.ForEach(p => p.Apply());
+        SettingManager.Instance.Save();
+        SettingManager.Instance.Apply();
     }
 }

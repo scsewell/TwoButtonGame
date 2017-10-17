@@ -24,6 +24,9 @@ public class Main : ComponentSingleton<Main>
 
         m_raceManagerPrefab = Resources.Load<RaceManager>("RaceManager");
         gameObject.AddComponent<AudioListener>();
+
+        SettingManager.Instance.Load();
+        SettingManager.Instance.Apply();
     }
 
     private void Update()
@@ -90,5 +93,13 @@ public class Main : ComponentSingleton<Main>
         Time.timeScale = 1;
         yield return new WaitWhile(() => !loading.isDone);
         onComplete();
+    }
+
+    private void OnApplicationFocus(bool focus)
+    {
+        if (focus)
+        {
+            SettingManager.Instance.Apply();
+        }
     }
 }
