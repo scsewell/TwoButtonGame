@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -8,55 +9,31 @@ using Framework.Interpolation;
 
 public class Main : ComponentSingleton<Main>
 {
-    [SerializeField]
-    private Camera m_clearCameraPrefab;
-    [SerializeField]
-    private CameraManager m_cameraPrefab;
-    
-    [SerializeField] [Range(0.1f, 5)]
-    private float m_fadeInTime = 1.0f;
+    private RaceManager m_raceManagerPrefab;
 
-    private List<Player> m_players = new List<Player>();
-    private List<CameraManager> m_cameras = new List<CameraManager>();
+    private RaceManager m_raceManager;
+    public RaceManager RaceManager { get { return m_raceManager; } }
 
-    private RacePath m_racePath;
-    public RacePath RacePath { get { return m_racePath; } }
-
-    private float m_raceStartTime;
-    private int m_countdownSecond;
-
-    public float CountdownTime
-    {
-        get { return m_raceStartTime - Time.time; }
-    }
-
-    public float FadeFactor
-    {
-        get { return 1 - Mathf.Clamp01((Time.time - (m_raceStartTime - m_levelConfig.CountdownDuration)) / m_fadeInTime); }
-    }
-
-    private LevelConfig m_levelConfig;
-    private bool m_racing = false;
+    private RaceParameters m_raceParams = null;
+    public RaceParameters LastRaceParams { get { return m_raceParams; } }
 
     protected override void Awake()
     {
         base.Awake();
         DontDestroyOnLoad(gameObject);
+
+        m_raceManagerPrefab = Resources.Load<RaceManager>("RaceManager");
+        gameObject.AddComponent<AudioListener>();
     }
-    
+
     private void Update()
     {
         InterpolationController.Instance.VisualUpdate();
         InputManager.Instance.Update();
 
-        if (m_racing)
+        if (m_raceManager != null)
         {
-            int countdownSecond = Mathf.CeilToInt(CountdownTime);
-            if (countdownSecond != m_countdownSecond && 0 <= countdownSecond && countdownSecond <= 3)
-            {
-                AudioManager.Instance.PlaySound(countdownSecond == 0 ? m_levelConfig.GoSound : m_levelConfig.CountdownSound);
-            }
-            m_countdownSecond = countdownSecond;
+            m_raceManager.UpdateRace();
         }
     }
 
@@ -69,78 +46,49 @@ public class Main : ComponentSingleton<Main>
     {
         InterpolationController.Instance.EarlyFixedUpdate();
 
-        if (m_racing)
+        if (m_raceManager != null)
         {
-            m_players.ForEach(p => p.MainUpdate());
-            m_cameras.ForEach(c => c.MainUpdate());
+            m_raceManager.FixedUpdateRace();
         }
     }
 
-    public void LoadMenu()
+    public AsyncOperation LoadMainMenu()
     {
-        m_racing = false;
-        SceneManager.LoadScene(0);
-    }
-
-    public AsyncOperation LoadRace(LevelConfig levelConfig, List<PlayerConfig> playerConfigs, List<PlayerInput> inputs)
-    {
-        m_racing = true;
-        m_levelConfig = levelConfig;
-
-        AsyncOperation loading = SceneManager.LoadSceneAsync(levelConfig.SceneName);
+        AsyncOperation loading = SceneManager.LoadSceneAsync(0);
         loading.allowSceneActivation = false;
 
-        StartCoroutine(StartLevel(loading, playerConfigs, inputs));
+        StartCoroutine(LoadLevel(loading, () => StartMainMenu()));
         return loading;
     }
-    
-    private IEnumerator StartLevel(AsyncOperation loading, List<PlayerConfig> playerConfigs, List<PlayerInput> inputs)
+
+    private void StartMainMenu()
+    {
+        m_raceManager = null;
+    }
+
+    public AsyncOperation LoadRace(RaceParameters raceParams)
+    {
+        m_raceParams = raceParams;
+
+        AsyncOperation loading = SceneManager.LoadSceneAsync(raceParams.LevelConfig.SceneName);
+        loading.allowSceneActivation = false;
+
+        StartCoroutine(LoadLevel(loading, () => StartRace(raceParams)));
+        return loading;
+    }
+
+    private void StartRace(RaceParameters raceParams)
+    {
+        m_raceManager = Instantiate(m_raceManagerPrefab);
+        m_raceManager.StartRace(raceParams);
+    }
+
+    private IEnumerator LoadLevel(AsyncOperation loading, Action onComplete)
     {
         yield return new WaitWhile(() => !loading.allowSceneActivation);
-        yield return null;
-
-        Instantiate(m_clearCameraPrefab);
-        m_racePath = FindObjectOfType<RacePath>();
-
-        int playerCount = playerConfigs.Count;
-        List<Vector3> positions = new List<Vector3>();
-        
-        Vector3 spacing = 0.5f * m_levelConfig.StartSpacing * Vector3.right;
-        for (int playerNum = 0; playerNum < playerCount; playerNum++)
-        {
-            positions.Add((playerNum - ((playerCount - 1) - playerNum)) * spacing);
-        }
-
-        for (int playerNum = 0; playerNum < playerCount; playerNum++)
-        {
-            int index = Random.Range(0, positions.Count);
-            Vector3 pos = positions[index];
-            positions.RemoveAt(index);
-
-            Player player = GameObject.Instantiate(playerConfigs[playerNum].PlayerPrefab, pos, Quaternion.identity);
-            player.Init(playerNum, inputs[playerNum], playerConfigs[playerNum]);
-            m_players.Add(player);
-
-            CameraManager camera = GameObject.Instantiate(m_cameraPrefab);
-            camera.Init(player, playerNum, playerCount);
-            m_cameras.Add(camera);
-        }
-
-        m_raceStartTime = Time.time + m_levelConfig.CountdownDuration;
-    }
-
-    public float GetTimeSinceStart(float time)
-    {
-        return Mathf.Max(time - m_raceStartTime, 0);
-    }
-
-    public int GetPlayerRank(Player player)
-    {
-        return m_players.Count(p => p != player && (
-            (p.IsFinished && player.IsFinished && p.FinishTime < player.FinishTime) ||
-            !player.IsFinished && (
-            (p.WaypointsCompleted > player.WaypointsCompleted) ||
-            (p.WaypointsCompleted == player.WaypointsCompleted && Vector3.Distance(p.CurrentWaypoint.Position, p.transform.position) < Vector3.Distance(player.CurrentWaypoint.Position, player.transform.position))
-            ))) + 1;
+        AudioListener.volume = 0;
+        Time.timeScale = 1;
+        yield return new WaitWhile(() => !loading.isDone);
+        onComplete();
     }
 }

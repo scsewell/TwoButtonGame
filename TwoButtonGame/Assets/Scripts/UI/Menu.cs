@@ -12,39 +12,42 @@ public class Menu : MonoBehaviour
     [SerializeField] private AudioClip m_cancelSound;
     [SerializeField] private AudioClip m_nextMenu;
     [SerializeField] private AudioClip m_backMenu;
-
+    
     public void PlaySound(AudioClip clip)
     {
-        AudioManager.Instance.PlaySound(clip);
+        if (clip != null)
+        {
+            AudioManager.Instance.PlaySound(clip);
+        }
     }
 
     public void PlaySelectSound()
     {
-        AudioManager.Instance.PlaySound(m_selectSound);
+        PlaySound(m_selectSound);
     }
 
     public void PlayDeselectSound()
     {
-        AudioManager.Instance.PlaySound(m_deselectSound);
+        PlaySound(m_deselectSound);
     }
 
     public void PlaySubmitSound()
     {
-        AudioManager.Instance.PlaySound(m_submitSound);
+        PlaySound(m_submitSound);
     }
 
     public void PlayCancelSound()
     {
-        AudioManager.Instance.PlaySound(m_cancelSound);
+        PlaySound(m_cancelSound);
     }
 
     public void PlayNextMenuSound()
     {
-        AudioManager.Instance.PlaySound(m_nextMenu);
+        PlaySound(m_nextMenu);
     }
 
     public void PlayBackMenuSound()
     {
-        AudioManager.Instance.PlaySound(m_backMenu);
+        PlaySound(m_backMenu);
     }
 }

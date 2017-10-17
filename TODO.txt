@@ -1,19 +1,23 @@
 ### To Do ###
-Pause Menu
-Race End Menu
+Remeber setting from previous play
+
+Basic settings - resolution, fullscreen, vsynch, volume
 
 Checkpoint sound
 Collision sound
 Player movement/action sounds
 Player finish line sounds
 
+Player Models
+
 Abilities and stuff
+
+Name / Logo / Icon
 
 Music (Per Level)
 Menu Music
 
-Tutorial / How to Play
-Credits / About
+How to Play
 
 ### Long Term ###
 

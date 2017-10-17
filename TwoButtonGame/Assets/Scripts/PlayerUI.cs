@@ -5,10 +5,6 @@ using UnityEngine.UI;
 
 public class PlayerUI : MonoBehaviour
 {
-    [Header("Fade")]
-    [SerializeField]
-    private Image m_fade;
-
     [Header("Countdown")]
     [SerializeField]
     private Text m_countdownText;
@@ -61,6 +57,7 @@ public class PlayerUI : MonoBehaviour
     [SerializeField] [Range(0.01f, 1)]
     private float m_newLapAlphaSmoothing = 0.25f;
 
+    private RaceManager m_raceManager;
     private CanvasScaler m_canvasScaler;
     private Transform m_arrow;
     private float m_baseScaleFactor;
@@ -74,6 +71,8 @@ public class PlayerUI : MonoBehaviour
         m_baseScaleFactor = m_canvasScaler.referenceResolution.y;
 
         m_arrow = Instantiate(m_arrowPrefab);
+
+        m_raceManager = Main.Instance.RaceManager;
 
         SetAlpha(m_newLapText, 0);
     }
@@ -91,17 +90,14 @@ public class PlayerUI : MonoBehaviour
     {
         // set the canvas scale
         m_canvasScaler.referenceResolution = new Vector2(m_canvasScaler.referenceResolution.x, m_baseScaleFactor / cam.rect.height);
-
-        // fading
-        SetAlpha(m_fade, Main.Instance.FadeFactor);
-
+        
         // start countdown
-        float countdown = Main.Instance.CountdownTime;
+        float countdown = m_raceManager.CountdownTime;
         m_countdownText.gameObject.SetActive(-1 < countdown && countdown <= 3);
         m_countdownText.text = (countdown > 0) ? Mathf.CeilToInt(countdown).ToString() : "GO!";
 
         // timer
-        float time = Main.Instance.GetTimeSinceStart(player.IsFinished ? player.FinishTime : Time.time);
+        float time = m_raceManager.GetTimeSinceStart(player.IsFinished ? player.FinishTime : Time.time);
         int minutes = Mathf.FloorToInt(time / 60);
         int seconds = Mathf.FloorToInt(time - (minutes * 60));
         int milliseconds = Mathf.FloorToInt((time - seconds - (minutes * 60)) * 100);
@@ -112,20 +108,21 @@ public class PlayerUI : MonoBehaviour
         m_playerText.text = "Player " + (player.PlayerNum + 1);
         m_playerText.color = Consts.PLAYER_COLORS[player.PlayerNum];
 
-        int rank = Main.Instance.GetPlayerRank(player);
+        int rank = m_raceManager.GetPlayerRank(player);
+        bool isSolo = m_raceManager.PlayerCount == 1;
 
-        RacePath path = Main.Instance.RacePath;
+        RacePath path = m_raceManager.RacePath;
         int lap = path.GetCurrentLap(player.WaypointsCompleted);
         bool finished = player.IsFinished;
         
         m_arrow.gameObject.SetActive(!finished);
-        m_rankText.gameObject.SetActive(!finished);
-        m_rankSubText.gameObject.SetActive(!finished);
+        m_rankText.gameObject.SetActive(!finished && !isSolo);
+        m_rankSubText.gameObject.SetActive(!finished && !isSolo);
         m_lapText.gameObject.SetActive(!finished);
         m_newLapText.gameObject.SetActive(!finished);
 
-        m_finalRankText.gameObject.SetActive(finished);
-        m_finalRankSubText.gameObject.SetActive(finished);
+        m_finalRankText.gameObject.SetActive(finished && !isSolo);
+        m_finalRankSubText.gameObject.SetActive(finished && !isSolo);
 
         if (!finished)
         {

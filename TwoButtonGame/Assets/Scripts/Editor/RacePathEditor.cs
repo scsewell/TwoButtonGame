@@ -29,17 +29,20 @@ public class RacePathEditor : Editor
     {
         Waypoint[] path = m_racePath.Path;
 
-        for (int i = 0; i < path.Length; i++)
+        if (path != null)
         {
-            Handles.color = Color.yellow;
-
-            Vector3 start = path[i].Position;
-            Vector3 end = path[(i + 1) % path.Length].Position;
-            Handles.DrawLine(start, end);
-
-            if ((end - start).magnitude > 0.5f)
+            for (int i = 0; i < path.Length; i++)
             {
-                Handles.ConeHandleCap(0, (start + end) / 2, Quaternion.LookRotation(end - start), 2f, EventType.Repaint);
+                Handles.color = Color.yellow;
+
+                Vector3 start = path[i].Position;
+                Vector3 end = path[(i + 1) % path.Length].Position;
+                Handles.DrawLine(start, end);
+
+                if ((end - start).magnitude > 0.5f)
+                {
+                    Handles.ConeHandleCap(0, (start + end) / 2, Quaternion.LookRotation(end - start), 2f, EventType.Repaint);
+                }
             }
         }
     }

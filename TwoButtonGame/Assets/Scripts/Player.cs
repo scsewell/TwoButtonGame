@@ -31,9 +31,13 @@ public class Player : MonoBehaviour
     private float m_finishTime = float.MaxValue;
     public float FinishTime { get { return m_finishTime; } }
 
+    private RaceManager m_raceManager;
+
     private void Awake()
     {
         m_movement = GetComponentInChildren<MemeBoots>();
+
+        m_raceManager = Main.Instance.RaceManager;
     }
 
     public void Init(int playerNum, PlayerInput input, PlayerConfig config)
@@ -42,19 +46,19 @@ public class Player : MonoBehaviour
 
         m_movement.Init(input, config);
         
-        m_currentWaypoint = Main.Instance.RacePath.GetWaypoint(m_waypointsCompleted);
+        m_currentWaypoint = m_raceManager.RacePath.GetWaypoint(m_waypointsCompleted);
     }
 
-    public void MainUpdate()
+    public void MainUpdate(bool canAcceptInput)
     {
-        bool finished = Main.Instance.RacePath.IsFinished(m_waypointsCompleted);
+        m_movement.Move(!m_isFinished && canAcceptInput);
+
+        bool finished = m_raceManager.RacePath.IsFinished(m_waypointsCompleted);
         if (finished != m_isFinished)
         {
             m_finishTime = Time.time;
             m_isFinished = finished;
         }
-
-        m_movement.Move(!m_isFinished && Main.Instance.CountdownTime <= 0);
     }
 
     private void Update()
@@ -74,6 +78,6 @@ public class Player : MonoBehaviour
     private void GetNextWaypoint()
     {
         m_waypointsCompleted++;
-        m_currentWaypoint = Main.Instance.RacePath.GetWaypoint(m_waypointsCompleted);
+        m_currentWaypoint = m_raceManager.RacePath.GetWaypoint(m_waypointsCompleted);
     }
 }

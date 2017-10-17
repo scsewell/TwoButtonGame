@@ -7,11 +7,11 @@ public class InputManager : Singleton<InputManager>
 {
     private PlayerInput[] m_playerInputs =
     {
-            new PlayerInput(KeyCode.A, KeyCode.S),
-            new PlayerInput(KeyCode.LeftArrow, KeyCode.DownArrow),
-            new PlayerInput(KeyCode.J, KeyCode.K),
-            new PlayerInput(KeyCode.Keypad2, KeyCode.Keypad3),
-        };
+        new PlayerInput(KeyCode.A, KeyCode.S),
+        new PlayerInput(KeyCode.LeftArrow, KeyCode.DownArrow),
+        new PlayerInput(KeyCode.J, KeyCode.K),
+        new PlayerInput(KeyCode.Keypad2, KeyCode.Keypad3),
+    };
 
     public PlayerInput[] PlayerInputs
     {

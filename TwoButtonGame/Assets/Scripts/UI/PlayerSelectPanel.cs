@@ -56,6 +56,12 @@ public class PlayerSelectPanel : MonoBehaviour
         UpdateGraphics();
     }
 
+    public void FromConfig(PlayerConfig[] configs, PlayerConfig selectedConfig)
+    {
+        m_state = State.Select;
+        m_selectedConfig = System.Array.IndexOf(configs, selectedConfig);
+    }
+
     public bool UpdatePanel(int playerNum, PlayerInput input, PlayerConfig[] configs, Menu menu)
     {
         m_input = input;
@@ -67,7 +73,7 @@ public class PlayerSelectPanel : MonoBehaviour
             {
                 case State.Join: m_state = State.Select; menu.PlaySubmitSound(); break;
                 case State.Select: m_state = State.Ready; menu.PlaySubmitSound(); break;
-                case State.Ready: m_continue = true; break;
+                case State.Ready: if (playerNum == 0) { m_continue = true; } break;
             }
         }
 
@@ -96,7 +102,7 @@ public class PlayerSelectPanel : MonoBehaviour
 
         PlayerConfig config = configs[m_selectedConfig];
         m_characterPreview.sprite = config.Preview;
-        m_characterHighlight.color = new Color(1, 1, 1, Mathf.Lerp(m_characterHighlight.color.a, 0, Time.deltaTime * 10f));
+        m_characterHighlight.color = new Color(1, 1, 1, Mathf.Lerp(m_characterHighlight.color.a, 0, Time.unscaledDeltaTime * 12f));
 
         m_playerName.text = "Player " + (playerNum + 1);
         m_playerName.color = Consts.PLAYER_COLORS[playerNum];

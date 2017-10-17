@@ -70,11 +70,14 @@ public class PlayerInput
         }
     }
 
-    private string GetName(KeyCode button)
+    public static string GetName(KeyCode button)
     {
         string str = button.ToString();
         switch (button)
         {
+            case KeyCode.Escape:        return "Esc";
+            case KeyCode.Return:        return "Enter";
+
             case KeyCode.Keypad0:
             case KeyCode.Keypad1:
             case KeyCode.Keypad2:

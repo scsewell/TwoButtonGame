@@ -7,14 +7,13 @@ public class SoundListener : MonoBehaviour,
     IPointerClickHandler, ISubmitHandler, 
     IDragHandler
 {
-    [SerializeField]
-    AudioClip m_submitOverrideClip;
+    [SerializeField] private AudioClip m_submitOverrideClip;
 
-    private MainMenu m_menu;
+    private Menu m_menu;
 
 	private void Awake()
     {
-        m_menu = GetComponentInParent<MainMenu>();
+        m_menu = GetComponentInParent<Menu>();
     }
 
     public void OnPointerEnter(PointerEventData e)

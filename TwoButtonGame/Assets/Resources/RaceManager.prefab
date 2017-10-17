@@ -9,30 +9,30 @@ Prefab:
     m_Modifications: []
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
-  m_RootGameObject: {fileID: 1388100150519874}
+  m_RootGameObject: {fileID: 1059228394434116}
   m_IsPrefabParent: 1
---- !u!1 &1388100150519874
+--- !u!1 &1059228394434116
 GameObject:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   serializedVersion: 5
   m_Component:
-  - component: {fileID: 4449245091673216}
-  - component: {fileID: 114839344924344462}
+  - component: {fileID: 4674021325814336}
+  - component: {fileID: 114165988731793432}
   m_Layer: 0
-  m_Name: GameController
+  m_Name: RaceManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &4449245091673216
+--- !u!4 &4674021325814336
 Transform:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1388100150519874}
+  m_GameObject: {fileID: 1059228394434116}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -40,19 +40,25 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &114839344924344462
+--- !u!114 &114165988731793432
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1388100150519874}
+  m_GameObject: {fileID: 1059228394434116}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 35ed9aa798c33c944b162acde24e31c4, type: 3}
+  m_Script: {fileID: 11500000, guid: 78af6824180a0c54896771b6288d55f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_clearCameraPrefab: {fileID: 20152883271897542, guid: 7285fc462a99be14cada1308b91a9c9d,
     type: 2}
-  m_cameraPrefab: {fileID: 114172548826053758, guid: f6548cba694dd6f4ab07421c0a80d3f9,
+  m_splitscreenCameraPrefab: {fileID: 114172548826053758, guid: f6548cba694dd6f4ab07421c0a80d3f9,
     type: 2}
-  m_fadeInTime: 2
+  m_raceMenuPrefab: {fileID: 114856836458412740, guid: 6d43815a00386be4dbea0fb5064d975d,
+    type: 2}
+  m_fadeInTime: 0.75
+  m_fadeOutTime: 0.75
+  m_countdownDuration: 5
+  m_countdownSound: {fileID: 8300000, guid: 249b1823055eec542b9a26b915bdefce, type: 3}
+  m_goSound: {fileID: 8300000, guid: 3bd94b4b8ec8a334b84134d52b6cab9c, type: 3}

@@ -14,8 +14,8 @@ Shader "Hidden/Post FX/Motion Blur"
         Pass
         {
             CGPROGRAM
-
                 #include "MotionBlur.cginc"
+
                 #pragma vertex VertDefault
                 #pragma fragment FragVelocitySetup
 
