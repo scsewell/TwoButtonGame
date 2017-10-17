@@ -54,6 +54,7 @@ public class MainMenu : Menu
     [Header("Settings")]
     [SerializeField] private Canvas m_settingsMenu;
     [SerializeField] private Button m_settingsApplyButton;
+    [SerializeField] private Button m_settingsUseDefaultsButton;
     [SerializeField] private Button m_settingsBackButton;
     [SerializeField] private RectTransform m_settingsContent;
     [SerializeField] private SettingPanel m_settingPrefab;
@@ -68,12 +69,15 @@ public class MainMenu : Menu
     [SerializeField]
     private Image m_fade;
     [SerializeField] [Range(0, 5)]
-    private float m_loadFadeDuration = 1.0f;
+    private float m_fadeInDuration = 0.5f;
+    [SerializeField] [Range(0, 5)]
+    private float m_fadeOutDuration = 2.5f;
     [SerializeField] [Range(0, 5)]
     private float m_fadePower = 3.0f;
 
     private AsyncOperation m_loading;
-    private float m_loadFadeTime = float.MaxValue;
+    private float m_loadFadeTime;
+    private float m_menuLoadTime;
 
     private enum Menu
     {
@@ -105,6 +109,7 @@ public class MainMenu : Menu
         m_howToNextButton.onClick.AddListener(() => m_currentHowTo = Mathf.Min(m_currentHowTo + 1, 2));
 
         m_settingsBackButton.onClick.AddListener(() => SetMenu(Menu.Root));
+        m_settingsUseDefaultsButton.onClick.AddListener(() => UseDefaultSettings());
         m_settingsApplyButton.onClick.AddListener(() => ApplySettings());
 
         m_creditsBackButton.onClick.AddListener(() => SetMenu(Menu.Root));
@@ -121,7 +126,7 @@ public class MainMenu : Menu
         RaceParameters previousParams = Main.Instance.LastRaceParams;
         if (previousParams != null)
         {
-            m_selectedLevel = System.Array.IndexOf(m_levelConfigs, previousParams.LevelConfig);
+            m_selectedLevel = Array.IndexOf(m_levelConfigs, previousParams.LevelConfig);
 
             for (int i = 0; i < previousParams.PlayerIndicies.Count; i++)
             {
@@ -134,6 +139,8 @@ public class MainMenu : Menu
         {
             SetMenu(Menu.Root);
         }
+
+        m_menuLoadTime = Time.time;
     }
 
     private void SetMenu(Menu menu, bool back = false)
@@ -199,10 +206,17 @@ public class MainMenu : Menu
             case Menu.PlayerSelect: UpdatePlayerSelect(); break;
             case Menu.LevelSelect: UpdateLevelSelect(); break;
             case Menu.HowToPlay: UpdateHowToPlay(); break;
-            case Menu.Loading: UpdateLoading(); break;
         }
 
-        AudioManager.Instance.Volume = Mathf.MoveTowards(AudioManager.Instance.Volume, 1 - GetFadeFactor(), Time.unscaledDeltaTime / 0.35f);
+        float factor = GetFadeFactor();
+        m_fade.color = new Color(0, 0, 0, factor);
+
+        if (m_loading != null && factor >= 1)
+        {
+            m_loading.allowSceneActivation = true;
+        }
+
+        AudioManager.Instance.Volume = Mathf.MoveTowards(AudioManager.Instance.Volume, 1 - factor, Time.unscaledDeltaTime / 0.35f);
     }
 
     private void ResetPlayerSelect(bool fullReset)
@@ -317,28 +331,6 @@ public class MainMenu : Menu
         }
     }
 
-    private void UpdateLoading()
-    {
-        if (m_loadFadeTime == float.MaxValue && m_loading.progress >= 0.9f)
-        {
-            m_loadFadeTime = Time.unscaledTime;
-        }
-
-        float factor = GetFadeFactor();
-        m_fade.color = new Color(0, 0, 0, factor);
-
-        if (factor >= 1)
-        {
-            m_loading.allowSceneActivation = true;
-        }
-    }
-
-    private float GetFadeFactor()
-    {
-        float baseFac = Mathf.Clamp01((Time.unscaledTime - m_loadFadeTime) / m_loadFadeDuration);
-        return m_loadFadeTime != float.MaxValue ? Mathf.Sin((Mathf.PI / 2) * Mathf.Pow(baseFac, m_fadePower)) : 0;
-    }
-
     private void ResetHowToPlay()
     {
         m_currentHowTo = 0;
@@ -382,9 +374,12 @@ public class MainMenu : Menu
         m_settingsApplyButton.navigation = tempNav;
     }
 
-    private void RefreshSettings()
+    private void UseDefaultSettings()
     {
-        m_settingPanels.ForEach(p => p.GetValue());
+        SettingManager.Instance.UseDefaults();
+        SettingManager.Instance.Save();
+        SettingManager.Instance.Apply();
+        RefreshSettings();
     }
 
     private void ApplySettings()
@@ -392,5 +387,21 @@ public class MainMenu : Menu
         m_settingPanels.ForEach(p => p.Apply());
         SettingManager.Instance.Save();
         SettingManager.Instance.Apply();
+        RefreshSettings();
+    }
+
+    private void RefreshSettings()
+    {
+        m_settingPanels.ForEach(p => p.GetValue());
+    }
+
+    private float GetFadeFactor()
+    {
+        float fac = 1 - Mathf.Clamp01((Time.time - m_menuLoadTime) / m_fadeInDuration);
+        if (m_loading != null)
+        {
+            fac = Mathf.Lerp(fac, 1, Mathf.Clamp01((Time.unscaledTime - m_loadFadeTime) / m_fadeOutDuration));
+        }
+        return Mathf.Sin((Mathf.PI / 2) * Mathf.Pow(fac, m_fadePower));
     }
 }

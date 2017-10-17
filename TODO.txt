@@ -1,21 +1,19 @@
 ### To Do ###
+Player Models
+
+Name / Logo / Icon
+
 Checkpoint sound
 Collision sound
 Player movement/action sounds
 Player finish line sounds
 
-Player Models
-
 Abilities and stuff
-
-Name / Logo / Icon
 
 Music (Per Level)
 Menu Music
 
 How to Play
-
-### Long Term ###
 
 ### Maybe ###
 Camera angles vertically towards next waypoint

@@ -23,6 +23,8 @@ public class AudioManager : ComponentSingleton<AudioManager>
         
         m_audio = gameObject.AddComponent<AudioSource>();
         m_audio.playOnAwake = false;
+
+        AudioListener.volume = 0;
     }
 
     public void PlaySound(AudioClip clip, float volume = 1)
@@ -33,7 +35,7 @@ public class AudioManager : ComponentSingleton<AudioManager>
         }
     }
 
-    public void Update()
+    private void Update()
     {
         AudioListener.volume = Volume * (SettingManager.Instance.Volume.Value / 100.0f);
     }
