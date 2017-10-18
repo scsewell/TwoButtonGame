@@ -31,8 +31,11 @@ public class SettingManager : Singleton<SettingManager>
     private Setting<bool> m_vsync;
     public Setting<bool> Vsync { get { return m_vsync; } }
 
-    private Setting<int> m_volume;
-    public Setting<int> Volume {  get { return m_volume; } }
+    private Setting<int> m_masterVolume;
+    public Setting<int> MasterVolume {  get { return m_masterVolume; } }
+
+    private Setting<int> m_musicVolume;
+    public Setting<int> MusicVolume { get { return m_musicVolume; } }
 
     public SettingManager()
     {
@@ -49,7 +52,8 @@ public class SettingManager : Singleton<SettingManager>
         m_vsync         = m_settings.Add(Categories.Screen, "VSync", true, BOOL_VALS, SerializeBool, ParseBool, (v) => QualitySettings.vSyncCount = (v ? 1 : 0));
 
         string[] volumeValues = Enumerable.Range(0, 101).Where(i => i % 2 == 0).Select(v => v.ToString()).ToArray();
-        m_volume = m_settings.Add(Categories.Audio, "Volume", 100, volumeValues, (v) => v.ToString(), (s) => int.Parse(s));
+        m_masterVolume = m_settings.Add(Categories.Audio, "Master Volume", 100, volumeValues, (v) => v.ToString(), (s) => int.Parse(s));
+        m_musicVolume = m_settings.Add(Categories.Audio, "Music Volume", 50, volumeValues, (v) => v.ToString(), (s) => int.Parse(s));
     }
     
     public void UseDefaults()

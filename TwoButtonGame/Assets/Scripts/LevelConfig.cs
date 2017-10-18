@@ -14,4 +14,8 @@ public class LevelConfig : ScriptableObject
     [SerializeField]
     private string m_sceneName;
     public string SceneName { get { return m_sceneName; } }
+
+    [SerializeField]
+    private MusicParams m_music;
+    public MusicParams Music { get { return m_music; } }
 }

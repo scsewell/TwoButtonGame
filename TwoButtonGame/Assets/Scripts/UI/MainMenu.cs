@@ -9,6 +9,8 @@ using Framework.UI;
 
 public class MainMenu : Menu
 {
+    [SerializeField] private MusicParams m_music;
+
     [Header("Root Menu")]
     [SerializeField] private Canvas m_rootMenu;
     [SerializeField] private Button m_playButton;
@@ -141,6 +143,8 @@ public class MainMenu : Menu
         }
 
         m_menuLoadTime = Time.time;
+
+        AudioManager.Instance.PlayMusic(m_music);
     }
 
     private void SetMenu(Menu menu, bool back = false)

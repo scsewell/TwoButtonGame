@@ -4,24 +4,34 @@ Test levels
 Handle level bounds
 
 Name / Logo / Icon
+	Brazen Boosters
+	Boost Blasters
+	Lifters
 
 Checkpoint sound
 Collision sound
 Player movement/action sounds
 Player finish line sounds
 
+Waypoint Gates (with parts that glow when the next gate for each player) (mulitple shapes)
+Boost gates
 Moving gates
+Wind / wind turbines
 
 Abilities and stuff
 
-Music (Per Level)
-Menu Music
-
 How to Play
+
+### Music Loop Times
+The Lift		7:27.467896
+Deep Haze		1:28.677811
+Corruption		7:00.017059
+Eighties Action		2:39.558456
+Harmful or Fatal	5:19.921844
 
 ### Maybe ###
 Camera angles vertically towards next waypoint
 Input selection
-Player n is nth joier
+Player n is nth joiner
 Leaderboard
 Replays / Ghosting

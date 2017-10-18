@@ -16,6 +16,9 @@ public class RaceManager : MonoBehaviour
     [SerializeField] [Range(0, 10)]
     private int m_countdownDuration = 5;
 
+    [SerializeField] [Range(0, 2)]
+    private int m_musicDelay = 1;
+
     [SerializeField] private AudioClip m_countdownSound;
     [SerializeField]  private AudioClip m_goSound;
 
@@ -25,11 +28,13 @@ public class RaceManager : MonoBehaviour
     private RacePath m_racePath;
     public RacePath RacePath { get { return m_racePath; } }
 
+    private RaceParameters m_raceParams;
     private InRaceMenu m_raceMenu;
     private AsyncOperation m_loading;
     private float m_raceStartTime;
     private float m_fadeStartTime;
     private int m_countdownSecond;
+    private bool m_musicStarted = false;
 
     public float CountdownTime
     {
@@ -79,6 +84,8 @@ public class RaceManager : MonoBehaviour
 
     public void StartRace(RaceParameters raceParams)
     {
+        m_raceParams = raceParams;
+
         Instantiate(m_clearCameraPrefab);
 
         m_raceMenu = Instantiate(m_raceMenuPrefab);
@@ -122,6 +129,16 @@ public class RaceManager : MonoBehaviour
         }
 
         AudioManager.Instance.Volume = Mathf.MoveTowards(AudioManager.Instance.Volume, 1 - FadeFac, Time.unscaledDeltaTime / 0.5f);
+
+        if (!m_musicStarted && CountdownTime < -m_musicDelay)
+        {
+            MusicParams music = m_raceParams.LevelConfig.Music;
+            if (music != null)
+            {
+                AudioManager.Instance.PlayMusic(music);
+            }
+            m_musicStarted = true;
+        }
 
         m_raceMenu.UpdateUI(this, m_state == State.Paused, m_state == State.Finished, m_loading != null);
 
