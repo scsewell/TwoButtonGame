@@ -26,13 +26,16 @@ public class MemeBoots : MonoBehaviour
     {
         m_input = input;
         m_bootConfig = bootConfig;
-
-        m_capsule.material = m_bootConfig.PhysicsMat;
+        
         m_body.useGravity = false;
     }
     
     public void Move(bool acceptInput)
     {
+        m_capsule.material = m_bootConfig.PhysicsMat;
+        m_body.drag = m_bootConfig.LinearDrag;
+        m_body.angularDrag = m_bootConfig.AngularDrag;
+
         bool leftButton = acceptInput ? m_input.Button1 : false;
         bool rightButton = acceptInput ? m_input.Button2 : false;
         

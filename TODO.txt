@@ -1,5 +1,7 @@
 ### To Do ###
 Player Models
+Test levels
+Handle level bounds
 
 Name / Logo / Icon
 
@@ -7,6 +9,8 @@ Checkpoint sound
 Collision sound
 Player movement/action sounds
 Player finish line sounds
+
+Moving gates
 
 Abilities and stuff
 
@@ -18,3 +22,6 @@ How to Play
 ### Maybe ###
 Camera angles vertically towards next waypoint
 Input selection
+Player n is nth joier
+Leaderboard
+Replays / Ghosting

@@ -19,6 +19,14 @@ public class PlayerConfig : ScriptableObject
     private PhysicMaterial m_physicsMat;
     public PhysicMaterial PhysicsMat { get { return m_physicsMat; } }
 
+    [SerializeField] [Range(0, 2)]
+    private float m_linearDrag = 0.35f;
+    public float LinearDrag { get { return m_linearDrag; } }
+
+    [SerializeField] [Range(0, 20)]
+    private float m_angularDrag = 4.0f;
+    public float AngularDrag { get { return m_angularDrag; } }
+
     [SerializeField]
     [Range(0, 100)]
     private float m_forwardAccel = 15.0f;
