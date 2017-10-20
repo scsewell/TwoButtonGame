@@ -220,6 +220,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4149003091442914}
   - component: {fileID: 95325823822467338}
+  - component: {fileID: 114711427459646502}
   m_Layer: 0
   m_Name: Rig
   m_TagString: Untagged
@@ -841,6 +842,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b35ea56cd4eeb14c8e01c9123f06680, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &114711427459646502
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1918693950220096}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2165ac0a98978541b2749236ec2c69d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_velocityScale: 0.25
+  m_velocitySmoothing: 0.125
+  m_idleVelThresh: 2
 --- !u!114 &114992304729088298
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -852,6 +867,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58759e4c08d429843968e917aee52589, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_groundLayers:
+    serializedVersion: 2
+    m_Bits: 16384
 --- !u!136 &136373345108810784
 CapsuleCollider:
   m_ObjectHideFlags: 1

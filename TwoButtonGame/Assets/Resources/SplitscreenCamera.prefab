@@ -379,9 +379,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_spliscreenMargin: 5
-  m_smoothness: 3
-  m_positionOffset: {x: 6.5, y: 2.15}
-  m_lookOffset: 1.65
+  m_smoothness: 2
+  m_positionOffset: {x: 5.25, y: 2}
+  m_lookOffset: 1.5
 --- !u!114 &114206301504588478
 MonoBehaviour:
   m_ObjectHideFlags: 1

@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(MemeBoots))]
+[RequireComponent(typeof(PlayerAnimation))]
 public class Player : MonoBehaviour
 {
     private MemeBoots m_movement;
+    private PlayerAnimation m_animation;
 
     private int m_playerNum;
     public int PlayerNum
@@ -36,6 +38,7 @@ public class Player : MonoBehaviour
     private void Awake()
     {
         m_movement = GetComponentInChildren<MemeBoots>();
+        m_animation = GetComponentInChildren<PlayerAnimation>();
 
         m_raceManager = Main.Instance.RaceManager;
     }
@@ -63,6 +66,11 @@ public class Player : MonoBehaviour
 
     private void Update()
     {
+        if (m_animation != null)
+        {
+            m_animation.UpdateAnimation(m_movement);
+        }
+
         Debug.DrawLine(transform.position, m_currentWaypoint.Position, Color.magenta);
     }
 

@@ -3,6 +3,7 @@ Player Models (one fatty, one floating boosers fancy tech, robot, one other othe
 Test levels
 Handle level bounds
 
+Ready up anim
 Name / Logo / Icon
 	Brazen Boosters
 	Boost Blasters
