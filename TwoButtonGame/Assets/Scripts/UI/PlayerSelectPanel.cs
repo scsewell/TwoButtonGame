@@ -1,7 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.PostProcessing;
 
 public class PlayerSelectPanel : MonoBehaviour
 {
@@ -13,8 +14,30 @@ public class PlayerSelectPanel : MonoBehaviour
     [SerializeField] private ControlPanel m_controls1;
     [SerializeField] private ControlPanel m_controls2;
     [SerializeField] private ControlPanel m_controls3;
-    [SerializeField] private Image m_characterPreview;
+    [SerializeField] private RawImage m_characterPreview;
+    [SerializeField] private Text m_characterName;
+    [SerializeField] private Image m_characterNamePlate;
+    [SerializeField] private Image m_characterBackground;
     [SerializeField] private Image m_characterHighlight;
+
+    [SerializeField]
+    public PostProcessingProfile m_cameraPost;
+    [SerializeField]
+    private Vector3 m_previewCamPos = new Vector3(0, 1.5f, 2.5f);
+    [SerializeField]
+    private Vector3 m_previewCamRot = new Vector3(12, 180, 0);
+    [SerializeField] [Range(0, 180)]
+    private float m_previewCamFov = 50;
+    [SerializeField] [Range(0.25f, 1)]
+    private float m_resolutionScale = 1.0f;
+    [SerializeField]
+    private Color m_previewBgColor = new Color(0.05f, 0.05f, 0.05f);
+    [SerializeField] [Range(0, 1)]
+    private float m_previewBgColorFac = 0.1f;
+    [SerializeField] [Range(0, 5)]
+    private float m_rotateWait = 2.0f;
+    [SerializeField] [Range(0, 180)]
+    private float m_rotateSpeed = 30.0f;
 
     public enum State
     {
@@ -25,6 +48,13 @@ public class PlayerSelectPanel : MonoBehaviour
     
     private State m_state;
     private bool m_continue;
+    private PlayerConfig[] m_configs;
+    private Camera m_previewCam;
+    private RenderTexture m_previewTex;
+    private int m_previewLayer;
+    private Dictionary<PlayerConfig, GameObject> m_configToPreview = new Dictionary<PlayerConfig, GameObject>();
+    private List<GameObject> m_previewObjects = new List<GameObject>();
+    private float m_selectTime;
 
     private int m_selectedConfig;
     public int SelectedConfig { get { return m_selectedConfig; } }
@@ -36,9 +66,39 @@ public class PlayerSelectPanel : MonoBehaviour
     public bool IsReady { get { return m_state == State.Ready; } }
     public bool CanContinue { get { return m_state == State.Ready || m_state == State.Join; } }
     public bool Continue { get { return m_continue; } }
-
-    public void Awake()
+    
+    private void OnDestroy()
     {
+        FreeTexture();
+    }
+
+    public void Init(int index, PlayerConfig[] configs)
+    {
+        m_previewCam = new GameObject("PreviewCamera").AddComponent<Camera>();
+        m_previewCam.transform.position = m_previewCamPos;
+        m_previewCam.transform.rotation = Quaternion.Euler(m_previewCamRot);
+        m_previewCam.fieldOfView = m_previewCamFov;
+        m_previewCam.clearFlags = CameraClearFlags.SolidColor;
+        m_previewCam.renderingPath = RenderingPath.DeferredShading;
+        m_previewCam.allowMSAA = false;
+        m_previewCam.depth = -10;
+
+        m_previewLayer = (index + 8);
+        m_previewCam.cullingMask = (1 << m_previewLayer);
+
+        m_previewCam.gameObject.AddComponent<PostProcessingBehaviour>().profile = m_cameraPost;
+
+        m_configs = configs;
+        m_input = InputManager.Instance.PlayerInputs[index];
+
+        foreach (PlayerConfig config in m_configs)
+        {
+            GameObject previewObject = Instantiate(config.Preview);
+            previewObject.GetComponentsInChildren<Transform>(true).ToList().ForEach(r => r.gameObject.layer = m_previewLayer);
+            m_configToPreview.Add(config, previewObject);
+            m_previewObjects.Add(previewObject);
+        }
+
         ResetState(true);
     }
 
@@ -48,7 +108,7 @@ public class PlayerSelectPanel : MonoBehaviour
 
         if (fullReset)
         {
-            m_selectedConfig = 0;
+            SelectCharacter(0);
         }
         
         m_characterHighlight.color = new Color(1, 1, 1, 0);
@@ -56,22 +116,33 @@ public class PlayerSelectPanel : MonoBehaviour
         UpdateGraphics();
     }
 
-    public void FromConfig(PlayerConfig[] configs, PlayerConfig selectedConfig)
+    public void FromConfig(PlayerConfig selectedConfig)
     {
         m_state = State.Select;
-        m_selectedConfig = System.Array.IndexOf(configs, selectedConfig);
+        m_selectedConfig = System.Array.IndexOf(m_configs, selectedConfig);
     }
 
-    public bool UpdatePanel(int playerNum, PlayerInput input, PlayerConfig[] configs, Menu menu)
+    public void SetCameraActive(bool isActive)
     {
-        m_input = input;
+        m_previewCam.enabled = isActive;
 
+        if (!isActive)
+        {
+            foreach (GameObject go in m_previewObjects)
+            {
+                go.SetActive(false);
+            }
+        }
+    }
+    
+    public bool UpdatePanel(int playerNum, Menu menu)
+    {
         m_continue = false;
         if (m_input.Button1Up)
         {
             switch (m_state)
             {
-                case State.Join: m_state = State.Select; menu.PlaySubmitSound(); break;
+                case State.Join: m_state = State.Select; menu.PlaySubmitSound(); SelectCharacter(0); break;
                 case State.Select: m_state = State.Ready; menu.PlaySubmitSound(); break;
                 case State.Ready: if (playerNum == 0) { m_continue = true; } break;
             }
@@ -82,7 +153,7 @@ public class PlayerSelectPanel : MonoBehaviour
             switch (m_state)
             {
                 case State.Select:
-                    m_selectedConfig = (m_selectedConfig = 1) % configs.Length;
+                    SelectCharacter(m_selectedConfig + 1);
                     m_characterHighlight.color = new Color(1, 1, 1, 0.5f);
                     menu.PlaySelectSound();
                     break;
@@ -100,8 +171,39 @@ public class PlayerSelectPanel : MonoBehaviour
             }
         }
 
-        PlayerConfig config = configs[m_selectedConfig];
-        m_characterPreview.sprite = config.Preview;
+        PlayerConfig config = m_configs[m_selectedConfig];
+        
+        GameObject previewObject = null;
+        if (m_configToPreview.TryGetValue(config, out previewObject))
+        {
+            foreach (GameObject go in m_previewObjects)
+            {
+                go.SetActive(go == previewObject);
+            }
+            float timeSinceSelect = Time.unscaledTime - m_selectTime;
+            float rotSpeed = Mathf.Lerp(0, m_rotateSpeed, 1 - (0.5f * Mathf.Cos(Mathf.PI * Mathf.Clamp01((timeSinceSelect - 1) / 4.0f)) + 0.5f));
+
+            previewObject.transform.rotation *= Quaternion.Euler(0, rotSpeed * Time.unscaledDeltaTime, 0);
+        }
+        
+        RectTransform previewRT = m_characterPreview.GetComponent<RectTransform>();
+
+        m_previewCam.enabled = m_state != State.Join;
+        int width = Mathf.RoundToInt(m_resolutionScale * previewRT.rect.width);
+        int height = Mathf.RoundToInt(m_resolutionScale * previewRT.rect.height);
+        if (m_previewTex == null || width != m_previewTex.width || height != m_previewTex.height)
+        {
+            FreeTexture();
+            CreateTexture();
+        }
+
+        Color bgCol = Color.Lerp(m_previewBgColor, Consts.PLAYER_COLORS[playerNum], m_previewBgColorFac);
+        m_previewCam.backgroundColor = bgCol;
+        bgCol.a = (140.0f / 255.0f);
+
+        m_characterBackground.color = bgCol;
+        m_characterPreview.texture = m_previewTex;
+        m_characterName.text = config.Name;
         m_characterHighlight.color = new Color(1, 1, 1, Mathf.Lerp(m_characterHighlight.color.a, 0, Time.unscaledDeltaTime * 12f));
 
         m_playerName.text = "Player " + (playerNum + 1);
@@ -117,6 +219,8 @@ public class PlayerSelectPanel : MonoBehaviour
         m_joinTab.SetActive(m_state == State.Join);
         m_characterSelectTab.SetActive(m_state != State.Join);
         m_playerName.gameObject.SetActive(m_state != State.Join);
+        //m_characterName.gameObject.SetActive(m_state == State.Select);
+        //m_characterNamePlate.gameObject.SetActive(m_state == State.Select);
         m_readyText.gameObject.SetActive(m_state == State.Ready);
 
         if (m_input != null)
@@ -146,6 +250,46 @@ public class PlayerSelectPanel : MonoBehaviour
                     m_controls3.SetActive(false);
                     break;
             }
+        }
+    }
+
+    private void CreateTexture()
+    {
+        RectTransform previewRT = m_characterPreview.GetComponent<RectTransform>();
+
+        int width = Mathf.RoundToInt(m_resolutionScale * previewRT.rect.width);
+        int height = Mathf.RoundToInt(m_resolutionScale * previewRT.rect.height);
+
+        if (width > 0 && height > 0)
+        {
+            m_previewTex = new RenderTexture(width, height, 24);
+            m_previewCam.targetTexture = m_previewTex;
+        }
+    }
+
+    private void FreeTexture()
+    {
+        if (m_previewTex != null)
+        {
+            m_previewTex.Release();
+            m_previewTex = null;
+
+            if (m_previewCam != null)
+            {
+                m_previewCam.targetTexture = null;
+            }
+        }
+    }
+
+    private void SelectCharacter(int index)
+    {
+        m_selectedConfig = index % m_configs.Length;
+        m_selectTime = Time.unscaledTime;
+        
+        GameObject previewObject = null;
+        if (m_configToPreview.TryGetValue(m_configs[m_selectedConfig], out previewObject))
+        {
+            previewObject.transform.rotation = Quaternion.identity;
         }
     }
 }

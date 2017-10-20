@@ -358,7 +358,7 @@ MonoBehaviour:
   m_rankColors:
   - {r: 1, g: 0.8943724, b: 0.453, a: 1}
   - {r: 0.75735295, g: 0.75735295, b: 0.75735295, a: 1}
-  - {r: 0.74264705, g: 0.41131803, b: 0.28941393, a: 1}
+  - {r: 0.509, g: 0.43123183, b: 0.402619, a: 1}
   - {r: 1, g: 1, b: 1, a: 1}
   m_finalRankFadeTime: 2
   m_lapText: {fileID: 114827759345114474}
@@ -379,9 +379,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_spliscreenMargin: 5
-  m_smoothness: 6
-  m_positionOffset: {x: 12, y: 2}
-  m_lookOffset: 2
+  m_smoothness: 3
+  m_positionOffset: {x: 6.5, y: 2.15}
+  m_lookOffset: 1.65
 --- !u!114 &114206301504588478
 MonoBehaviour:
   m_ObjectHideFlags: 1

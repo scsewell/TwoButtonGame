@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a524bd016ecbe644d87d885661f97870, type: 3}
+  m_Name: Character1
+  m_EditorClassIdentifier: 
+  m_name: Zephyr
+  m_preview: {fileID: 1223342234031220, guid: f39de2b587b4f074196a7d30af5bcafa, type: 2}
+  m_playerPrefab: {fileID: 114436422087379408, guid: ca2c0e2d909fe81428fd76005095ef61,
+    type: 2}
+  m_physicsMat: {fileID: 13400000, guid: a98a30527bb05cb4e9413f0318de73d6, type: 2}
+  m_linearDrag: 0.35
+  m_angularDrag: 4
+  m_forwardAccel: 18
+  m_verticalAccel: 9
+  m_turnRatio: 0.0625
+  m_gravityFac: 2.5

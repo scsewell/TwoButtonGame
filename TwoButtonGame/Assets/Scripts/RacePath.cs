@@ -16,6 +16,14 @@ public class RacePath : MonoBehaviour
     private Transform[] m_spawns;
     public Transform[] Spawns { get { return m_spawns; } }
 
+    private void Awake()
+    {
+        if (Main.Instance.LastRaceParams == null)
+        {
+            Main.Instance.LoadMainMenu();
+        }
+    }
+
     public bool IsFinished(int waypointIndex)
     {
         return waypointIndex >= (m_path.Length * m_laps);

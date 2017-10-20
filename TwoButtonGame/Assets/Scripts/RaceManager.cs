@@ -17,7 +17,7 @@ public class RaceManager : MonoBehaviour
     private int m_countdownDuration = 5;
 
     [SerializeField] [Range(0, 2)]
-    private int m_musicDelay = 1;
+    private float m_musicDelay = 1.0f;
 
     [SerializeField] private AudioClip m_countdownSound;
     [SerializeField]  private AudioClip m_goSound;

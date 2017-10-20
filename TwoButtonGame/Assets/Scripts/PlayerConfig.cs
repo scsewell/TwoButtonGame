@@ -8,8 +8,8 @@ public class PlayerConfig : ScriptableObject
     public string Name { get { return m_name; } }
 
     [SerializeField]
-    private Sprite m_preview;
-    public Sprite Preview { get { return m_preview; } }
+    private GameObject m_preview;
+    public GameObject Preview { get { return m_preview; } }
 
     [SerializeField]
     private Player m_playerPrefab;

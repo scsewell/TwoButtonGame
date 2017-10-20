@@ -120,7 +120,9 @@ public class MainMenu : Menu
 
         for (int i = 0; i < 4; i++)
         {
-            m_playerSelectPanels.Add(Instantiate(m_playerSelectPrefab, m_playerSelectContent));
+            PlayerSelectPanel p = Instantiate(m_playerSelectPrefab, m_playerSelectContent);
+            p.Init(i, m_playerConfigs);
+            m_playerSelectPanels.Add(p);
         }
 
         m_bannerCol = m_continueBanner.color;
@@ -132,7 +134,7 @@ public class MainMenu : Menu
 
             for (int i = 0; i < previousParams.PlayerIndicies.Count; i++)
             {
-                m_playerSelectPanels[previousParams.PlayerIndicies[i]].FromConfig(m_playerConfigs, previousParams.PlayerConfigs[i]);
+                m_playerSelectPanels[previousParams.PlayerIndicies[i]].FromConfig(previousParams.PlayerConfigs[i]);
             }
 
             SetMenu(Menu.PlayerSelect);
@@ -154,14 +156,14 @@ public class MainMenu : Menu
         if (previous != menu)
         {
             m_activeMenu = menu;
-
+            
             m_rootMenu.enabled          = (menu == Menu.Root);
             m_playerSelectMenu.enabled  = (menu == Menu.PlayerSelect);
             m_levelSelectMenu.enabled   = (menu == Menu.LevelSelect);
             m_howToMenu.enabled         = (menu == Menu.HowToPlay);
             m_creditsMenu.enabled       = (menu == Menu.Credits);
             m_settingsMenu.enabled      = (menu == Menu.Settings);
-
+            
             if (previous != Menu.None)
             {
                 if (back)
@@ -183,6 +185,8 @@ public class MainMenu : Menu
             }
 
             EventSystem.current.SetSelectedGameObject(null);
+
+            m_playerSelectPanels.ForEach(p => p.SetCameraActive(menu == Menu.PlayerSelect));
         }
     }
 
@@ -236,9 +240,7 @@ public class MainMenu : Menu
         int playerNum = 0;
         for (int i = 0; i < 4; i++)
         {
-            PlayerInput input = InputManager.Instance.PlayerInputs[i];
-            
-            bool back = m_playerSelectPanels[i].UpdatePanel(playerNum, input, m_playerConfigs, this);
+            bool back = m_playerSelectPanels[i].UpdatePanel(playerNum, this);
 
             if (m_playerSelectPanels[i].IsJoined)
             {

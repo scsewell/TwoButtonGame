@@ -1,5 +1,5 @@
 ### To Do ###
-Player Models
+Player Models (one fatty, one floating boosers fancy tech, robot, one other other race?, really abstract?)
 Test levels
 Handle level bounds
 
@@ -18,9 +18,13 @@ Boost gates
 Moving gates
 Wind / wind turbines
 
+Make motion feel fast (radial speed blur, etc)
+
 Abilities and stuff
+Level preview camera shots
 
 How to Play
+Ensure music is credited
 
 ### Music Loop Times
 The Lift		7:27.467896
@@ -28,6 +32,7 @@ Deep Haze		1:28.677811
 Corruption		7:00.017059
 Eighties Action		2:39.558456
 Harmful or Fatal	5:19.921844
+Exit the Premises	3:24.419144
 
 ### Maybe ###
 Camera angles vertically towards next waypoint
