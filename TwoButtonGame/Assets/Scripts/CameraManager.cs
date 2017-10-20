@@ -1,11 +1,17 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.PostProcessing;
 using Framework.Interpolation;
 
 [RequireComponent(typeof(TransformInterpolator))]
 public class CameraManager : MonoBehaviour
 {
+    [SerializeField]
+    private Camera m_mainCam;
+    [SerializeField]
+    private Camera m_uiCam;
+
     [SerializeField]
     [Range(0, 20)]
     private float m_spliscreenMargin = 10.0f;
@@ -17,27 +23,32 @@ public class CameraManager : MonoBehaviour
     [SerializeField]
     private float m_lookOffset = 2.0f;
 
-    private Camera m_cam;
     private PlayerUI m_ui;
     private TransformInterpolator m_tInterpolator;
     private Player m_player;
-    private int m_playerNum;
     private int m_playerCount;
     private Vector3 m_velocity = Vector3.zero;
 
     private void Awake()
     {
-        m_cam = GetComponentInChildren<Camera>();
         m_ui = GetComponentInChildren<PlayerUI>();
     }
 
-    public void Init(Player player, int playerNum, int playerCount)
+    public void Init(Player player, int playerCount)
     {
         m_player = player;
-        m_playerNum = playerNum;
         m_playerCount = playerCount;
 
         m_tInterpolator = GetComponent<TransformInterpolator>();
+
+        SetSplitscreen(m_mainCam);
+        SetSplitscreen(m_uiCam);
+
+        PostProcessingProfile profile = m_mainCam.GetComponent<PostProcessingBehaviour>().profile;
+        profile.screenSpaceReflection.enabled = SettingManager.Instance.UseSSR.Value;
+        profile.motionBlur.enabled = SettingManager.Instance.UseMotionBlur.Value;
+
+        m_ui.Init(m_uiCam, player);
 
         transform.position = GetPosTarget();
         transform.rotation = GetRotTarget();
@@ -49,7 +60,9 @@ public class CameraManager : MonoBehaviour
     {
         if (m_player != null)
         {
-            transform.position = Vector3.SmoothDamp(transform.position, GetPosTarget(), ref m_velocity, m_smoothness * Time.deltaTime);
+            Vector3 playerVelocity = m_player.GetComponent<MemeBoots>().Velocity;
+
+            transform.position = Vector3.SmoothDamp(transform.position, GetPosTarget(), ref playerVelocity, m_smoothness * Time.deltaTime);
             transform.rotation = GetRotTarget();
         }
     }
@@ -68,12 +81,10 @@ public class CameraManager : MonoBehaviour
     
     private void Update()
     {
-        SetSplitscreen();
-
-        m_ui.UpdateUI(m_cam, m_player);
+        m_ui.UpdateUI(m_uiCam, m_player);
     }
 
-    private void SetSplitscreen()
+    private void SetSplitscreen(Camera cam)
     {
         Vector2 m = new Vector2(m_spliscreenMargin / Screen.width, m_spliscreenMargin / Screen.height) / 2;
 
@@ -87,29 +98,29 @@ public class CameraManager : MonoBehaviour
 
         switch (m_playerCount)
         {
-            case 1: m_cam.rect = FULL; break;
+            case 1: cam.rect = FULL; break;
             case 2:
-                switch (m_playerNum)
+                switch (m_player.PlayerNum)
                 {
-                    case 0: m_cam.rect = TOP; break;
-                    case 1: m_cam.rect = BOTTOM; break;
+                    case 0: cam.rect = TOP; break;
+                    case 1: cam.rect = BOTTOM; break;
                 }
                 break;
             case 3:
-                switch (m_playerNum)
+                switch (m_player.PlayerNum)
                 {
-                    case 0: m_cam.rect = TOP; break;
-                    case 1: m_cam.rect = BOTTOM_L; break;
-                    case 2: m_cam.rect = BOTTOM_R; break;
+                    case 0: cam.rect = TOP; break;
+                    case 1: cam.rect = BOTTOM_L; break;
+                    case 2: cam.rect = BOTTOM_R; break;
                 }
                 break;
             case 4:
-                switch (m_playerNum)
+                switch (m_player.PlayerNum)
                 {
-                    case 0: m_cam.rect = TOP_L; break;
-                    case 1: m_cam.rect = TOP_R; break;
-                    case 2: m_cam.rect = BOTTOM_L; break;
-                    case 3: m_cam.rect = BOTTOM_R; break;
+                    case 0: cam.rect = TOP_L; break;
+                    case 1: cam.rect = TOP_R; break;
+                    case 2: cam.rect = BOTTOM_L; break;
+                    case 3: cam.rect = BOTTOM_R; break;
                 }
                 break;
         }

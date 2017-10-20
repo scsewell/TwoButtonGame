@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Name: Character1
   m_EditorClassIdentifier: 
   m_name: Zephyr
-  m_preview: {fileID: 1223342234031220, guid: f39de2b587b4f074196a7d30af5bcafa, type: 2}
-  m_playerPrefab: {fileID: 114436422087379408, guid: ca2c0e2d909fe81428fd76005095ef61,
+  m_characterGraphics: {fileID: 1223342234031220, guid: f39de2b587b4f074196a7d30af5bcafa,
     type: 2}
+  m_graphicsOffset: {x: 0, y: -1, z: 0.2}
   m_physicsMat: {fileID: 13400000, guid: a98a30527bb05cb4e9413f0318de73d6, type: 2}
   m_linearDrag: 0.35
   m_angularDrag: 4

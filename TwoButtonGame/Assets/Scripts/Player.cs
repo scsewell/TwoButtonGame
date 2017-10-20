@@ -38,7 +38,6 @@ public class Player : MonoBehaviour
     private void Awake()
     {
         m_movement = GetComponentInChildren<MemeBoots>();
-        m_animation = GetComponentInChildren<PlayerAnimation>();
 
         m_raceManager = Main.Instance.RaceManager;
     }
@@ -66,6 +65,11 @@ public class Player : MonoBehaviour
 
     private void Update()
     {
+        if (m_animation == null)
+        {
+            m_animation = GetComponentInChildren<PlayerAnimation>();
+        }
+        
         if (m_animation != null)
         {
             m_animation.UpdateAnimation(m_movement);

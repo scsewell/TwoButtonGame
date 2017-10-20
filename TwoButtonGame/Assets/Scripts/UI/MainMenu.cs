@@ -353,8 +353,6 @@ public class MainMenu : Menu
         Settings settings = SettingManager.Instance.Settings;
         foreach (string category in settings.Categories)
         {
-            //UIHelper.Create(prefab_header, m_settingsContent).GetComponentInChildren<Text>().text = category;
-
             foreach (ISetting setting in settings.CategoryToSettings[category])
             {
                 if (setting.DisplayOptions != null)
@@ -363,7 +361,6 @@ public class MainMenu : Menu
                     m_settingPanels.Add(UIHelper.Create(m_settingPrefab, m_settingsContent).Init(getSetting));
                 }
             }
-            //UIHelper.AddSpacer(m_settingsContent, 10);
         }
 
         Navigation explicitNav = new Navigation();

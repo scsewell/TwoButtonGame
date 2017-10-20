@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Name: TestCharacterConfig
   m_EditorClassIdentifier: 
   m_name: Test Character
-  m_preview: {fileID: 1833247706499324, guid: 54bf9a0ec326a3a479a4e0cedef80d70, type: 2}
-  m_playerPrefab: {fileID: 114130760083275144, guid: 7ad0b79d1e3ea9a4a900401eed4a10fb,
+  m_characterGraphics: {fileID: 1309904247820802, guid: 54bf9a0ec326a3a479a4e0cedef80d70,
     type: 2}
+  m_graphicsOffset: {x: 0, y: -1, z: 0}
   m_physicsMat: {fileID: 13400000, guid: a98a30527bb05cb4e9413f0318de73d6, type: 2}
   m_linearDrag: 0.35
   m_angularDrag: 4

@@ -3,16 +3,13 @@ Player Models (one fatty, one floating boosers fancy tech, robot, one other othe
 Test levels
 Handle level bounds
 
-Ready up anim
-Name / Logo / Icon
-	Brazen Boosters
-	Boost Blasters
-	Lifters
-
 Checkpoint sound
 Collision sound
 Player movement/action sounds
 Player finish line sounds
+
+Ready up anim
+Logo
 
 Waypoint Gates (with parts that glow when the next gate for each player) (mulitple shapes)
 Boost gates

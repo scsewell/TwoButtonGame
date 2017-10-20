@@ -5,8 +5,9 @@ using UnityEngine;
 public class RaceManager : MonoBehaviour
 {
     [SerializeField] private Camera m_clearCameraPrefab;
-    [SerializeField] private CameraManager m_splitscreenCameraPrefab;
     [SerializeField] private InRaceMenu m_raceMenuPrefab;
+    [SerializeField] private Player m_playerPrefab;
+    [SerializeField] private CameraManager m_splitscreenCameraPrefab;
 
     [SerializeField] [Range(0.1f, 5)]
     private float m_fadeInTime = 1.0f;
@@ -100,12 +101,17 @@ public class RaceManager : MonoBehaviour
             Transform spawn = spawns[index];
             spawns.RemoveAt(index);
 
-            Player player = Instantiate(raceParams.PlayerConfigs[playerNum].PlayerPrefab, spawn.position, spawn.rotation);
+            PlayerConfig config = raceParams.PlayerConfigs[playerNum];
+
+            Player player = Instantiate(m_playerPrefab, spawn.position, spawn.rotation);
+            GameObject graphics = Instantiate(config.CharacterGraphics, spawn.position, spawn.rotation, player.transform);
+            graphics.transform.localPosition = config.GraphicsOffset;
+
             player.Init(playerNum, raceParams.GetPlayerInput(playerNum), raceParams.PlayerConfigs[playerNum]);
             m_players.Add(player);
 
             CameraManager camera = Instantiate(m_splitscreenCameraPrefab);
-            camera.Init(player, playerNum, playerCount);
+            camera.Init(player, playerCount);
             m_cameras.Add(camera);
         }
 

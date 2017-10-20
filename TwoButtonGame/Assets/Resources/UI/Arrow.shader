@@ -12,6 +12,7 @@
 	SubShader
     {
 		Tags { "RenderType"="Opaque" }
+        LOD 300
 		
         Pass
         {
@@ -54,6 +55,8 @@
 
         Pass
         {
+            Cull Back
+
 		    CGPROGRAM
 		    #pragma target 3.0
             #pragma vertex vert

@@ -9,6 +9,7 @@ using Framework.IO;
 public class SettingManager : Singleton<SettingManager>
 {
     private static readonly string[] BOOL_VALS = new string[] { "On", "Off" };
+    private static readonly string[] SHADOW_VALS = new string[] { "Ultra", "High", "Medium", "Low", "Off" };
 
     public struct Categories
     {
@@ -22,17 +23,14 @@ public class SettingManager : Singleton<SettingManager>
         get { return m_settings; }
     }
 
-    private Setting<Resolution> m_resolution;
-    public Setting<Resolution> Resolution { get { return m_resolution; } }
+    private Setting<bool> m_useSSR;
+    public Setting<bool> UseSSR { get { return m_useSSR; } }
 
-    private Setting<bool> m_fullscreen;
-    public Setting<bool> Fullscreen { get { return m_fullscreen; } }
-
-    private Setting<bool> m_vsync;
-    public Setting<bool> Vsync { get { return m_vsync; } }
+    private Setting<bool> m_useMotionBlur;
+    public Setting<bool> UseMotionBlur { get { return m_useMotionBlur; } }
 
     private Setting<int> m_masterVolume;
-    public Setting<int> MasterVolume {  get { return m_masterVolume; } }
+    public Setting<int> MasterVolume { get { return m_masterVolume; } }
 
     private Setting<int> m_musicVolume;
     public Setting<int> MusicVolume { get { return m_musicVolume; } }
@@ -41,15 +39,19 @@ public class SettingManager : Singleton<SettingManager>
     {
         m_settings = new Settings();
 
-        m_resolution = m_settings.Add(Categories.Screen,"Resolution", Screen.resolutions.Last(),
+        m_settings.Add(Categories.Screen,"Resolution", Screen.resolutions.Last(),
             GetSupportedResolutions(),
             (v) => SerializeResolution(v),
             (s) => ParseResolution(s),
             (v) => Screen.SetResolution(v.width, v.height, Screen.fullScreen)
             );
 
-        m_fullscreen    = m_settings.Add(Categories.Screen, "Fullscreen", true, BOOL_VALS, SerializeBool, ParseBool, (v) => Screen.fullScreen = v);
-        m_vsync         = m_settings.Add(Categories.Screen, "VSync", true, BOOL_VALS, SerializeBool, ParseBool, (v) => QualitySettings.vSyncCount = (v ? 1 : 0));
+        m_settings.Add(Categories.Screen, "Fullscreen", true, BOOL_VALS, SerializeBool, ParseBool, (v) => Screen.fullScreen = v);
+        m_settings.Add(Categories.Screen, "VSync", true, BOOL_VALS, SerializeBool, ParseBool, (v) => QualitySettings.vSyncCount = (v ? 1 : 0));
+
+        m_settings.Add(Categories.Screen, "Shadow Quality", 1, SHADOW_VALS, (v) => SHADOW_VALS[v], ParseShadow, (v) => QualitySettings.SetQualityLevel(v));
+        m_useSSR        = m_settings.Add(Categories.Screen, "Fancy Reflections", true, BOOL_VALS, SerializeBool, ParseBool);
+        m_useMotionBlur = m_settings.Add(Categories.Screen, "Motion Blur", true, BOOL_VALS, SerializeBool, ParseBool);
 
         string[] volumeValues = Enumerable.Range(0, 101).Where(i => i % 2 == 0).Select(v => v.ToString()).ToArray();
         m_masterVolume = m_settings.Add(Categories.Audio, "Master Volume", 100, volumeValues, (v) => v.ToString(), (s) => int.Parse(s));
@@ -118,5 +120,17 @@ public class SettingManager : Singleton<SettingManager>
     private static bool ParseBool(string s)
     {
         return s == BOOL_VALS[0];
+    }
+
+    private static int ParseShadow(string s)
+    {
+        for (int i = 0; i < SHADOW_VALS.Length; i++)
+        {
+            if (SHADOW_VALS[i] == s)
+            {
+                return i;
+            }
+        }
+        return 0;
     }
 }

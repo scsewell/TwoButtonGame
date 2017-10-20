@@ -1,5 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -77,6 +77,18 @@ public class PlayerUI : MonoBehaviour
         SetAlpha(m_newLapText, 0);
     }
 
+    public void Init(Camera cam, Player player)
+    {
+        int baseLayer = 13;
+        int uiLayer = player.PlayerNum + baseLayer;
+
+        m_arrow.gameObject.layer = uiLayer;
+
+        GetComponentsInChildren<Transform>().ToList().ForEach(t => t.gameObject.layer = uiLayer);
+
+        cam.cullingMask = (1 << uiLayer);
+    }
+
     private void OnDestroy()
     {
         if (m_arrow != null)
@@ -134,17 +146,6 @@ public class PlayerUI : MonoBehaviour
             m_arrow.position = arrowPos;
             m_arrow.rotation = m_arrowSmoothing > 0 ? Quaternion.Slerp(m_arrow.rotation, arrowRot, Time.deltaTime / m_arrowSmoothing) : arrowRot;
             m_arrow.localScale = m_arrowScale * Vector3.one;
-
-            int baseLayer = 10;
-            int arrowLayer = player.PlayerNum + baseLayer;
-            m_arrow.gameObject.layer = arrowLayer;
-
-            for (int layer = baseLayer; layer < baseLayer + 4; layer++)
-            {
-                cam.cullingMask &= ~(1 << layer);
-            }
-
-            cam.cullingMask |= (1 << arrowLayer);
         }
 
         // set rank text

@@ -93,7 +93,7 @@ public class PlayerSelectPanel : MonoBehaviour
 
         foreach (PlayerConfig config in m_configs)
         {
-            GameObject previewObject = Instantiate(config.Preview);
+            GameObject previewObject = Instantiate(config.CharacterGraphics);
             previewObject.GetComponentsInChildren<Transform>(true).ToList().ForEach(r => r.gameObject.layer = m_previewLayer);
             m_configToPreview.Add(config, previewObject);
             m_previewObjects.Add(previewObject);
@@ -171,41 +171,9 @@ public class PlayerSelectPanel : MonoBehaviour
             }
         }
 
-        PlayerConfig config = m_configs[m_selectedConfig];
-        
-        GameObject previewObject = null;
-        if (m_configToPreview.TryGetValue(config, out previewObject))
-        {
-            foreach (GameObject go in m_previewObjects)
-            {
-                go.SetActive(go == previewObject);
-            }
-            float timeSinceSelect = Time.unscaledTime - m_selectTime;
-            float rotSpeed = Mathf.Lerp(0, m_rotateSpeed, 1 - (0.5f * Mathf.Cos(Mathf.PI * Mathf.Clamp01((timeSinceSelect - 1) / 4.0f)) + 0.5f));
-
-            previewObject.transform.rotation *= Quaternion.Euler(0, rotSpeed * Time.unscaledDeltaTime, 0);
-        }
-        
-        RectTransform previewRT = m_characterPreview.GetComponent<RectTransform>();
-
-        m_previewCam.enabled = m_state != State.Join;
-        int width = Mathf.RoundToInt(m_resolutionScale * previewRT.rect.width);
-        int height = Mathf.RoundToInt(m_resolutionScale * previewRT.rect.height);
-        if (m_previewTex == null || width != m_previewTex.width || height != m_previewTex.height)
-        {
-            FreeTexture();
-            CreateTexture();
-        }
-
         Color bgCol = Color.Lerp(m_previewBgColor, Consts.PLAYER_COLORS[playerNum], m_previewBgColorFac);
         m_previewCam.backgroundColor = bgCol;
-        bgCol.a = (140.0f / 255.0f);
-
-        m_characterBackground.color = bgCol;
-        m_characterPreview.texture = m_previewTex;
-        m_characterName.text = config.Name;
-        m_characterHighlight.color = new Color(1, 1, 1, Mathf.Lerp(m_characterHighlight.color.a, 0, Time.unscaledDeltaTime * 12f));
-
+        
         m_playerName.text = "Player " + (playerNum + 1);
         m_playerName.color = Consts.PLAYER_COLORS[playerNum];
 
@@ -219,8 +187,6 @@ public class PlayerSelectPanel : MonoBehaviour
         m_joinTab.SetActive(m_state == State.Join);
         m_characterSelectTab.SetActive(m_state != State.Join);
         m_playerName.gameObject.SetActive(m_state != State.Join);
-        //m_characterName.gameObject.SetActive(m_state == State.Select);
-        //m_characterNamePlate.gameObject.SetActive(m_state == State.Select);
         m_readyText.gameObject.SetActive(m_state == State.Ready);
 
         if (m_input != null)
@@ -251,6 +217,41 @@ public class PlayerSelectPanel : MonoBehaviour
                     break;
             }
         }
+
+        PlayerConfig config = m_configs[m_selectedConfig];
+
+        SetCameraActive(m_state != State.Join);
+
+        if (m_previewCam.enabled)
+        {
+            GameObject previewObject = null;
+            if (m_configToPreview.TryGetValue(config, out previewObject))
+            {
+                foreach (GameObject go in m_previewObjects)
+                {
+                    go.SetActive(go == previewObject);
+                }
+                float timeSinceSelect = Time.unscaledTime - m_selectTime;
+                float rotSpeed = Mathf.Lerp(0, m_rotateSpeed, 1 - (0.5f * Mathf.Cos(Mathf.PI * Mathf.Clamp01((timeSinceSelect - 1) / 4.0f)) + 0.5f));
+
+                previewObject.transform.rotation *= Quaternion.Euler(0, rotSpeed * Time.unscaledDeltaTime, 0);
+            }
+
+            RectTransform previewRT = m_characterPreview.GetComponent<RectTransform>();
+
+            int width = Mathf.RoundToInt(m_resolutionScale * previewRT.rect.width);
+            int height = Mathf.RoundToInt(m_resolutionScale * previewRT.rect.height);
+            if (m_previewTex == null || width != m_previewTex.width || height != m_previewTex.height)
+            {
+                FreeTexture();
+                CreateTexture();
+            }
+        }
+        
+        m_characterPreview.texture = m_previewTex;
+        m_characterName.text = config.Name;
+        m_characterHighlight.color = new Color(1, 1, 1, Mathf.Lerp(m_characterHighlight.color.a, 0, Time.unscaledDeltaTime * 12f));
+
     }
 
     private void CreateTexture()

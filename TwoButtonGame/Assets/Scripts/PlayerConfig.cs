@@ -6,14 +6,14 @@ public class PlayerConfig : ScriptableObject
     [SerializeField]
     private string m_name;
     public string Name { get { return m_name; } }
+    
+    [SerializeField]
+    private GameObject m_characterGraphics;
+    public GameObject CharacterGraphics { get { return m_characterGraphics; } }
 
     [SerializeField]
-    private GameObject m_preview;
-    public GameObject Preview { get { return m_preview; } }
-
-    [SerializeField]
-    private Player m_playerPrefab;
-    public Player PlayerPrefab { get { return m_playerPrefab; } }
+    private Vector3 m_graphicsOffset;
+    public Vector3 GraphicsOffset { get { return m_graphicsOffset; } }
 
     [SerializeField]
     private PhysicMaterial m_physicsMat;

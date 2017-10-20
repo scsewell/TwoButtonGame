@@ -23,6 +23,12 @@ public class MemeBoots : MonoBehaviour
     private bool m_isGrounded = true;
     public bool IsGrounded { get { return m_isGrounded; } }
 
+    private bool m_leftBoost = true;
+    public bool LeftBoost { get { return m_leftBoost; } }
+
+    private bool m_rightBoost = true;
+    public bool RightBoost { get { return m_rightBoost; } }
+
     private void Awake()
     {
         m_body = GetComponent<Rigidbody>();
@@ -45,21 +51,21 @@ public class MemeBoots : MonoBehaviour
         m_body.drag = m_bootConfig.LinearDrag;
         m_body.angularDrag = m_bootConfig.AngularDrag;
 
-        bool leftButton = acceptInput ? m_input.Button1 : false;
-        bool rightButton = acceptInput ? m_input.Button2 : false;
+        m_leftBoost = acceptInput ? m_input.Button2 : false;
+        m_rightBoost = acceptInput ? m_input.Button1 : false;
         
         m_body.AddForce(m_bootConfig.GravityFac * Physics.gravity);
 
         Vector3 force = m_bootConfig.ForwardAccel * transform.forward + m_bootConfig.VerticalAccel * m_bootConfig.GravityFac * Vector3.up;
         Vector3 forceOffset = m_bootConfig.TurnRatio * transform.right;
 
-        if (leftButton)
-        {
-            AddForce(force, transform.position + forceOffset);
-        }
-        if (rightButton)
+        if (m_leftBoost)
         {
             AddForce(force, transform.position - forceOffset);
+        }
+        if (m_rightBoost)
+        {
+            AddForce(force, transform.position + forceOffset);
         }
 
         Vector3 lowerSphereCenter = transform.TransformPoint(m_capsule.center + (((m_capsule.height / 2) - m_capsule.radius) * Vector3.down));
