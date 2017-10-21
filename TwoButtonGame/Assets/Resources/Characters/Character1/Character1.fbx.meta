@@ -174,6 +174,8 @@ ModelImporter:
     100332: ORG-upper_arm.L
     100334: ORG-upper_arm.R
     100336: root
+    100338: Character1Body_Lod0
+    100340: Character1Body_Lod1
     400000: //RootNode
     400002: Character1_Rig
     400004: Character1Body
@@ -343,6 +345,8 @@ ModelImporter:
     400332: ORG-upper_arm.L
     400334: ORG-upper_arm.R
     400336: root
+    400338: Character1Body_Lod0
+    400340: Character1Body_Lod1
     2100000: Armour
     2100002: ArmourDark
     2100004: ArmourGlow
@@ -373,6 +377,8 @@ ModelImporter:
     4300012: Character1BoosterTab2.R
     4300014: Character1BoosterTab3.R
     4300016: Character1Body
+    4300018: Character1Body_Lod1
+    4300020: Character1Body_Lod0
     7400000: Character1_Rig|Idle
     7400002: Character1_Rig|Idle.001
     7400004: Character1_Rig|FlyBack
@@ -389,6 +395,8 @@ ModelImporter:
     7400026: Character1_Rig|BoostersOpenR
     9500000: //RootNode
     13700000: Character1Body
+    13700002: Character1Body_Lod0
+    13700004: Character1Body_Lod1
   externalObjects: {}
   materials:
     importMaterials: 0

@@ -57,19 +57,16 @@ public class PlayerUI : MonoBehaviour
     [SerializeField] [Range(0.01f, 1)]
     private float m_newLapAlphaSmoothing = 0.25f;
 
+    private Player m_player;
+    private CameraManager m_camera;
     private RaceManager m_raceManager;
-    private CanvasScaler m_canvasScaler;
     private Transform m_arrow;
-    private float m_baseScaleFactor;
     private int m_lastRank = 1;
     private int m_lastLap = 1;
     private float m_lapChangeTime = float.NegativeInfinity;
 
     private void Awake()
     {
-        m_canvasScaler = GetComponent<CanvasScaler>();
-        m_baseScaleFactor = m_canvasScaler.referenceResolution.y;
-
         m_arrow = Instantiate(m_arrowPrefab);
 
         m_raceManager = Main.Instance.RaceManager;
@@ -77,16 +74,33 @@ public class PlayerUI : MonoBehaviour
         SetAlpha(m_newLapText, 0);
     }
 
-    public void Init(Camera cam, Player player)
+    public PlayerUI Init(Player player, CameraManager cam, int playerCount)
     {
-        int baseLayer = 13;
+        m_player = player;
+        m_camera = cam;
+
+        int baseLayer = 8;
         int uiLayer = player.PlayerNum + baseLayer;
+        
+        gameObject.GetComponentsInChildren<Transform>().ToList().ForEach(t => t.gameObject.layer = uiLayer);
+        m_arrow.GetComponentsInChildren<Transform>().ToList().ForEach(t => t.gameObject.layer = uiLayer);
 
-        m_arrow.gameObject.layer = uiLayer;
+        cam.Camera.cullingMask |= (1 << uiLayer);
 
-        GetComponentsInChildren<Transform>().ToList().ForEach(t => t.gameObject.layer = uiLayer);
+        RectTransform rt = GetComponent<RectTransform>();
+        Rect splitscreen = CameraManager.GetSplitscreen(player.PlayerNum, playerCount);
 
-        cam.cullingMask = (1 << uiLayer);
+        rt.localScale = Vector3.one;
+        rt.anchorMin = new Vector2(splitscreen.x, splitscreen.y);
+        rt.anchorMax = new Vector2(splitscreen.x + splitscreen.width, splitscreen.y + splitscreen.height);
+        rt.anchoredPosition = Vector2.zero;
+        rt.sizeDelta = Vector2.zero;
+
+        // Set up UI
+        m_playerText.text = "Player " + (player.PlayerNum + 1);
+        m_playerText.color = Consts.PLAYER_COLORS[player.PlayerNum];
+
+        return this;
     }
 
     private void OnDestroy()
@@ -98,34 +112,31 @@ public class PlayerUI : MonoBehaviour
         }
     }
 
-    public void UpdateUI(Camera cam, Player player)
+    public void UpdateUI()
     {
-        // set the canvas scale
-        m_canvasScaler.referenceResolution = new Vector2(m_canvasScaler.referenceResolution.x, m_baseScaleFactor / cam.rect.height);
-        
         // start countdown
         float countdown = m_raceManager.CountdownTime;
         m_countdownText.gameObject.SetActive(-1 < countdown && countdown <= 3);
-        m_countdownText.text = (countdown > 0) ? Mathf.CeilToInt(countdown).ToString() : "GO!";
+
+        if (m_countdownText.isActiveAndEnabled)
+        {
+            m_countdownText.text = (countdown > 0) ? Mathf.CeilToInt(countdown).ToString() : "GO!";
+        }
 
         // timer
-        float time = m_raceManager.GetTimeSinceStart(player.IsFinished ? player.FinishTime : Time.time);
+        float time = m_raceManager.GetTimeSinceStart(m_player.IsFinished ? m_player.FinishTime : Time.time);
         int minutes = Mathf.FloorToInt(time / 60);
         int seconds = Mathf.FloorToInt(time - (minutes * 60));
         int milliseconds = Mathf.FloorToInt((time - seconds - (minutes * 60)) * 100);
 
         m_timerText.text = string.Format(minutes.ToString() + ":" + seconds.ToString("D2") + ":" + milliseconds.ToString("D2"));
-
-        // player text
-        m_playerText.text = "Player " + (player.PlayerNum + 1);
-        m_playerText.color = Consts.PLAYER_COLORS[player.PlayerNum];
-
-        int rank = m_raceManager.GetPlayerRank(player);
+        
+        int rank = m_raceManager.GetPlayerRank(m_player);
         bool isSolo = m_raceManager.PlayerCount == 1;
 
         RacePath path = m_raceManager.RacePath;
-        int lap = path.GetCurrentLap(player.WaypointsCompleted);
-        bool finished = player.IsFinished;
+        int lap = path.GetCurrentLap(m_player.WaypointsCompleted);
+        bool finished = m_player.IsFinished;
         
         m_arrow.gameObject.SetActive(!finished);
         m_rankText.gameObject.SetActive(!finished && !isSolo);
@@ -135,13 +146,13 @@ public class PlayerUI : MonoBehaviour
         m_finalRankText.gameObject.SetActive(finished && !isSolo);
         m_finalRankSubText.gameObject.SetActive(finished && !isSolo);
 
-        if (!finished)
+        if (m_arrow.gameObject.activeInHierarchy)
         {
             // set the waypoint arrow
-            Vector3 arrowTarget = player.CurrentWaypoint.Position;
+            Vector3 arrowTarget = m_player.CurrentWaypoint.Position;
 
-            Vector3 arrowPos = cam.ViewportToWorldPoint(new Vector3(0.5f, m_arrowPosition, 1));
-            Quaternion arrowRot = Quaternion.LookRotation(arrowTarget - player.transform.position);
+            Vector3 arrowPos = m_camera.Camera.ViewportToWorldPoint(new Vector3(0.5f, m_arrowPosition, 1));
+            Quaternion arrowRot = Quaternion.LookRotation(arrowTarget - m_player.transform.position);
 
             m_arrow.position = arrowPos;
             m_arrow.rotation = m_arrowSmoothing > 0 ? Quaternion.Slerp(m_arrow.rotation, arrowRot, Time.deltaTime / m_arrowSmoothing) : arrowRot;

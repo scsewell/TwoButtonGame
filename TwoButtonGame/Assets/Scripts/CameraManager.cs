@@ -8,14 +8,6 @@ using Framework.Interpolation;
 public class CameraManager : MonoBehaviour
 {
     [SerializeField]
-    private Camera m_mainCam;
-    [SerializeField]
-    private Camera m_uiCam;
-
-    [SerializeField]
-    [Range(0, 20)]
-    private float m_spliscreenMargin = 10.0f;
-    [SerializeField]
     [Range(0, 20)]
     private float m_smoothness = 10.0f;
     [SerializeField]
@@ -23,37 +15,49 @@ public class CameraManager : MonoBehaviour
     [SerializeField]
     private float m_lookOffset = 2.0f;
 
-    private PlayerUI m_ui;
+    private Camera m_cam;
+    public Camera Camera { get { return m_cam; } }
+
     private TransformInterpolator m_tInterpolator;
     private Player m_player;
-    private int m_playerCount;
-    private Vector3 m_velocity = Vector3.zero;
 
     private void Awake()
     {
-        m_ui = GetComponentInChildren<PlayerUI>();
+        m_cam = GetComponent<Camera>();
     }
 
-    public void Init(Player player, int playerCount)
+    public CameraManager Init(Player player, int playerCount)
     {
         m_player = player;
-        m_playerCount = playerCount;
 
         m_tInterpolator = GetComponent<TransformInterpolator>();
 
-        SetSplitscreen(m_mainCam);
-        SetSplitscreen(m_uiCam);
+        m_cam.rect = GetSplitscreen(player.PlayerNum, playerCount);
 
-        PostProcessingProfile profile = m_mainCam.GetComponent<PostProcessingBehaviour>().profile;
-        profile.screenSpaceReflection.enabled = SettingManager.Instance.UseSSR.Value;
+        PostProcessingBehaviour post = m_cam.GetComponent<PostProcessingBehaviour>();
+        PostProcessingProfile profile = Instantiate(post.profile);
+
         profile.motionBlur.enabled = SettingManager.Instance.UseMotionBlur.Value;
 
-        m_ui.Init(m_uiCam, player);
-
+        int aaVal = SettingManager.Instance.AA.Value;
+        if (aaVal < 2)
+        {
+            profile.antialiasing.enabled = true;
+            AntialiasingModel.Settings aa = profile.antialiasing.settings;
+            aa.method = (aaVal == 0) ? AntialiasingModel.Method.Taa : AntialiasingModel.Method.Fxaa;
+            profile.antialiasing.settings = aa;
+        }
+        else
+        {
+            profile.antialiasing.enabled = false;
+        }
+        post.profile = profile;
+        
         transform.position = GetPosTarget();
         transform.rotation = GetRotTarget();
         m_tInterpolator.ForgetPreviousValues();
-        m_velocity = Vector3.zero;
+
+        return this;
     }
 
     public void MainUpdate()
@@ -78,15 +82,11 @@ public class CameraManager : MonoBehaviour
         Vector3 lookTarget = m_player.transform.position + m_lookOffset * Vector3.up;
         return Quaternion.LookRotation(lookTarget - transform.position, Vector3.up);
     }
-    
-    private void Update()
-    {
-        m_ui.UpdateUI(m_uiCam, m_player);
-    }
 
-    private void SetSplitscreen(Camera cam)
+    public static Rect GetSplitscreen(int playerNum, int playerCount)
     {
-        Vector2 m = new Vector2(m_spliscreenMargin / Screen.width, m_spliscreenMargin / Screen.height) / 2;
+        const float pixelMargin = 5.0f;
+        Vector2 m = new Vector2(pixelMargin / Screen.width, pixelMargin / Screen.height) / 2;
 
         Rect FULL       = new Rect(0,           0,              1,              1);
         Rect TOP        = new Rect(0,           0.5f + m.y,     1,              0.5f - m.y);
@@ -96,33 +96,34 @@ public class CameraManager : MonoBehaviour
         Rect BOTTOM_L   = new Rect(0,           0,              0.5f - m.x,     0.5f - m.y);
         Rect BOTTOM_R   = new Rect(0.5f + m.x,  0,              0.5f - m.x,     0.5f - m.y);
 
-        switch (m_playerCount)
+        switch (playerCount)
         {
-            case 1: cam.rect = FULL; break;
+            case 1: return FULL;
             case 2:
-                switch (m_player.PlayerNum)
+                switch (playerNum)
                 {
-                    case 0: cam.rect = TOP; break;
-                    case 1: cam.rect = BOTTOM; break;
+                    case 0: return TOP;
+                    case 1: return BOTTOM;
                 }
                 break;
             case 3:
-                switch (m_player.PlayerNum)
+                switch (playerNum)
                 {
-                    case 0: cam.rect = TOP; break;
-                    case 1: cam.rect = BOTTOM_L; break;
-                    case 2: cam.rect = BOTTOM_R; break;
+                    case 0: return TOP;
+                    case 1: return BOTTOM_L;
+                    case 2: return BOTTOM_R;
                 }
                 break;
             case 4:
-                switch (m_player.PlayerNum)
+                switch (playerNum)
                 {
-                    case 0: cam.rect = TOP_L; break;
-                    case 1: cam.rect = TOP_R; break;
-                    case 2: cam.rect = BOTTOM_L; break;
-                    case 3: cam.rect = BOTTOM_R; break;
+                    case 0: return TOP_L;
+                    case 1: return TOP_R;
+                    case 2: return BOTTOM_L;
+                    case 3: return BOTTOM_R;
                 }
                 break;
         }
+        return FULL;
     }
 }

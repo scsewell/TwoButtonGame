@@ -17,6 +17,7 @@
         Pass
         {
             Cull Front
+            ZTest Always
 
 		    CGPROGRAM
 		    #pragma target 3.0
@@ -35,7 +36,7 @@
                 float4 vertex : SV_POSITION;
             };
 
-            fixed _RimThickness;
+            half _RimThickness;
 
             v2f vert(appdata v)
             {

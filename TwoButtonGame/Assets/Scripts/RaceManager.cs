@@ -7,7 +7,8 @@ public class RaceManager : MonoBehaviour
     [SerializeField] private Camera m_clearCameraPrefab;
     [SerializeField] private InRaceMenu m_raceMenuPrefab;
     [SerializeField] private Player m_playerPrefab;
-    [SerializeField] private CameraManager m_splitscreenCameraPrefab;
+    [SerializeField] private CameraManager m_playerCameraPrefab;
+    [SerializeField] private PlayerUI m_playerUIPrefab;
 
     [SerializeField] [Range(0.1f, 5)]
     private float m_fadeInTime = 1.0f;
@@ -21,7 +22,7 @@ public class RaceManager : MonoBehaviour
     private float m_musicDelay = 1.0f;
 
     [SerializeField] private AudioClip m_countdownSound;
-    [SerializeField]  private AudioClip m_goSound;
+    [SerializeField] private AudioClip m_goSound;
 
     private List<Player> m_players = new List<Player>();
     private List<CameraManager> m_cameras = new List<CameraManager>();
@@ -86,13 +87,13 @@ public class RaceManager : MonoBehaviour
     public void StartRace(RaceParameters raceParams)
     {
         m_raceParams = raceParams;
+        int playerCount = raceParams.PlayerIndicies.Count;
 
         Instantiate(m_clearCameraPrefab);
 
-        m_raceMenu = Instantiate(m_raceMenuPrefab);
+        m_raceMenu = Instantiate(m_raceMenuPrefab).Init(playerCount);
         m_racePath = FindObjectOfType<RacePath>();
 
-        int playerCount = raceParams.PlayerIndicies.Count;
         List<Transform> spawns = new List<Transform>(m_racePath.Spawns);
 
         for (int playerNum = 0; playerNum < playerCount; playerNum++)
@@ -101,18 +102,21 @@ public class RaceManager : MonoBehaviour
             Transform spawn = spawns[index];
             spawns.RemoveAt(index);
 
-            PlayerConfig config = raceParams.PlayerConfigs[playerNum];
-
             Player player = Instantiate(m_playerPrefab, spawn.position, spawn.rotation);
+
+            PlayerConfig config = raceParams.PlayerConfigs[playerNum];
             GameObject graphics = Instantiate(config.CharacterGraphics, spawn.position, spawn.rotation, player.transform);
             graphics.transform.localPosition = config.GraphicsOffset;
 
             player.Init(playerNum, raceParams.GetPlayerInput(playerNum), raceParams.PlayerConfigs[playerNum]);
             m_players.Add(player);
 
-            CameraManager camera = Instantiate(m_splitscreenCameraPrefab);
-            camera.Init(player, playerCount);
+            CameraManager camera = Instantiate(m_playerCameraPrefab).Init(player, playerCount);
             m_cameras.Add(camera);
+
+            PlayerUI ui = Instantiate(m_playerUIPrefab);
+            m_raceMenu.AddPlayerUI(ui);
+            ui.Init(player, camera, playerCount);
         }
 
         m_raceStartTime = Time.time + m_countdownDuration + m_fadeInTime;

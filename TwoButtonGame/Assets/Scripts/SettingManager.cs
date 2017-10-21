@@ -9,6 +9,7 @@ using Framework.IO;
 public class SettingManager : Singleton<SettingManager>
 {
     private static readonly string[] BOOL_VALS = new string[] { "On", "Off" };
+    private static readonly string[] AA_VALS = new string[] { "High", "Low", "Off" };
     private static readonly string[] SHADOW_VALS = new string[] { "Ultra", "High", "Medium", "Low", "Off" };
 
     public struct Categories
@@ -22,9 +23,9 @@ public class SettingManager : Singleton<SettingManager>
     {
         get { return m_settings; }
     }
-
-    private Setting<bool> m_useSSR;
-    public Setting<bool> UseSSR { get { return m_useSSR; } }
+    
+    private Setting<int> m_aa;
+    public Setting<int> AA { get { return m_aa; } }
 
     private Setting<bool> m_useMotionBlur;
     public Setting<bool> UseMotionBlur { get { return m_useMotionBlur; } }
@@ -49,9 +50,9 @@ public class SettingManager : Singleton<SettingManager>
         m_settings.Add(Categories.Screen, "Fullscreen", true, BOOL_VALS, SerializeBool, ParseBool, (v) => Screen.fullScreen = v);
         m_settings.Add(Categories.Screen, "VSync", true, BOOL_VALS, SerializeBool, ParseBool, (v) => QualitySettings.vSyncCount = (v ? 1 : 0));
 
-        m_settings.Add(Categories.Screen, "Shadow Quality", 1, SHADOW_VALS, (v) => SHADOW_VALS[v], ParseShadow, (v) => QualitySettings.SetQualityLevel(v));
-        m_useSSR        = m_settings.Add(Categories.Screen, "Fancy Reflections", true, BOOL_VALS, SerializeBool, ParseBool);
+        m_aa = m_settings.Add(Categories.Screen, "Anti Aliasing", 1, AA_VALS, (v) => AA_VALS[v], (s) => ParseIndex(s, AA_VALS));
         m_useMotionBlur = m_settings.Add(Categories.Screen, "Motion Blur", true, BOOL_VALS, SerializeBool, ParseBool);
+        m_settings.Add(Categories.Screen, "Shadow Quality", 1, SHADOW_VALS, (v) => SHADOW_VALS[v], (s) => ParseIndex(s, SHADOW_VALS), (v) => QualitySettings.SetQualityLevel(v));
 
         string[] volumeValues = Enumerable.Range(0, 101).Where(i => i % 2 == 0).Select(v => v.ToString()).ToArray();
         m_masterVolume = m_settings.Add(Categories.Audio, "Master Volume", 100, volumeValues, (v) => v.ToString(), (s) => int.Parse(s));
@@ -122,11 +123,11 @@ public class SettingManager : Singleton<SettingManager>
         return s == BOOL_VALS[0];
     }
 
-    private static int ParseShadow(string s)
+    private static int ParseIndex(string s, string[] values)
     {
-        for (int i = 0; i < SHADOW_VALS.Length; i++)
+        for (int i = 0; i < values.Length; i++)
         {
-            if (SHADOW_VALS[i] == s)
+            if (values[i] == s)
             {
                 return i;
             }

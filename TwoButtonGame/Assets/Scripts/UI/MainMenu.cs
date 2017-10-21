@@ -326,7 +326,7 @@ public class MainMenu : Menu
         LevelConfig config = m_levelConfigs[m_selectedLevel];
         m_levelName.text = config.Name;
         m_levelPreview.sprite = config.Preview;
-        m_levelHighlight.color = new Color(1, 1, 1, Mathf.Lerp(m_levelHighlight.color.a, 0, Time.unscaledDeltaTime * 12f));
+        m_levelHighlight.color = new Color(1, 1, 1, Mathf.Lerp(m_levelHighlight.color.a, 0, Time.unscaledDeltaTime * 16f));
 
         if (m_playerSelectPanels.Any(p => p.IsReady))
         {

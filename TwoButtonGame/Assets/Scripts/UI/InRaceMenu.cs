@@ -10,9 +10,13 @@ public class InRaceMenu : MonoBehaviour
     [SerializeField] private AudioClip m_resume;
     [SerializeField] private AudioClip m_confirm;
     [SerializeField] private AudioClip m_cancel;
-
-    [SerializeField] private Image m_fade;
-
+    
+    [SerializeField]
+    private Canvas m_playerUIParent;
+    
+    [Header("Fade")]
+    [SerializeField]
+    private Image m_fade;
     [SerializeField] [Range(0, 10)]
     private float m_finishWait = 1;
     [SerializeField] [Range(0, 5)]
@@ -24,12 +28,13 @@ public class InRaceMenu : MonoBehaviour
     [SerializeField] private ControlPanel m_menuControls1;
     [SerializeField] private ControlPanel m_menuControls2;
     
+    private List<PlayerUI> m_playerUIs = new List<PlayerUI>();
+    private CanvasGroup m_menuGroup;
     private List<KeyCode> m_pauseKeys;
     private List<KeyCode> m_resumeKeys;
     private List<KeyCode> m_confirmKeys;
     private List<KeyCode> m_cancelKeys;
     private List<KeyCode> m_quitKeys;
-    private CanvasGroup m_menuGroup;
     private float m_finishTime;
     private bool m_confirmAction = false;
 
@@ -50,8 +55,29 @@ public class InRaceMenu : MonoBehaviour
         m_fade.color = new Color(0, 0, 0, 1);
     }
 
+    public InRaceMenu Init(int playerCount)
+    {
+        CanvasScaler scaler = m_playerUIParent.GetComponent<CanvasScaler>();
+
+        Rect splitscreen = CameraManager.GetSplitscreen(0, playerCount);
+        scaler.referenceResolution = new Vector2(scaler.referenceResolution.x / splitscreen.width, scaler.referenceResolution.y / splitscreen.height);
+
+        return this;
+    }
+
+    public void AddPlayerUI(PlayerUI playerUI)
+    {
+        playerUI.transform.SetParent(m_playerUIParent.transform, false);
+        m_playerUIs.Add(playerUI);
+    }
+
     public void UpdateUI(RaceManager raceManager, bool isPaused, bool isFinished, bool isQuitting)
     {
+        foreach (PlayerUI ui in m_playerUIs)
+        {
+            ui.UpdateUI();
+        }
+
         m_menu.enabled = (isPaused || isFinished) && !isQuitting;
 
         if (isFinished)

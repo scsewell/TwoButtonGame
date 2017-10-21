@@ -6,7 +6,8 @@ public class PlayerAnimation : MonoBehaviour
 {
     [SerializeField] Renderer[] m_leftBoosters;
     [SerializeField] Renderer[] m_rightBoosters;
-    [SerializeField] Material m_boosterGlowMat;
+    [SerializeField] Material m_boosterGlowLMat;
+    [SerializeField] Material m_boosterGlowRMat;
 
     [SerializeField] [Range(0, 5)]
     private float m_boostGlow = 1.75f;
@@ -31,9 +32,9 @@ public class PlayerAnimation : MonoBehaviour
     {
         m_anim = GetComponent<Animator>();
 
-        m_emissionColor = m_boosterGlowMat.GetColor("_EmissionColor");
-        m_leftGlow = InstanceSharedMat(m_boosterGlowMat, m_leftBoosters);
-        m_rightGlow = InstanceSharedMat(m_boosterGlowMat, m_rightBoosters);
+        m_emissionColor = m_boosterGlowLMat.GetColor("_EmissionColor");
+        m_leftGlow = InstanceSharedMat(m_boosterGlowLMat, m_leftBoosters);
+        m_rightGlow = InstanceSharedMat(m_boosterGlowRMat, m_rightBoosters);
     }
     
     public void UpdateAnimation(MemeBoots movement)

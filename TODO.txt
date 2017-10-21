@@ -1,4 +1,5 @@
 ### To Do ###
+head looks at next waypoint
 Player Models (one fatty, one floating boosers fancy tech, robot, one other other race?, really abstract?)
 Test levels
 Handle level bounds

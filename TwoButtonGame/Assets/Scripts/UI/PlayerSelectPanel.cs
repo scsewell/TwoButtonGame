@@ -79,7 +79,7 @@ public class PlayerSelectPanel : MonoBehaviour
         m_previewCam.transform.rotation = Quaternion.Euler(m_previewCamRot);
         m_previewCam.fieldOfView = m_previewCamFov;
         m_previewCam.clearFlags = CameraClearFlags.SolidColor;
-        m_previewCam.renderingPath = RenderingPath.DeferredShading;
+        m_previewCam.renderingPath = RenderingPath.Forward;
         m_previewCam.allowMSAA = false;
         m_previewCam.depth = -10;
 
@@ -250,8 +250,7 @@ public class PlayerSelectPanel : MonoBehaviour
         
         m_characterPreview.texture = m_previewTex;
         m_characterName.text = config.Name;
-        m_characterHighlight.color = new Color(1, 1, 1, Mathf.Lerp(m_characterHighlight.color.a, 0, Time.unscaledDeltaTime * 12f));
-
+        m_characterHighlight.color = new Color(1, 1, 1, Mathf.Lerp(m_characterHighlight.color.a, 0, Time.unscaledDeltaTime * 16f));
     }
 
     private void CreateTexture()
