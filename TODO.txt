@@ -1,29 +1,36 @@
 ### To Do ###
-head looks at next waypoint
-Player Models (one fatty, one floating boosers fancy tech, robot, one other other race?, really abstract?)
+Player Models (one fatty, one floating boosters fancy tech, robot, one other other race?, really abstract?)
 Test levels
 Handle level bounds
-
-Checkpoint sound
-Collision sound
-Player movement/action sounds
-Player finish line sounds
-
-Ready up anim
-Logo
 
 Waypoint Gates (with parts that glow when the next gate for each player) (mulitple shapes)
 Boost gates
 Moving gates
 Wind / wind turbines
 
+Abilities and stuff
+
+Checkpoint sound
+Collision sound
+Player movement/action sounds
+Player finish line sounds
+
 Make motion feel fast (radial speed blur, etc)
 
-Abilities and stuff
+Ready up anim
 Level preview camera shots
-
 How to Play
 Ensure music is credited
+
+### Bugs and stuff ###
+Outline is very expensive on player time
+
+### Maybe ###
+Camera angles vertically towards next waypoint
+Input selection
+Player n is nth joiner
+Leaderboard
+Replays / Ghosting
 
 ### Music Loop Times
 The Lift		7:27.467896
@@ -32,10 +39,3 @@ Corruption		7:00.017059
 Eighties Action		2:39.558456
 Harmful or Fatal	5:19.921844
 Exit the Premises	3:24.419144
-
-### Maybe ###
-Camera angles vertically towards next waypoint
-Input selection
-Player n is nth joiner
-Leaderboard
-Replays / Ghosting

@@ -13,6 +13,13 @@ public class ControlPanel : MonoBehaviour
     private List<string> m_buttonNames = new List<string>();
     private List<RectTransform> m_buttons = new List<RectTransform>();
 
+    private RectTransform m_key;
+
+    private void Awake()
+    {
+        m_key = Instantiate(m_buttonPrefab, transform, false);
+    }
+
     public void SetActive(bool active)
     {
         gameObject.SetActive(active);
@@ -43,6 +50,18 @@ public class ControlPanel : MonoBehaviour
         {
             m_buttonNames = new List<string>(buttonNames);
 
+            //*
+            string str = "";
+            for (int i = 0; i < m_buttonNames.Count; i++)
+            {
+                str += m_buttonNames[i];
+                if (i != m_buttonNames.Count - 1)
+                {
+                    str += " + ";
+                }
+            }
+            m_key.GetComponentInChildren<Text>().text = str;
+            /*/
             for (int i = 0; i < Mathf.Max(m_buttonNames.Count, m_buttons.Count); i++)
             {
                 RectTransform button;
@@ -67,6 +86,7 @@ public class ControlPanel : MonoBehaviour
                     button.gameObject.SetActive(false);
                 }
             }
+            //*/
         }
     }
 }

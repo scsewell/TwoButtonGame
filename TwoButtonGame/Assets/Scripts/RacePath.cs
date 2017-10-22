@@ -36,7 +36,11 @@ public class RacePath : MonoBehaviour
 
     public Waypoint GetWaypoint(int waypointIndex)
     {
-        return m_path[waypointIndex % m_path.Length];
+        if (!IsFinished(waypointIndex))
+        {
+            return m_path[waypointIndex % m_path.Length];
+        }
+        return null;
     }
 
     private void OnDrawGizmos()

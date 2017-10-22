@@ -122,6 +122,21 @@ public class RaceManager : MonoBehaviour
         m_raceStartTime = Time.time + m_countdownDuration + m_fadeInTime;
     }
 
+    public void FixedUpdateRace()
+    {
+        if (m_state == State.Racing || m_state == State.Finished)
+        {
+            m_players.ForEach(p => p.MainUpdate(m_state == State.Racing && CountdownTime <= 0));
+            m_cameras.ForEach(c => c.MainUpdate());
+        }
+
+        if (m_state != State.Finished && m_players.All(p => p.IsFinished))
+        {
+            m_state = State.Finished;
+            m_raceMenu.OnFinish();
+        }
+    }
+
     public void UpdateRace()
     {
         m_fadeFac = GetFadeFactor();
@@ -160,21 +175,6 @@ public class RaceManager : MonoBehaviour
             AudioManager.Instance.PlaySound(countdownSecond == 0 ? m_goSound : m_countdownSound);
         }
         m_countdownSecond = countdownSecond;
-    }
-
-    public void FixedUpdateRace()
-    {
-        if (m_state == State.Racing || m_state == State.Finished)
-        {
-            m_players.ForEach(p => p.MainUpdate(m_state == State.Racing && CountdownTime <= 0));
-            m_cameras.ForEach(c => c.MainUpdate());
-        }
-
-        if (m_state != State.Finished && m_players.All(p => p.IsFinished))
-        {
-            m_state = State.Finished;
-            m_raceMenu.OnFinish();
-        }
     }
 
     private float GetFadeFactor()

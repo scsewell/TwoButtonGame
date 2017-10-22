@@ -61,6 +61,11 @@ public class Player : MonoBehaviour
             m_finishTime = Time.time;
             m_isFinished = finished;
         }
+
+        if (m_animation != null)
+        {
+            m_animation.UpdateAnimation(m_movement);
+        }
     }
 
     private void Update()
@@ -69,13 +74,19 @@ public class Player : MonoBehaviour
         {
             m_animation = GetComponentInChildren<PlayerAnimation>();
         }
-        
+
+        if (m_currentWaypoint != null)
+        {
+            Debug.DrawLine(transform.position, m_currentWaypoint.Position, Color.magenta);
+        }
+    }
+
+    private void LateUpdate()
+    {
         if (m_animation != null)
         {
-            m_animation.UpdateAnimation(m_movement);
+            m_animation.LateUpdateAnimation(m_currentWaypoint);
         }
-
-        Debug.DrawLine(transform.position, m_currentWaypoint.Position, Color.magenta);
     }
 
     private void OnTriggerEnter(Collider other)

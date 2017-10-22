@@ -135,10 +135,11 @@ public class PlayerUI : MonoBehaviour
         bool isSolo = m_raceManager.PlayerCount == 1;
 
         RacePath path = m_raceManager.RacePath;
+        Waypoint waypoint = m_player.CurrentWaypoint;
         int lap = path.GetCurrentLap(m_player.WaypointsCompleted);
         bool finished = m_player.IsFinished;
         
-        m_arrow.gameObject.SetActive(!finished);
+        m_arrow.gameObject.SetActive(!finished && waypoint != null);
         m_rankText.gameObject.SetActive(!finished && !isSolo);
         m_rankSubText.gameObject.SetActive(!finished && !isSolo);
         m_newLapText.gameObject.SetActive(!finished);
@@ -148,11 +149,8 @@ public class PlayerUI : MonoBehaviour
 
         if (m_arrow.gameObject.activeInHierarchy)
         {
-            // set the waypoint arrow
-            Vector3 arrowTarget = m_player.CurrentWaypoint.Position;
-
             Vector3 arrowPos = m_camera.Camera.ViewportToWorldPoint(new Vector3(0.5f, m_arrowPosition, 1));
-            Quaternion arrowRot = Quaternion.LookRotation(arrowTarget - m_player.transform.position);
+            Quaternion arrowRot = Quaternion.LookRotation(waypoint.Position - m_player.transform.position);
 
             m_arrow.position = arrowPos;
             m_arrow.rotation = m_arrowSmoothing > 0 ? Quaternion.Slerp(m_arrow.rotation, arrowRot, Time.deltaTime / m_arrowSmoothing) : arrowRot;

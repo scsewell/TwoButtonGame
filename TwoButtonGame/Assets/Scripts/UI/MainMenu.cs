@@ -79,7 +79,7 @@ public class MainMenu : Menu
 
     private AsyncOperation m_loading;
     private float m_loadFadeTime;
-    private float m_menuLoadTime;
+    private float m_menuLoadTime = float.MaxValue;
 
     private enum Menu
     {
@@ -144,7 +144,7 @@ public class MainMenu : Menu
             SetMenu(Menu.Root);
         }
 
-        m_menuLoadTime = Time.time;
+        m_menuLoadTime = 1;
 
         AudioManager.Instance.PlayMusic(m_music);
     }

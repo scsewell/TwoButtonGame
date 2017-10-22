@@ -1,9 +1,10 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class PlayerAnimation : MonoBehaviour
 {
+    [SerializeField] Transform m_head;
     [SerializeField] Renderer[] m_leftBoosters;
     [SerializeField] Renderer[] m_rightBoosters;
     [SerializeField] Material m_boosterGlowLMat;
@@ -23,10 +24,20 @@ public class PlayerAnimation : MonoBehaviour
     [SerializeField] [Range(0, 10)]
     private float m_idleVelThresh = 2f;
 
+    [SerializeField] [Range(0, 90)]
+    private float m_lookClamp = 42.5f;
+    [SerializeField] [Range(0.01f, 1)]
+    private float m_lookSmoothing = 0.25f;
+    [SerializeField] [Range(0, 1)]
+    private float m_lookUpScale = 0.16f;
+    [SerializeField] [Range(0, 1)]
+    private float m_lookDownScale = 0.33f;
+
     private Animator m_anim;
     private Material m_leftGlow;
     private Material m_rightGlow;
     private Color m_emissionColor;
+    private Quaternion m_headRotation;
 
     private void Awake()
     {
@@ -56,6 +67,33 @@ public class PlayerAnimation : MonoBehaviour
 
         m_leftGlow.SetColor("_EmissionColor", m_emissionColor * Mathf.Lerp(m_notBoostGlow, m_boostGlow, leftBoost));
         m_rightGlow.SetColor("_EmissionColor", m_emissionColor * Mathf.Lerp(m_notBoostGlow, m_boostGlow, rightBoost));
+    }
+
+    public void LateUpdateAnimation(Waypoint nextWaypoint)
+    {
+        Quaternion headRot;
+        if (nextWaypoint != null)
+        {
+            Vector3 disp = nextWaypoint.Position - m_head.position;
+
+            float horzontalDisp = Mathf.Sqrt((disp.x * disp.x) + (disp.z * disp.z));
+            disp.y = Mathf.Clamp(disp.y, -horzontalDisp * m_lookDownScale, horzontalDisp * m_lookUpScale);
+
+            if (disp.magnitude < 0.01f)
+            {
+                disp = m_headRotation * Vector3.forward;
+            }
+
+            Quaternion targetRot = Quaternion.LookRotation(disp, m_head.up);
+            headRot = Quaternion.RotateTowards(m_head.rotation, targetRot, m_lookClamp);
+        }
+        else
+        {
+            headRot = m_head.rotation;
+        }
+
+        m_head.rotation = Quaternion.Slerp(m_headRotation, headRot, Time.deltaTime / m_lookSmoothing);
+        m_headRotation = m_head.rotation;
     }
 
     private Material InstanceSharedMat(Material mat, Renderer[] renderers)
