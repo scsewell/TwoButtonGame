@@ -45,10 +45,9 @@ public class Player : MonoBehaviour
     public void Init(int playerNum, PlayerInput input, PlayerConfig config)
     {
         m_playerNum = playerNum;
+        m_currentWaypoint = m_raceManager.RacePath.GetWaypoint(m_waypointsCompleted);
 
         m_movement.Init(input, config);
-        
-        m_currentWaypoint = m_raceManager.RacePath.GetWaypoint(m_waypointsCompleted);
     }
 
     public void MainUpdate(bool canAcceptInput)
@@ -61,11 +60,6 @@ public class Player : MonoBehaviour
             m_finishTime = Time.time;
             m_isFinished = finished;
         }
-
-        if (m_animation != null)
-        {
-            m_animation.UpdateAnimation(m_movement);
-        }
     }
 
     private void Update()
@@ -73,6 +67,11 @@ public class Player : MonoBehaviour
         if (m_animation == null)
         {
             m_animation = GetComponentInChildren<PlayerAnimation>();
+        }
+
+        if (m_animation != null)
+        {
+            m_animation.UpdateAnimation(m_movement);
         }
 
         if (m_currentWaypoint != null)

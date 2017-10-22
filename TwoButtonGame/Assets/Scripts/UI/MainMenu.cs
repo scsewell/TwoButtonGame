@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -10,6 +11,7 @@ using Framework.UI;
 public class MainMenu : Menu
 {
     [SerializeField] private MusicParams m_music;
+    [SerializeField] private GameObject m_background;
 
     [Header("Root Menu")]
     [SerializeField] private Canvas m_rootMenu;
@@ -144,8 +146,15 @@ public class MainMenu : Menu
             SetMenu(Menu.Root);
         }
 
-        m_menuLoadTime = 1;
+        StartCoroutine(FinishAwake());
+    }
 
+    private IEnumerator FinishAwake()
+    {
+        m_fade.color = new Color(0, 0, 0, 0);
+        yield return null;
+        m_menuLoadTime = Time.time;
+        m_background.SetActive(true);
         AudioManager.Instance.PlayMusic(m_music);
     }
 

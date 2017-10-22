@@ -18,7 +18,7 @@ Player finish line sounds
 Make motion feel fast (radial speed blur, etc)
 
 Ready up anim
-Level preview camera shots
+Level preview camera shots (In menu as well?)
 How to Play
 Ensure music is credited
 
