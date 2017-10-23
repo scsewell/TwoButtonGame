@@ -1,19 +1,19 @@
 ### To Do ###
 Player Models (one fatty, one floating boosters fancy tech, robot, one other other race?, really abstract?)
-Test levels
-Music can play while paused during intro, while that behavior is only really wanted during race
-pause player updates once , unpause snaps camera a little one out of 5 or so times
 Make 2nd next gate white or so
-Level Intro Music
-Handle level bounds
 
 Waypoint Gates (mulitple shapes and sizes)
-Start / finish line gates
 Boost gates
+Start / finish line gates
 Moving gates
 Wind / wind turbines
 
 Abilities and stuff
+Handle level bounds
+
+Test levels
+Level select should state laps and difficulty
+Choose how many laps
 
 Checkpoint sound
 Collision sound

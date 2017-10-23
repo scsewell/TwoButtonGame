@@ -13,38 +13,44 @@ public class Player : MonoBehaviour
 
     private int m_waypointsCompleted = 0;
     public int WaypointsCompleted { get { return m_waypointsCompleted; } }
-
-    private Waypoint m_currentWaypoint = null;
-    public Waypoint CurrentWaypoint { get { return m_currentWaypoint; } }
-
+    
     private bool m_isFinished = false;
     public bool IsFinished { get { return m_isFinished; } }
 
     private float m_finishTime = float.MaxValue;
     public float FinishTime { get { return m_finishTime; } }
 
-    private RaceManager m_raceManager;
+    private RacePath m_racePath;
+
+    public Waypoint NextWaypoint
+    {
+        get { return m_racePath.GetWaypoint(m_waypointsCompleted); }
+    }
+
+    public Waypoint SecondNextWaypoint
+    {
+        get { return m_racePath.GetWaypoint(m_waypointsCompleted + 1); }
+    }
 
     private void Awake()
     {
         m_movement = GetComponentInChildren<MemeBoots>();
-
-        m_raceManager = Main.Instance.RaceManager;
     }
 
     public void Init(int playerNum, PlayerInput input, PlayerConfig config)
     {
         m_playerNum = playerNum;
-        m_currentWaypoint = m_raceManager.RacePath.GetWaypoint(m_waypointsCompleted);
+        
+        m_racePath = Main.Instance.RaceManager.RacePath;
 
         m_movement.Init(input, config);
     }
 
-    public void MainUpdate(bool canAcceptInput)
+    public void FixedUpdatePlayer(bool canAcceptInput)
     {
         m_movement.Move(!m_isFinished && canAcceptInput);
 
-        bool finished = m_raceManager.RacePath.IsFinished(m_waypointsCompleted);
+        bool finished = m_racePath.IsFinished(m_waypointsCompleted);
         if (finished != m_isFinished)
         {
             m_finishTime = Time.time;
@@ -52,7 +58,7 @@ public class Player : MonoBehaviour
         }
     }
 
-    private void Update()
+    public void UpdatePlayer()
     {
         if (m_animation == null)
         {
@@ -64,33 +70,27 @@ public class Player : MonoBehaviour
             m_animation.UpdateAnimation(m_movement);
         }
 
-        if (m_currentWaypoint != null)
+        if (NextWaypoint != null)
         {
-            Debug.DrawLine(transform.position, m_currentWaypoint.Position, Color.magenta);
+            Debug.DrawLine(transform.position, NextWaypoint.Position, Color.magenta);
         }
     }
 
-    private void LateUpdate()
+    public void LateUpdatePlayer()
     {
         if (m_animation != null)
         {
-            m_animation.LateUpdateAnimation(m_currentWaypoint);
+            m_animation.LateUpdateAnimation(NextWaypoint);
         }
     }
 
     private void OnTriggerEnter(Collider other)
     {
         Waypoint waypoint = other.GetComponent<Waypoint>();
-        if (waypoint == m_currentWaypoint)
+        if (waypoint == NextWaypoint)
         {
-            GetNextWaypoint();
+            m_waypointsCompleted++;
         }
-    }
-
-    private void GetNextWaypoint()
-    {
-        m_waypointsCompleted++;
-        m_currentWaypoint = m_raceManager.RacePath.GetWaypoint(m_waypointsCompleted);
     }
 
     public Color GetColor()

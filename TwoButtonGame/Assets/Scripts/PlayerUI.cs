@@ -69,8 +69,6 @@ public class PlayerUI : MonoBehaviour
     {
         m_arrow = Instantiate(m_arrowPrefab);
 
-        m_raceManager = Main.Instance.RaceManager;
-
         SetAlpha(m_newLapText, 0);
     }
 
@@ -78,6 +76,8 @@ public class PlayerUI : MonoBehaviour
     {
         m_player = player;
         m_camera = cam;
+        
+        m_raceManager = Main.Instance.RaceManager;
 
         int baseLayer = 8;
         int uiLayer = player.PlayerNum + baseLayer;
@@ -100,7 +100,7 @@ public class PlayerUI : MonoBehaviour
         m_playerText.text = "Player " + (player.PlayerNum + 1);
         m_playerText.color = Color.Lerp(player.GetColor(), Color.white, 0.35f);
         
-        SetArrow(m_player.CurrentWaypoint, 0);
+        SetArrow(m_player.NextWaypoint, 0);
 
         return this;
     }
@@ -137,7 +137,7 @@ public class PlayerUI : MonoBehaviour
         bool isSolo = m_raceManager.PlayerCount == 1;
 
         RacePath path = m_raceManager.RacePath;
-        Waypoint waypoint = m_player.CurrentWaypoint;
+        Waypoint waypoint = m_player.NextWaypoint;
         int lap = path.GetCurrentLap(m_player.WaypointsCompleted);
         bool finished = m_player.IsFinished;
         

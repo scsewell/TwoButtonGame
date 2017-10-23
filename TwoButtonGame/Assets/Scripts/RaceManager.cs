@@ -24,11 +24,13 @@ public class RaceManager : MonoBehaviour
     [SerializeField] private AudioClip m_countdownSound;
     [SerializeField] private AudioClip m_goSound;
 
-    private List<Player> m_players = new List<Player>();
-    private List<CameraManager> m_cameras = new List<CameraManager>();
-
     private RacePath m_racePath;
     public RacePath RacePath { get { return m_racePath; } }
+
+    private List<Player> m_players = new List<Player>();
+    public List<Player> Players { get { return m_players; } }
+
+    private List<CameraManager> m_cameras = new List<CameraManager>();
 
     private InRaceMenu m_raceMenu;
     private CameraRig m_cameraRig;
@@ -99,10 +101,11 @@ public class RaceManager : MonoBehaviour
         m_raceParams = raceParams;
         int playerCount = raceParams.PlayerIndicies.Count;
 
+        m_racePath = FindObjectOfType<RacePath>();
+
         Instantiate(m_clearCameraPrefab);
 
         m_raceMenu = Instantiate(m_raceMenuPrefab).Init(playerCount);
-        m_racePath = FindObjectOfType<RacePath>();
 
         List<Transform> spawns = new List<Transform>(m_racePath.Spawns);
 
@@ -142,8 +145,10 @@ public class RaceManager : MonoBehaviour
     {
         if (m_state == State.Racing || m_state == State.Finished)
         {
-            m_players.ForEach(p => p.MainUpdate(m_state == State.Racing && CountdownTime <= 0));
+            m_players.ForEach(p => p.FixedUpdatePlayer(m_state == State.Racing && CountdownTime <= 0));
             m_cameras.ForEach(c => c.MainUpdate());
+
+            m_racePath.FixedUpdatePath();
 
             foreach (Player player in m_players)
             {
@@ -151,7 +156,7 @@ public class RaceManager : MonoBehaviour
                     (p.IsFinished && player.IsFinished && p.FinishTime < player.FinishTime) ||
                     !player.IsFinished && (
                     (p.WaypointsCompleted > player.WaypointsCompleted) ||
-                    (p.WaypointsCompleted == player.WaypointsCompleted && Vector3.Distance(p.CurrentWaypoint.Position, p.transform.position) < Vector3.Distance(player.CurrentWaypoint.Position, player.transform.position))
+                    (p.WaypointsCompleted == player.WaypointsCompleted && Vector3.Distance(p.NextWaypoint.Position, p.transform.position) < Vector3.Distance(player.NextWaypoint.Position, player.transform.position))
                     ))) + 1;
             }
         }
@@ -198,10 +203,14 @@ public class RaceManager : MonoBehaviour
             AudioManager.Instance.PlaySound(countdownSecond == 0 ? m_goSound : m_countdownSound);
         }
         m_countdownSecond = countdownSecond;
+        
+        m_players.ForEach(p => p.UpdatePlayer());
+        m_racePath.UpdatePath();
     }
 
     public void LateUpdateRace()
     {
+        m_players.ForEach(p => p.LateUpdatePlayer());
         m_cameras.ForEach(c => c.Camera.enabled = !m_cameraRig.IsPlaying);
         m_raceMenu.UpdateUI(this, !m_cameraRig.IsPlaying, m_state == State.Paused, m_state == State.Finished, m_loading != null, m_fadeFac);
     }

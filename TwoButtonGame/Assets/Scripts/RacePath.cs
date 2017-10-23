@@ -43,15 +43,39 @@ public class RacePath : MonoBehaviour
         return null;
     }
 
+    public void FixedUpdatePath()
+    {
+        foreach (Waypoint waypoint in m_path)
+        {
+            waypoint.FixedUpdateWaypoint();
+        }
+    }
+
+    public void UpdatePath()
+    {
+        foreach (Waypoint waypoint in m_path)
+        {
+            waypoint.UpdateWaypoint();
+        }
+    }
+
     private void OnDrawGizmos()
     {
         for (int i = 0; i < m_path.Length; i++)
         {
+            Waypoint start = m_path[i];
+            Waypoint end = m_path[(i + 1) % m_path.Length];
+
+            if (start == null || end == null)
+            {
+                continue;
+            }
+            
             Gizmos.color = Color.yellow;
 
-            Vector3 start = m_path[i].Position;
-            Vector3 end = m_path[(i + 1) % m_path.Length].Position;
-            Gizmos.DrawLine(start, end);
+            Vector3 startPos = start.Position;
+            Vector3 endPos = end.Position;
+            Gizmos.DrawLine(startPos, endPos);
         }
     }
 }

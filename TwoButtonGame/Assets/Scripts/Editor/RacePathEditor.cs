@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEditor;
 using Framework.EditorTools;
 
@@ -33,15 +31,23 @@ public class RacePathEditor : Editor
         {
             for (int i = 0; i < path.Length; i++)
             {
-                Handles.color = Color.yellow;
+                Waypoint start = path[i];
+                Waypoint end = path[(i + 1) % path.Length];
 
-                Vector3 start = path[i].Position;
-                Vector3 end = path[(i + 1) % path.Length].Position;
-                Handles.DrawLine(start, end);
-
-                if ((end - start).magnitude > 0.5f)
+                if (start == null || end == null)
                 {
-                    Handles.ConeHandleCap(0, (start + end) / 2, Quaternion.LookRotation(end - start), 2f, EventType.Repaint);
+                    continue;
+                }
+                
+                Vector3 startPos = start.Position;
+                Vector3 EndPos = end.Position;
+
+                Handles.color = Color.yellow;
+                Handles.DrawLine(startPos, EndPos);
+
+                if ((EndPos - startPos).magnitude > 0.5f)
+                {
+                    Handles.ConeHandleCap(0, (startPos + EndPos) / 2, Quaternion.LookRotation(EndPos - startPos), 2f, EventType.Repaint);
                 }
             }
         }

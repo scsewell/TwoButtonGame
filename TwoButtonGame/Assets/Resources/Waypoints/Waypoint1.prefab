@@ -159,7 +159,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_glowMaterialIndex: 2
-  m_glowIntensity: 2.25
+  m_nextGlowIntensity: 2.25
+  m_secondNextGlowIntensity: 1.4
   m_glowChangeTime: 0.5
   m_bobIntensity: 0.035
   m_bobFrequency: 0.15
