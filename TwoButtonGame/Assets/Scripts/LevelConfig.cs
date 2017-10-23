@@ -7,6 +7,18 @@ public class LevelConfig : ScriptableObject
     private string m_name;
     public string Name { get { return m_name; } }
 
+    public enum Difficulty
+    {
+        Easy,
+        Moderate,
+        Hard,
+        Intense,
+    }
+
+    [SerializeField]
+    private Difficulty m_difficulty = Difficulty.Moderate;
+    public Difficulty LevelDifficulty { get { return m_difficulty; } }
+
     [SerializeField]
     private Sprite m_preview;
     public Sprite Preview { get { return m_preview; } }

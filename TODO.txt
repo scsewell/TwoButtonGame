@@ -1,6 +1,6 @@
 ### To Do ###
 Player Models (one fatty, one floating boosters fancy tech, robot, one other other race?, really abstract?)
-Make 2nd next gate white or so
+Additive booster flaps noise, especially for boost
 
 Waypoint Gates (mulitple shapes and sizes)
 Boost gates
@@ -12,8 +12,6 @@ Abilities and stuff
 Handle level bounds
 
 Test levels
-Level select should state laps and difficulty
-Choose how many laps
 
 Checkpoint sound
 Collision sound

@@ -38,6 +38,7 @@ public class MainMenu : Menu
     [Header("Level Select")]
     [SerializeField] private Canvas m_levelSelectMenu;
     [SerializeField] private Text m_levelName;
+    [SerializeField] private Text m_levelDifficulty;
     [SerializeField] private Image m_levelPreview;
     [SerializeField] private Image m_levelHighlight;
     [SerializeField] private ControlPanel m_levelControls1;
@@ -47,6 +48,20 @@ public class MainMenu : Menu
 
     private int m_selectedLevel = 0;
     
+    [Header("Lap Count")]
+    [SerializeField] private Canvas m_lapCountMenu;
+    [SerializeField] private Text m_lapCountText;
+    [SerializeField] private ControlPanel m_lapControls1;
+    [SerializeField] private ControlPanel m_lapControls2;
+    [SerializeField] private ControlPanel m_lapControls3;
+    
+    [SerializeField] [Range(1, 10)]
+    private int m_maxLapCount = 5;
+    [SerializeField] [Range(1, 10)]
+    private int m_defaultLapCount = 3;
+
+    private int m_lapCount;
+
     [Header("How To Play")]
     [SerializeField] private Canvas m_howToMenu;
     [SerializeField] private Button m_howToBackButton;
@@ -89,6 +104,7 @@ public class MainMenu : Menu
         Root,
         PlayerSelect,
         LevelSelect,
+        LapChoose,
         HowToPlay,
         Settings,
         Credits,
@@ -133,6 +149,7 @@ public class MainMenu : Menu
         if (previousParams != null)
         {
             m_selectedLevel = Array.IndexOf(m_levelConfigs, previousParams.LevelConfig);
+            m_lapCount = previousParams.Laps;
 
             for (int i = 0; i < previousParams.PlayerIndicies.Count; i++)
             {
@@ -144,6 +161,7 @@ public class MainMenu : Menu
         else
         {
             SetMenu(Menu.Root);
+            m_lapCount = m_defaultLapCount;
         }
 
         StartCoroutine(FinishAwake());
@@ -169,6 +187,7 @@ public class MainMenu : Menu
             m_rootMenu.enabled          = (menu == Menu.Root);
             m_playerSelectMenu.enabled  = (menu == Menu.PlayerSelect);
             m_levelSelectMenu.enabled   = (menu == Menu.LevelSelect);
+            m_lapCountMenu.enabled      = (menu == Menu.LapChoose);
             m_howToMenu.enabled         = (menu == Menu.HowToPlay);
             m_creditsMenu.enabled       = (menu == Menu.Credits);
             m_settingsMenu.enabled      = (menu == Menu.Settings);
@@ -189,6 +208,7 @@ public class MainMenu : Menu
             {
                 case Menu.PlayerSelect: ResetPlayerSelect(previous == Menu.Root); break;
                 case Menu.LevelSelect: ResetLevelSelect(); break;
+                case Menu.LapChoose: ResetLapChoose(); break;
                 case Menu.HowToPlay: ResetHowToPlay(); break;
                 case Menu.Settings: RefreshSettings(); break;
             }
@@ -222,6 +242,7 @@ public class MainMenu : Menu
         {
             case Menu.PlayerSelect: UpdatePlayerSelect(); break;
             case Menu.LevelSelect: UpdateLevelSelect(); break;
+            case Menu.LapChoose: UpdateLapChoose(); break;
             case Menu.HowToPlay: UpdateHowToPlay(); break;
         }
 
@@ -295,28 +316,12 @@ public class MainMenu : Menu
 
         if (input.Button1Up)
         {
-            LevelConfig levelConfig = m_levelConfigs[m_selectedLevel];
-
-            List<int> playerIndicies = new List<int>();
-            for (int i = 0; i < 4; i++)
-            {
-                if (m_playerSelectPanels[i].IsReady)
-                {
-                    playerIndicies.Add(i);
-                }
-            }
-
-            List<PlayerConfig> playerConfigs = readyPlayers.Select(p => m_playerConfigs[p.SelectedConfig]).ToList();
-
-            RaceParameters raceParams = new RaceParameters(levelConfig, playerIndicies, playerConfigs);
-
-            m_loading = Main.Instance.LoadRace(raceParams);
-            m_loadFadeTime = Time.unscaledTime;
-            SetMenu(Menu.Loading);
+            SetMenu(Menu.LapChoose);
         }
         else if (input.Button2Up)
         {
-            m_selectedLevel = (m_selectedLevel = 1) % m_levelConfigs.Length;
+            m_selectedLevel = (m_selectedLevel += 1) % m_levelConfigs.Length;
+            m_lapCount = m_defaultLapCount;
             m_levelHighlight.color = new Color(1, 1, 1, 0.5f);
             PlaySelectSound();
         }
@@ -332,6 +337,7 @@ public class MainMenu : Menu
     {
         LevelConfig config = m_levelConfigs[m_selectedLevel];
         m_levelName.text = config.Name;
+        m_levelDifficulty.text = config.LevelDifficulty.ToString();
         m_levelPreview.sprite = config.Preview;
         m_levelHighlight.color = new Color(1, 1, 1, Mathf.Lerp(m_levelHighlight.color.a, 0, Time.unscaledDeltaTime * 16f));
 
@@ -341,6 +347,46 @@ public class MainMenu : Menu
             m_levelControls1.UpdateUI("Accept", input.Button1Name);
             m_levelControls2.UpdateUI("Next", input.Button2Name);
             m_levelControls3.UpdateUI("Back", input.ButtonNames);
+        }
+    }
+
+    private void ResetLapChoose()
+    {
+        UpdateLapChooseGraphics();
+    }
+
+    private void UpdateLapChoose()
+    {
+        List<PlayerSelectPanel> readyPlayers = m_playerSelectPanels.Where(p => p.IsReady).ToList();
+        PlayerInput input = readyPlayers.First().Input;
+
+        if (input.Button1Up)
+        {
+            LaunchRace();
+        }
+        else if (input.Button2Up)
+        {
+            m_lapCount = Mathf.Max((m_lapCount += 1) % (m_maxLapCount + 1), 1);
+            PlaySelectSound();
+        }
+        else if (input.BothDown)
+        {
+            SetMenu(Menu.LevelSelect, true);
+        }
+
+        UpdateLapChooseGraphics();
+    }
+
+    private void UpdateLapChooseGraphics()
+    {
+        m_lapCountText.text = "Laps: " + m_lapCount;
+        
+        if (m_playerSelectPanels.Any(p => p.IsReady))
+        {
+            PlayerInput input = m_playerSelectPanels.Where(p => p.IsReady).First().Input;
+            m_lapControls1.UpdateUI("Accept", input.Button1Name);
+            m_lapControls2.UpdateUI("Change", input.Button2Name);
+            m_lapControls3.UpdateUI("Back", input.ButtonNames);
         }
     }
 
@@ -413,5 +459,28 @@ public class MainMenu : Menu
             fac = Mathf.Lerp(fac, 1, Mathf.Clamp01((Time.unscaledTime - m_loadFadeTime) / m_fadeOutDuration));
         }
         return Mathf.Sin((Mathf.PI / 2) * Mathf.Pow(fac, m_fadePower));
+    }
+
+    private void LaunchRace()
+    {
+        LevelConfig levelConfig = m_levelConfigs[m_selectedLevel];
+
+        List<int> playerIndicies = new List<int>();
+        for (int i = 0; i < 4; i++)
+        {
+            if (m_playerSelectPanels[i].IsReady)
+            {
+                playerIndicies.Add(i);
+            }
+        }
+        
+        List<PlayerConfig> playerConfigs = m_playerSelectPanels.Where(p => p.IsReady)
+            .Select(p => m_playerConfigs[p.SelectedConfig]).ToList();
+
+        RaceParameters raceParams = new RaceParameters(levelConfig, m_lapCount, playerIndicies, playerConfigs);
+
+        m_loading = Main.Instance.LoadRace(raceParams);
+        m_loadFadeTime = Time.unscaledTime;
+        SetMenu(Menu.Loading);
     }
 }

@@ -119,7 +119,7 @@ public class PlayerSelectPanel : MonoBehaviour
     public void FromConfig(PlayerConfig selectedConfig)
     {
         m_state = State.Select;
-        m_selectedConfig = System.Array.IndexOf(m_configs, selectedConfig);
+        SelectCharacter(System.Array.IndexOf(m_configs, selectedConfig));
     }
 
     public void SetCameraActive(bool isActive)
@@ -130,7 +130,7 @@ public class PlayerSelectPanel : MonoBehaviour
         {
             foreach (GameObject go in m_previewObjects)
             {
-                go.SetActive(false);
+                //go.SetActive(false);
             }
         }
     }

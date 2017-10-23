@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class RaceManager : MonoBehaviour
 {
+    [Header("Prefabs")]
     [SerializeField] private Camera m_clearCameraPrefab;
     [SerializeField] private CameraRig m_cameraRigPrefab;
     [SerializeField] private InRaceMenu m_raceMenuPrefab;
@@ -11,15 +12,19 @@ public class RaceManager : MonoBehaviour
     [SerializeField] private CameraManager m_playerCameraPrefab;
     [SerializeField] private PlayerUI m_playerUIPrefab;
 
+    [Header("Fade")]
     [SerializeField] [Range(0.01f, 5)]
     private float m_fadeInTime = 1.0f;
     [SerializeField] [Range(0.01f, 5)]
     private float m_introFadeTime = 0.5f;
     [SerializeField] [Range(0.01f, 5)]
     private float m_fadeOutTime = 1.0f;
-    
+
+    [Header("Countdown")]
     [SerializeField] [Range(0, 10)]
     private int m_countdownDuration = 5;
+    [SerializeField] [Range(0.5f, 5)]
+    private float m_countdownScale = 1.65f;
     
     [SerializeField] private AudioClip m_countdownSound;
     [SerializeField] private AudioClip m_goSound;
@@ -48,7 +53,7 @@ public class RaceManager : MonoBehaviour
 
     public float CountdownTime
     {
-        get { return m_raceStartTime - Time.time; }
+        get { return (m_raceStartTime - Time.time) / m_countdownScale; }
     }
 
     public int PlayerCount { get { return m_players.Count; } }
@@ -101,7 +106,7 @@ public class RaceManager : MonoBehaviour
         m_raceParams = raceParams;
         int playerCount = raceParams.PlayerIndicies.Count;
 
-        m_racePath = FindObjectOfType<RacePath>();
+        m_racePath = FindObjectOfType<RacePath>().Init(raceParams.Laps);
 
         Instantiate(m_clearCameraPrefab);
 
@@ -138,7 +143,7 @@ public class RaceManager : MonoBehaviour
 
         m_raceLoadTime = Time.time;
         m_introEndTime = m_raceLoadTime + m_cameraRig.GetIntroSequenceLength();
-        m_raceStartTime = m_introEndTime + m_countdownDuration + m_fadeInTime;
+        m_raceStartTime = m_introEndTime + (m_countdownScale * m_countdownDuration) + m_fadeInTime;
     }
 
     public void FixedUpdateRace()
@@ -212,6 +217,7 @@ public class RaceManager : MonoBehaviour
     {
         m_players.ForEach(p => p.LateUpdatePlayer());
         m_cameras.ForEach(c => c.Camera.enabled = !m_cameraRig.IsPlaying);
+
         m_raceMenu.UpdateUI(this, !m_cameraRig.IsPlaying, m_state == State.Paused, m_state == State.Finished, m_loading != null, m_fadeFac);
     }
 

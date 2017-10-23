@@ -1,20 +1,17 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class RacePath : MonoBehaviour
 {
     [SerializeField]
     private Waypoint[] m_path;
     public Waypoint[] Path { get { return m_path; } }
-
-    [SerializeField] [Range(1, 10)]
-    private int m_laps = 3;
-    public int Laps { get { return m_laps; } }
-
+    
     [SerializeField]
     private Transform[] m_spawns;
     public Transform[] Spawns { get { return m_spawns; } }
+
+    private int m_laps;
+    public int Laps { get { return m_laps; } }
 
     private void Awake()
     {
@@ -22,6 +19,12 @@ public class RacePath : MonoBehaviour
         {
             Main.Instance.LoadMainMenu();
         }
+    }
+
+    public RacePath Init(int laps)
+    {
+        m_laps = laps;
+        return this;
     }
 
     public bool IsFinished(int waypointIndex)
