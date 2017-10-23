@@ -29,6 +29,12 @@ public class RaceManager : MonoBehaviour
     [SerializeField] private AudioClip m_countdownSound;
     [SerializeField] private AudioClip m_goSound;
 
+    [Header("Options")]
+    [SerializeField]
+    private bool m_skipIntro = false;
+    [SerializeField]
+    private bool m_skipCoundown = false;
+
     private RacePath m_racePath;
     public RacePath RacePath { get { return m_racePath; } }
 
@@ -103,6 +109,12 @@ public class RaceManager : MonoBehaviour
 
     public void StartRace(RaceParameters raceParams)
     {
+        if (!Application.isEditor)
+        {
+            m_skipCoundown = false;
+            m_skipIntro = false;
+        }
+
         m_raceParams = raceParams;
         int playerCount = raceParams.PlayerIndicies.Count;
 
@@ -138,12 +150,23 @@ public class RaceManager : MonoBehaviour
             ui.Init(player, camera, playerCount);
         }
 
-        m_cameraRig = Instantiate(m_cameraRigPrefab).Init(raceParams.LevelConfig);
-        m_cameraRig.PlayIntroSequence();
+        float introLength = 0;
+        if (!m_skipIntro)
+        {
+            m_cameraRig = Instantiate(m_cameraRigPrefab).Init(raceParams.LevelConfig);
+            m_cameraRig.PlayIntroSequence();
+            introLength = m_cameraRig.GetIntroSequenceLength();
+        }
+
+        float coundownLength = 0;
+        if (!m_skipCoundown)
+        {
+            coundownLength = (m_countdownScale * m_countdownDuration) + m_introFadeTime;
+        }
 
         m_raceLoadTime = Time.time;
-        m_introEndTime = m_raceLoadTime + m_cameraRig.GetIntroSequenceLength();
-        m_raceStartTime = m_introEndTime + (m_countdownScale * m_countdownDuration) + m_fadeInTime;
+        m_introEndTime = m_raceLoadTime + introLength;
+        m_raceStartTime = m_introEndTime + coundownLength;
     }
 
     public void FixedUpdateRace()
@@ -198,16 +221,19 @@ public class RaceManager : MonoBehaviour
             }
             m_musicStarted = true;
         }
-        
+
+        if (!m_skipCoundown)
+        {
+            int countdownSecond = Mathf.CeilToInt(CountdownTime);
+            if (countdownSecond != m_countdownSecond && 0 <= countdownSecond && countdownSecond <= 3)
+            {
+                AudioManager.Instance.PlaySound(countdownSecond == 0 ? m_goSound : m_countdownSound);
+            }
+            m_countdownSecond = countdownSecond;
+        }
+
         AudioManager.Instance.MusicPausable = (Time.time - m_raceStartTime < 0);
         AudioManager.Instance.Volume = Mathf.MoveTowards(AudioManager.Instance.Volume, 1 - GetFadeFactor(true), Time.unscaledDeltaTime / 0.5f);
-        
-        int countdownSecond = Mathf.CeilToInt(CountdownTime);
-        if (countdownSecond != m_countdownSecond && 0 <= countdownSecond && countdownSecond <= 3)
-        {
-            AudioManager.Instance.PlaySound(countdownSecond == 0 ? m_goSound : m_countdownSound);
-        }
-        m_countdownSecond = countdownSecond;
         
         m_players.ForEach(p => p.UpdatePlayer());
         m_racePath.UpdatePath();
@@ -215,10 +241,12 @@ public class RaceManager : MonoBehaviour
 
     public void LateUpdateRace()
     {
-        m_players.ForEach(p => p.LateUpdatePlayer());
-        m_cameras.ForEach(c => c.Camera.enabled = !m_cameraRig.IsPlaying);
+        bool isInIntro = (m_cameraRig != null && m_cameraRig.IsPlaying);
 
-        m_raceMenu.UpdateUI(this, !m_cameraRig.IsPlaying, m_state == State.Paused, m_state == State.Finished, m_loading != null, m_fadeFac);
+        m_players.ForEach(p => p.LateUpdatePlayer());
+        m_cameras.ForEach(c => c.Camera.enabled = !isInIntro);
+
+        m_raceMenu.UpdateUI(this, !isInIntro, m_state == State.Paused, m_state == State.Finished, m_loading != null, m_fadeFac);
     }
 
     private float GetFadeFactor(bool audio)
@@ -252,6 +280,11 @@ public class RaceManager : MonoBehaviour
 
     public int GetPlayerRank(Player player)
     {
-        return m_playerRanks[player];
+        int rank;
+        if (!m_playerRanks.TryGetValue(player, out rank))
+        {
+            rank = 1;
+        }
+        return Mathf.Max(rank, 1);
     }
 }

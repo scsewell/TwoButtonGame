@@ -4804,14 +4804,16 @@ MonoBehaviour:
   m_boosterGlowRMat: {fileID: 2100000, guid: 33e7112cb75ab594e8ae91e61822331c, type: 2}
   m_boostGlow: 1.75
   m_notBoostGlow: 0.5
-  m_velocityScale: 0.25
-  m_velocitySmoothing: 0.335
-  m_boostSmoothing: 0.125
-  m_idleVelThresh: 2
+  m_boostGlowNoiseStrength: 0.65
+  m_boostGlowNoiseFrequency: 17.5
   m_lookClamp: 42.5
   m_lookSmoothing: 0.25
   m_lookUpScale: 0.16
   m_lookDownScale: 0.33
+  m_velocityScale: 0.25
+  m_velocitySmoothing: 0.335
+  m_boostSmoothing: 0.125
+  m_idleVelThresh: 2
 --- !u!137 &137364885047586638
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 1

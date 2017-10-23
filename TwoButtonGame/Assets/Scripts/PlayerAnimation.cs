@@ -10,20 +10,17 @@ public class PlayerAnimation : MonoBehaviour
     [SerializeField] Material m_boosterGlowLMat;
     [SerializeField] Material m_boosterGlowRMat;
 
+    [Header("Glow")]
     [SerializeField] [Range(0, 5)]
     private float m_boostGlow = 1.75f;
     [SerializeField] [Range(0, 5)]
     private float m_notBoostGlow = 1.0f;
+    [SerializeField] [Range(0, 2)]
+    private float m_boostGlowNoiseStrength = 0.1f;
+    [SerializeField] [Range(1, 30)]
+    private float m_boostGlowNoiseFrequency = 10.0f;
 
-    [SerializeField] [Range(0, 1)]
-    private float m_velocityScale = 0.25f;
-    [SerializeField] [Range(0, 1)]
-    private float m_velocitySmoothing = 0.125f;
-    [SerializeField] [Range(0, 1)]
-    private float m_boostSmoothing = 0.125f;
-    [SerializeField] [Range(0, 10)]
-    private float m_idleVelThresh = 2f;
-
+    [Header("Looking")]
     [SerializeField] [Range(0, 90)]
     private float m_lookClamp = 42.5f;
     [SerializeField] [Range(0.01f, 1)]
@@ -32,6 +29,16 @@ public class PlayerAnimation : MonoBehaviour
     private float m_lookUpScale = 0.16f;
     [SerializeField] [Range(0, 1)]
     private float m_lookDownScale = 0.33f;
+    
+    [Header("Other")]
+    [SerializeField] [Range(0, 1)]
+    private float m_velocityScale = 0.25f;
+    [SerializeField] [Range(0, 1)]
+    private float m_velocitySmoothing = 0.125f;
+    [SerializeField] [Range(0, 1)]
+    private float m_boostSmoothing = 0.125f;
+    [SerializeField] [Range(0, 10)]
+    private float m_idleVelThresh = 2f;
 
     private Animator m_anim;
     private Material m_leftGlow;
@@ -65,8 +72,14 @@ public class PlayerAnimation : MonoBehaviour
 
         m_anim.SetBool("IsFlying", !(movement.IsGrounded && movement.Velocity.magnitude < m_idleVelThresh));
 
-        m_leftGlow.SetColor("_EmissionColor", m_emissionColor * Mathf.Lerp(m_notBoostGlow, m_boostGlow, leftBoost));
-        m_rightGlow.SetColor("_EmissionColor", m_emissionColor * Mathf.Lerp(m_notBoostGlow, m_boostGlow, rightBoost));
+        float noiseTime = m_boostGlowNoiseFrequency * Time.time;
+        float noiseScale = m_boostGlow * m_boostGlowNoiseStrength;
+
+        float leftNoiseFac = Mathf.LerpUnclamped(leftBoost, 0, m_boostGlowNoiseStrength * Mathf.PerlinNoise(noiseTime, 0.25f));
+        float rightNoiseFac = Mathf.LerpUnclamped(rightBoost, 0, m_boostGlowNoiseStrength * Mathf.PerlinNoise(noiseTime, 0.75f));
+
+        m_leftGlow.SetColor("_EmissionColor", m_emissionColor * Mathf.LerpUnclamped(m_notBoostGlow, m_boostGlow, leftNoiseFac));
+        m_rightGlow.SetColor("_EmissionColor", m_emissionColor * Mathf.LerpUnclamped(m_notBoostGlow, m_boostGlow, rightNoiseFac));
     }
 
     public void LateUpdateAnimation(Waypoint nextWaypoint)
