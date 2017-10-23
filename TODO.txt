@@ -1,17 +1,15 @@
 ### To Do ###
 Player Models (one fatty, one floating boosters fancy tech, robot, one other other race?, really abstract?)
-Additive booster flaps noise, especially for boost
 
-Waypoint Gates (mulitple shapes and sizes)
 Boost gates
 Start / finish line gates
-Moving gates
+Moving gates (Gate thrusters that attatch to the side of existing gate models)
 Wind / wind turbines
 
 Abilities and stuff
-Handle level bounds
+Handle level bounds (could done using a restoring force a little larger than the thrust force component going out of bounds)
 
-Test levels
+Levels (City, Sky, Desert, Factory, Arctic)
 
 Checkpoint sound
 Collision sound

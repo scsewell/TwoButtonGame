@@ -96,7 +96,7 @@ public class Waypoint : MonoBehaviour
         // make the waypoint glow only for a player's camera if this is the next waypoint
         CameraManager camManager = Camera.current.GetComponent<CameraManager>();
 
-        Color diffuse = new Color(0.2f, 0.2f, 0.2f);
+        Color diffuse = new Color(0.35f, 0.35f, 0.35f);
         Color glow = Color.black;
 
         if (camManager != null && m_glowMat != null)

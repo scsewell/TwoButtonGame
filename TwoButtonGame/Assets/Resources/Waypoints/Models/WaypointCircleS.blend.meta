@@ -1,31 +1,31 @@
 fileFormatVersion: 2
-guid: 54bb014961958504391babbb44f70519
-timeCreated: 1508687162
+guid: ee0952aaf10200843bd07c31e313c57b
+timeCreated: 1508774950
 licenseType: Free
 ModelImporter:
   serializedVersion: 22
   fileIDToRecycleName:
     100000: //RootNode
-    100002: Gate1
-    100004: Gate1_Collider
-    100006: Gate1_Trigger
+    100002: WaypointCircleS
+    100004: WaypointCircleS_Collider
+    100006: WaypointCircleS_Trigger
     400000: //RootNode
-    400002: Gate1
-    400004: Gate1_Collider
-    400006: Gate1_Trigger
-    2100000: Material
-    2300000: //RootNode
-    2300002: Gate1
-    2300004: Gate1_Collider
-    2300006: Gate1_Trigger
-    3300000: //RootNode
-    3300002: Gate1
-    3300004: Gate1_Collider
-    3300006: Gate1_Trigger
-    4300000: Gate
-    4300002: Gate1_Trigger
-    4300004: Gate1_Collider
-    4300006: Gate1
+    400002: WaypointCircleS
+    400004: WaypointCircleS_Collider
+    400006: WaypointCircleS_Trigger
+    2100000: Material__Untitled
+    2100002: Material_002__Untitled
+    2100004: Material_001__Untitled
+    2100006: Material
+    2300000: WaypointCircleS
+    2300002: WaypointCircleS_Collider
+    2300004: WaypointCircleS_Trigger
+    3300000: WaypointCircleS
+    3300002: WaypointCircleS_Collider
+    3300004: WaypointCircleS_Trigger
+    4300000: WaypointCircleS
+    4300002: WaypointCircleS_Trigger
+    4300004: WaypointCircleS_Collider
     7400000: Default Take
     9500000: //RootNode
   externalObjects: {}
@@ -99,10 +99,10 @@ ModelImporter:
     rootMotionBoneName: 
     rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
     hasTranslationDoF: 0
-    hasExtraRoot: 0
+    hasExtraRoot: 1
     skeletonHasParents: 1
   lastHumanDescriptionAvatarSource: {instanceID: 0}
-  animationType: 2
+  animationType: 0
   humanoidOversampling: 1
   additionalBone: 0
   userData: 
