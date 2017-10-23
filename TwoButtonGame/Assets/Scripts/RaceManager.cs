@@ -112,7 +112,7 @@ public class RaceManager : MonoBehaviour
 
         m_raceMenu = Instantiate(m_raceMenuPrefab).Init(playerCount);
 
-        List<Transform> spawns = new List<Transform>(m_racePath.Spawns);
+        List<Transform> spawns = m_racePath.Spawns.Take(playerCount).ToList();
 
         for (int playerNum = 0; playerNum < playerCount; playerNum++)
         {
