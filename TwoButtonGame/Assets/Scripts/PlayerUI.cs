@@ -98,7 +98,9 @@ public class PlayerUI : MonoBehaviour
 
         // Set up UI
         m_playerText.text = "Player " + (player.PlayerNum + 1);
-        m_playerText.color = Consts.PLAYER_COLORS[player.PlayerNum];
+        m_playerText.color = Color.Lerp(player.GetColor(), Color.white, 0.35f);
+        
+        SetArrow(m_player.CurrentWaypoint, 0);
 
         return this;
     }
@@ -149,12 +151,7 @@ public class PlayerUI : MonoBehaviour
 
         if (m_arrow.gameObject.activeInHierarchy)
         {
-            Vector3 arrowPos = m_camera.Camera.ViewportToWorldPoint(new Vector3(0.5f, m_arrowPosition, 1));
-            Quaternion arrowRot = Quaternion.LookRotation(waypoint.Position - m_player.transform.position);
-
-            m_arrow.position = arrowPos;
-            m_arrow.rotation = m_arrowSmoothing > 0 ? Quaternion.Slerp(m_arrow.rotation, arrowRot, Time.deltaTime / m_arrowSmoothing) : arrowRot;
-            m_arrow.localScale = m_arrowScale * Vector3.one;
+            SetArrow(waypoint, m_arrowSmoothing);
         }
 
         // set rank text
@@ -220,6 +217,19 @@ public class PlayerUI : MonoBehaviour
 
         m_lastRank = rank;
         m_lastLap = lap;
+    }
+
+    private void SetArrow(Waypoint waypoint, float smoothing)
+    {
+        if (waypoint != null)
+        {
+            Vector3 arrowPos = m_camera.Camera.ViewportToWorldPoint(new Vector3(0.5f, m_arrowPosition, 1));
+            Quaternion arrowRot = Quaternion.LookRotation(waypoint.Position - m_player.transform.position);
+
+            m_arrow.position = arrowPos;
+            m_arrow.rotation = m_arrowSmoothing > 0 ? Quaternion.Slerp(m_arrow.rotation, arrowRot, Time.deltaTime / smoothing) : arrowRot;
+            m_arrow.localScale = m_arrowScale * Vector3.one;
+        }
     }
 
     private void SetColorNoAlpha(Graphic g, Color c)

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class Menu : MonoBehaviour
 {
@@ -17,7 +14,7 @@ public class Menu : MonoBehaviour
     {
         if (clip != null)
         {
-            AudioManager.Instance.PlaySound(clip);
+            AudioManager.Instance.PlaySound(clip, 1, true);
         }
     }
 

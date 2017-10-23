@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Framework;
@@ -29,6 +27,16 @@ public class Main : ComponentSingleton<Main>
         SettingManager.Instance.Apply();
     }
 
+    private void FixedUpdate()
+    {
+        InterpolationController.Instance.EarlyFixedUpdate();
+
+        if (m_raceManager != null)
+        {
+            m_raceManager.FixedUpdateRace();
+        }
+    }
+
     private void Update()
     {
         InterpolationController.Instance.VisualUpdate();
@@ -43,15 +51,10 @@ public class Main : ComponentSingleton<Main>
     private void LateUpdate()
     {
         InputManager.Instance.LateUpdate();
-    }
-
-    private void FixedUpdate()
-    {
-        InterpolationController.Instance.EarlyFixedUpdate();
 
         if (m_raceManager != null)
         {
-            m_raceManager.FixedUpdateRace();
+            m_raceManager.LateUpdateRace();
         }
     }
 
@@ -90,6 +93,7 @@ public class Main : ComponentSingleton<Main>
     {
         yield return new WaitWhile(() => !loading.allowSceneActivation);
         AudioListener.volume = 0;
+        AudioListener.pause = false;
         Time.timeScale = 1;
         yield return new WaitWhile(() => !loading.isDone);
         onComplete();

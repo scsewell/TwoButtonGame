@@ -1,7 +1,7 @@
-﻿using UnityEngine;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
+using UnityEngine.PostProcessing;
 using Framework;
 using Framework.SettingManagement;
 using Framework.IO;
@@ -40,13 +40,17 @@ public class SettingManager : Singleton<SettingManager>
     {
         m_settings = new Settings();
 
-        m_settings.Add(Categories.Screen,"Resolution", Screen.resolutions.Last(),
-            GetSupportedResolutions(),
-            (v) => SerializeResolution(v),
-            (s) => ParseResolution(s),
-            (v) => Screen.SetResolution(v.width, v.height, Screen.fullScreen)
-            );
-
+        Resolution[] resolutions = Screen.resolutions;
+        if (resolutions.Length > 0)
+        {
+            m_settings.Add(Categories.Screen, "Resolution", resolutions.Last(),
+                GetSupportedResolutions(),
+                (v) => SerializeResolution(v),
+                (s) => ParseResolution(s),
+                (v) => Screen.SetResolution(v.width, v.height, Screen.fullScreen)
+                );
+        }
+        
         m_settings.Add(Categories.Screen, "Fullscreen", true, BOOL_VALS, SerializeBool, ParseBool, (v) => Screen.fullScreen = v);
         m_settings.Add(Categories.Screen, "VSync", true, BOOL_VALS, SerializeBool, ParseBool, (v) => QualitySettings.vSyncCount = (v ? 1 : 0));
 
@@ -71,17 +75,48 @@ public class SettingManager : Singleton<SettingManager>
 
     public void Save()
     {
+#if UNITY_EDITOR || UNITY_STANDALONE
         FileIO.WriteFile(JsonConverter.ToJson(m_settings.Serialize()), FileIO.GetInstallDirectory(), "Settings.ini");
+#else
+        PlayerPrefs.SetString("Settings", JsonConverter.ToJson(m_settings.Serialize()));
+#endif
     }
 
     public void Load()
     {
+#if UNITY_EDITOR || UNITY_STANDALONE
         string str = FileIO.ReadFile(FileIO.GetInstallDirectory(), "Settings.ini");
+#else
+        string str = PlayerPrefs.GetString("Settings", null);
+#endif
         if (str == null || !m_settings.Deserialize(JsonConverter.FromJson<SerializableSettings>(str)))
         {
             m_settings.UseDefaults();
             Save();
         }
+    }
+
+    public void ConfigureCamera(Camera cam, bool permitMotionBlur)
+    {
+        PostProcessingBehaviour post = cam.GetComponent<PostProcessingBehaviour>();
+        PostProcessingProfile profile = Object.Instantiate(post.profile);
+
+        profile.motionBlur.enabled = m_useMotionBlur.Value && permitMotionBlur;
+
+        int aaVal = m_aa.Value;
+        if (aaVal < 2)
+        {
+            profile.antialiasing.enabled = true;
+            AntialiasingModel.Settings aa = profile.antialiasing.settings;
+            aa.method = (aaVal == 0) ? AntialiasingModel.Method.Taa : AntialiasingModel.Method.Fxaa;
+            profile.antialiasing.settings = aa;
+        }
+        else
+        {
+            profile.antialiasing.enabled = false;
+        }
+
+        post.profile = profile;
     }
 
     private string SerializeResolution(Resolution res)

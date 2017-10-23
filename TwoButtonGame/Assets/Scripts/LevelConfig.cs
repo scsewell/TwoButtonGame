@@ -18,4 +18,24 @@ public class LevelConfig : ScriptableObject
     [SerializeField]
     private MusicParams m_music;
     public MusicParams Music { get { return m_music; } }
+
+    [SerializeField] [Range(0, 5)]
+    private float m_musicDelay = 0.5f;
+    public float MusicDelay { get { return m_musicDelay; } }
+
+    [SerializeField]
+    private CameraShot[] m_introSequence;
+    public CameraShot[] IntroSequence { get { return m_introSequence; } }
+
+    [System.Serializable]
+    public class CameraShot
+    {
+        [SerializeField]
+        private AnimationClip m_clip;
+        public AnimationClip Clip { get { return m_clip; } }
+
+        [SerializeField] [Range(0, 10)]
+        private float m_speed = 1;
+        public float Speed { get { return m_speed; } }
+    }
 }

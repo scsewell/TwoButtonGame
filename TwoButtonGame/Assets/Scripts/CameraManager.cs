@@ -1,14 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
-using UnityEngine.PostProcessing;
+﻿using UnityEngine;
 using Framework.Interpolation;
 
 [RequireComponent(typeof(TransformInterpolator))]
 public class CameraManager : MonoBehaviour
 {
-    [SerializeField]
-    [Range(0, 20)]
+    [SerializeField] [Range(0, 20)]
     private float m_smoothness = 10.0f;
     [SerializeField]
     private Vector2 m_positionOffset = new Vector2(12, 2);
@@ -18,40 +14,24 @@ public class CameraManager : MonoBehaviour
     private Camera m_cam;
     public Camera Camera { get { return m_cam; } }
 
-    private TransformInterpolator m_tInterpolator;
     private Player m_player;
+    public Player Owner { get { return m_player; } }
+
+    private TransformInterpolator m_tInterpolator;
 
     private void Awake()
     {
         m_cam = GetComponent<Camera>();
+        m_tInterpolator = GetComponent<TransformInterpolator>();
     }
 
     public CameraManager Init(Player player, int playerCount)
     {
         m_player = player;
 
-        m_tInterpolator = GetComponent<TransformInterpolator>();
-
         m_cam.rect = GetSplitscreen(player.PlayerNum, playerCount);
 
-        PostProcessingBehaviour post = m_cam.GetComponent<PostProcessingBehaviour>();
-        PostProcessingProfile profile = Instantiate(post.profile);
-
-        profile.motionBlur.enabled = SettingManager.Instance.UseMotionBlur.Value;
-
-        int aaVal = SettingManager.Instance.AA.Value;
-        if (aaVal < 2)
-        {
-            profile.antialiasing.enabled = true;
-            AntialiasingModel.Settings aa = profile.antialiasing.settings;
-            aa.method = (aaVal == 0) ? AntialiasingModel.Method.Taa : AntialiasingModel.Method.Fxaa;
-            profile.antialiasing.settings = aa;
-        }
-        else
-        {
-            profile.antialiasing.enabled = false;
-        }
-        post.profile = profile;
+        SettingManager.Instance.ConfigureCamera(m_cam, true);
         
         transform.position = GetPosTarget();
         transform.rotation = GetRotTarget();
@@ -70,7 +50,7 @@ public class CameraManager : MonoBehaviour
             transform.rotation = GetRotTarget();
         }
     }
-
+    
     private Vector3 GetPosTarget()
     {
         Vector3 forwardLook = m_player.transform.forward;

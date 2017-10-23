@@ -53,6 +53,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_clearCameraPrefab: {fileID: 20152883271897542, guid: 7285fc462a99be14cada1308b91a9c9d,
     type: 2}
+  m_cameraRigPrefab: {fileID: 114117289867158092, guid: 84fa99131d6c11c4fb8b535a6aee935c,
+    type: 2}
   m_raceMenuPrefab: {fileID: 114856836458412740, guid: 6d43815a00386be4dbea0fb5064d975d,
     type: 2}
   m_playerPrefab: {fileID: 114948392826785060, guid: 3d680dfc5c2d78245a2014838b7209fd,

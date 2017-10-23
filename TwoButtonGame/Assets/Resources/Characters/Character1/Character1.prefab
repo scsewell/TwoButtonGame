@@ -4808,6 +4808,10 @@ MonoBehaviour:
   m_velocitySmoothing: 0.335
   m_boostSmoothing: 0.125
   m_idleVelThresh: 2
+  m_lookClamp: 42.5
+  m_lookSmoothing: 0.25
+  m_lookUpScale: 0.16
+  m_lookDownScale: 0.33
 --- !u!137 &137364885047586638
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 1
@@ -5238,11 +5242,11 @@ LODGroup:
   m_FadeMode: 0
   m_AnimateCrossFading: 0
   m_LODs:
-  - screenRelativeHeight: 0.08273922
+  - screenRelativeHeight: 0.044101503
     fadeTransitionWidth: 0
     renderers:
     - renderer: {fileID: 137364885047586638}
-  - screenRelativeHeight: 0.0010964995
+  - screenRelativeHeight: 0.0005347007
     fadeTransitionWidth: 0
     renderers:
     - renderer: {fileID: 137955910274563368}

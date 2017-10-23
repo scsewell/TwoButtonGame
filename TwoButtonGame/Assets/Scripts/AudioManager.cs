@@ -1,12 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using Framework;
 
 public class AudioManager : ComponentSingleton<AudioManager>
 {
-    private AudioSource m_audio;
-
     private float m_volume = 1.0f;
     public float Volume
     {
@@ -16,12 +12,6 @@ public class AudioManager : ComponentSingleton<AudioManager>
             m_volume = Mathf.Clamp01(value);
         }
     }
-
-    private AudioSource[] m_musicSources;
-    private int m_lastMusicSource = 0;
-
-    private MusicParams m_musicParams;
-    private double m_lastLoopTime;
 
     private float m_musicVolume = 1.0f;
     public float MusicVolume
@@ -33,6 +23,20 @@ public class AudioManager : ComponentSingleton<AudioManager>
         }
     }
 
+    private bool m_musicPausable = false;
+    public bool MusicPausable
+    {
+        get { return m_musicPausable; }
+        set { m_musicPausable = value; }
+    }
+
+    private AudioSource m_audio;
+    private AudioSource m_noPauseAudio;
+    private AudioSource[] m_musicSources;
+    private int m_lastMusicSource = 0;
+    private MusicParams m_musicParams;
+    private double m_lastLoopTime;
+
     protected override void Awake()
     {
         base.Awake();
@@ -41,6 +45,10 @@ public class AudioManager : ComponentSingleton<AudioManager>
 
         m_audio = gameObject.AddComponent<AudioSource>();
         m_audio.playOnAwake = false;
+
+        m_noPauseAudio = gameObject.AddComponent<AudioSource>();
+        m_noPauseAudio.ignoreListenerPause = true;
+        m_noPauseAudio.playOnAwake = false;
 
         m_musicSources = new AudioSource[2];
         for (int i = 0; i < m_musicSources.Length; i++)
@@ -60,6 +68,11 @@ public class AudioManager : ComponentSingleton<AudioManager>
                 PlayMusicScheduled(nextLoopTime);
             }
         }
+        
+        for (int i = 0; i < m_musicSources.Length; i++)
+        {
+            m_musicSources[i].ignoreListenerPause = !m_musicPausable;
+        }
 
         for (int i = 0; i < m_musicSources.Length; i++)
         {
@@ -69,11 +82,18 @@ public class AudioManager : ComponentSingleton<AudioManager>
         AudioListener.volume = Volume * Mathf.Pow((SettingManager.Instance.MasterVolume.Value / 100.0f), 2.0f);
     }
 
-    public void PlaySound(AudioClip clip, float volume = 1)
+    public void PlaySound(AudioClip clip, float volume = 1, bool ignorePause = false)
     {
         if (clip != null && volume > 0)
         {
-            m_audio.PlayOneShot(clip, volume);
+            if (ignorePause)
+            {
+                m_noPauseAudio.PlayOneShot(clip, volume);
+            }
+            else
+            {
+                m_audio.PlayOneShot(clip, volume);
+            }
         }
     }
 

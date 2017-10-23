@@ -244,8 +244,6 @@ public class MainMenu : Menu
 
     private void UpdatePlayerSelect()
     {
-        int players = m_playerSelectPanels.Count(p => p.IsJoined);
-
         int playerNum = 0;
         for (int i = 0; i < 4; i++)
         {

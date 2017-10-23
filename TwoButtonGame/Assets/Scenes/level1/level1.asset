@@ -14,4 +14,12 @@ MonoBehaviour:
   m_name: Test Level
   m_preview: {fileID: 21300000, guid: 9867f477b256dfa46b931b7e5499eab7, type: 3}
   m_sceneName: Scenes/level1/level1
-  m_music: {fileID: 11400000, guid: d1ae1707ec9c54e4ca295dbae670a74f, type: 2}
+  m_music: {fileID: 11400000, guid: 1599836063edb8542a5688e03e348cd8, type: 2}
+  m_musicDelay: 4
+  m_introSequence:
+  - m_clip: {fileID: 7400000, guid: c66d3a454e872c843852370b6217babd, type: 3}
+    m_speed: 1
+  - m_clip: {fileID: 7400004, guid: c66d3a454e872c843852370b6217babd, type: 3}
+    m_speed: 1.89
+  - m_clip: {fileID: 7400002, guid: c66d3a454e872c843852370b6217babd, type: 3}
+    m_speed: 0.74

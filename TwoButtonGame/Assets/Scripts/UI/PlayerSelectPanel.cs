@@ -171,11 +171,13 @@ public class PlayerSelectPanel : MonoBehaviour
             }
         }
 
-        Color bgCol = Color.Lerp(m_previewBgColor, Consts.PLAYER_COLORS[playerNum], m_previewBgColorFac);
+        Color playerCol = Color.Lerp(Consts.PLAYER_COLORS[playerNum], Color.white, 0.35f);
+
+        Color bgCol = Color.Lerp(m_previewBgColor, playerCol, m_previewBgColorFac);
         m_previewCam.backgroundColor = bgCol;
         
         m_playerName.text = "Player " + (playerNum + 1);
-        m_playerName.color = Consts.PLAYER_COLORS[playerNum];
+        m_playerName.color = playerCol;
 
         UpdateGraphics();
 
@@ -232,7 +234,7 @@ public class PlayerSelectPanel : MonoBehaviour
                     go.SetActive(go == previewObject);
                 }
                 float timeSinceSelect = Time.unscaledTime - m_selectTime;
-                float rotSpeed = Mathf.Lerp(0, m_rotateSpeed, 1 - (0.5f * Mathf.Cos(Mathf.PI * Mathf.Clamp01((timeSinceSelect - 1) / 4.0f)) + 0.5f));
+                float rotSpeed = Mathf.Lerp(0, m_rotateSpeed, 1 - (0.5f * Mathf.Cos(Mathf.PI * Mathf.Clamp01((timeSinceSelect - m_rotateWait) / 4.0f)) + 0.5f));
 
                 previewObject.transform.rotation *= Quaternion.Euler(0, rotSpeed * Time.unscaledDeltaTime, 0);
             }

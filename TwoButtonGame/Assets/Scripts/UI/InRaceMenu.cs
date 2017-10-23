@@ -5,29 +5,45 @@ using UnityEngine.UI;
 
 public class InRaceMenu : MonoBehaviour
 {
+    [Header("Audio")]
     [SerializeField] private AudioClip m_quit;
+    [SerializeField] [Range(0, 1)]
+    private float m_quitVolume = 1.0f;
+
     [SerializeField] private AudioClip m_pause;
+    [SerializeField] [Range(0, 1)]
+    private float m_pauseVolume = 1.0f;
+
     [SerializeField] private AudioClip m_resume;
+    [SerializeField] [Range(0, 1)]
+    private float m_resumeVolume = 1.0f;
+
     [SerializeField] private AudioClip m_confirm;
+    [SerializeField] [Range(0, 1)]
+    private float m_confirmVolume = 1.0f;
+
     [SerializeField] private AudioClip m_cancel;
-    
-    [SerializeField]
-    private Canvas m_playerUIParent;
+    [SerializeField] [Range(0, 1)]
+    private float m_cancelVolume = 1.0f;
     
     [Header("Fade")]
     [SerializeField]
     private Image m_fade;
-    [SerializeField] [Range(0, 10)]
-    private float m_finishWait = 1;
-    [SerializeField] [Range(0, 5)]
-    private float m_finishFadeInTime = 0.5f;
 
     [Header("Menu")]
     [SerializeField] private Canvas m_menu;
     [SerializeField] private Text m_title;
     [SerializeField] private ControlPanel m_menuControls1;
     [SerializeField] private ControlPanel m_menuControls2;
-    
+    [SerializeField] [Range(0, 10)]
+    private float m_finishWait = 1;
+    [SerializeField] [Range(0, 5)]
+    private float m_finishFadeInTime = 0.5f;
+
+    [Header("Other")]
+    [SerializeField]
+    private Canvas m_playerUIParent;
+
     private List<PlayerUI> m_playerUIs = new List<PlayerUI>();
     private CanvasGroup m_menuGroup;
     private List<KeyCode> m_pauseKeys;
@@ -71,11 +87,16 @@ public class InRaceMenu : MonoBehaviour
         m_playerUIs.Add(playerUI);
     }
 
-    public void UpdateUI(RaceManager raceManager, bool isPaused, bool isFinished, bool isQuitting)
+    public void UpdateUI(RaceManager raceManager, bool showPlayerUI, bool isPaused, bool isFinished, bool isQuitting, float fade)
     {
-        foreach (PlayerUI ui in m_playerUIs)
+        m_playerUIParent.enabled = showPlayerUI;
+
+        if (m_playerUIParent.enabled)
         {
-            ui.UpdateUI();
+            foreach (PlayerUI ui in m_playerUIs)
+            {
+                ui.UpdateUI();
+            }
         }
 
         m_menu.enabled = (isPaused || isFinished) && !isQuitting;
@@ -85,7 +106,7 @@ public class InRaceMenu : MonoBehaviour
             m_menuGroup.alpha = Mathf.Clamp01((Time.unscaledTime - (m_finishTime + m_finishWait)) / m_finishFadeInTime);
         }
 
-        m_fade.color = new Color(0, 0, 0, raceManager.FadeFac);
+        m_fade.color = new Color(0, 0, 0, fade);
 
         bool resume = m_resumeKeys.Any(k => Input.GetKeyDown(k));
         bool pause = m_pauseKeys.Any(k => Input.GetKeyDown(k));
@@ -111,7 +132,7 @@ public class InRaceMenu : MonoBehaviour
                     else if (quit)
                     {
                         m_confirmAction = true;
-                        AudioManager.Instance.PlaySound(m_confirm);
+                        AudioManager.Instance.PlaySound(m_confirm, m_confirmVolume, true);
                     }
                 }
                 else
@@ -123,7 +144,7 @@ public class InRaceMenu : MonoBehaviour
                     else if (cancel)
                     {
                         m_confirmAction = false;
-                        AudioManager.Instance.PlaySound(m_cancel);
+                        AudioManager.Instance.PlaySound(m_cancel, m_cancelVolume, true);
                     }
                 }
             }
@@ -158,18 +179,18 @@ public class InRaceMenu : MonoBehaviour
 
     private void Quit(RaceManager raceManager)
     {
-        AudioManager.Instance.PlaySound(m_quit);
+        AudioManager.Instance.PlaySound(m_quit, m_quitVolume, true);
         raceManager.Quit();
     }
 
     public void OnPause()
     {
-        AudioManager.Instance.PlaySound(m_pause);
+        AudioManager.Instance.PlaySound(m_pause, m_pauseVolume, true);
     }
 
     public void OnResume()
     {
-        AudioManager.Instance.PlaySound(m_resume);
+        AudioManager.Instance.PlaySound(m_resume, m_resumeVolume, true);
     }
 
     public void OnFinish()

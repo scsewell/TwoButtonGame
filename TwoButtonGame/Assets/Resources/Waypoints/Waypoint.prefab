@@ -93,6 +93,7 @@ GameObject:
   - component: {fileID: 4610928109446106}
   - component: {fileID: 65548671307394308}
   - component: {fileID: 114159406902019412}
+  - component: {fileID: 114739798852480076}
   m_Layer: 0
   m_Name: Waypoint
   m_TagString: Untagged
@@ -120,7 +121,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1792430716084218}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -18, y: 38, z: 20}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4744165606980318}
@@ -178,6 +179,7 @@ MeshRenderer:
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
@@ -193,6 +195,7 @@ MeshRenderer:
   m_PreserveUVs: 1
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
+  m_StitchLightmapSeams: 0
   m_SelectedEditorRenderState: 3
   m_MinimumChartSize: 4
   m_AutoUVMaxDistance: 0.5
@@ -210,6 +213,7 @@ MeshRenderer:
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
@@ -225,6 +229,7 @@ MeshRenderer:
   m_PreserveUVs: 1
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
+  m_StitchLightmapSeams: 0
   m_SelectedEditorRenderState: 3
   m_MinimumChartSize: 4
   m_AutoUVMaxDistance: 0.5
@@ -242,6 +247,7 @@ MeshRenderer:
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
@@ -257,6 +263,7 @@ MeshRenderer:
   m_PreserveUVs: 1
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
+  m_StitchLightmapSeams: 0
   m_SelectedEditorRenderState: 3
   m_MinimumChartSize: 4
   m_AutoUVMaxDistance: 0.5
@@ -274,6 +281,7 @@ MeshRenderer:
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
@@ -289,6 +297,7 @@ MeshRenderer:
   m_PreserveUVs: 1
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
+  m_StitchLightmapSeams: 0
   m_SelectedEditorRenderState: 3
   m_MinimumChartSize: 4
   m_AutoUVMaxDistance: 0.5
@@ -343,7 +352,7 @@ BoxCollider:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1657516116197096}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: 378a5c1cd7985f0428c6c2ecf1bb2bd9, type: 2}
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
@@ -355,7 +364,7 @@ BoxCollider:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1172553129508076}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: 378a5c1cd7985f0428c6c2ecf1bb2bd9, type: 2}
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
@@ -367,7 +376,7 @@ BoxCollider:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1195336766377504}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: 378a5c1cd7985f0428c6c2ecf1bb2bd9, type: 2}
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
@@ -379,7 +388,7 @@ BoxCollider:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1649335505494488}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: 378a5c1cd7985f0428c6c2ecf1bb2bd9, type: 2}
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
@@ -396,3 +405,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f36e248bc54c82141b057e8994ba0bbd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_glowMaterialIndex: -1
+  m_glowIntensity: 1.75
+  m_glowChangeTime: 0.5
+  m_bobIntensity: 0.04
+  m_bobFrequency: 0.15
+  m_bobFrequencyVariance: 0.1
+--- !u!114 &114739798852480076
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1792430716084218}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 71352e4032e959f4cb1a045bf61a29ce, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  useThresholds: 1
+  m_postionThreshold: 0.01
+  m_rotationThreshold: 0.1
+  m_scaleThreshold: 0.001

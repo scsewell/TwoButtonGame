@@ -1,9 +1,14 @@
 ### To Do ###
 Player Models (one fatty, one floating boosters fancy tech, robot, one other other race?, really abstract?)
 Test levels
+Music can play while paused during intro, while that behavior is only really wanted during race
+pause player updates once , unpause snaps camera a little one out of 5 or so times
+Make 2nd next gate white or so
+Level Intro Music
 Handle level bounds
 
-Waypoint Gates (with parts that glow when the next gate for each player) (mulitple shapes)
+Waypoint Gates (mulitple shapes and sizes)
+Start / finish line gates
 Boost gates
 Moving gates
 Wind / wind turbines
@@ -18,17 +23,17 @@ Player finish line sounds
 Make motion feel fast (radial speed blur, etc)
 
 Ready up anim
-Level preview camera shots (In menu as well?)
+Level preview camera shots in menu as well?
 How to Play
 Ensure music is credited
 
 ### Bugs and stuff ###
-Outline is very expensive on player time
+Outline is very expensive on UI, especially the player time...
+Camera can clip with the gates, perhaps use a fading material when close?
 
 ### Maybe ###
-Camera angles vertically towards next waypoint
 Input selection
-Player n is nth joiner
+Player n is nth joiner (But what about if 1st player leaves?)
 Leaderboard
 Replays / Ghosting
 

@@ -5,6 +5,7 @@ using UnityEngine;
 public class RaceManager : MonoBehaviour
 {
     [SerializeField] private Camera m_clearCameraPrefab;
+    [SerializeField] private CameraRig m_cameraRigPrefab;
     [SerializeField] private InRaceMenu m_raceMenuPrefab;
     [SerializeField] private Player m_playerPrefab;
     [SerializeField] private CameraManager m_playerCameraPrefab;
@@ -17,10 +18,7 @@ public class RaceManager : MonoBehaviour
     
     [SerializeField] [Range(0, 10)]
     private int m_countdownDuration = 5;
-
-    [SerializeField] [Range(0, 2)]
-    private float m_musicDelay = 1.0f;
-
+    
     [SerializeField] private AudioClip m_countdownSound;
     [SerializeField] private AudioClip m_goSound;
 
@@ -30,13 +28,19 @@ public class RaceManager : MonoBehaviour
     private RacePath m_racePath;
     public RacePath RacePath { get { return m_racePath; } }
 
-    private RaceParameters m_raceParams;
     private InRaceMenu m_raceMenu;
+    private CameraRig m_cameraRig;
+    private RaceParameters m_raceParams;
     private AsyncOperation m_loading;
+    private float m_raceLoadTime;
+    private float m_introEndTime;
     private float m_raceStartTime;
-    private float m_fadeStartTime;
+    private float m_quitStartTime;
     private int m_countdownSecond;
     private bool m_musicStarted = false;
+    private float m_fadeFac = 1;
+
+    private Dictionary<Player, int> m_playerRanks = new Dictionary<Player, int>();
 
     public float CountdownTime
     {
@@ -44,9 +48,6 @@ public class RaceManager : MonoBehaviour
     }
 
     public int PlayerCount { get { return m_players.Count; } }
-
-    private float m_fadeFac = 1;
-    public float FadeFac { get { return m_fadeFac; } }
 
     private enum State
     {
@@ -56,23 +57,28 @@ public class RaceManager : MonoBehaviour
     }
 
     private State m_state = State.Racing;
-
-
+    
     public void Pause()
     {
-        if (m_state == State.Racing)
+        switch (m_state)
         {
-            m_state = State.Paused;
-            m_raceMenu.OnPause();
+            case State.Racing:
+                m_state = State.Paused;
+                AudioListener.pause = true;
+                m_raceMenu.OnPause();
+                break;
         }
     }
 
     public void Resume()
     {
-        if (m_state == State.Paused)
+        switch (m_state)
         {
-            m_state = State.Racing;
-            m_raceMenu.OnResume();
+            case State.Paused:
+                m_state = State.Racing;
+                AudioListener.pause = false;
+                m_raceMenu.OnResume();
+                break;
         }
     }
 
@@ -112,6 +118,7 @@ public class RaceManager : MonoBehaviour
             m_players.Add(player);
 
             CameraManager camera = Instantiate(m_playerCameraPrefab).Init(player, playerCount);
+            camera.Camera.enabled = false;
             m_cameras.Add(camera);
 
             PlayerUI ui = Instantiate(m_playerUIPrefab);
@@ -119,7 +126,12 @@ public class RaceManager : MonoBehaviour
             ui.Init(player, camera, playerCount);
         }
 
-        m_raceStartTime = Time.time + m_countdownDuration + m_fadeInTime;
+        m_cameraRig = Instantiate(m_cameraRigPrefab).Init(raceParams.LevelConfig);
+        m_cameraRig.PlayIntroSequence();
+
+        m_raceLoadTime = Time.time;
+        m_introEndTime = m_raceLoadTime + m_cameraRig.GetIntroSequenceLength();
+        m_raceStartTime = m_introEndTime + m_countdownDuration + m_fadeInTime;
     }
 
     public void FixedUpdateRace()
@@ -128,6 +140,16 @@ public class RaceManager : MonoBehaviour
         {
             m_players.ForEach(p => p.MainUpdate(m_state == State.Racing && CountdownTime <= 0));
             m_cameras.ForEach(c => c.MainUpdate());
+
+            foreach (Player player in m_players)
+            {
+                m_playerRanks[player] = m_players.Count(p => p != player && (
+                    (p.IsFinished && player.IsFinished && p.FinishTime < player.FinishTime) ||
+                    !player.IsFinished && (
+                    (p.WaypointsCompleted > player.WaypointsCompleted) ||
+                    (p.WaypointsCompleted == player.WaypointsCompleted && Vector3.Distance(p.CurrentWaypoint.Position, p.transform.position) < Vector3.Distance(player.CurrentWaypoint.Position, player.transform.position))
+                    ))) + 1;
+            }
         }
 
         if (m_state != State.Finished && m_players.All(p => p.IsFinished))
@@ -139,7 +161,7 @@ public class RaceManager : MonoBehaviour
 
     public void UpdateRace()
     {
-        m_fadeFac = GetFadeFactor();
+        m_fadeFac = GetFadeFactor(false);
 
         if (m_loading != null)
         {
@@ -150,12 +172,10 @@ public class RaceManager : MonoBehaviour
         }
         else
         {
-            m_fadeStartTime = Time.unscaledTime;
+            m_quitStartTime = Time.unscaledTime;
         }
-
-        AudioManager.Instance.Volume = Mathf.MoveTowards(AudioManager.Instance.Volume, 1 - FadeFac, Time.unscaledDeltaTime / 0.5f);
-
-        if (!m_musicStarted && CountdownTime < -m_musicDelay)
+        
+        if (!m_musicStarted && Time.time - m_raceLoadTime > m_raceParams.LevelConfig.MusicDelay)
         {
             MusicParams music = m_raceParams.LevelConfig.Music;
             if (music != null)
@@ -165,8 +185,9 @@ public class RaceManager : MonoBehaviour
             m_musicStarted = true;
         }
 
-        m_raceMenu.UpdateUI(this, m_state == State.Paused, m_state == State.Finished, m_loading != null);
-
+        AudioManager.Instance.MusicPausable = (Time.time - m_raceStartTime < 0);
+        AudioManager.Instance.Volume = Mathf.MoveTowards(AudioManager.Instance.Volume, 1 - GetFadeFactor(true), Time.unscaledDeltaTime / 0.5f);
+        
         Time.timeScale = (m_state == State.Paused) ? 0 : 1;
 
         int countdownSecond = Mathf.CeilToInt(CountdownTime);
@@ -177,19 +198,34 @@ public class RaceManager : MonoBehaviour
         m_countdownSecond = countdownSecond;
     }
 
-    private float GetFadeFactor()
+    public void LateUpdateRace()
     {
-        float fadeFac = 1 - Mathf.Clamp01((Time.time - (m_raceStartTime - (m_countdownDuration + m_fadeInTime))) / m_fadeInTime);
-        if (m_state == State.Paused)
+        m_cameras.ForEach(c => c.Camera.enabled = !m_cameraRig.IsPlaying);
+        m_raceMenu.UpdateUI(this, !m_cameraRig.IsPlaying, m_state == State.Paused, m_state == State.Finished, m_loading != null, m_fadeFac);
+    }
+
+    private float GetFadeFactor(bool audio)
+    {
+        float fadeFac = 0;
+
+        fadeFac = Mathf.Lerp(fadeFac, 1, 1 - Mathf.Clamp01(Mathf.Abs(Time.time - m_raceLoadTime) / m_fadeInTime));
+
+        if (!audio)
         {
-            fadeFac = Mathf.Lerp(fadeFac, 1, 0.5f);
+            fadeFac = Mathf.Lerp(fadeFac, 1, 1 - Mathf.Clamp01(Mathf.Abs(Time.time - m_introEndTime) / m_fadeInTime));
         }
+        
         if (m_loading != null)
         {
-            float quitFade = Mathf.Clamp01((Time.unscaledTime - m_fadeStartTime) / m_fadeOutTime);
-            fadeFac = Mathf.Lerp(fadeFac, 1, quitFade);
+            fadeFac = Mathf.Lerp(fadeFac, 1, Mathf.Clamp01((Time.unscaledTime - m_quitStartTime) / m_fadeOutTime));
         }
-        return Mathf.Sin((Mathf.PI / 2) * fadeFac);
+
+        if (m_state == State.Paused)
+        {
+            fadeFac = Mathf.Lerp(fadeFac, 1, 0.65f);
+        }
+
+        return 1 - (0.5f * Mathf.Cos((Mathf.PI) * fadeFac) + 0.5f);
     }
 
     public float GetTimeSinceStart(float time)
@@ -199,11 +235,6 @@ public class RaceManager : MonoBehaviour
 
     public int GetPlayerRank(Player player)
     {
-        return m_players.Count(p => p != player && (
-            (p.IsFinished && player.IsFinished && p.FinishTime < player.FinishTime) ||
-            !player.IsFinished && (
-            (p.WaypointsCompleted > player.WaypointsCompleted) ||
-            (p.WaypointsCompleted == player.WaypointsCompleted && Vector3.Distance(p.CurrentWaypoint.Position, p.transform.position) < Vector3.Distance(player.CurrentWaypoint.Position, player.transform.position))
-            ))) + 1;
+        return m_playerRanks[player];
     }
 }
