@@ -1,9 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using Framework.Interpolation;
 
 [RequireComponent(typeof(MemeBoots))]
-[RequireComponent(typeof(PlayerAnimation))]
+[RequireComponent(typeof(TransformInterpolator))]
 public class Player : MonoBehaviour
 {
     private MemeBoots m_movement;

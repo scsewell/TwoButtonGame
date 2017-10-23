@@ -26,10 +26,6 @@ public class InRaceMenu : MonoBehaviour
     [SerializeField] [Range(0, 1)]
     private float m_cancelVolume = 1.0f;
     
-    [Header("Fade")]
-    [SerializeField]
-    private Image m_fade;
-
     [Header("Menu")]
     [SerializeField] private Canvas m_menu;
     [SerializeField] private Text m_title;
@@ -43,6 +39,8 @@ public class InRaceMenu : MonoBehaviour
     [Header("Other")]
     [SerializeField]
     private Canvas m_playerUIParent;
+    [SerializeField]
+    private Image m_fade;
 
     private List<PlayerUI> m_playerUIs = new List<PlayerUI>();
     private CanvasGroup m_menuGroup;

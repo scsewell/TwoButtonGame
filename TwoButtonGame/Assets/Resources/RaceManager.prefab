@@ -63,9 +63,9 @@ MonoBehaviour:
     type: 2}
   m_playerUIPrefab: {fileID: 114930604609040968, guid: 4da22fc9ba08a9d47aca094f2ed5ed80,
     type: 2}
-  m_fadeInTime: 0.75
-  m_fadeOutTime: 0.75
+  m_fadeInTime: 1.65
+  m_introFadeTime: 0.7
+  m_fadeOutTime: 0.85
   m_countdownDuration: 5
-  m_musicDelay: 1
   m_countdownSound: {fileID: 8300000, guid: 249b1823055eec542b9a26b915bdefce, type: 3}
   m_goSound: {fileID: 8300000, guid: 3bd94b4b8ec8a334b84134d52b6cab9c, type: 3}

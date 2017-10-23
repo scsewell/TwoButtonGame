@@ -11,9 +11,11 @@ public class RaceManager : MonoBehaviour
     [SerializeField] private CameraManager m_playerCameraPrefab;
     [SerializeField] private PlayerUI m_playerUIPrefab;
 
-    [SerializeField] [Range(0.1f, 5)]
+    [SerializeField] [Range(0.01f, 5)]
     private float m_fadeInTime = 1.0f;
-    [SerializeField] [Range(0.1f, 5)]
+    [SerializeField] [Range(0.01f, 5)]
+    private float m_introFadeTime = 0.5f;
+    [SerializeField] [Range(0.01f, 5)]
     private float m_fadeOutTime = 1.0f;
     
     [SerializeField] [Range(0, 10)]
@@ -65,6 +67,7 @@ public class RaceManager : MonoBehaviour
             case State.Racing:
                 m_state = State.Paused;
                 AudioListener.pause = true;
+                Time.timeScale = 0;
                 m_raceMenu.OnPause();
                 break;
         }
@@ -77,6 +80,7 @@ public class RaceManager : MonoBehaviour
             case State.Paused:
                 m_state = State.Racing;
                 AudioListener.pause = false;
+                Time.timeScale = 1;
                 m_raceMenu.OnResume();
                 break;
         }
@@ -184,12 +188,10 @@ public class RaceManager : MonoBehaviour
             }
             m_musicStarted = true;
         }
-
+        
         AudioManager.Instance.MusicPausable = (Time.time - m_raceStartTime < 0);
         AudioManager.Instance.Volume = Mathf.MoveTowards(AudioManager.Instance.Volume, 1 - GetFadeFactor(true), Time.unscaledDeltaTime / 0.5f);
         
-        Time.timeScale = (m_state == State.Paused) ? 0 : 1;
-
         int countdownSecond = Mathf.CeilToInt(CountdownTime);
         if (countdownSecond != m_countdownSecond && 0 <= countdownSecond && countdownSecond <= 3)
         {
@@ -212,7 +214,7 @@ public class RaceManager : MonoBehaviour
 
         if (!audio)
         {
-            fadeFac = Mathf.Lerp(fadeFac, 1, 1 - Mathf.Clamp01(Mathf.Abs(Time.time - m_introEndTime) / m_fadeInTime));
+            fadeFac = Mathf.Lerp(fadeFac, 1, 1 - Mathf.Clamp01(Mathf.Abs(Time.time - m_introEndTime) / m_introFadeTime));
         }
         
         if (m_loading != null)
