@@ -45,6 +45,7 @@ public class PlayerAnimation : MonoBehaviour
     private Material m_rightGlow;
     private Color m_emissionColor;
     private Quaternion m_headRotation;
+    private Vector3 m_velocity;
 
     private void Awake()
     {
@@ -60,9 +61,11 @@ public class PlayerAnimation : MonoBehaviour
         Vector3 localVel = movement.transform.InverseTransformVector(movement.Velocity);
         localVel = localVel.normalized * SmoothMin(m_velocityScale * Mathf.Log(localVel.magnitude + 1), 0.95f, 0.1f);
 
-        SetFloatSmooth("VelocityX", localVel.x, m_velocitySmoothing);
-        SetFloatSmooth("VelocityY", localVel.y, m_velocitySmoothing);
-        SetFloatSmooth("VelocityZ", localVel.z, m_velocitySmoothing);
+        m_velocity = Vector3.Lerp(m_velocity, localVel, 6.0f * Time.deltaTime);
+
+        SetFloatSmooth("VelocityX", m_velocity.x, m_velocitySmoothing);
+        SetFloatSmooth("VelocityY", m_velocity.y, m_velocitySmoothing);
+        SetFloatSmooth("VelocityZ", m_velocity.z, m_velocitySmoothing);
         
         float leftBoost = Mathf.Lerp(movement.LeftBoost ? 1 : 0, 2, movement.BoostFactor);
         float rightBoost = Mathf.Lerp(movement.RightBoost ? 1 : 0, 2, movement.BoostFactor);
