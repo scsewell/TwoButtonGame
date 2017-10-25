@@ -75,19 +75,22 @@ public class SettingManager : Singleton<SettingManager>
 
     public void Save()
     {
-#if UNITY_EDITOR || UNITY_STANDALONE
+#if (UNITY_EDITOR || UNITY_STANDALONE)
         FileIO.WriteFile(JsonConverter.ToJson(m_settings.Serialize()), FileIO.GetInstallDirectory(), "Settings.ini");
-#else
+#elif (!UNITY_WEBGL)
         PlayerPrefs.SetString("Settings", JsonConverter.ToJson(m_settings.Serialize()));
 #endif
     }
 
     public void Load()
     {
-#if UNITY_EDITOR || UNITY_STANDALONE
+#if (UNITY_EDITOR || UNITY_STANDALONE)
         string str = FileIO.ReadFile(FileIO.GetInstallDirectory(), "Settings.ini");
 #else
         string str = PlayerPrefs.GetString("Settings", null);
+#endif
+#if UNITY_WEBGL
+        str = null;
 #endif
         if (str == null || !m_settings.Deserialize(JsonConverter.FromJson<SerializableSettings>(str)))
         {

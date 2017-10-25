@@ -344,7 +344,7 @@ public class MainMenu : Menu
         if (m_playerSelectPanels.Any(p => p.IsReady))
         {
             PlayerInput input = m_playerSelectPanels.Where(p => p.IsReady).First().Input;
-            m_levelControls1.UpdateUI("Accept", input.Button1Name);
+            m_levelControls1.UpdateUI("Select", input.Button1Name);
             m_levelControls2.UpdateUI("Next", input.Button2Name);
             m_levelControls3.UpdateUI("Back", input.ButtonNames);
         }
@@ -384,7 +384,7 @@ public class MainMenu : Menu
         if (m_playerSelectPanels.Any(p => p.IsReady))
         {
             PlayerInput input = m_playerSelectPanels.Where(p => p.IsReady).First().Input;
-            m_lapControls1.UpdateUI("Accept", input.Button1Name);
+            m_lapControls1.UpdateUI("Race", input.Button1Name);
             m_lapControls2.UpdateUI("Change", input.Button2Name);
             m_lapControls3.UpdateUI("Back", input.ButtonNames);
         }

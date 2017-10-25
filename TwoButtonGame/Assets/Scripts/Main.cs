@@ -61,7 +61,6 @@ public class Main : ComponentSingleton<Main>
     public AsyncOperation LoadMainMenu()
     {
         AsyncOperation loading = SceneManager.LoadSceneAsync(0);
-        loading.allowSceneActivation = false;
 
         StartCoroutine(LoadLevel(loading, () => StartMainMenu()));
         return loading;
@@ -77,7 +76,6 @@ public class Main : ComponentSingleton<Main>
         m_raceParams = raceParams;
 
         AsyncOperation loading = SceneManager.LoadSceneAsync(raceParams.LevelConfig.SceneName);
-        loading.allowSceneActivation = false;
 
         StartCoroutine(LoadLevel(loading, () => StartRace(raceParams)));
         return loading;
@@ -91,6 +89,7 @@ public class Main : ComponentSingleton<Main>
 
     private IEnumerator LoadLevel(AsyncOperation loading, Action onComplete)
     {
+        loading.allowSceneActivation = false;
         yield return new WaitWhile(() => !loading.allowSceneActivation);
         AudioListener.volume = 0;
         AudioListener.pause = false;

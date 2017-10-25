@@ -73,7 +73,6 @@ public class PlayerAnimation : MonoBehaviour
         m_anim.SetBool("IsFlying", !(movement.IsGrounded && movement.Velocity.magnitude < m_idleVelThresh));
 
         float noiseTime = m_boostGlowNoiseFrequency * Time.time;
-        float noiseScale = m_boostGlow * m_boostGlowNoiseStrength;
 
         float leftNoiseFac = Mathf.LerpUnclamped(leftBoost, 0, m_boostGlowNoiseStrength * Mathf.PerlinNoise(noiseTime, 0.25f));
         float rightNoiseFac = Mathf.LerpUnclamped(rightBoost, 0, m_boostGlowNoiseStrength * Mathf.PerlinNoise(noiseTime, 0.75f));

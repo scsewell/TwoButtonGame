@@ -7,19 +7,22 @@ public class RacePathEditor : Editor
 {
     private RacePath m_racePath;
     private SerializedProperty m_path;
+    private SerializedProperty m_spawns;
 
     private void OnEnable()
     {
         m_racePath = (RacePath)target;
         m_path = serializedObject.FindProperty("m_path");
+        m_spawns = serializedObject.FindProperty("m_spawns");
     }
 
     public override void OnInspectorGUI()
     {
-        base.OnInspectorGUI();
-
         serializedObject.Update();
+
         EditorExtentions.DrawList(m_path);
+        EditorExtentions.DrawList(m_spawns);
+
         serializedObject.ApplyModifiedProperties();
     }
 
@@ -43,7 +46,6 @@ public class RacePathEditor : Editor
                 Vector3 EndPos = end.Position;
 
                 Handles.color = Color.yellow;
-                Handles.DrawLine(startPos, EndPos);
 
                 if ((EndPos - startPos).magnitude > 0.5f)
                 {

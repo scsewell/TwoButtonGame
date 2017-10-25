@@ -209,7 +209,7 @@ public class PlayerSelectPanel : MonoBehaviour
                     m_controls2.SetActive(true);
                     m_controls2.UpdateUI("Next", m_input.Button2Name);
                     m_controls3.SetActive(true);
-                    m_controls3.UpdateUI("Ready", m_input.Button1Name);
+                    m_controls3.UpdateUI("Select", m_input.Button1Name);
                     break;
                 case State.Ready:
                     m_controls1.SetActive(true);

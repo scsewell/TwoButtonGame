@@ -7,6 +7,7 @@ public class Player : MonoBehaviour
 {
     private MemeBoots m_movement;
     private PlayerAnimation m_animation;
+    private RacePath m_racePath;
 
     private int m_playerNum = -1;
     public int PlayerNum { get { return m_playerNum; } }
@@ -19,8 +20,6 @@ public class Player : MonoBehaviour
 
     private float m_finishTime = float.MaxValue;
     public float FinishTime { get { return m_finishTime; } }
-
-    private RacePath m_racePath;
 
     public Waypoint NextWaypoint
     {
@@ -37,13 +36,15 @@ public class Player : MonoBehaviour
         m_movement = GetComponentInChildren<MemeBoots>();
     }
 
-    public void Init(int playerNum, PlayerInput input, PlayerConfig config)
+    public Player Init(int playerNum, PlayerInput input, PlayerConfig config)
     {
         m_playerNum = playerNum;
         
         m_racePath = Main.Instance.RaceManager.RacePath;
 
         m_movement.Init(input, config);
+
+        return this;
     }
 
     public void FixedUpdatePlayer(bool canAcceptInput)

@@ -64,6 +64,31 @@ public class RacePath : MonoBehaviour
 
     private void OnDrawGizmos()
     {
+        for (int i = 0; i < m_spawns.Length; i++)
+        {
+            Transform spawn = m_spawns[i];
+            
+            if (spawn == null)
+            {
+                continue;
+            }
+            
+            Gizmos.color = Consts.PLAYER_COLORS[i];
+
+            Gizmos.matrix = spawn.localToWorldMatrix;
+            Gizmos.DrawWireCube(Vector3.zero, new Vector3(1.5f, 2, 1.5f));
+            Gizmos.matrix = Matrix4x4.identity;
+
+            if (m_path.Length > 0)
+            {
+                Waypoint first = m_path[0];
+                if (first != null)
+                {
+                    Gizmos.DrawLine(spawn.position, first.Position);
+                }
+            }
+        }
+
         for (int i = 0; i < m_path.Length; i++)
         {
             Waypoint start = m_path[i];

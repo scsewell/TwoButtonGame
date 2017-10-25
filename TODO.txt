@@ -1,20 +1,25 @@
 ### To Do ###
 Player Models (one fatty, one floating boosters fancy tech, robot, one other other race?, really abstract?)
+Abilities and stuff
 
 Boost gates
 Start / finish line gates
 Moving gates (Gate thrusters that attatch to the side of existing gate models)
 Wind / wind turbines
 
-Abilities and stuff
-Handle level bounds (could done using a restoring force a little larger than the thrust force component going out of bounds)
-
-Levels (City, Sky, Desert, Factory, Arctic)
-
 Checkpoint sound
 Collision sound
 Player movement/action sounds
 Player finish line sounds
+
+Levels
+	City
+	Sky
+	Desert - sandstorms
+	Factory
+	Arctic - ice caves
+	Volano
+Handle level bounds (could done using a restoring force a little larger than the thrust force component going out of bound, visual effect or notification)
 
 Make motion feel fast (radial speed blur, etc)
 
@@ -26,6 +31,7 @@ Ensure music is credited
 ### Bugs and stuff ###
 Outline is very expensive on UI, especially the player time...
 Camera can clip with the gates, perhaps use a fading material when close?
+Can occasionally pass through gates?
 
 ### Maybe ###
 Input selection
