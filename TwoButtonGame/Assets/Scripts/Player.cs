@@ -61,6 +61,8 @@ public class Player : MonoBehaviour
 
     public void UpdatePlayer()
     {
+        m_movement.UpdateMovement();
+
         if (m_animation == null)
         {
             m_animation = GetComponentInChildren<PlayerAnimation>();

@@ -125,20 +125,12 @@ public class PlayerSelectPanel : MonoBehaviour
     public void SetCameraActive(bool isActive)
     {
         m_previewCam.enabled = isActive;
-
-        if (!isActive)
-        {
-            foreach (GameObject go in m_previewObjects)
-            {
-                //go.SetActive(false);
-            }
-        }
     }
     
     public bool UpdatePanel(int playerNum, Menu menu)
     {
         m_continue = false;
-        if (m_input.Button1Up)
+        if (m_input.Button1Pressed)
         {
             switch (m_state)
             {
@@ -148,7 +140,7 @@ public class PlayerSelectPanel : MonoBehaviour
             }
         }
 
-        if (m_input.Button2Up)
+        if (m_input.Button2Pressed)
         {
             switch (m_state)
             {
@@ -193,7 +185,7 @@ public class PlayerSelectPanel : MonoBehaviour
 
         if (m_input != null)
         {
-            m_joinControls.UpdateUI("Join", m_input.Button1Name);
+            m_joinControls.UpdateUI("Join", m_input.Button1.Name);
 
             switch (m_state)
             {
@@ -207,9 +199,9 @@ public class PlayerSelectPanel : MonoBehaviour
                     m_controls1.SetActive(true);
                     m_controls1.UpdateUI("Leave", m_input.ButtonNames);
                     m_controls2.SetActive(true);
-                    m_controls2.UpdateUI("Next", m_input.Button2Name);
+                    m_controls2.UpdateUI("Next", m_input.Button2.Name);
                     m_controls3.SetActive(true);
-                    m_controls3.UpdateUI("Select", m_input.Button1Name);
+                    m_controls3.UpdateUI("Select", m_input.Button1.Name);
                     break;
                 case State.Ready:
                     m_controls1.SetActive(true);
@@ -252,7 +244,7 @@ public class PlayerSelectPanel : MonoBehaviour
         
         m_characterPreview.texture = m_previewTex;
         m_characterName.text = config.Name;
-        m_characterHighlight.color = new Color(1, 1, 1, Mathf.Lerp(m_characterHighlight.color.a, 0, Time.unscaledDeltaTime * 16f));
+        m_characterHighlight.color = new Color(1, 1, 1, Mathf.Lerp(m_characterHighlight.color.a, 0, Time.unscaledDeltaTime * 24f));
     }
 
     private void CreateTexture()

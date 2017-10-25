@@ -294,7 +294,7 @@ public class MainMenu : Menu
         {
             PlayerSelectPanel firstPlayer = m_playerSelectPanels.First(p => p.IsReady);
 
-            m_continueControls.UpdateUI("Continue", firstPlayer.Input.Button1Name);
+            m_continueControls.UpdateUI("Continue", firstPlayer.Input.Button1.Name);
 
             if (firstPlayer.Continue)
             {
@@ -314,11 +314,11 @@ public class MainMenu : Menu
         List<PlayerSelectPanel> readyPlayers = m_playerSelectPanels.Where(p => p.IsReady).ToList();
         PlayerInput input = readyPlayers.First().Input;
 
-        if (input.Button1Up)
+        if (input.Button1Pressed)
         {
             SetMenu(Menu.LapChoose);
         }
-        else if (input.Button2Up)
+        else if (input.Button2Pressed)
         {
             m_selectedLevel = (m_selectedLevel += 1) % m_levelConfigs.Length;
             m_lapCount = m_defaultLapCount;
@@ -339,13 +339,13 @@ public class MainMenu : Menu
         m_levelName.text = config.Name;
         m_levelDifficulty.text = config.LevelDifficulty.ToString();
         m_levelPreview.sprite = config.Preview;
-        m_levelHighlight.color = new Color(1, 1, 1, Mathf.Lerp(m_levelHighlight.color.a, 0, Time.unscaledDeltaTime * 16f));
+        m_levelHighlight.color = new Color(1, 1, 1, Mathf.Lerp(m_levelHighlight.color.a, 0, Time.unscaledDeltaTime * 24f));
 
         if (m_playerSelectPanels.Any(p => p.IsReady))
         {
             PlayerInput input = m_playerSelectPanels.Where(p => p.IsReady).First().Input;
-            m_levelControls1.UpdateUI("Select", input.Button1Name);
-            m_levelControls2.UpdateUI("Next", input.Button2Name);
+            m_levelControls1.UpdateUI("Select", input.Button1.Name);
+            m_levelControls2.UpdateUI("Next", input.Button2.Name);
             m_levelControls3.UpdateUI("Back", input.ButtonNames);
         }
     }
@@ -360,11 +360,11 @@ public class MainMenu : Menu
         List<PlayerSelectPanel> readyPlayers = m_playerSelectPanels.Where(p => p.IsReady).ToList();
         PlayerInput input = readyPlayers.First().Input;
 
-        if (input.Button1Up)
+        if (input.Button1Pressed)
         {
             LaunchRace();
         }
-        else if (input.Button2Up)
+        else if (input.Button2Pressed)
         {
             m_lapCount = Mathf.Max((m_lapCount += 1) % (m_maxLapCount + 1), 1);
             PlaySelectSound();
@@ -384,8 +384,8 @@ public class MainMenu : Menu
         if (m_playerSelectPanels.Any(p => p.IsReady))
         {
             PlayerInput input = m_playerSelectPanels.Where(p => p.IsReady).First().Input;
-            m_lapControls1.UpdateUI("Race", input.Button1Name);
-            m_lapControls2.UpdateUI("Change", input.Button2Name);
+            m_lapControls1.UpdateUI("Race", input.Button1.Name);
+            m_lapControls2.UpdateUI("Change", input.Button2.Name);
             m_lapControls3.UpdateUI("Back", input.ButtonNames);
         }
     }

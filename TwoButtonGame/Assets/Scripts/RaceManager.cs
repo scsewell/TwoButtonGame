@@ -72,39 +72,10 @@ public class RaceManager : MonoBehaviour
     }
 
     private State m_state = State.Racing;
-    
-    public void Pause()
-    {
-        switch (m_state)
-        {
-            case State.Racing:
-                m_state = State.Paused;
-                AudioListener.pause = true;
-                Time.timeScale = 0;
-                m_raceMenu.OnPause();
-                break;
-        }
-    }
 
-    public void Resume()
+    public bool InMenu
     {
-        switch (m_state)
-        {
-            case State.Paused:
-                m_state = State.Racing;
-                AudioListener.pause = false;
-                Time.timeScale = 1;
-                m_raceMenu.OnResume();
-                break;
-        }
-    }
-
-    public void Quit()
-    {
-        if (m_loading == null)
-        {
-            m_loading = Main.Instance.LoadMainMenu();
-        }
+        get { return m_state != State.Racing; }
     }
 
     public void StartRace(RaceParameters raceParams)
@@ -247,6 +218,40 @@ public class RaceManager : MonoBehaviour
         m_cameras.ForEach(c => c.Camera.enabled = !isInIntro);
 
         m_raceMenu.UpdateUI(this, !isInIntro, m_state == State.Paused, m_state == State.Finished, m_loading != null, m_fadeFac);
+    }
+
+    public void Pause()
+    {
+        switch (m_state)
+        {
+            case State.Racing:
+                m_state = State.Paused;
+                AudioListener.pause = true;
+                Time.timeScale = 0;
+                m_raceMenu.OnPause();
+                break;
+        }
+    }
+
+    public void Resume()
+    {
+        switch (m_state)
+        {
+            case State.Paused:
+                m_state = State.Racing;
+                AudioListener.pause = false;
+                Time.timeScale = 1;
+                m_raceMenu.OnResume();
+                break;
+        }
+    }
+
+    public void Quit()
+    {
+        if (m_loading == null)
+        {
+            m_loading = Main.Instance.LoadMainMenu();
+        }
     }
 
     private float GetFadeFactor(bool audio)

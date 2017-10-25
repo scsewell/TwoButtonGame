@@ -40,7 +40,7 @@ public class Main : ComponentSingleton<Main>
     private void Update()
     {
         InterpolationController.Instance.VisualUpdate();
-        InputManager.Instance.Update();
+        InputManager.Instance.Update(m_raceManager == null || m_raceManager.InMenu);
 
         if (m_raceManager != null)
         {
@@ -50,8 +50,6 @@ public class Main : ComponentSingleton<Main>
 
     private void LateUpdate()
     {
-        InputManager.Instance.LateUpdate();
-
         if (m_raceManager != null)
         {
             m_raceManager.LateUpdateRace();

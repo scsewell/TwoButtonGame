@@ -63,9 +63,9 @@ public class PlayerAnimation : MonoBehaviour
         SetFloatSmooth("VelocityX", localVel.x, m_velocitySmoothing);
         SetFloatSmooth("VelocityY", localVel.y, m_velocitySmoothing);
         SetFloatSmooth("VelocityZ", localVel.z, m_velocitySmoothing);
-
-        float leftBoost = movement.LeftBoost ? 1 : 0;
-        float rightBoost = movement.RightBoost ? 1 : 0;
+        
+        float leftBoost = Mathf.Lerp(movement.LeftBoost ? 1 : 0, 2, movement.BoostFactor);
+        float rightBoost = Mathf.Lerp(movement.RightBoost ? 1 : 0, 2, movement.BoostFactor);
 
         SetFloatSmooth("LeftBoost", leftBoost, m_boostSmoothing);
         SetFloatSmooth("RightBoost", rightBoost, m_boostSmoothing);
