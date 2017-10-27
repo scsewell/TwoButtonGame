@@ -68,7 +68,7 @@ public class MemeBoots : MonoBehaviour
         m_leftBoost = acceptInput ? m_input.Button2.IsDown : false;
         m_rightBoost = acceptInput ? m_input.Button1.IsDown : false;
 
-        if (m_doubleTap)
+        if (acceptInput && m_doubleTap)
         {
             m_doubleTap = false;
             float boostDuration = 0.6f;
