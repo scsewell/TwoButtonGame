@@ -105,4 +105,14 @@ public class MemeBoots : MonoBehaviour
         m_body.AddForce(force);
         m_body.AddTorque(Vector3.Cross(position - m_body.position, force));
     }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        BoostGate boostGate = other.GetComponent<BoostGate>();
+        if (boostGate != null)
+        {
+            m_boostDirection = (boostGate.Target != null) ? (boostGate.Target.position - transform.position).normalized : other.transform.forward;
+            m_boostEndTime = Mathf.Max(Time.time + boostGate.Duration, m_boostEndTime);
+        }
+    }
 }
