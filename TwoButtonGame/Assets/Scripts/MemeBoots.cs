@@ -76,7 +76,7 @@ public class MemeBoots : MonoBehaviour
             m_boostEndTime = Time.time + boostDuration;
         }
 
-        m_boostFactor = 1 - Mathf.Clamp01((Time.time - m_boostEndTime) / 0.5f);
+        m_boostFactor = 1 - Mathf.Clamp01((Time.time - m_boostEndTime) / 0.25f);
         
         m_body.AddForce(m_boostDirection * m_boostFactor * 65 * Time.deltaTime, ForceMode.Impulse);
         
@@ -108,7 +108,7 @@ public class MemeBoots : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        BoostGate boostGate = other.GetComponent<BoostGate>();
+        BoostGate boostGate = other.GetComponentInParent<BoostGate>();
         if (boostGate != null)
         {
             m_boostDirection = (boostGate.Target != null) ? (boostGate.Target.position - transform.position).normalized : other.transform.forward;

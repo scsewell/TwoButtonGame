@@ -9,7 +9,7 @@ Prefab:
     m_Modifications: []
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
-  m_RootGameObject: {fileID: 1855723000028214}
+  m_RootGameObject: {fileID: 1992442675813818}
   m_IsPrefabParent: 1
 --- !u!1 &1855723000028214
 GameObject:
@@ -23,8 +23,24 @@ GameObject:
   - component: {fileID: 23801410366886918}
   - component: {fileID: 64071235055883912}
   - component: {fileID: 64911734707487938}
-  - component: {fileID: 114754414299291028}
   - component: {fileID: 114713714745595008}
+  - component: {fileID: 114925435420650568}
+  m_Layer: 0
+  m_Name: Gate
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!1 &1992442675813818
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 4570669380357112}
+  - component: {fileID: 114754414299291028}
   m_Layer: 0
   m_Name: WaypointCirclS
   m_TagString: Untagged
@@ -38,10 +54,24 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1855723000028214}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 4570669380357112}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 10.604, y: 168.38301, z: -13.184001}
+--- !u!4 &4570669380357112
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1992442675813818}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 3.5, y: 3.5, z: 3.5}
-  m_Children: []
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 4457945097969370}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -136,16 +166,33 @@ MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1855723000028214}
+  m_GameObject: {fileID: 1992442675813818}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f36e248bc54c82141b057e8994ba0bbd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_gate: {fileID: 4457945097969370}
   m_glowMaterialIndex: 2
   m_nextGlowIntensity: 1.85
   m_secondNextGlowIntensity: 1.45
   m_glowChangeTime: 0.3
-  m_bobIntensity: 0.025
+  m_bobIntensity: 0.25
   m_bobFrequency: 0.175
   m_bobFrequencyVariance: 0.1
+  m_enableMovement: 0
+  m_path: []
+  m_cyclic: 0
+  m_flipDirection: 0
+  m_startOffset: 0
+--- !u!114 &114925435420650568
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1855723000028214}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d9c3fe07812109147af8d1e1863095bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

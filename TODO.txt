@@ -2,9 +2,9 @@
 Player Models (one fatty, one floating boosters fancy tech, robot, one other other race?, really abstract?)
 Abilities and stuff
 
-Boost gates
-Start / finish line gates
-Moving gates (Gate thrusters that attatch to the side of existing gate models)
+Boost gates - improve graphics
+Moving gates - Add rotation (Gate thrusters that attatch to the side of existing gate models)
+Start / finish line
 Wind / wind turbines
 
 Checkpoint sound

@@ -89,7 +89,7 @@ public class Player : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        Waypoint waypoint = other.GetComponent<Waypoint>();
+        Waypoint waypoint = other.GetComponentInParent<Waypoint>();
         if (waypoint == NextWaypoint)
         {
             m_waypointsCompleted++;
