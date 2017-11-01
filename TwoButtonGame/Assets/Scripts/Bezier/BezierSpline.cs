@@ -181,8 +181,14 @@ public class BezierSpline : MonoBehaviour
     private void Collapse(int index)
     {
         int pathIndex = ((index + 1) / 3) * 3;
-        m_points[(pathIndex - (m_loop && pathIndex == 0 ? 2 : 1) + m_points.Length) % m_points.Length] = m_points[pathIndex];
-        m_points[(pathIndex + (m_loop && pathIndex == m_points.Length - 1 ? 2 : 1)) % m_points.Length] = m_points[pathIndex];
+        if (m_loop || pathIndex > 0)
+        {
+            m_points[(pathIndex - (m_loop && pathIndex == 0 ? 2 : 1) + m_points.Length) % m_points.Length] = m_points[pathIndex];
+        }
+        if (m_loop || pathIndex < m_points.Length - 1)
+        {
+            m_points[(pathIndex + (m_loop && pathIndex == m_points.Length - 1 ? 2 : 1)) % m_points.Length] = m_points[pathIndex];
+        }
     }
 
     public bool IsUnusedHandle(int index)
@@ -385,7 +391,7 @@ public class BezierSpline : MonoBehaviour
 
             for (int i = 0; i < m_points.Length; i++)
             {
-                SetControlPoint(i, m_points[i]);
+                EnforceMode(i);
             }
         }
     }

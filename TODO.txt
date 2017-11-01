@@ -1,9 +1,11 @@
 ### To Do ###
 Player Models (one fatty, one floating boosters fancy tech, robot, one other other race?, really abstract?)
 Abilities and stuff
+boost lasts while keys held
 
 Boost gates - improve graphics
-Moving gates - Add rotation (Gate thrusters that attatch to the side of existing gate models)
+Moving gates - Add rotation, per edge weight (Gate thrusters that attatch to the side of existing gate models)
+
 Start / finish line
 Wind / wind turbines
 
