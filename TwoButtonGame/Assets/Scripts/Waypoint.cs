@@ -37,13 +37,19 @@ public class Waypoint : MonoBehaviour, OnWillRenderReceiver
     private bool m_flipDirection = false;
     [SerializeField] [Range(0, 1)]
     private float m_startOffset = 0;
+    [SerializeField] [Range(0.01f, 1)]
+    private float m_accelerationSmoothing = 0.135f;
 
     private RaceManager m_raceManager;
     private TransformInterpolator m_interpolator;
+    private GateEngine[] m_engines;
     private Material m_glowMat;
     private Dictionary<Player, float> m_playerToGlow = new Dictionary<Player, float>();
     private float m_bobCycleOffset;
     private float m_bobFreq;
+    private Vector3 m_lastPosition;
+    private Vector3 m_lastVelocity;
+    private Vector3 m_acceleration;
 
     public Vector3 Position
     {
@@ -52,26 +58,33 @@ public class Waypoint : MonoBehaviour, OnWillRenderReceiver
 
     private void Awake()
     {
-        Renderer renderer = GetComponentInChildren<Renderer>();
+        m_interpolator = m_gate.GetComponent<TransformInterpolator>();
+
+        Renderer renderer = m_gate.GetComponentInChildren<Renderer>();
         if (renderer != null && m_glowMaterialIndex >= 0)
         {
             m_glowMat = renderer.materials[m_glowMaterialIndex];
         }
+
+        m_engines = m_gate.GetComponentsInChildren<GateEngine>(true);
+
+        foreach (GateEngine engine in m_engines)
+        {
+            engine.gameObject.SetActive(m_path != null);
+        }
     }
 
-    private void Start()
+    public void Init()
     {
         m_bobCycleOffset = Random.value;
         m_bobFreq = m_bobFrequency * Random.Range(1 - m_bobFrequencyVariance, 1 + m_bobFrequencyVariance);
-
-        if (m_path != null && !m_path.Loop)
+        
+        if (m_path != null)
         {
-            m_wrapMode = WrapMode.PingPong;
+            m_gate.position = m_path.GetPointWithWaits(GetPathTime(), m_wrapMode);
+            m_lastPosition = m_gate.position;
         }
 
-        EvaluatePath(true);
-
-        m_interpolator = m_gate.GetComponent<TransformInterpolator>();
         if (m_interpolator != null)
         {
             m_interpolator.ForgetPreviousValues();
@@ -80,47 +93,40 @@ public class Waypoint : MonoBehaviour, OnWillRenderReceiver
 
     public void FixedUpdateWaypoint()
     {
-        EvaluatePath(true);
-    }
-
-    public void EvaluatePath(bool useBobbing)
-    {
         Vector3 pos = transform.position;
         Quaternion rot = transform.rotation;
 
         if (m_path != null)
         {
-            pos = m_path.GetPointWithWaits(GetPathTime(Time.time / m_duration), m_wrapMode);
+            pos = m_path.GetPointWithWaits(GetPathTime(), m_wrapMode);
+            
+            Vector3 velocity = (pos - m_lastPosition) / Time.deltaTime;
+            Vector3 acceleration = (velocity - m_lastVelocity) / Time.deltaTime;
+            m_acceleration = Vector3.Lerp(m_acceleration, acceleration, Time.deltaTime / m_accelerationSmoothing);
+            m_lastVelocity = velocity;
+            m_lastPosition = pos;
+
+            foreach (GateEngine engine in m_engines)
+            {
+                engine.UpdateEngine(m_acceleration);
+            }
         }
 
-        if (useBobbing)
-        {
-            pos.y += m_bobIntensity * Mathf.Sin((Time.time * m_bobFreq + m_bobCycleOffset) * (2 * Mathf.PI));
-        }
+        float time = Main.Instance.RaceManager.GetStartRelativeTime();
+        pos.y += m_bobIntensity * Mathf.Sin((time * m_bobFreq + m_bobCycleOffset) * (2 * Mathf.PI));
 
         m_gate.SetPositionAndRotation(pos, rot);
     }
 
-    private float GetPathTime(float time)
+    private float GetPathTime()
     {
-        float t = m_startOffset + (m_flipDirection ? -time : time);
-        return (m_wrapMode == WrapMode.PingPong) ? Mathf.PingPong(t, 1) : mod(t, 1);
-    }
-
-    private float mod(float x, float m)
-    {
-        float r = x % m;
-        return r < 0 ? r + m : r;
+        float t = Main.Instance.RaceManager.GetStartRelativeTime() / m_duration;
+        return m_startOffset + (m_flipDirection ? -t : t);
     }
 
     public void UpdateWaypoint()
     {
-        if (m_raceManager == null)
-        {
-            m_raceManager = Main.Instance.RaceManager;
-        }
-
-        foreach (Player player in m_raceManager.Players)
+        foreach (Player player in Main.Instance.RaceManager.Players)
         {
             float glowFac;
             if (!m_playerToGlow.TryGetValue(player, out glowFac))

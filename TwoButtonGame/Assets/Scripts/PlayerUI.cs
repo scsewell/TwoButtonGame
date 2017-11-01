@@ -126,7 +126,7 @@ public class PlayerUI : MonoBehaviour
         }
 
         // timer
-        float time = m_raceManager.GetTimeSinceStart(m_player.IsFinished ? m_player.FinishTime : Time.time);
+        float time = Mathf.Max(m_raceManager.GetStartRelativeTime(m_player.IsFinished ? m_player.FinishTime : Time.time), 0);
         int minutes = Mathf.FloorToInt(time / 60);
         int seconds = Mathf.FloorToInt(time - (minutes * 60));
         int milliseconds = Mathf.FloorToInt((time - seconds - (minutes * 60)) * 100);
@@ -178,7 +178,7 @@ public class PlayerUI : MonoBehaviour
         m_rankSubText.text = subText;
         m_finalRankSubText.text = subText;
 
-        if (rank != m_lastRank && m_raceManager.GetTimeSinceStart(Time.time) > 0)
+        if (rank != m_lastRank && m_raceManager.GetStartRelativeTime() > 0)
         {
             m_rankRect.localScale = 1.2f * Vector3.one;
         }

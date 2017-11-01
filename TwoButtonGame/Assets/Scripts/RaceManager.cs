@@ -278,9 +278,14 @@ public class RaceManager : MonoBehaviour
         return 1 - (0.5f * Mathf.Cos((Mathf.PI) * fadeFac) + 0.5f);
     }
 
-    public float GetTimeSinceStart(float time)
+    public float GetStartRelativeTime()
     {
-        return Mathf.Max(time - m_raceStartTime, 0);
+        return Time.time - m_raceStartTime;
+    }
+
+    public float GetStartRelativeTime(float time)
+    {
+        return time - m_raceStartTime;
     }
 
     public int GetPlayerRank(Player player)

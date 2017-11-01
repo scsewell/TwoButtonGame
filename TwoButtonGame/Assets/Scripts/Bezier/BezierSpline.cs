@@ -220,6 +220,13 @@ public class BezierSpline : MonoBehaviour
         return GetVelocity(time, i);
     }
 
+    public Vector3 GetAccelerationWithWaits(float t, WrapMode warpMode)
+    {
+        int i;
+        float time = GetCurveTimeWithWaits(t, warpMode, out i);
+        return GetAcceleration(time, i);
+    }
+
     public Vector3 GetPoint(float t)
     {
         int i;
@@ -234,8 +241,22 @@ public class BezierSpline : MonoBehaviour
         return GetVelocity(time, i);
     }
 
-    private float GetCurveTimeWithWaits(float t, WrapMode warpMode, out int i)
+    public Vector3 GetAcceleration(float t)
     {
+        int i;
+        float time = GetCurveTime(t, out i);
+        return GetAcceleration(time, i);
+    }
+
+    private float GetCurveTimeWithWaits(float t, WrapMode wrapMode, out int i)
+    {
+        if (!m_loop)
+        {
+            wrapMode = WrapMode.PingPong;
+        }
+
+        t = (wrapMode == WrapMode.PingPong) ? Mathf.PingPong(t, 1) : mod(t, 1);
+
         if (t >= 1)
         {
             i = m_points.Length - 4;
@@ -243,13 +264,13 @@ public class BezierSpline : MonoBehaviour
         }
         else
         {
-            bool loop = m_loop && warpMode == WrapMode.Loop;
+            bool loop = m_loop && wrapMode == WrapMode.Loop;
 
             float totalTime = m_waitTimes.Length - 1;
             int lastIndex = m_waitTimes.Length - (loop ? 2 : 1);
             for (int j = 0; j <= lastIndex; j++)
             {
-                if (warpMode == WrapMode.PingPong && (j == 0 || j == lastIndex))
+                if (wrapMode == WrapMode.PingPong && (j == 0 || j == lastIndex))
                 {
                     totalTime += m_waitTimes[0] / 2;
                 }
@@ -262,9 +283,9 @@ public class BezierSpline : MonoBehaviour
             float evaluationTime = Mathf.Clamp01(t) * totalTime;
             
             float segmentStartTime = 0;
-            float segmentEndTime = (warpMode == WrapMode.PingPong) ? m_waitTimes[0] / 2 : m_waitTimes[0];
+            float segmentEndTime = (wrapMode == WrapMode.PingPong) ? m_waitTimes[0] / 2 : m_waitTimes[0];
             i = 0;
-            
+
             while (segmentEndTime < evaluationTime)
             {
                 float segmentDuration = 1.0f;
@@ -282,19 +303,24 @@ public class BezierSpline : MonoBehaviour
                 if (!(loop && i == m_waitTimes.Length - 1))
                 {
                     segmentStartTime = segmentEndTime;
-                    segmentEndTime += (warpMode == WrapMode.PingPong && (i == m_waitTimes.Length - 1)) ? m_waitTimes[i] / 2 : m_waitTimes[i];
+                    segmentEndTime += (wrapMode == WrapMode.PingPong && (i == m_waitTimes.Length - 1)) ? m_waitTimes[i] / 2 : m_waitTimes[i];
                     
                     if (segmentEndTime >= evaluationTime)
                     {
                         if (i == m_waitTimes.Length - 1)
                         {
-                            i = 0;
+                            i = m_points.Length - 4;
+                            return 1;
                         }
-                        i *= 3;
-                        return 0;
+                        else
+                        {
+                            i *= 3;
+                            return 0;
+                        }
                     }
                 }
             }
+
             return 0;
         }
     }
@@ -316,6 +342,12 @@ public class BezierSpline : MonoBehaviour
         return t;
     }
 
+    private float mod(float x, float m)
+    {
+        float r = x % m;
+        return r < 0 ? r + m : r;
+    }
+
     private Vector3 GetPoint(float t, int i)
     {
         return transform.TransformPoint(Bezier.GetPoint(m_points[i], m_points[i + 1], m_points[i + 2], m_points[i + 3], t));
@@ -324,6 +356,11 @@ public class BezierSpline : MonoBehaviour
     private Vector3 GetVelocity(float t, int i)
     {
         return transform.TransformPoint(Bezier.GetFirstDerivative(m_points[i], m_points[i + 1], m_points[i + 2], m_points[i + 3], t)) - transform.position;
+    }
+
+    private Vector3 GetAcceleration(float t, int i)
+    {
+        return transform.TransformPoint(Bezier.GetSecondDerivative(m_points[i], m_points[i + 1], m_points[i + 2], m_points[i + 3], t)) - transform.position;
     }
 
     public void AddCurve()

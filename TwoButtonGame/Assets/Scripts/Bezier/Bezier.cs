@@ -14,6 +14,11 @@ public static class Bezier
         return (2f * (1f - t) * (p1 - p0)) + (2f * t * (p2 - p1));
     }
 
+    public static Vector3 GetSecondDerivative(Vector3 p0, Vector3 p1, Vector3 p2, float t)
+    {
+        return 2f * (p2 - (2 * p1) + p0);
+    }
+
     public static Vector3 GetPoint(Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3, float t)
     {
         t = Mathf.Clamp01(t);
@@ -33,5 +38,12 @@ public static class Bezier
             3f * oneMinusT * oneMinusT * (p1 - p0) +
             6f * oneMinusT * t * (p2 - p1) +
             3f * t * t * (p3 - p2);
+    }
+
+    public static Vector3 GetSecondDerivative(Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3, float t)
+    {
+        t = Mathf.Clamp01(t);
+        float oneMinusT = 1f - t;
+        return 6f * ((oneMinusT * (p2 - (2 * p1) + p0)) + (t * (p3 - (2 * p2) + p1)));
     }
 }

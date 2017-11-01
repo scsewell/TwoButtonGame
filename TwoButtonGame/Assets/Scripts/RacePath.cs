@@ -24,6 +24,12 @@ public class RacePath : MonoBehaviour
     public RacePath Init(int laps)
     {
         m_laps = laps;
+        
+        foreach (Waypoint waypoint in m_path)
+        {
+            waypoint.Init();
+        }
+
         return this;
     }
 
