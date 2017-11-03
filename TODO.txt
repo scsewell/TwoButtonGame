@@ -1,19 +1,18 @@
 ### To Do ###
-Player Models (one fatty, one floating boosters fancy tech, robot, one other other race?, really abstract?)
+Player Models (fatty, floating boosters fancy tech, robot, other race?, really abstract?)
 Abilities and stuff
 boost lasts while keys held
 Other player indicators with player num
-
-Boost gates - improve graphics
-Moving gates - Add rotation, per edge weight
-
-Start / finish line
-Wind / wind turbines
 
 Checkpoint sound
 Collision sound
 Player movement/action sounds
 Player finish line sounds
+
+Moving gates - Add rotation, per edge weight
+Boost gates - improve graphics
+Start / finish line
+Wind / wind turbines
 
 Levels
 	City
@@ -33,8 +32,7 @@ Ensure music is credited
 
 ### Bugs and stuff ###
 Outline is very expensive on UI, especially the player time...
-Camera can clip with the gates, perhaps use a fading material when close?
-Can occasionally pass through gates?
+Camera can clip with the gates, perhaps use a fading material when close...
 
 ### Maybe ###
 Input selection

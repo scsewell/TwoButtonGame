@@ -12,14 +12,15 @@ public class BezierSplineInspector : Editor
     private static Color[] MODE_COLORS =
     {
         Color.red,
-        Color.white,
-        Color.yellow,
         Color.cyan,
+        Color.yellow,
+        Color.magenta,
     };
 
     private BezierSpline m_spline;
     private Transform m_transform;
-    private int m_selectedIndex = -1;
+    private int m_selectedPoint = -1;
+    private int m_selectedEdge = -1;
 
     private void OnEnable()
     {
@@ -39,12 +40,19 @@ public class BezierSplineInspector : Editor
             EditorUtility.SetDirty(m_spline);
             SceneView.RepaintAll();
         }
+        EditorGUILayout.Space();
 
-        if (m_selectedIndex >= 0 && m_selectedIndex < m_spline.ControlPointCount)
+        if (m_selectedPoint >= 0 && m_selectedPoint < m_spline.ControlPointCount)
         {
             EditorGUILayout.Space();
-            EditorGUILayout.Space();
             DrawSelectedPointInspector();
+            EditorGUILayout.Space();
+        }
+
+        if (m_selectedEdge >= 0 && m_selectedEdge < m_spline.EdgeCount)
+        {
+            EditorGUILayout.Space();
+            DrawSelectedEdgeInspector();
             EditorGUILayout.Space();
         }
 
@@ -59,88 +67,119 @@ public class BezierSplineInspector : Editor
 
     private void DrawSelectedPointInspector()
     {
-        if (m_spline.IsUnusedHandle(m_selectedIndex))
+        if (m_spline.IsUnusedHandle(m_selectedPoint))
         {
-            m_selectedIndex = ((m_selectedIndex + 1) / 3) * 3;
+            m_selectedPoint = ((m_selectedPoint + 1) / 3) * 3;
             SceneView.RepaintAll();
         }
-        else if (m_spline.IsUnusedPoint(m_selectedIndex))
+        else if (m_spline.IsUnusedPoint(m_selectedPoint))
         {
-            m_selectedIndex = 0;
+            m_selectedPoint = 0;
             SceneView.RepaintAll();
         }
 
         GUILayout.BeginHorizontal();
         if (GUILayout.Button("Prev", EditorStyles.miniButton, GUILayout.MaxWidth(55)))
         {
-            SelectPrev();
-            while (m_spline.IsUnusedPoint(m_selectedIndex)) { SelectPrev(); }
+            SelectPrevPoint();
+            while (m_spline.IsUnusedPoint(m_selectedPoint)) { SelectPrevPoint(); }
             SceneView.RepaintAll();
         }
 
         Color col = EditorStyles.centeredGreyMiniLabel.normal.textColor;
         EditorStyles.centeredGreyMiniLabel.normal.textColor = Color.black;
-        GUILayout.Label("Selected Point: " + (m_selectedIndex + 1) + "/" + m_spline.ControlPointCount, EditorStyles.centeredGreyMiniLabel);
+        GUILayout.Label("Selected Point: " + (m_selectedPoint + 1) + "/" + m_spline.ControlPointCount, EditorStyles.centeredGreyMiniLabel);
         EditorStyles.centeredGreyMiniLabel.normal.textColor = col;
 
         if (GUILayout.Button("Next", EditorStyles.miniButton, GUILayout.MaxWidth(55)))
         {
-            SelectNext();
-            while (m_spline.IsUnusedPoint(m_selectedIndex)) { SelectNext(); }
+            SelectNextPoint();
+            while (m_spline.IsUnusedPoint(m_selectedPoint)) { SelectNextPoint(); }
             SceneView.RepaintAll();
         }
         GUILayout.EndHorizontal();
 
         EditorGUI.BeginChangeCheck();
-        Vector3 point = EditorGUILayout.Vector3Field("Position", m_spline.GetControlPoint(m_selectedIndex));
+        Vector3 point = EditorGUILayout.Vector3Field("Position", m_spline.GetControlPoint(m_selectedPoint));
         if (EditorGUI.EndChangeCheck())
         {
             Undo.RecordObject(m_spline, "Move Point");
-            m_spline.SetControlPoint(m_selectedIndex, point);
+            m_spline.SetControlPoint(m_selectedPoint, point);
             EditorUtility.SetDirty(m_spline);
         }
 
         EditorGUI.BeginChangeCheck();
-        float wait = EditorGUILayout.Slider("Wait Time", m_spline.GetWaitTime(m_selectedIndex), 0, 10);
+        float wait = EditorGUILayout.Slider("Wait Time", m_spline.GetWaitTime(m_selectedPoint), 0, 10);
         if (EditorGUI.EndChangeCheck())
         {
             Undo.RecordObject(m_spline, "Change Point Wait Time");
-            m_spline.SetWaitTime(m_selectedIndex, wait);
+            m_spline.SetWaitTime(m_selectedPoint, wait);
             EditorUtility.SetDirty(m_spline);
         }
 
         EditorGUI.BeginChangeCheck();
-        BezierControlPointMode mode = (BezierControlPointMode)EditorGUILayout.EnumPopup("Handle Mode", m_spline.GetControlPointMode(m_selectedIndex));
+        BezierControlPointMode mode = (BezierControlPointMode)EditorGUILayout.EnumPopup("Handle Mode", m_spline.GetControlPointMode(m_selectedPoint));
         if (EditorGUI.EndChangeCheck())
         {
             Undo.RecordObject(m_spline, "Change Point Mode");
-            m_spline.SetControlPointMode(m_selectedIndex, mode);
+            m_spline.SetControlPointMode(m_selectedPoint, mode);
             EditorUtility.SetDirty(m_spline);
         }
 
         if (GUILayout.Button("Collapse Handles"))
         {
             Undo.RecordObject(m_spline, "Collapse Curve Handles");
-            m_spline.CollapseHandles(m_selectedIndex);
+            m_spline.CollapseHandles(m_selectedPoint);
             EditorUtility.SetDirty(m_spline);
         }
 
         if (GUILayout.Button("Remove Point"))
         {
             Undo.RecordObject(m_spline, "Remove Curve Segment");
-            m_spline.RemoveCurve(m_selectedIndex);
+            m_spline.RemoveCurve(m_selectedPoint);
             EditorUtility.SetDirty(m_spline);
         }
     }
 
-    private void SelectPrev()
+    private void SelectPrevPoint()
     {
-        m_selectedIndex = ((m_selectedIndex - 1) + m_spline.ControlPointCount) % m_spline.ControlPointCount;
+        m_selectedPoint = ((m_selectedPoint - 1) + m_spline.ControlPointCount) % m_spline.ControlPointCount;
     }
 
-    private void SelectNext()
+    private void SelectNextPoint()
     {
-        m_selectedIndex = (m_selectedIndex + 1) % m_spline.ControlPointCount;
+        m_selectedPoint = (m_selectedPoint + 1) % m_spline.ControlPointCount;
+    }
+
+    private void DrawSelectedEdgeInspector()
+    {
+        GUILayout.BeginHorizontal();
+        if (GUILayout.Button("Prev", EditorStyles.miniButton, GUILayout.MaxWidth(55)))
+        {
+            m_selectedEdge = ((m_selectedEdge - 1) + m_spline.EdgeCount) % m_spline.EdgeCount;
+            SceneView.RepaintAll();
+        }
+
+        Color col = EditorStyles.centeredGreyMiniLabel.normal.textColor;
+        EditorStyles.centeredGreyMiniLabel.normal.textColor = Color.black;
+        GUILayout.Label("Selected Edge: " + (m_selectedEdge + 1) + "/" + m_spline.EdgeCount, EditorStyles.centeredGreyMiniLabel);
+        EditorStyles.centeredGreyMiniLabel.normal.textColor = col;
+
+        if (GUILayout.Button("Next", EditorStyles.miniButton, GUILayout.MaxWidth(55)))
+        {
+            m_selectedEdge = (m_selectedEdge + 1) % m_spline.EdgeCount;
+            SceneView.RepaintAll();
+        }
+        GUILayout.EndHorizontal();
+        
+        EditorGUI.BeginChangeCheck();
+        float duration = EditorGUILayout.Slider("Edge Duration", m_spline.GetEdgeTime(m_selectedEdge), 0, 10);
+        if (EditorGUI.EndChangeCheck())
+        {
+            Undo.RecordObject(m_spline, "Change Edge Duration");
+            m_spline.SetEdgeTime(m_selectedEdge, duration);
+            EditorUtility.SetDirty(m_spline);
+        }
     }
 
     private void OnSceneGUI()
@@ -168,7 +207,11 @@ public class BezierSplineInspector : Editor
             Handles.DrawBezier(p0, p3, p1, p2, Color.white, null, 2f);
             p0 = p3;
         }
-        //ShowDirections();
+
+        for (int i = 0; i < m_spline.EdgeCount; i++)
+        {
+            ShowEdge(i, handleRot);
+        }
     }
 
     private void ShowDirections()
@@ -201,11 +244,12 @@ public class BezierSplineInspector : Editor
 
             if (Handles.Button(point, handleRot, size * HANDLE_SIZE, size * PICK_SIZE, Handles.DotHandleCap))
             {
-                m_selectedIndex = index;
+                m_selectedPoint = index;
+                m_selectedEdge = -1;
                 Repaint();
             }
 
-            if (m_selectedIndex == index)
+            if (m_selectedPoint == index)
             {
                 EditorGUI.BeginChangeCheck();
                 point = Handles.DoPositionHandle(point, handleRot);
@@ -219,5 +263,21 @@ public class BezierSplineInspector : Editor
             return true;
         }
         return false;
+    }
+
+    private void ShowEdge(int index, Quaternion handleRot)
+    {
+        Vector3 point = m_spline.GetPoint((index + 0.5f) / m_spline.EdgeCount);
+        
+        float size = HandleUtility.GetHandleSize(point);
+
+        Handles.color = (m_selectedEdge == index) ? Color.white : Color.gray;
+
+        if (Handles.Button(point, handleRot, size * HANDLE_SIZE, size * PICK_SIZE, Handles.DotHandleCap))
+        {
+            m_selectedPoint = -1;
+            m_selectedEdge = index;
+            Repaint();
+        }
     }
 }

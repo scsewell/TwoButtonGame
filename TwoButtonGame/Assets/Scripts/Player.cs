@@ -39,6 +39,8 @@ public class Player : MonoBehaviour
     public Player Init(int playerNum, PlayerInput input, PlayerConfig config)
     {
         m_playerNum = playerNum;
+
+        m_animation = GetComponentInChildren<PlayerAnimation>();
         
         m_racePath = Main.Instance.RaceManager.RacePath;
 
@@ -47,9 +49,9 @@ public class Player : MonoBehaviour
         return this;
     }
 
-    public void FixedUpdatePlayer(bool canAcceptInput)
+    public void FixedUpdatePlayer(bool acceptInput, bool inPreWarm)
     {
-        m_movement.Move(!m_isFinished && canAcceptInput);
+        m_movement.Move(acceptInput && !m_isFinished, inPreWarm);
 
         bool finished = m_racePath.IsFinished(m_waypointsCompleted);
         if (finished != m_isFinished)
@@ -62,11 +64,6 @@ public class Player : MonoBehaviour
     public void UpdatePlayer()
     {
         m_movement.UpdateMovement();
-
-        if (m_animation == null)
-        {
-            m_animation = GetComponentInChildren<PlayerAnimation>();
-        }
 
         if (m_animation != null)
         {

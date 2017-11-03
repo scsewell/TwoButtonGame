@@ -5,12 +5,12 @@ public class BezierSpline : MonoBehaviour
 {
     [SerializeField]
     private Vector3[] m_points;
-
     [SerializeField]
     private BezierControlPointMode[] m_modes;
-
     [SerializeField]
     private float[] m_waitTimes;
+    [SerializeField]
+    private float[] m_edgeTimes;
 
     [SerializeField]
     private bool m_loop;
@@ -31,6 +31,11 @@ public class BezierSpline : MonoBehaviour
     public int ControlPointCount
     {
         get { return m_points.Length; }
+    }
+
+    public int EdgeCount
+    {
+        get { return m_edgeTimes.Length; }
     }
 
     public Vector3 GetControlPoint(int index)
@@ -100,7 +105,17 @@ public class BezierSpline : MonoBehaviour
             }
         }
     }
-    
+
+    public float GetEdgeTime(int index)
+    {
+        return m_edgeTimes[index];
+    }
+
+    public void SetEdgeTime(int index, float time)
+    {
+        m_edgeTimes[index] = time;
+    }
+
     public BezierControlPointMode GetControlPointMode(int index)
     {
         return m_modes[(index + 1) / 3];
@@ -257,72 +272,68 @@ public class BezierSpline : MonoBehaviour
 
         t = (wrapMode == WrapMode.PingPong) ? Mathf.PingPong(t, 1) : mod(t, 1);
 
-        if (t >= 1)
-        {
-            i = m_points.Length - 4;
-            return 1;
-        }
-        else
-        {
-            bool loop = m_loop && wrapMode == WrapMode.Loop;
+        bool loop = m_loop && wrapMode == WrapMode.Loop;
 
-            float totalTime = m_waitTimes.Length - 1;
-            int lastIndex = m_waitTimes.Length - (loop ? 2 : 1);
-            for (int j = 0; j <= lastIndex; j++)
+        float totalTime = 0;
+        int lastIndex = m_waitTimes.Length - (loop ? 2 : 1);
+        for (int j = 0; j <= lastIndex; j++)
+        {
+            if (wrapMode == WrapMode.PingPong && (j == 0 || j == lastIndex))
             {
-                if (wrapMode == WrapMode.PingPong && (j == 0 || j == lastIndex))
-                {
-                    totalTime += m_waitTimes[0] / 2;
-                }
-                else
-                {
-                    totalTime += m_waitTimes[j];
-                }
+                totalTime += m_waitTimes[0] / 2;
+            }
+            else
+            {
+                totalTime += m_waitTimes[j];
+            }
+            if (j < m_edgeTimes.Length)
+            {
+                totalTime += m_edgeTimes[j];
+            }
+        }
+
+        float evaluationTime = Mathf.Clamp01(t) * totalTime;
+            
+        float segmentStartTime = 0;
+        float segmentEndTime = (wrapMode == WrapMode.PingPong) ? m_waitTimes[0] / 2 : m_waitTimes[0];
+        i = 0;
+
+        while (segmentEndTime < evaluationTime)
+        {
+            float segmentDuration = m_edgeTimes[i];
+            segmentStartTime = segmentEndTime;
+            segmentEndTime += segmentDuration;
+
+            if (segmentEndTime >= evaluationTime)
+            {
+                i *= 3;
+                return (evaluationTime - segmentStartTime) / segmentDuration;
             }
 
-            float evaluationTime = Mathf.Clamp01(t) * totalTime;
-            
-            float segmentStartTime = 0;
-            float segmentEndTime = (wrapMode == WrapMode.PingPong) ? m_waitTimes[0] / 2 : m_waitTimes[0];
-            i = 0;
+            i++;
 
-            while (segmentEndTime < evaluationTime)
+            if (!(loop && i == m_waitTimes.Length - 1))
             {
-                float segmentDuration = 1.0f;
                 segmentStartTime = segmentEndTime;
-                segmentEndTime += segmentDuration;
-
+                segmentEndTime += (wrapMode == WrapMode.PingPong && (i == m_waitTimes.Length - 1)) ? m_waitTimes[i] / 2 : m_waitTimes[i];
+                    
                 if (segmentEndTime >= evaluationTime)
                 {
-                    i *= 3;
-                    return (evaluationTime - segmentStartTime) / segmentDuration;
-                }
-
-                i++;
-
-                if (!(loop && i == m_waitTimes.Length - 1))
-                {
-                    segmentStartTime = segmentEndTime;
-                    segmentEndTime += (wrapMode == WrapMode.PingPong && (i == m_waitTimes.Length - 1)) ? m_waitTimes[i] / 2 : m_waitTimes[i];
-                    
-                    if (segmentEndTime >= evaluationTime)
+                    if (i == m_waitTimes.Length - 1)
                     {
-                        if (i == m_waitTimes.Length - 1)
-                        {
-                            i = m_points.Length - 4;
-                            return 1;
-                        }
-                        else
-                        {
-                            i *= 3;
-                            return 0;
-                        }
+                        i = m_points.Length - 4;
+                        return 1;
+                    }
+                    else
+                    {
+                        i *= 3;
+                        return 0;
                     }
                 }
             }
-
-            return 0;
         }
+
+        return 0;
     }
 
     private float GetCurveTime(float t, out int i)
@@ -382,6 +393,9 @@ public class BezierSpline : MonoBehaviour
         Array.Resize(ref m_waitTimes, m_waitTimes.Length + 1);
         m_waitTimes[m_modes.Length - 1] = 0;
 
+        Array.Resize(ref m_edgeTimes, m_edgeTimes.Length + 1);
+        m_edgeTimes[m_edgeTimes.Length - 1] = 1;
+
         if (m_loop)
         {
             m_points[m_points.Length - 1] = m_points[0];
@@ -422,9 +436,15 @@ public class BezierSpline : MonoBehaviour
             {
                 m_modes[i] = m_modes[i + 1];
                 m_waitTimes[i] = m_waitTimes[i + 1];
+
+                if (i < m_edgeTimes.Length - 1)
+                {
+                    m_edgeTimes[i] = m_edgeTimes[i + 1];
+                }
             }
             Array.Resize(ref m_modes, m_modes.Length - 1);
             Array.Resize(ref m_waitTimes, m_waitTimes.Length - 1);
+            Array.Resize(ref m_edgeTimes, m_edgeTimes.Length - 1);
 
             for (int i = 0; i < m_points.Length; i++)
             {
@@ -454,6 +474,7 @@ public class BezierSpline : MonoBehaviour
             BezierControlPointMode.Free,
         };
         m_waitTimes = new float[2];
+        m_edgeTimes = new float[] { 1 };
     }
 
     private void OnDrawGizmos()

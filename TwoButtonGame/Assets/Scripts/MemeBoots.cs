@@ -59,7 +59,7 @@ public class MemeBoots : MonoBehaviour
         }
     }
 
-    public void Move(bool acceptInput)
+    public void Move(bool acceptInput, bool inPreWarm)
     {
         m_capsule.material = m_bootConfig.PhysicsMat;
         m_body.drag = m_bootConfig.LinearDrag;
@@ -68,13 +68,13 @@ public class MemeBoots : MonoBehaviour
         m_leftBoost = acceptInput ? m_input.Button2.IsDown : false;
         m_rightBoost = acceptInput ? m_input.Button1.IsDown : false;
 
-        if (acceptInput && m_doubleTap)
+        if (m_doubleTap && acceptInput && !inPreWarm)
         {
-            m_doubleTap = false;
             float boostDuration = 0.6f;
             m_boostDirection = transform.forward;
             m_boostEndTime = Time.time + boostDuration;
         }
+        m_doubleTap = false;
 
         m_boostFactor = 1 - Mathf.Clamp01((Time.time - m_boostEndTime) / 0.25f);
         
@@ -85,11 +85,11 @@ public class MemeBoots : MonoBehaviour
         Vector3 force = (1 - m_boostFactor) * (m_bootConfig.ForwardAccel * transform.forward + m_bootConfig.VerticalAccel * m_bootConfig.GravityFac * Vector3.up);
         Vector3 forceOffset = m_bootConfig.TurnRatio * transform.right;
 
-        if (m_leftBoost)
+        if (m_leftBoost && !inPreWarm)
         {
             AddForce(force, transform.position - forceOffset);
         }
-        if (m_rightBoost)
+        if (m_rightBoost && !inPreWarm)
         {
             AddForce(force, transform.position + forceOffset);
         }
