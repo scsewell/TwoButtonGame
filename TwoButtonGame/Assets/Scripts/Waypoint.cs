@@ -37,8 +37,6 @@ public class Waypoint : MonoBehaviour, OnWillRenderReceiver
     private bool m_flipDirection = false;
     [SerializeField] [Range(0, 1)]
     private float m_startOffset = 0;
-    [SerializeField] [Range(0.01f, 1)]
-    private float m_accelerationSmoothing = 0.135f;
 
     private RaceManager m_raceManager;
     private TransformInterpolator m_interpolator;
@@ -49,7 +47,7 @@ public class Waypoint : MonoBehaviour, OnWillRenderReceiver
     private float m_bobFreq;
     private Vector3 m_lastPosition;
     private Vector3 m_lastVelocity;
-    private Vector3 m_acceleration;
+    private Vector3 m_engineForce;
 
     public Vector3 Position
     {
@@ -102,14 +100,16 @@ public class Waypoint : MonoBehaviour, OnWillRenderReceiver
             
             Vector3 velocity = (pos - m_lastPosition) / Time.deltaTime;
             Vector3 acceleration = (velocity - m_lastVelocity) / Time.deltaTime;
-            m_acceleration = Vector3.Lerp(m_acceleration, acceleration, Time.deltaTime / m_accelerationSmoothing);
-            m_lastVelocity = velocity;
-            m_lastPosition = pos;
+            
+            m_engineForce = Vector3.Lerp(m_engineForce, Vector3.Lerp(velocity, acceleration, 0.5f), Time.deltaTime / 0.25f);
 
             foreach (GateEngine engine in m_engines)
             {
-                engine.UpdateEngine(m_acceleration);
+                engine.UpdateEngine(m_engineForce);
             }
+
+            m_lastVelocity = velocity;
+            m_lastPosition = pos;
         }
 
         float time = Main.Instance.RaceManager.GetStartRelativeTime();

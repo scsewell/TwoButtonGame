@@ -26,24 +26,28 @@ public class PlayerConfig : ScriptableObject
     [SerializeField] [Range(0, 20)]
     private float m_angularDrag = 4.0f;
     public float AngularDrag { get { return m_angularDrag; } }
+    
+    [SerializeField] [Range(0, 10)]
+    private float m_gravityFac = 2.0f;
+    public float GravityFac { get { return m_gravityFac; } }
 
-    [SerializeField]
-    [Range(0, 100)]
+    [SerializeField] [Range(0, 100)]
     private float m_forwardAccel = 15.0f;
     public float ForwardAccel { get { return m_forwardAccel; } }
 
-    [SerializeField]
-    [Range(0, 100)]
+    [SerializeField] [Range(0, 100)]
     private float m_verticalAccel = 7.5f;
     public float VerticalAccel { get { return m_verticalAccel; } }
 
-    [SerializeField]
-    [Range(0, 1)]
+    [SerializeField] [Range(0, 1)]
     private float m_turnRatio = 0.05f;
     public float TurnRatio { get { return m_turnRatio; } }
 
-    [SerializeField]
-    [Range(0, 10)]
-    private float m_gravityFac = 2.0f;
-    public float GravityFac { get { return m_gravityFac; } }
+    [SerializeField] [Range(1, 200)]
+    private float m_boostSoftCap = 80.0f;
+    public float BoostSoftCap { get { return m_boostSoftCap; } }
+
+    [SerializeField] [Range(10, 500)]
+    private float m_boostAcceleration = 200.0f;
+    public float BoostAcceleration { get { return m_boostAcceleration; } }
 }

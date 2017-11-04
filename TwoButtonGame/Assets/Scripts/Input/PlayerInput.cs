@@ -42,7 +42,11 @@ public class PlayerInput
         List<BufferedInput> button1Buf = m_button1.Buffer;
         List<BufferedInput> button2Buf = m_button2.Buffer;
 
-        m_bothDoubleTap = false;
+        if (!m_button1.IsDown || !m_button2.IsDown)
+        {
+            m_bothDoubleTap = false;
+        }
+
         float doubleTapTime1 = GetDoubleTapTime(button1Buf);
         float doubleTapTime2 = GetDoubleTapTime(button2Buf);
 

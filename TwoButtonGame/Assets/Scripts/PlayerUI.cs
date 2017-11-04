@@ -5,6 +5,28 @@ using UnityEngine.UI;
 
 public class PlayerUI : MonoBehaviour
 {
+    [Header("Player Indicator")]
+    [SerializeField]
+    private RectTransform m_playerIndicatorPrefab;
+    [SerializeField]
+    private RectTransform m_playerIndicatorParent;
+    [SerializeField] [Range(0, 2)]
+    private float m_indicatorVerticalOffset = 0.85f;
+    [SerializeField] [Range(0, 50)]
+    private float m_indicatorNearFadeStart = 2.0f;
+    [SerializeField] [Range(0, 50)]
+    private float m_indicatorNearFadeEnd = 4.0f;
+    [SerializeField] [Range(0, 1000)]
+    private float m_indicatorFarFadeStart = 200.0f;
+    [SerializeField] [Range(0, 1000)]
+    private float m_indicatorFarFadeEnd = 250.0f;
+    [SerializeField] [Range(0, 2)]
+    private float m_indicatorMinSize = 0.5f;
+    [SerializeField] [Range(0, 2)]
+    private float m_indicatorMaxSize = 1.0f;
+    [SerializeField] [Range(0, 1)]
+    private float m_indicatorMaxAlpha = 1.0f;
+
     [Header("Countdown")]
     [SerializeField]
     private Text m_countdownText;
@@ -60,6 +82,7 @@ public class PlayerUI : MonoBehaviour
     private Player m_player;
     private CameraManager m_camera;
     private RaceManager m_raceManager;
+    private Dictionary<Player, RectTransform> m_playerToIndicators;
     private Transform m_arrow;
     private int m_lastRank = 1;
     private int m_lastLap = 1;
@@ -97,6 +120,8 @@ public class PlayerUI : MonoBehaviour
         rt.sizeDelta = Vector2.zero;
 
         // Set up UI
+        m_playerToIndicators = new Dictionary<Player, RectTransform>();
+
         m_playerText.text = "Player " + (player.PlayerNum + 1);
         m_playerText.color = Color.Lerp(player.GetColor(), Color.white, 0.35f);
         
@@ -154,6 +179,60 @@ public class PlayerUI : MonoBehaviour
             SetArrow(waypoint, m_arrowSmoothing);
         }
 
+        List<Player> players = m_raceManager.Players.OrderBy(p => Vector3.Distance(m_camera.transform.position, p.transform.position)).ToList();
+
+        foreach (Player player in players)
+        {
+            if (player != m_player)
+            {
+                RectTransform indicator;
+                if (!m_playerToIndicators.TryGetValue(player, out indicator))
+                {
+                    indicator = Instantiate(m_playerIndicatorPrefab, m_playerIndicatorParent);
+                    indicator.SetAsFirstSibling();
+                    indicator.pivot = new Vector2(0.5f, 0);
+
+                    foreach (Graphic g in indicator.GetComponentsInChildren<Graphic>())
+                    {
+                        g.color = player.GetColor();
+                    }
+
+                    m_playerToIndicators.Add(player, indicator);
+                }
+
+                Vector3 camPos = m_camera.transform.position;
+                Vector3 indicatorPos = player.transform.position + m_indicatorVerticalOffset * Vector3.up;
+                Vector3 viewportPoint = m_camera.Camera.WorldToViewportPoint(indicatorPos);
+
+                bool active = 0 < viewportPoint.z && !finished && !player.IsFinished;
+
+                Vector3 inticatorDisp = indicatorPos - camPos;
+                float distance = inticatorDisp.magnitude;
+
+                if (active && !Physics.Raycast(camPos, inticatorDisp, distance))
+                {
+                    indicator.gameObject.SetActive(true);
+                    indicator.SetAsFirstSibling();
+                    indicator.anchoredPosition = Vector2.zero;
+                    indicator.anchorMin = viewportPoint;
+                    indicator.anchorMax = viewportPoint;
+
+                    float farFade = Mathf.Clamp01((distance - m_indicatorFarFadeStart) / (m_indicatorFarFadeEnd - m_indicatorFarFadeStart));
+                    float nearFade = Mathf.Clamp01((distance - m_indicatorNearFadeStart) / (m_indicatorNearFadeEnd - m_indicatorNearFadeStart));
+                    float fade = Mathf.Min(nearFade, 1 - farFade);
+                    SetAlpha(indicator.GetComponentInChildren<Graphic>(), Mathf.Lerp(0, m_indicatorMaxAlpha, fade));
+
+                    float scaleFac = 1 - Mathf.Clamp01((distance - m_indicatorNearFadeEnd) / (m_indicatorFarFadeStart - m_indicatorNearFadeEnd));
+                    float scale = Mathf.Lerp(m_indicatorMinSize, m_indicatorMaxSize, scaleFac);
+                    indicator.localScale = scale * Vector3.one;
+                }
+                else
+                {
+                    indicator.gameObject.SetActive(false);
+                }
+            }
+        }
+        
         // set rank text
         Color rankColor = m_rankColors[rank - 1];
         SetColorNoAlpha(m_rankText, rankColor);
@@ -213,6 +292,8 @@ public class PlayerUI : MonoBehaviour
             bool activated = Time.time - m_lapChangeTime < m_newLapDuration;
 
             SetAlpha(m_newLapText, Mathf.Lerp(m_newLapText.color.a, activated ? 1 : 0, Time.deltaTime / m_newLapAlphaSmoothing));
+
+            m_newLapText.enabled = (m_newLapText.color.a > 0);
         }
 
         m_lastRank = rank;

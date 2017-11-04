@@ -56,11 +56,11 @@ public class InRaceMenu : MonoBehaviour
     {
         m_menuGroup = m_menu.GetComponent<CanvasGroup>();
 
-        m_pauseKeys = new List<KeyCode>() { KeyCode.Escape, };
-        m_resumeKeys = new List<KeyCode>() { KeyCode.Escape, };
-        m_quitKeys = new List<KeyCode>() { KeyCode.Q, };
-        m_confirmKeys = new List<KeyCode>() { KeyCode.Return, };
-        m_cancelKeys = new List<KeyCode>() { KeyCode.Escape, };
+        m_pauseKeys     = new List<KeyCode>() { KeyCode.Escape, };
+        m_resumeKeys    = new List<KeyCode>() { KeyCode.Escape, };
+        m_quitKeys      = new List<KeyCode>() { KeyCode.Q, };
+        m_confirmKeys   = new List<KeyCode>() { KeyCode.Return, };
+        m_cancelKeys    = new List<KeyCode>() { KeyCode.Escape, };
 
         m_menu.enabled = false;
         m_menuGroup.alpha = 1;
@@ -106,11 +106,11 @@ public class InRaceMenu : MonoBehaviour
 
         m_fade.color = new Color(0, 0, 0, fade);
 
-        bool resume = m_resumeKeys.Any(k => Input.GetKeyDown(k));
-        bool pause = m_pauseKeys.Any(k => Input.GetKeyDown(k));
-        bool quit = m_quitKeys.Any(k => Input.GetKeyDown(k));
-        bool confirm = m_confirmKeys.Any(k => Input.GetKeyDown(k));
-        bool cancel = m_cancelKeys.Any(k => Input.GetKeyDown(k));
+        bool resume = m_resumeKeys.Any(     k => Input.GetKeyDown(k));
+        bool pause = m_pauseKeys.Any(       k => Input.GetKeyDown(k));
+        bool quit = m_quitKeys.Any(         k => Input.GetKeyDown(k));
+        bool confirm = m_confirmKeys.Any(   k => Input.GetKeyDown(k));
+        bool cancel = m_cancelKeys.Any(     k => Input.GetKeyDown(k));
 
         if (isFinished && quit)
         {

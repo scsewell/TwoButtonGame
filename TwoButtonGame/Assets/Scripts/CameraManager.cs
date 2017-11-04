@@ -65,9 +65,9 @@ public class CameraManager : MonoBehaviour
 
     public static Rect GetSplitscreen(int playerNum, int playerCount)
     {
-        const float pixelMargin = 5.0f;
+        const float pixelMargin = 4f;
         Vector2 m = new Vector2(pixelMargin / Screen.width, pixelMargin / Screen.height) / 2;
-
+        
         Rect FULL       = new Rect(0,           0,              1,              1);
         Rect TOP        = new Rect(0,           0.5f + m.y,     1,              0.5f - m.y);
         Rect BOTTOM     = new Rect(0,           0,              1,              0.5f - m.y);

@@ -1,7 +1,6 @@
 ### To Do ###
 Player Models (fatty, floating boosters fancy tech, robot, other race?, really abstract?)
-Abilities and stuff
-boost lasts while keys held
+boost energy
 Other player indicators with player num
 
 Checkpoint sound
@@ -9,7 +8,7 @@ Collision sound
 Player movement/action sounds
 Player finish line sounds
 
-Moving gates - Add rotation, per edge weight
+Moving gates - Add rotation
 Boost gates - improve graphics
 Start / finish line
 Wind / wind turbines

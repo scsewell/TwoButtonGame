@@ -10,11 +10,10 @@ public class MemeBoots : MonoBehaviour
     private LayerMask m_groundLayers;
 
     private PlayerInput m_input;
-    private PlayerConfig m_bootConfig;
+    private PlayerConfig m_config;
     private Rigidbody m_body;
     private CapsuleCollider m_capsule;
     private RaycastHit[] m_hits;
-    private bool m_doubleTap = false;
     private Vector3 m_boostDirection;
     private float m_boostEndTime = float.MinValue;
     private float m_boostFactor = 0;
@@ -43,47 +42,42 @@ public class MemeBoots : MonoBehaviour
         m_hits = new RaycastHit[20];
     }
 
-    public void Init(PlayerInput input, PlayerConfig bootConfig)
+    public void Init(PlayerInput input, PlayerConfig config)
     {
         m_input = input;
-        m_bootConfig = bootConfig;
+        m_config = config;
         
         m_body.useGravity = false;
     }
 
     public void UpdateMovement()
     {
-        if (!m_doubleTap)
-        {
-            m_doubleTap = m_input.BothDoubleTap;
-        }
     }
 
     public void Move(bool acceptInput, bool inPreWarm)
     {
-        m_capsule.material = m_bootConfig.PhysicsMat;
-        m_body.drag = m_bootConfig.LinearDrag;
-        m_body.angularDrag = m_bootConfig.AngularDrag;
+        m_capsule.material = m_config.PhysicsMat;
+        m_body.drag = m_config.LinearDrag;
+        m_body.angularDrag = m_config.AngularDrag;
 
         m_leftBoost = acceptInput ? m_input.Button2.IsDown : false;
         m_rightBoost = acceptInput ? m_input.Button1.IsDown : false;
-
-        if (m_doubleTap && acceptInput && !inPreWarm)
+        
+        if (m_input.BothDoubleTap && acceptInput && !inPreWarm)
         {
-            float boostDuration = 0.6f;
             m_boostDirection = transform.forward;
-            m_boostEndTime = Time.time + boostDuration;
+            m_boostEndTime = Time.time;
         }
-        m_doubleTap = false;
 
         m_boostFactor = 1 - Mathf.Clamp01((Time.time - m_boostEndTime) / 0.25f);
         
-        m_body.AddForce(m_boostDirection * m_boostFactor * 65 * Time.deltaTime, ForceMode.Impulse);
+        float boostStrength = Mathf.Clamp01(Mathf.Exp(-Vector3.Dot(m_body.velocity, m_boostDirection) / m_config.BoostSoftCap));
+        m_body.AddForce(m_boostFactor * m_config.BoostAcceleration * boostStrength * Time.deltaTime * m_boostDirection, ForceMode.Impulse);
         
-        m_body.AddForce((1 - m_boostFactor) * m_bootConfig.GravityFac * Physics.gravity);
+        m_body.AddForce((1 - m_boostFactor) * m_config.GravityFac * Physics.gravity);
 
-        Vector3 force = (1 - m_boostFactor) * (m_bootConfig.ForwardAccel * transform.forward + m_bootConfig.VerticalAccel * m_bootConfig.GravityFac * Vector3.up);
-        Vector3 forceOffset = m_bootConfig.TurnRatio * transform.right;
+        Vector3 force = (1 - m_boostFactor) * (m_config.ForwardAccel * transform.forward + m_config.VerticalAccel * m_config.GravityFac * Vector3.up);
+        Vector3 forceOffset = m_config.TurnRatio * transform.right;
 
         if (m_leftBoost && !inPreWarm)
         {
