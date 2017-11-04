@@ -28,6 +28,9 @@ public class PlayerInput
     private bool m_bothDoubleTap = false;
     public bool BothDoubleTap { get { return m_bothDoubleTap; } }
 
+    private bool m_bothDoubleTapHeld = false;
+    public bool BothDoubleTapHeld { get { return m_bothDoubleTapHeld; } }
+
     public PlayerInput(KeyCode button1, KeyCode button2)
     {
         m_button1 = new InputButton(button1);
@@ -42,9 +45,10 @@ public class PlayerInput
         List<BufferedInput> button1Buf = m_button1.Buffer;
         List<BufferedInput> button2Buf = m_button2.Buffer;
 
+        m_bothDoubleTap = false;
         if (!m_button1.IsDown || !m_button2.IsDown)
         {
-            m_bothDoubleTap = false;
+            m_bothDoubleTapHeld = false;
         }
 
         float doubleTapTime1 = GetDoubleTapTime(button1Buf);
@@ -53,6 +57,7 @@ public class PlayerInput
         if (doubleTapTime1 > 0 && doubleTapTime2 > 0 && Mathf.Abs(doubleTapTime1 - doubleTapTime2) < DOUBLE_TAP_TOLERANCE)
         {
             m_bothDoubleTap = true;
+            m_bothDoubleTapHeld = true;
             button1Buf.Clear();
             button2Buf.Clear();
         }

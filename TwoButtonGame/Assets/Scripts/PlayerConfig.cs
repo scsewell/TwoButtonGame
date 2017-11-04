@@ -3,10 +3,12 @@
 [CreateAssetMenu(fileName = "PlayerConfig", menuName = "PlayerConfig", order = 1)]
 public class PlayerConfig : ScriptableObject
 {
+    [Header("Description")]
     [SerializeField]
     private string m_name;
     public string Name { get { return m_name; } }
-    
+
+    [Header("Graphics")]
     [SerializeField]
     private GameObject m_characterGraphics;
     public GameObject CharacterGraphics { get { return m_characterGraphics; } }
@@ -15,6 +17,7 @@ public class PlayerConfig : ScriptableObject
     private Vector3 m_graphicsOffset;
     public Vector3 GraphicsOffset { get { return m_graphicsOffset; } }
 
+    [Header("Physics")]
     [SerializeField]
     private PhysicMaterial m_physicsMat;
     public PhysicMaterial PhysicsMat { get { return m_physicsMat; } }
@@ -42,6 +45,20 @@ public class PlayerConfig : ScriptableObject
     [SerializeField] [Range(0, 1)]
     private float m_turnRatio = 0.05f;
     public float TurnRatio { get { return m_turnRatio; } }
+
+    [Header("Energy")]
+    [SerializeField] [Range(0, 500)]
+    private float m_energyCap = 200.0f;
+    public float EnergyCap { get { return m_energyCap; } }
+
+    [SerializeField] [Range(0, 100)]
+    private float m_energyRechargeRate = 10.0f;
+    public float EnergyRechargeRate { get { return m_energyRechargeRate; } }
+
+    [Header("Boosting")]
+    [SerializeField] [Range(0, 500)]
+    private float m_boostEnergyUseRate = 100.0f;
+    public float BoostEnergyUseRate { get { return m_boostEnergyUseRate; } }
 
     [SerializeField] [Range(1, 200)]
     private float m_boostSoftCap = 80.0f;

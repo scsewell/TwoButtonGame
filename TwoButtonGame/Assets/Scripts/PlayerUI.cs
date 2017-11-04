@@ -27,6 +27,8 @@ public class PlayerUI : MonoBehaviour
     [SerializeField] [Range(0, 1)]
     private float m_indicatorMaxAlpha = 1.0f;
 
+    private Dictionary<Player, RectTransform> m_playerToIndicators;
+
     [Header("Countdown")]
     [SerializeField]
     private Text m_countdownText;
@@ -49,6 +51,8 @@ public class PlayerUI : MonoBehaviour
     [SerializeField] [Range(0, 1)]
     private float m_arrowSmoothing = 0.2f;
 
+    private Transform m_arrow;
+
     [Header("Rank Text")]
     [SerializeField]
     private RectTransform m_rankRect;
@@ -65,6 +69,8 @@ public class PlayerUI : MonoBehaviour
     [SerializeField] [Range(0.01f, 4)]
     private float m_finalRankFadeTime = 1.0f;
 
+    private int m_lastRank = 1;
+
     [Header("Lap Text")]
     [SerializeField]
     private Text m_lapText;
@@ -79,14 +85,28 @@ public class PlayerUI : MonoBehaviour
     [SerializeField] [Range(0.01f, 1)]
     private float m_newLapAlphaSmoothing = 0.25f;
 
+    private int m_lastLap = 1;
+    private float m_lapChangeTime = float.NegativeInfinity;
+
+    [Header("Energy Bar")]
+    [SerializeField]
+    private GameObject m_energyBar;
+    [SerializeField]
+    private Image m_energyBarBorder;
+    [SerializeField]
+    private Image m_energyBarFill;
+    [SerializeField]
+    private Image m_energyBarHighlight;
+    [SerializeField] [Range(0.01f, 1)]
+    private float m_energyHighlightDuration = 0.35f;
+    [SerializeField] [Range(0.01f, 1)]
+    private float m_energyCantBoostAlpha = 0.35f;
+
+    private float m_energyGainTime = float.NegativeInfinity;
+
     private Player m_player;
     private CameraManager m_camera;
     private RaceManager m_raceManager;
-    private Dictionary<Player, RectTransform> m_playerToIndicators;
-    private Transform m_arrow;
-    private int m_lastRank = 1;
-    private int m_lastLap = 1;
-    private float m_lapChangeTime = float.NegativeInfinity;
 
     private void Awake()
     {
@@ -126,6 +146,8 @@ public class PlayerUI : MonoBehaviour
         m_playerText.color = Color.Lerp(player.GetColor(), Color.white, 0.35f);
         
         SetArrow(m_player.NextWaypoint, 0);
+
+        player.EnergyGained += Player_EnergyGained;
 
         return this;
     }
@@ -170,6 +192,7 @@ public class PlayerUI : MonoBehaviour
         m_rankText.gameObject.SetActive(!finished && !isSolo);
         m_rankSubText.gameObject.SetActive(!finished && !isSolo);
         m_newLapText.gameObject.SetActive(!finished);
+        m_energyBar.SetActive(!finished);
 
         m_finalRankText.gameObject.SetActive(finished && !isSolo);
         m_finalRankSubText.gameObject.SetActive(finished && !isSolo);
@@ -208,8 +231,10 @@ public class PlayerUI : MonoBehaviour
 
                 Vector3 inticatorDisp = indicatorPos - camPos;
                 float distance = inticatorDisp.magnitude;
+                Ray ray = new Ray(camPos, inticatorDisp);
+                RaycastHit hit;
 
-                if (active && !Physics.Raycast(camPos, inticatorDisp, distance))
+                if (active && !Physics.Raycast(ray, distance) && !m_arrow.GetComponent<Collider>().Raycast(ray, out hit, distance))
                 {
                     indicator.gameObject.SetActive(true);
                     indicator.SetAsFirstSibling();
@@ -298,6 +323,23 @@ public class PlayerUI : MonoBehaviour
 
         m_lastRank = rank;
         m_lastLap = lap;
+
+        // energy bar
+        float energyFill = m_player.Energy / m_player.MaxEnergy;
+        m_energyBarFill.fillAmount = energyFill;
+        m_energyBarHighlight.fillAmount = energyFill;
+
+        SetColorNoAlpha(m_energyBarFill, Color.Lerp(m_player.GetColor(), Color.white, 0.35f));
+        SetAlpha(m_energyBarFill, m_player.Movement.CanBoost || m_player.Movement.IsBoosting ? 1 : m_energyCantBoostAlpha);
+
+        SetAlpha(m_energyBarHighlight, 1 - Mathf.Clamp01((Time.time - m_energyGainTime) / m_energyHighlightDuration));
+        
+        SetColorNoAlpha(m_energyBarBorder, Color.Lerp(m_player.GetColor(), Color.white * 0.75f, m_player.Movement.IsBoosting ? 0 : 0.75f));
+    }
+
+    private void Player_EnergyGained(float total, float delta)
+    {
+        m_energyGainTime = Time.time;
     }
 
     private void SetArrow(Waypoint waypoint, float smoothing)

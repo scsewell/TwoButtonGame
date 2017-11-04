@@ -11,8 +11,12 @@ public class PlayerAnimation : MonoBehaviour
     [SerializeField] Material m_boosterGlowRMat;
 
     [Header("Glow")]
+    [SerializeField]
+    private Color m_glowCol = new Color(1, 0.334f, 0, 1);
+    [SerializeField]
+    private Color m_boostGlowCol = new Color(1, 0.334f, 0, 1);
     [SerializeField] [Range(0, 5)]
-    private float m_boostGlow = 1.75f;
+    private float m_boostGlow = 3.0f;
     [SerializeField] [Range(0, 5)]
     private float m_notBoostGlow = 1.0f;
     [SerializeField] [Range(0, 2)]
@@ -43,15 +47,13 @@ public class PlayerAnimation : MonoBehaviour
     private Animator m_anim;
     private Material m_leftGlow;
     private Material m_rightGlow;
-    private Color m_emissionColor;
     private Quaternion m_headRotation;
     private Vector3 m_velocity;
 
     private void Awake()
     {
         m_anim = GetComponent<Animator>();
-
-        m_emissionColor = m_boosterGlowLMat.GetColor("_EmissionColor");
+        
         m_leftGlow = InstanceSharedMat(m_boosterGlowLMat, m_leftBoosters);
         m_rightGlow = InstanceSharedMat(m_boosterGlowRMat, m_rightBoosters);
     }
@@ -67,21 +69,22 @@ public class PlayerAnimation : MonoBehaviour
         SetFloatSmooth("VelocityY", m_velocity.y, m_velocitySmoothing);
         SetFloatSmooth("VelocityZ", m_velocity.z, m_velocitySmoothing);
         
-        float leftBoost = Mathf.Lerp(movement.LeftBoost ? 1 : 0, 2, movement.BoostFactor);
-        float rightBoost = Mathf.Lerp(movement.RightBoost ? 1 : 0, 2, movement.BoostFactor);
+        float leftEngine = Mathf.Lerp(movement.LeftEngine ? 1 : 0, 2, movement.BoostFactor);
+        float rightEngine = Mathf.Lerp(movement.RightEngine ? 1 : 0, 2, movement.BoostFactor);
 
-        SetFloatSmooth("LeftBoost", leftBoost, m_boostSmoothing);
-        SetFloatSmooth("RightBoost", rightBoost, m_boostSmoothing);
+        SetFloatSmooth("LeftBoost", leftEngine, m_boostSmoothing);
+        SetFloatSmooth("RightBoost", rightEngine, m_boostSmoothing);
 
         m_anim.SetBool("IsFlying", !(movement.IsGrounded && movement.Velocity.magnitude < m_idleVelThresh));
 
         float noiseTime = m_boostGlowNoiseFrequency * Time.time;
 
-        float leftNoiseFac = Mathf.LerpUnclamped(leftBoost, 0, m_boostGlowNoiseStrength * Mathf.PerlinNoise(noiseTime, 0.25f));
-        float rightNoiseFac = Mathf.LerpUnclamped(rightBoost, 0, m_boostGlowNoiseStrength * Mathf.PerlinNoise(noiseTime, 0.75f));
+        float leftNoiseFac = Mathf.LerpUnclamped(leftEngine, 0, m_boostGlowNoiseStrength * Mathf.PerlinNoise(noiseTime, 0.25f));
+        float rightNoiseFac = Mathf.LerpUnclamped(rightEngine, 0, m_boostGlowNoiseStrength * Mathf.PerlinNoise(noiseTime, 0.75f));
 
-        m_leftGlow.SetColor("_EmissionColor", m_emissionColor * Mathf.LerpUnclamped(m_notBoostGlow, m_boostGlow, leftNoiseFac));
-        m_rightGlow.SetColor("_EmissionColor", m_emissionColor * Mathf.LerpUnclamped(m_notBoostGlow, m_boostGlow, rightNoiseFac));
+        Color glow = Color.Lerp(m_glowCol, m_boostGlowCol, movement.BoostFactor);
+        m_leftGlow.SetColor("_EmissionColor", glow * Mathf.LerpUnclamped(m_notBoostGlow, m_boostGlow, leftNoiseFac));
+        m_rightGlow.SetColor("_EmissionColor", glow * Mathf.LerpUnclamped(m_notBoostGlow, m_boostGlow, rightNoiseFac));
     }
 
     public void LateUpdateAnimation(Waypoint nextWaypoint)

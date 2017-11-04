@@ -1,15 +1,17 @@
 ### To Do ###
 Player Models (fatty, floating boosters fancy tech, robot, other race?, really abstract?)
 boost energy
-Other player indicators with player num
+Character blurbs
 
+Player movement/boost sounds
 Checkpoint sound
-Collision sound
-Player movement/action sounds
 Player finish line sounds
+Collision sound
+Boost gate sounds
+Waypoint move sound
 
 Moving gates - Add rotation
-Boost gates - improve graphics
+Boost gates - redesign/improve graphics
 Start / finish line
 Wind / wind turbines
 
@@ -33,13 +35,13 @@ Ensure music is credited
 Outline is very expensive on UI, especially the player time...
 Camera can clip with the gates, perhaps use a fading material when close...
 
-### Maybe ###
+### Long Term ###
 Input selection
 Player n is nth joiner (But what about if 1st player leaves?)
 Leaderboard
 Replays / Ghosting
 
-### Music Loop Times
+### Music Loop Times ###
 The Lift		7:27.467896
 Deep Haze		1:28.677811
 Corruption		7:00.017059
