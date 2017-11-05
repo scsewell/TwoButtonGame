@@ -11,8 +11,8 @@ Boost gate sounds
 Waypoint move sound
 
 Moving gates - Add rotation
-Boost gates - redesign/improve graphics
-Start / finish line
+Alternate gates
+Boost gates - improve graphics
 Wind / wind turbines
 
 Levels

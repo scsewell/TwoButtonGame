@@ -8,18 +8,33 @@ ModelImporter:
     100000: //RootNode
     100002: Circle
     100004: Level2Main
+    100006: Level2Main_001
+    100008: Plane
+    100010: Level2Main_002
     400000: //RootNode
     400002: Circle
     400004: Level2Main
+    400006: Level2Main_001
+    400008: Plane
+    400010: Level2Main_002
     2100000: Material
     2300000: //RootNode
     2300002: Circle
     2300004: Level2Main
+    2300006: Level2Main_001
+    2300008: Plane
+    2300010: Level2Main_002
     3300000: //RootNode
     3300002: Circle
     3300004: Level2Main
+    3300006: Level2Main_001
+    3300008: Plane
+    3300010: Level2Main_002
     4300000: Level2Main
     4300002: Circle
+    4300004: Level2Main_001
+    4300006: Plane
+    4300008: Level2Main_002
     7400000: Default Take
     9500000: //RootNode
   externalObjects: {}
