@@ -67,6 +67,8 @@ public class MemeBoots : MonoBehaviour
 
         m_capsule.material = config.PhysicsMat;
         m_body.useGravity = false;
+        m_body.solverIterations = 16;
+        m_body.solverVelocityIterations = 2;
         m_body.drag = config.LinearDrag;
         m_body.angularDrag = config.AngularDrag;
 

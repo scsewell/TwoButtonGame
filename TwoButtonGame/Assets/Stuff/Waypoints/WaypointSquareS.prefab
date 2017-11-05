@@ -806,7 +806,7 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 4.4, y: 4.4, z: 0.5}
+  m_Size: {x: 4.4, y: 4.4, z: 0.9}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &114364678219024714
 MonoBehaviour:
@@ -930,7 +930,6 @@ MonoBehaviour:
   m_wrapMode: 0
   m_flipDirection: 0
   m_startOffset: 0
-  m_accelerationSmoothing: 0.135
 --- !u!114 &114999657646011902
 MonoBehaviour:
   m_ObjectHideFlags: 1

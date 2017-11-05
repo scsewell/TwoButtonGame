@@ -5,8 +5,8 @@ using UnityEngine;
 public class PlayerInput
 {
     private const float DOUBLE_PRESS_TIME = 0.075f;
-    private const float DOUBLE_TAP_TIME = 0.2f;
-    private const float DOUBLE_TAP_TOLERANCE = 0.0825f;
+    private const float DOUBLE_TAP_TIME = 0.265f;
+    private const float DOUBLE_TAP_TOLERANCE = 0.095f;
 
     private InputButton m_button1;
     public InputButton Button1 { get { return m_button1; } }

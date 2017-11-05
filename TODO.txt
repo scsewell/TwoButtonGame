@@ -1,7 +1,7 @@
 ### To Do ###
 Player Models (fatty, floating boosters fancy tech, robot, other race?, really abstract?)
-boost energy
 Character blurbs
+improve camera - more vertical smoothing than on horizontal plane
 
 Player movement/boost sounds
 Checkpoint sound

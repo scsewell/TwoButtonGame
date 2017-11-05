@@ -16,14 +16,14 @@ MonoBehaviour:
     type: 2}
   m_graphicsOffset: {x: 0, y: -1, z: 0.2}
   m_physicsMat: {fileID: 13400000, guid: a98a30527bb05cb4e9413f0318de73d6, type: 2}
-  m_linearDrag: 0.6
+  m_linearDrag: 0.535
   m_angularDrag: 4
-  m_gravityFac: 2.65
-  m_forwardAccel: 24
-  m_verticalAccel: 10
-  m_turnRatio: 0.045
+  m_gravityFac: 3
+  m_forwardAccel: 42
+  m_verticalAccel: 12
+  m_turnRatio: 0.025
   m_energyCap: 200
-  m_energyRechargeRate: 4
-  m_boostEnergyUseRate: 125
-  m_boostSoftCap: 75
-  m_boostAcceleration: 175
+  m_energyRechargeRate: 2.5
+  m_boostEnergyUseRate: 100
+  m_boostSoftCap: 130
+  m_boostAcceleration: 265

@@ -35,17 +35,25 @@ public class RacePath : MonoBehaviour
 
     public bool IsFinished(int waypointIndex)
     {
-        return waypointIndex >= (m_path.Length * m_laps);
+        if (m_path.Length > 0)
+        {
+            return waypointIndex >= (m_path.Length * m_laps);
+        }
+        return false;
     }
 
     public int GetCurrentLap(int waypointIndex)
     {
-        return Mathf.Clamp((waypointIndex / m_path.Length) + 1, 1, m_laps);
+        if (m_path.Length > 0)
+        {
+            return Mathf.Clamp((waypointIndex / m_path.Length) + 1, 1, m_laps);
+        }
+        return 0;
     }
 
     public Waypoint GetWaypoint(int waypointIndex)
     {
-        if (!IsFinished(waypointIndex))
+        if (m_path.Length > 0 && !IsFinished(waypointIndex))
         {
             return m_path[waypointIndex % m_path.Length];
         }

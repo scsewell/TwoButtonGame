@@ -701,10 +701,10 @@ MonoBehaviour:
   m_indicatorVerticalOffset: 0.85
   m_indicatorNearFadeStart: 4
   m_indicatorNearFadeEnd: 7.5
-  m_indicatorFarFadeStart: 175
-  m_indicatorFarFadeEnd: 225
+  m_indicatorFarFadeStart: 215
+  m_indicatorFarFadeEnd: 250
   m_indicatorMinSize: 0.15
-  m_indicatorMaxSize: 0.425
+  m_indicatorMaxSize: 0.5
   m_indicatorMaxAlpha: 0.7
   m_countdownText: {fileID: 114693424851636968}
   m_timerText: {fileID: 114062562678126962}
