@@ -8,7 +8,7 @@ LightmapParameters:
   m_Name: Level2_LMAP
   serializedVersion: 3
   resolution: 0.35
-  clusterResolution: 0.1
+  clusterResolution: 0.15
   irradianceBudget: 128
   irradianceQuality: 8192
   backFaceTolerance: 0.9
@@ -20,6 +20,6 @@ LightmapParameters:
   directLightQuality: 128
   antiAliasingSamples: 8
   bakedLightmapTag: -1
-  pushoff: 0.025
+  pushoff: 0.5
   AOQuality: 128
   AOAntiAliasingSamples: 8

@@ -1,19 +1,23 @@
 ### To Do ###
 Player Models (fatty, floating boosters fancy tech, robot, other race?, really abstract?)
 Character blurbs
+Ready up anim
 improve camera - more vertical smoothing than on horizontal plane
+Make motion feel fast (radial speed blur, etc)
 
 Player movement/boost sounds
 Checkpoint sound
 Player finish line sounds
 Collision sound
 Boost gate sounds
-Waypoint move sound
+Waypoint engine sound
 
+Alternate paths
 Moving gates - Add rotation
-Alternate gates
 Boost gates - improve graphics
 Wind / wind turbines
+
+Handle level bounds (could done using a restoring force a little larger than the thrust force component going out of bound, visual effect or notification)
 
 Levels
 	City
@@ -22,20 +26,16 @@ Levels
 	Factory
 	Arctic - ice caves
 	Volano
-Handle level bounds (could done using a restoring force a little larger than the thrust force component going out of bound, visual effect or notification)
 
-Make motion feel fast (radial speed blur, etc)
-
-Ready up anim
-Level preview camera shots in menu as well?
-How to Play
 Ensure music is credited
+How to Play
 
 ### Bugs and stuff ###
 Outline is very expensive on UI, especially the player time...
 Camera can clip with the gates, perhaps use a fading material when close...
 
 ### Long Term ###
+Level preview camera shots in menu
 Input selection
 Player n is nth joiner (But what about if 1st player leaves?)
 Leaderboard
