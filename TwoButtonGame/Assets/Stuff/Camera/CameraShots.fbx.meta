@@ -19,6 +19,9 @@ ModelImporter:
     7400000: Dolly_Rig|TestLevel_Intro1
     7400002: Dolly_Rig|TestLevel_Intro2
     7400004: Dolly_Rig|TestLevel_Intro3
+    7400006: Dolly_Rig|Level2_Intro1
+    7400008: Dolly_Rig|Level2_Intro2
+    7400010: Dolly_Rig|Level2_Intro3
     9500000: //RootNode
   externalObjects: {}
   materials:

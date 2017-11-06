@@ -46,6 +46,11 @@ public class Main : ComponentSingleton<Main>
         {
             m_raceManager.UpdateRace();
         }
+
+        if (Input.GetKeyDown(KeyCode.F11))
+        {
+            ScreenCapture.CaptureScreenshot("Capture.png");
+        }
     }
 
     private void LateUpdate()

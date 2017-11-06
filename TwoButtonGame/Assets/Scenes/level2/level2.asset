@@ -13,8 +13,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_name: Desert Canyon
   m_difficulty: 1
-  m_preview: {fileID: 21300000, guid: d6afc292096f86746a12266bd35bc336, type: 3}
+  m_preview: {fileID: 21300000, guid: 5c9c12c0fce613b4aa09e3784cbccd95, type: 3}
   m_sceneName: Scenes/level2/level2
   m_music: {fileID: 11400000, guid: 7f43817e36da9894fb8f1096cd25e767, type: 2}
   m_musicDelay: 0.5
-  m_introSequence: []
+  m_introSequence:
+  - m_clip: {fileID: 7400006, guid: c66d3a454e872c843852370b6217babd, type: 3}
+    m_speed: 1
+  - m_clip: {fileID: 7400008, guid: c66d3a454e872c843852370b6217babd, type: 3}
+    m_speed: 0.75
+  - m_clip: {fileID: 7400010, guid: c66d3a454e872c843852370b6217babd, type: 3}
+    m_speed: 1.1
