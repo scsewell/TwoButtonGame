@@ -1,8 +1,6 @@
 ### To Do ###
 
-Handle level bounds (could done using a restoring force a little larger than the thrust force component going out of bound, visual effect or notification)
-Player phyics causes rotations rolling on impacts, reduce if possible
-improve camera - more vertical smoothing than on horizontal plane, mittigate clipping
+cam early clip smoothing
 Make motion feel fast (radial speed blur, etc)
 
 Player movement/boost sounds

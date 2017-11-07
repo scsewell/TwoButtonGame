@@ -48,13 +48,27 @@ public class CameraManager : MonoBehaviour
     {
         if (m_player != null)
         {
+            Vector3 targetPos = GetPosTarget();
+
             Vector3 vel = m_player.Movement.Velocity;
-            Vector3 hPos = Vector3.SmoothDamp(transform.position, GetPosTarget(), ref vel, m_hSmoothness * Time.deltaTime);
+            Vector3 hPos = Vector3.SmoothDamp(transform.position, targetPos, ref vel, m_hSmoothness * Time.deltaTime);
 
             vel = m_player.Movement.Velocity;
-            Vector3 vPos = Vector3.SmoothDamp(transform.position, GetPosTarget(), ref vel, m_vSmoothness * Time.deltaTime);
+            Vector3 vPos = Vector3.SmoothDamp(transform.position, targetPos, ref vel, m_vSmoothness * Time.deltaTime);
 
-            transform.position = new Vector3(hPos.x, vPos.y, hPos.z);
+            Vector3 goalPos = new Vector3(hPos.x, vPos.y, hPos.z);
+
+            Vector3 lookTarget = GetLookTarget();
+            Vector3 disp = goalPos - lookTarget;
+            float radius = m_cam.nearClipPlane + 0.01f;
+            RaycastHit hit;
+
+            if (Physics.SphereCast(lookTarget, radius, disp, out hit, disp.magnitude, m_blockingLayers))
+            {
+                goalPos = hit.point + (radius * hit.normal);
+            }
+
+            transform.position = goalPos;
             transform.rotation = GetRotTarget();
         }
     }
@@ -67,8 +81,12 @@ public class CameraManager : MonoBehaviour
 
     private Quaternion GetRotTarget()
     {
-        Vector3 lookTarget = m_player.transform.position + m_lookOffset * Vector3.up;
-        return Quaternion.LookRotation(lookTarget - transform.position, Vector3.up);
+        return Quaternion.LookRotation(GetLookTarget() - transform.position, Vector3.up);
+    }
+
+    private Vector3 GetLookTarget()
+    {
+        return m_player.transform.position + (m_lookOffset * Vector3.up);
     }
 
     public static Rect GetSplitscreen(int playerNum, int playerCount)

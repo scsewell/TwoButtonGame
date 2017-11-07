@@ -10,15 +10,18 @@ public class MemeBoots : MonoBehaviour
     private LayerMask m_boundsLayers;
     [SerializeField]
     private LayerMask m_groundLayers;
+    [SerializeField] [Range(0, 20)]
+    private float m_collisionTorqueIntensity = 0.0f;
     [SerializeField] [Range(0, 1)]
     private float m_minBoostTime = 0.25f;
     [SerializeField] [Range(0, 100)]
     private float m_boundsCorrectionStrength = 10.0f;
     
     private Player m_player;
-    private Rigidbody m_body;
     private CapsuleCollider m_capsule;
+    private Rigidbody m_body;
     private RaycastHit[] m_hits;
+    private float m_angVelocity = 0;
     private bool m_bothDoubleTap = false;
     private float m_boundsEffect = 0;
     private Vector3 m_boundsCorrectDir = Vector3.up;
@@ -111,7 +114,7 @@ public class MemeBoots : MonoBehaviour
                 m_isBoosting = false;
             }
         }
-
+        
         Vector3 force = Vector3.zero;
 
         RaycastHit boundsHit;
@@ -132,6 +135,7 @@ public class MemeBoots : MonoBehaviour
         Vector3 gravity = (1 - m_boostFactor) * config.GravityFac * Physics.gravity;
         force += ApplyBoundsCorrection(gravity);
 
+        float torque = 0;
         if (!inPreWarm)
         {
             Vector3 engineForeForce = config.ForwardAccel * transform.forward;
@@ -146,7 +150,7 @@ public class MemeBoots : MonoBehaviour
                 linearForce += engineForce;
                 if (!m_rightEngine)
                 {
-                    m_body.AddTorque(Vector3.Cross(-forceOffset, engineForce));
+                    torque += Vector3.Dot(Vector3.Cross(-forceOffset, engineForce), Vector3.up);
                 }
             }
             if (m_rightEngine)
@@ -154,7 +158,7 @@ public class MemeBoots : MonoBehaviour
                 linearForce += engineForce;
                 if (!m_leftEngine)
                 {
-                    m_body.AddTorque(Vector3.Cross(forceOffset, engineForce));
+                    torque += Vector3.Dot(Vector3.Cross(forceOffset, engineForce), Vector3.up);
                 }
             }
 
@@ -163,10 +167,29 @@ public class MemeBoots : MonoBehaviour
         
         m_body.AddForce(force);
 
+        // The 2.5 is arbitrary, but works to mimic Physx for some reason...
+        m_angVelocity += 2.5f * torque * Time.deltaTime;
+        m_angVelocity *= Mathf.Clamp01(1 - (m_body.angularDrag * Time.deltaTime));
+        transform.Rotate(Vector3.up, 180 * m_angVelocity * Time.deltaTime);
+
         Vector3 lowerSphereCenter = transform.TransformPoint(m_capsule.center + (((m_capsule.height / 2) - m_capsule.radius) * Vector3.down));
 
         int hitCount = Physics.SphereCastNonAlloc(lowerSphereCenter, m_capsule.radius * 0.95f, Vector3.down, m_hits, 0.1f, m_groundLayers);
         m_isGrounded = m_hits.Take(hitCount).Any(h => Mathf.Acos(Vector3.Dot(h.normal, Vector3.up)) * Mathf.Rad2Deg < 10.0f);
+    }
+
+    private void OnCollisionStay(Collision collision)
+    {
+        if (m_collisionTorqueIntensity > 0)
+        {
+            ContactPoint[] contacts = collision.contacts;
+            float torque = 0;
+            foreach (ContactPoint c in contacts)
+            {
+                torque += Vector3.Dot(Vector3.Cross(c.point - m_body.position, collision.impulse / contacts.Length), Vector3.up);
+            }
+            m_angVelocity += m_collisionTorqueIntensity * Mathf.Sign(torque) * Mathf.Min(Mathf.Abs(torque), 25) * Time.deltaTime;
+        }
     }
 
     private void ConfigurePhysics(PlayerConfig config)
