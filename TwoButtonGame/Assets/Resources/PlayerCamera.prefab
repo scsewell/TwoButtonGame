@@ -93,8 +93,15 @@ MonoBehaviour:
   m_blockingLayers:
     serializedVersion: 2
     m_Bits: 33554432
-  m_positionOffset: {x: 6, y: 1.65}
   m_lookOffset: 1.4
+  m_softLookOffset: 0
+  m_softLookRadius: 0.45
+  m_softLookDistance: 7.5
+  m_softLookSmoothing: 0.15
+  m_positionOffset: {x: 6, y: 1.65}
+  m_softBlockDistance: 12
+  m_softBlockMinDistance: 1
+  m_softBlockSmoothing: 0.25
   m_hSmoothness: 1.5
   m_vSmoothness: 3.75
 --- !u!114 &114812819627298710

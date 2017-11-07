@@ -201,10 +201,8 @@ public class PlayerUI : MonoBehaviour
         {
             SetArrow(waypoint, m_arrowSmoothing);
         }
-
-        List<Player> players = m_raceManager.Players.OrderBy(p => Vector3.Distance(m_camera.transform.position, p.transform.position)).ToList();
-
-        foreach (Player player in players)
+        
+        foreach (Player player in m_raceManager.Players.OrderBy(p => Vector3.Distance(m_camera.transform.position, p.transform.position)))
         {
             if (player != m_player)
             {

@@ -145,7 +145,7 @@ public class RaceManager : MonoBehaviour
         if (m_state == State.Racing || m_state == State.Finished)
         {
             m_players.ForEach(p => p.FixedUpdatePlayer(Time.time - m_introEndTime >= 0, GetStartRelativeTime() >= 0));
-            m_cameras.ForEach(c => c.MainUpdate());
+            m_cameras.ForEach(c => c.UpdateCamera());
 
             m_racePath.FixedUpdatePath();
 

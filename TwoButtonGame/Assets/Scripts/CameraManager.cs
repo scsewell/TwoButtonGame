@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 using Framework.Interpolation;
 
 [RequireComponent(typeof(TransformInterpolator))]
@@ -7,9 +9,23 @@ public class CameraManager : MonoBehaviour
     [SerializeField]
     private LayerMask m_blockingLayers = Physics.DefaultRaycastLayers;
     [SerializeField]
-    private Vector2 m_positionOffset = new Vector2(12, 2);
-    [SerializeField]
     private float m_lookOffset = 2.0f;
+    [SerializeField]
+    private float m_softLookOffset = 0.45f;
+    [SerializeField] [Range(0.01f, 1)]
+    private float m_softLookRadius = 0.35f;
+    [SerializeField] [Range(0, 20)]
+    private float m_softLookDistance = 5.0f;
+    [SerializeField] [Range(0.01f, 1)]
+    private float m_softLookSmoothing = 0.2f;
+    [SerializeField]
+    private Vector2 m_positionOffset = new Vector2(12, 2);
+    [SerializeField] [Range(0, 20)]
+    private float m_softBlockDistance = 12.0f;
+    [SerializeField] [Range(0, 20)]
+    private float m_softBlockMinDistance = 1.0f;
+    [SerializeField] [Range(0.01f, 1)]
+    private float m_softBlockSmoothing = 0.25f;
     [SerializeField] [Range(0, 10)]
     private float m_hSmoothness = 2.0f;
     [SerializeField] [Range(0, 10)]
@@ -22,6 +38,10 @@ public class CameraManager : MonoBehaviour
     public Player Owner { get { return m_player; } }
 
     private TransformInterpolator m_tInterpolator;
+    private RaycastHit[] m_hits = new RaycastHit[20];
+    private List<Vector3> m_blockHits = new List<Vector3>();
+    private float m_blockSmooth = 1;
+    private float m_lookSmooth = 1;
 
     private void Awake()
     {
@@ -38,13 +58,13 @@ public class CameraManager : MonoBehaviour
         SettingManager.Instance.ConfigureCamera(m_cam, true);
         
         transform.position = GetPosTarget();
-        transform.rotation = GetRotTarget();
+        transform.rotation = GetRotTarget(GetLookTarget());
         m_tInterpolator.ForgetPreviousValues();
 
         return this;
     }
 
-    public void MainUpdate()
+    public void UpdateCamera()
     {
         if (m_player != null)
         {
@@ -57,19 +77,41 @@ public class CameraManager : MonoBehaviour
             Vector3 vPos = Vector3.SmoothDamp(transform.position, targetPos, ref vel, m_vSmoothness * Time.deltaTime);
 
             Vector3 goalPos = new Vector3(hPos.x, vPos.y, hPos.z);
-
             Vector3 lookTarget = GetLookTarget();
             Vector3 disp = goalPos - lookTarget;
-            float radius = m_cam.nearClipPlane + 0.01f;
-            RaycastHit hit;
+            float radius = m_cam.nearClipPlane + 0.05f;
+            float softDistance = disp.magnitude + m_softBlockDistance;
+            float minSmooth = m_softBlockMinDistance / disp.magnitude;
 
-            if (Physics.SphereCast(lookTarget, radius, disp, out hit, disp.magnitude, m_blockingLayers))
+            Vector3 hitPos;
+            Vector3 finalPos;
+
+            if (IsBlocked(lookTarget, radius, disp, out hitPos, softDistance))
             {
-                goalPos = hit.point + (radius * hit.normal);
+                Vector3 hitDisp = hitPos - lookTarget;
+
+                float fac = Mathf.Clamp01(hitDisp.magnitude / softDistance);
+                m_blockSmooth = Mathf.Max(Mathf.Lerp(m_blockSmooth, fac, Time.deltaTime / m_softBlockSmoothing), minSmooth);
+                Vector3 smoothPos = Vector3.Lerp(lookTarget, goalPos, m_blockSmooth);
+
+                if (hitDisp.magnitude > (smoothPos - lookTarget).magnitude)
+                {
+                    finalPos = smoothPos;
+                }
+                else
+                {
+                    m_blockSmooth = Mathf.Max(hitDisp.magnitude / disp.magnitude, minSmooth);
+                    finalPos = hitPos;
+                }
+            }
+            else
+            {
+                m_blockSmooth = Mathf.Max(Mathf.Lerp(m_blockSmooth, 1, Time.deltaTime / m_softBlockSmoothing), minSmooth);
+                finalPos = Vector3.Lerp(lookTarget, goalPos, m_blockSmooth);
             }
 
-            transform.position = goalPos;
-            transform.rotation = GetRotTarget();
+            transform.position = finalPos;
+            transform.rotation = GetRotTarget(lookTarget);
         }
     }
     
@@ -79,14 +121,90 @@ public class CameraManager : MonoBehaviour
         return m_player.transform.position - m_positionOffset.x * forwardLook + m_positionOffset.y * Vector3.Cross(forwardLook, transform.right);
     }
 
-    private Quaternion GetRotTarget()
+    private Quaternion GetRotTarget(Vector3 lookTarget)
     {
-        return Quaternion.LookRotation(GetLookTarget() - transform.position, Vector3.up);
+        return Quaternion.LookRotation(lookTarget - transform.position, Vector3.up);
     }
 
     private Vector3 GetLookTarget()
     {
-        return m_player.transform.position + (m_lookOffset * Vector3.up);
+        Vector3 origin = m_player.transform.position + (m_softLookOffset * Vector3.up);
+        Vector3 goal = m_player.transform.position + (m_lookOffset * Vector3.up);
+        Vector3 disp = goal - origin;
+        float softDistance = disp.magnitude + m_softLookDistance;
+        float radius = m_softLookRadius;
+
+        RaycastHit hit;
+        Vector3 finalPos;
+
+        if (Physics.SphereCast(origin, radius, disp, out hit, softDistance, m_blockingLayers))
+        {
+            Vector3 hitPos = hit.point + (radius * hit.normal);
+            Vector3 hitDisp = hitPos - origin;
+
+            float fac = Mathf.Clamp01(hitDisp.magnitude / softDistance);
+            m_lookSmooth = Mathf.Lerp(m_lookSmooth, fac, Time.deltaTime / m_softLookSmoothing);
+            Vector3 smoothPos = Vector3.Lerp(origin, goal, m_lookSmooth);
+
+            if (hitDisp.magnitude > (smoothPos - origin).magnitude)
+            {
+                finalPos = smoothPos;
+            }
+            else
+            {
+                m_lookSmooth = hitDisp.magnitude / disp.magnitude;
+                finalPos = hitPos;
+            }
+        }
+        else
+        {
+            m_lookSmooth = Mathf.Lerp(m_lookSmooth, 1, Time.deltaTime / m_softLookSmoothing);
+            finalPos = Vector3.Lerp(origin, goal, m_lookSmooth);
+        }
+        
+        return finalPos;
+    }
+
+    private bool IsBlocked(Vector3 origin, float radius, Vector3 dir, out Vector3 hitPos, float distance)
+    {
+        hitPos = origin;
+        
+        m_blockHits.Clear();
+        GetBlockingHits(origin, radius, dir, distance, false);
+        GetBlockingHits(origin, radius, dir, distance, true);
+        
+        if (m_blockHits.Count > 0)
+        {
+            float min = float.MaxValue;
+            foreach (Vector3 point in m_blockHits)
+            {
+                float dist = (point - origin).magnitude;
+                if (dist < min)
+                {
+                    min = dist;
+                    hitPos = point;
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+
+    private void GetBlockingHits(Vector3 origin, float radius, Vector3 dir, float distance, bool reverseDir)
+    {
+        Vector3 start = origin;
+        if (reverseDir)
+        {
+            start = (distance * dir.normalized) + origin;
+            dir *= -1;
+        }
+
+        int hitCount = Physics.SphereCastNonAlloc(start, radius, dir.normalized, m_hits, distance, m_blockingLayers);
+        for (int i = 0; i < hitCount; i++)
+        {
+            RaycastHit h = m_hits[i];
+            m_blockHits.Add(h.point + ((reverseDir ? -1 : 1) * radius * h.normal));
+        }
     }
 
     public static Rect GetSplitscreen(int playerNum, int playerCount)
