@@ -4,12 +4,16 @@ using Framework.Interpolation;
 [RequireComponent(typeof(TransformInterpolator))]
 public class CameraManager : MonoBehaviour
 {
-    [SerializeField] [Range(0, 20)]
-    private float m_smoothness = 10.0f;
+    [SerializeField]
+    private LayerMask m_blockingLayers = Physics.DefaultRaycastLayers;
     [SerializeField]
     private Vector2 m_positionOffset = new Vector2(12, 2);
     [SerializeField]
     private float m_lookOffset = 2.0f;
+    [SerializeField] [Range(0, 10)]
+    private float m_hSmoothness = 2.0f;
+    [SerializeField] [Range(0, 10)]
+    private float m_vSmoothness = 4.0f;
 
     private Camera m_cam;
     public Camera Camera { get { return m_cam; } }
@@ -44,9 +48,13 @@ public class CameraManager : MonoBehaviour
     {
         if (m_player != null)
         {
-            Vector3 playerVelocity = m_player.GetComponent<MemeBoots>().Velocity;
+            Vector3 vel = m_player.Movement.Velocity;
+            Vector3 hPos = Vector3.SmoothDamp(transform.position, GetPosTarget(), ref vel, m_hSmoothness * Time.deltaTime);
 
-            transform.position = Vector3.SmoothDamp(transform.position, GetPosTarget(), ref playerVelocity, m_smoothness * Time.deltaTime);
+            vel = m_player.Movement.Velocity;
+            Vector3 vPos = Vector3.SmoothDamp(transform.position, GetPosTarget(), ref vel, m_vSmoothness * Time.deltaTime);
+
+            transform.position = new Vector3(hPos.x, vPos.y, hPos.z);
             transform.rotation = GetRotTarget();
         }
     }

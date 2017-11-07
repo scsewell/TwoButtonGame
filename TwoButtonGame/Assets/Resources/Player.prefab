@@ -70,10 +70,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58759e4c08d429843968e917aee52589, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_boundsLayers:
+    serializedVersion: 2
+    m_Bits: 134217728
   m_groundLayers:
     serializedVersion: 2
     m_Bits: 4294967295
   m_minBoostTime: 0.25
+  m_boundsCorrectionStrength: 25
 --- !u!114 &114499073984249860
 MonoBehaviour:
   m_ObjectHideFlags: 1

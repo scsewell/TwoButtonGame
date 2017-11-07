@@ -701,8 +701,8 @@ MonoBehaviour:
   m_indicatorVerticalOffset: 0.85
   m_indicatorNearFadeStart: 4
   m_indicatorNearFadeEnd: 7.5
-  m_indicatorFarFadeStart: 215
-  m_indicatorFarFadeEnd: 250
+  m_indicatorFarFadeStart: 400
+  m_indicatorFarFadeEnd: 500
   m_indicatorMinSize: 0.15
   m_indicatorMaxSize: 0.5
   m_indicatorMaxAlpha: 0.7

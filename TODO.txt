@@ -1,23 +1,25 @@
 ### To Do ###
-Player Models (fatty, floating boosters fancy tech, robot, other race?, really abstract?)
-Character blurbs
-Ready up anim
-improve camera - more vertical smoothing than on horizontal plane
+
+Handle level bounds (could done using a restoring force a little larger than the thrust force component going out of bound, visual effect or notification)
+Player phyics causes rotations rolling on impacts, reduce if possible
+improve camera - more vertical smoothing than on horizontal plane, mittigate clipping
 Make motion feel fast (radial speed blur, etc)
 
 Player movement/boost sounds
 Checkpoint sound
 Player finish line sounds
-Collision sound
+Collision/sliding sound
 Boost gate sounds
 Waypoint engine sound
+
+Player Models (fatty, floating boosters fancy tech, robot, other race?, really abstract?)
+Character blurbs
+Ready up anim
 
 Alternate paths
 Moving gates - Add rotation
 Boost gates - improve graphics
 Wind / wind turbines
-
-Handle level bounds (could done using a restoring force a little larger than the thrust force component going out of bound, visual effect or notification)
 
 Levels
 	City

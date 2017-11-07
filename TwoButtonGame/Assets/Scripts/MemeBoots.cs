@@ -7,19 +7,25 @@ using Framework.Interpolation;
 public class MemeBoots : MonoBehaviour
 {
     [SerializeField]
+    private LayerMask m_boundsLayers;
+    [SerializeField]
     private LayerMask m_groundLayers;
     [SerializeField] [Range(0, 1)]
     private float m_minBoostTime = 0.25f;
+    [SerializeField] [Range(0, 100)]
+    private float m_boundsCorrectionStrength = 10.0f;
     
     private Player m_player;
     private Rigidbody m_body;
     private CapsuleCollider m_capsule;
     private RaycastHit[] m_hits;
     private bool m_bothDoubleTap = false;
+    private float m_boundsEffect = 0;
+    private Vector3 m_boundsCorrectDir = Vector3.up;
     private float m_boostDuration = 0;
     private float m_boostEndTime = float.MinValue;
     private float m_boostFactor = 0;
-    
+
     public bool CanBoost
     {
         get { return m_player.Energy >= m_player.Config.BoostEnergyUseRate * m_minBoostTime; }
@@ -65,12 +71,7 @@ public class MemeBoots : MonoBehaviour
     {
         PlayerConfig config = m_player.Config;
 
-        m_capsule.material = config.PhysicsMat;
-        m_body.useGravity = false;
-        m_body.solverIterations = 16;
-        m_body.solverVelocityIterations = 2;
-        m_body.drag = config.LinearDrag;
-        m_body.angularDrag = config.AngularDrag;
+        ConfigurePhysics(config);
 
         m_leftEngine = acceptInput ? m_player.Input.Button2.IsDown : false;
         m_rightEngine = acceptInput ? m_player.Input.Button1.IsDown : false;
@@ -97,6 +98,7 @@ public class MemeBoots : MonoBehaviour
         {
             m_isBoosting = false;
         }
+        m_bothDoubleTap = false;
 
         if (m_isBoosting)
         {
@@ -109,36 +111,82 @@ public class MemeBoots : MonoBehaviour
                 m_isBoosting = false;
             }
         }
-        
+
+        Vector3 force = Vector3.zero;
+
+        RaycastHit boundsHit;
+        bool outOfBounds = Physics.Raycast(transform.position, -transform.position, out boundsHit, transform.position.magnitude, m_boundsLayers);
+        if (outOfBounds)
+        {
+            m_boundsCorrectDir = boundsHit.normal;
+            force += m_boundsCorrectionStrength * -boundsHit.normal;
+        }
+        m_boundsEffect = Mathf.MoveTowards(m_boundsEffect, outOfBounds ? 1 : 0, Time.deltaTime / 0.2f);
+
         m_boostFactor = 1 - Mathf.Clamp01((Time.time - m_boostEndTime) / 0.2f);
-        
         float boostStrength = Mathf.Clamp01(Mathf.Exp(-Vector3.Dot(m_body.velocity, transform.forward) / config.BoostSoftCap));
-        m_body.AddForce(m_boostFactor * config.BoostAcceleration * boostStrength * Time.deltaTime * transform.forward, ForceMode.Impulse);
+        Vector3 boostForce = m_boostFactor * config.BoostAcceleration * boostStrength * Time.deltaTime * transform.forward;
+        boostForce = ApplyBoundsCorrection(boostForce);
+        m_body.AddForce(boostForce, ForceMode.Impulse);
+
+        Vector3 gravity = (1 - m_boostFactor) * config.GravityFac * Physics.gravity;
+        force += ApplyBoundsCorrection(gravity);
+
+        if (!inPreWarm)
+        {
+            Vector3 engineForeForce = config.ForwardAccel * transform.forward;
+            Vector3 engineUpForce = config.VerticalAccel * config.GravityFac * Vector3.up;
+
+            Vector3 engineForce = (1 - m_boostFactor) * (engineForeForce + engineUpForce);
+            Vector3 forceOffset = config.TurnRatio * transform.right;
+
+            Vector3 linearForce = Vector3.zero;
+            if (m_leftEngine)
+            {
+                linearForce += engineForce;
+                if (!m_rightEngine)
+                {
+                    m_body.AddTorque(Vector3.Cross(-forceOffset, engineForce));
+                }
+            }
+            if (m_rightEngine)
+            {
+                linearForce += engineForce;
+                if (!m_leftEngine)
+                {
+                    m_body.AddTorque(Vector3.Cross(forceOffset, engineForce));
+                }
+            }
+
+            force += ApplyBoundsCorrection(linearForce);
+        }
         
-        m_body.AddForce((1 - m_boostFactor) * config.GravityFac * Physics.gravity);
+        m_body.AddForce(force);
 
-        Vector3 force = (1 - m_boostFactor) * (config.ForwardAccel * transform.forward + config.VerticalAccel * config.GravityFac * Vector3.up);
-        Vector3 forceOffset = config.TurnRatio * transform.right;
-
-        if (m_leftEngine && !inPreWarm)
-        {
-            AddForce(force, transform.position - forceOffset);
-        }
-        if (m_rightEngine && !inPreWarm)
-        {
-            AddForce(force, transform.position + forceOffset);
-        }
         Vector3 lowerSphereCenter = transform.TransformPoint(m_capsule.center + (((m_capsule.height / 2) - m_capsule.radius) * Vector3.down));
 
         int hitCount = Physics.SphereCastNonAlloc(lowerSphereCenter, m_capsule.radius * 0.95f, Vector3.down, m_hits, 0.1f, m_groundLayers);
         m_isGrounded = m_hits.Take(hitCount).Any(h => Mathf.Acos(Vector3.Dot(h.normal, Vector3.up)) * Mathf.Rad2Deg < 10.0f);
-
-        m_bothDoubleTap = false;
     }
 
-    private void AddForce(Vector3 force, Vector3 position)
+    private void ConfigurePhysics(PlayerConfig config)
     {
-        m_body.AddForce(force);
-        m_body.AddTorque(Vector3.Cross(position - m_body.position, force));
+        m_capsule.material = config.PhysicsMat;
+        m_body.useGravity = false;
+        m_body.solverIterations = 16;
+        m_body.solverVelocityIterations = 2;
+        m_body.drag = config.LinearDrag;
+        m_body.angularDrag = config.AngularDrag;
+    }
+
+    private Vector3 ApplyBoundsCorrection(Vector3 force)
+    {
+        float outwardDot = Vector3.Dot(force, m_boundsCorrectDir);
+        if (outwardDot > 0)
+        {
+            float effectIntensity = 1 - (0.5f * Mathf.Cos(m_boundsEffect * Mathf.PI) + 0.5f);
+            return force - (effectIntensity * m_boundsCorrectDir * outwardDot);
+        }
+        return force;
     }
 }

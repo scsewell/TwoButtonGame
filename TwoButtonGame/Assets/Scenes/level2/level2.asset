@@ -19,8 +19,8 @@ MonoBehaviour:
   m_musicDelay: 0.5
   m_introSequence:
   - m_clip: {fileID: 7400006, guid: c66d3a454e872c843852370b6217babd, type: 3}
-    m_speed: 1
+    m_speed: 1.1
   - m_clip: {fileID: 7400008, guid: c66d3a454e872c843852370b6217babd, type: 3}
-    m_speed: 0.75
+    m_speed: 0.85
   - m_clip: {fileID: 7400010, guid: c66d3a454e872c843852370b6217babd, type: 3}
     m_speed: 1.1
