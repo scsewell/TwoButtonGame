@@ -203,6 +203,8 @@ public class RaceManager : MonoBehaviour
             m_countdownSecond = countdownSecond;
         }
 
+        SettingManager.Instance.SetShadowDistance();
+
         AudioManager.Instance.MusicPausable = (Time.time - m_raceStartTime < 0);
         AudioManager.Instance.Volume = Mathf.MoveTowards(AudioManager.Instance.Volume, 1 - GetFadeFactor(true), Time.unscaledDeltaTime / 0.5f);
         

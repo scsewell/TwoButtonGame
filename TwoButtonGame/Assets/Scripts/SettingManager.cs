@@ -60,7 +60,7 @@ public class SettingManager : Singleton<SettingManager>
 
         string[] volumeValues = Enumerable.Range(0, 101).Where(i => i % 2 == 0).Select(v => v.ToString()).ToArray();
         m_masterVolume = m_settings.Add(Categories.Audio, "Master Volume", 100, volumeValues, (v) => v.ToString(), (s) => int.Parse(s));
-        m_musicVolume = m_settings.Add(Categories.Audio, "Music Volume", 50, volumeValues, (v) => v.ToString(), (s) => int.Parse(s));
+        m_musicVolume = m_settings.Add(Categories.Audio, "Music Volume", 60, volumeValues, (v) => v.ToString(), (s) => int.Parse(s));
     }
     
     public void UseDefaults()
@@ -120,6 +120,19 @@ public class SettingManager : Singleton<SettingManager>
         }
 
         post.profile = profile;
+    }
+
+    public void SetShadowDistance()
+    {
+        float distance = 20;
+        switch (QualitySettings.GetQualityLevel())
+        {
+            case 0: distance = 500; break;
+            case 1: distance = 450; break;
+            case 2: distance = 300; break;
+            case 3: distance = 100; break;
+        }
+        QualitySettings.shadowDistance = distance;
     }
 
     private string SerializeResolution(Resolution res)

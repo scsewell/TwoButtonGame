@@ -254,6 +254,8 @@ public class MainMenu : Menu
             m_loading.allowSceneActivation = true;
         }
 
+        QualitySettings.shadowDistance = 20;
+
         AudioManager.Instance.Volume = Mathf.MoveTowards(AudioManager.Instance.Volume, 1 - factor, Time.unscaledDeltaTime / 0.35f);
     }
 

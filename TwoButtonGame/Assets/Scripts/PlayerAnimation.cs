@@ -44,18 +44,37 @@ public class PlayerAnimation : MonoBehaviour
     [SerializeField] [Range(0, 10)]
     private float m_idleVelThresh = 2f;
 
+    [Header("Audio")]
+    [SerializeField] [Range(0, 1)]
+    private float m_engineVolume = 0.15f;
+    [SerializeField] [Range(0, 1)]
+    private float m_enginePitch = 0.35f;
+    [SerializeField] [Range(0, 1)]
+    private float m_volumePower = 0.4f;
+    [SerializeField] [Range(0, 1)]
+    private float m_boostPitch = 0.45f;
+    [SerializeField] [Range(0, 1)]
+    private float m_audioSmoothing = 0.065f;
+    
     private Animator m_anim;
+    private AudioSource m_audio;
     private Material m_leftGlow;
     private Material m_rightGlow;
     private Quaternion m_headRotation;
     private Vector3 m_velocity;
+    private float m_volume;
+    private float m_pitch;
 
     private void Awake()
     {
         m_anim = GetComponent<Animator>();
-        
+        m_audio = GetComponent<AudioSource>();
+
         m_leftGlow = InstanceSharedMat(m_boosterGlowLMat, m_leftBoosters);
         m_rightGlow = InstanceSharedMat(m_boosterGlowRMat, m_rightBoosters);
+
+        m_volume = 0;
+        m_pitch = m_enginePitch;
     }
     
     public void UpdateAnimation(MemeBoots movement)
@@ -85,6 +104,15 @@ public class PlayerAnimation : MonoBehaviour
         Color glow = Color.Lerp(m_glowCol, m_boostGlowCol, movement.BoostFactor);
         m_leftGlow.SetColor("_EmissionColor", glow * Mathf.LerpUnclamped(m_notBoostGlow, m_boostGlow, leftNoiseFac));
         m_rightGlow.SetColor("_EmissionColor", glow * Mathf.LerpUnclamped(m_notBoostGlow, m_boostGlow, rightNoiseFac));
+        
+        float targetVolume = (leftEngine + rightEngine) / 4;
+        float targetPitch = Mathf.Lerp(m_enginePitch, m_boostPitch, movement.BoostFactor);
+
+        m_volume = Mathf.Lerp(m_volume, targetVolume, Time.deltaTime / m_audioSmoothing);
+        m_pitch = Mathf.Lerp(m_pitch, targetPitch, Time.deltaTime / m_audioSmoothing);
+
+        m_audio.volume = Mathf.Pow(m_volume, m_volumePower) * m_engineVolume;
+        m_audio.pitch = m_pitch;
     }
 
     public void LateUpdateAnimation(Waypoint nextWaypoint)

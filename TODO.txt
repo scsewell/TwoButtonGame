@@ -1,14 +1,15 @@
 ### To Do ###
 
-cam early clip smoothing
+Fix arrow motion blur
+level titlecard
+
 Make motion feel fast (radial speed blur, etc)
 
-Player movement/boost sounds
+Collision/sliding sound
 Checkpoint sound
 Player finish line sounds
-Collision/sliding sound
-Boost gate sounds
 Waypoint engine sound
+Energy gate sounds
 
 Player Models (fatty, floating boosters fancy tech, robot, other race?, really abstract?)
 Character blurbs
