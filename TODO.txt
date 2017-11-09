@@ -2,8 +2,9 @@
 
 Fix arrow motion blur
 level titlecard
-
-Make motion feel fast (radial speed blur, etc)
+Make boost sound start more intense
+Change gate detection to be more reliable
+More detail to level2 color to help with judging distance, particles in air?
 
 Collision/sliding sound
 Checkpoint sound

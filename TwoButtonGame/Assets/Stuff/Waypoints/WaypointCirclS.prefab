@@ -646,7 +646,7 @@ MeshRenderer:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1855723000028214}
   m_Enabled: 1
-  m_CastShadows: 1
+  m_CastShadows: 2
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
   m_MotionVectors: 1
@@ -921,7 +921,6 @@ MonoBehaviour:
   m_wrapMode: 0
   m_flipDirection: 0
   m_startOffset: 0
-  m_accelerationSmoothing: 0.135
 --- !u!114 &114903465148022524
 MonoBehaviour:
   m_ObjectHideFlags: 1
