@@ -53,7 +53,6 @@
             float3 bn = tex2D(_NormalTex, IN.uv_MainTex);
             float3 dn1 = lerp(float3(0.5, 0.5, 1), tex2D(_NormalDetail1Tex, IN.uv_NormalDetail1Tex), _NormalDetail1);
 
-
             o.Normal = rnmBlendUnpacked(tex2D(_NormalTex, IN.uv_MainTex), tex2D(_NormalDetail1Tex, IN.uv_NormalDetail1Tex));
 
 			fixed4 c = tex2D(_MainTex, IN.uv_MainTex) * _Color;

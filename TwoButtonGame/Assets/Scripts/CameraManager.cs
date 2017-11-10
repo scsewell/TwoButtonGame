@@ -35,6 +35,18 @@ public class CameraManager : MonoBehaviour
     private float m_hSmoothness = 2.0f;
     [SerializeField] [Range(0, 10)]
     private float m_vSmoothness = 4.0f;
+
+    [Header("Dust Particles")]
+    [SerializeField] [Range(0, 1)]
+    private float m_dustAlpha = 0.1f;
+    [SerializeField] [Range(1, 200)]
+    private float m_dustMinVelocity = 5.0f;
+    [SerializeField] [Range(1, 200)]
+    private float m_dustMaxVelocity = 80.0f;
+    [SerializeField] [Range(1, 50)]
+    private float m_dustVelocityPower = 3.0f;
+    [SerializeField] [Range(0.01f, 1)]
+    private float m_dustFadeSmoothing = 0.25f;
     
     public Camera MainCam { get { return m_mainCam; } }
     public Camera UICam { get { return m_uiCam; } }
@@ -42,17 +54,21 @@ public class CameraManager : MonoBehaviour
     private Player m_player;
     public Player Owner { get { return m_player; } }
 
-    public int PlayerLayer { get { return m_player.PlayerNum + 8; } }
+    public int PlayerMainLayer { get { return m_player.PlayerNum + 8; } }
+    public int PlayerUILayer { get { return m_player.PlayerNum + 16; } }
 
     private TransformInterpolator m_tInterpolator;
+    private ParticleSystem m_dustParticles;
     private RaycastHit[] m_hits = new RaycastHit[20];
     private List<Vector3> m_blockHits = new List<Vector3>();
     private float m_blockSmooth = 1;
     private float m_lookSmooth = 1;
+    private float m_dustFade = 0;
 
     private void Awake()
     {
         m_tInterpolator = GetComponent<TransformInterpolator>();
+        m_dustParticles = GetComponentInChildren<ParticleSystem>();
     }
 
     public CameraManager Init(Player player, int playerCount)
@@ -65,8 +81,10 @@ public class CameraManager : MonoBehaviour
 
         SettingManager.Instance.ConfigureCamera(m_mainCam, true);
 
-        m_mainCam.cullingMask |= (1 << PlayerLayer);
-        m_uiCam.cullingMask |= (1 << PlayerLayer);
+        m_mainCam.cullingMask |= (1 << PlayerMainLayer);
+        m_uiCam.cullingMask |= (1 << PlayerUILayer);
+
+        m_dustParticles.gameObject.layer = PlayerMainLayer;
 
         transform.position = GetPosTarget();
         transform.rotation = GetRotTarget(GetLookTarget());
@@ -85,6 +103,14 @@ public class CameraManager : MonoBehaviour
     {
         if (m_player != null)
         {
+            float targetDustFade = Mathf.Pow(Mathf.Clamp01((m_player.Movement.Velocity.magnitude - m_dustMinVelocity) / m_dustMaxVelocity), m_dustVelocityPower);
+            Debug.Log(targetDustFade);
+            m_dustFade = Mathf.Lerp(m_dustFade, targetDustFade, Time.deltaTime / m_dustFadeSmoothing);
+
+            Color dustColor = Color.white;
+            dustColor.a = Mathf.Lerp(0, m_dustAlpha, targetDustFade);
+            m_dustParticles.GetComponent<Renderer>().material.SetColor("_TintColor", dustColor);
+
             Vector3 targetPos = GetPosTarget();
 
             Vector3 vel = m_player.Movement.Velocity;

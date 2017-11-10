@@ -122,7 +122,7 @@ public class PlayerUI : MonoBehaviour
         
         m_raceManager = Main.Instance.RaceManager;
         
-        m_arrow.GetComponentsInChildren<Transform>().ToList().ForEach(t => t.gameObject.layer = cam.PlayerLayer);
+        m_arrow.gameObject.layer = cam.PlayerUILayer;
 
         RectTransform rt = GetComponent<RectTransform>();
         Rect splitscreen = CameraManager.GetSplitscreen(player.PlayerNum, playerCount);

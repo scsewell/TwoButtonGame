@@ -54,7 +54,7 @@ public class SettingManager : Singleton<SettingManager>
         m_settings.Add(Categories.Screen, "Fullscreen", true, BOOL_VALS, SerializeBool, ParseBool, (v) => Screen.fullScreen = v);
         m_settings.Add(Categories.Screen, "VSync", true, BOOL_VALS, SerializeBool, ParseBool, (v) => QualitySettings.vSyncCount = (v ? 1 : 0));
 
-        m_aa = m_settings.Add(Categories.Screen, "Anti Aliasing", 1, AA_VALS, (v) => AA_VALS[v], (s) => ParseIndex(s, AA_VALS));
+        m_aa = m_settings.Add(Categories.Screen, "Anti Aliasing", 0, AA_VALS, (v) => AA_VALS[v], (s) => ParseIndex(s, AA_VALS));
         m_useMotionBlur = m_settings.Add(Categories.Screen, "Motion Blur", true, BOOL_VALS, SerializeBool, ParseBool);
         m_settings.Add(Categories.Screen, "Shadow Quality", 1, SHADOW_VALS, (v) => SHADOW_VALS[v], (s) => ParseIndex(s, SHADOW_VALS), (v) => QualitySettings.SetQualityLevel(v));
 
