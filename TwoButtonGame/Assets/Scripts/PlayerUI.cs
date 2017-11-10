@@ -125,10 +125,8 @@ public class PlayerUI : MonoBehaviour
         int baseLayer = 8;
         int uiLayer = player.PlayerNum + baseLayer;
         
-        gameObject.GetComponentsInChildren<Transform>().ToList().ForEach(t => t.gameObject.layer = uiLayer);
+        cam.UICam.cullingMask |= (1 << uiLayer);
         m_arrow.GetComponentsInChildren<Transform>().ToList().ForEach(t => t.gameObject.layer = uiLayer);
-
-        cam.Camera.cullingMask |= (1 << uiLayer);
 
         RectTransform rt = GetComponent<RectTransform>();
         Rect splitscreen = CameraManager.GetSplitscreen(player.PlayerNum, playerCount);
@@ -223,7 +221,7 @@ public class PlayerUI : MonoBehaviour
 
                 Vector3 camPos = m_camera.transform.position;
                 Vector3 indicatorPos = player.transform.position + m_indicatorVerticalOffset * Vector3.up;
-                Vector3 viewportPoint = m_camera.Camera.WorldToViewportPoint(indicatorPos);
+                Vector3 viewportPoint = m_camera.MainCam.WorldToViewportPoint(indicatorPos);
 
                 bool active = 0 < viewportPoint.z && !finished && !player.IsFinished;
 
@@ -344,7 +342,7 @@ public class PlayerUI : MonoBehaviour
     {
         if (waypoint != null)
         {
-            Vector3 arrowPos = m_camera.Camera.ViewportToWorldPoint(new Vector3(0.5f, m_arrowPosition, 1));
+            Vector3 arrowPos = m_camera.MainCam.ViewportToWorldPoint(new Vector3(0.5f, m_arrowPosition, 1));
             Quaternion arrowRot = Quaternion.LookRotation(waypoint.Position - m_player.transform.position);
 
             m_arrow.position = arrowPos;

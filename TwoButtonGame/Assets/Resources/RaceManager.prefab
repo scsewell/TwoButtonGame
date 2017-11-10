@@ -51,7 +51,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78af6824180a0c54896771b6288d55f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_clearCameraPrefab: {fileID: 20152883271897542, guid: 7285fc462a99be14cada1308b91a9c9d,
+  m_camClearPrefab: {fileID: 20152883271897542, guid: 7285fc462a99be14cada1308b91a9c9d,
+    type: 2}
+  m_camUIPrefab: {fileID: 20687122174168202, guid: 31935f04eab8212469f47a12e76fef60,
     type: 2}
   m_cameraRigPrefab: {fileID: 114117289867158092, guid: 84fa99131d6c11c4fb8b535a6aee935c,
     type: 2}
@@ -59,7 +61,7 @@ MonoBehaviour:
     type: 2}
   m_playerPrefab: {fileID: 114948392826785060, guid: 3d680dfc5c2d78245a2014838b7209fd,
     type: 2}
-  m_playerCameraPrefab: {fileID: 114172548826053758, guid: f6548cba694dd6f4ab07421c0a80d3f9,
+  m_playerCameraPrefab: {fileID: 114839623293009952, guid: 89dde09609676bf42a256fb75323c457,
     type: 2}
   m_playerUIPrefab: {fileID: 114550108196539550, guid: 4da22fc9ba08a9d47aca094f2ed5ed80,
     type: 2}

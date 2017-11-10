@@ -12,7 +12,6 @@
 	SubShader
     {
 		Tags { "RenderType"="Opaque" }
-        LOD 300
 		
         Pass
         {

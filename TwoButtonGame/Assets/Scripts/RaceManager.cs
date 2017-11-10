@@ -5,7 +5,7 @@ using UnityEngine;
 public class RaceManager : MonoBehaviour
 {
     [Header("Prefabs")]
-    [SerializeField] private Camera m_clearCameraPrefab;
+    [SerializeField] private Camera m_camClearPrefab;
     [SerializeField] private CameraRig m_cameraRigPrefab;
     [SerializeField] private InRaceMenu m_raceMenuPrefab;
     [SerializeField] private Player m_playerPrefab;
@@ -91,7 +91,7 @@ public class RaceManager : MonoBehaviour
 
         m_racePath = FindObjectOfType<RacePath>().Init(raceParams.Laps);
 
-        Instantiate(m_clearCameraPrefab);
+        Instantiate(m_camClearPrefab);
 
         m_raceMenu = Instantiate(m_raceMenuPrefab).Init(playerCount);
 
@@ -113,7 +113,7 @@ public class RaceManager : MonoBehaviour
             m_players.Add(player);
 
             CameraManager camera = Instantiate(m_playerCameraPrefab).Init(player, playerCount);
-            camera.Camera.enabled = false;
+            camera.MainCam.enabled = false;
             m_cameras.Add(camera);
 
             PlayerUI ui = Instantiate(m_playerUIPrefab);
@@ -217,7 +217,7 @@ public class RaceManager : MonoBehaviour
         bool isInIntro = (m_cameraRig != null && m_cameraRig.IsPlaying);
 
         m_players.ForEach(p => p.LateUpdatePlayer());
-        m_cameras.ForEach(c => c.Camera.enabled = !isInIntro);
+        m_cameras.ForEach(c => c.SetCameraEnabled(!isInIntro));
 
         m_raceMenu.UpdateUI(this, !isInIntro, m_state == State.Paused, m_state == State.Finished, m_loading != null, m_fadeFac);
     }

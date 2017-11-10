@@ -1,10 +1,8 @@
 ### To Do ###
 
-Fix arrow motion blur
-level titlecard
-Make boost sound start more intense
 Change gate detection to be more reliable
-More detail to level2 color to help with judging distance, particles in air?
+Make boost sound start more intense
+Help people judge distance better
 
 Collision/sliding sound
 Checkpoint sound

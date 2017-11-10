@@ -7,6 +7,11 @@ using Framework.Interpolation;
 public class CameraManager : MonoBehaviour
 {
     [SerializeField]
+    private Camera m_mainCam;
+    [SerializeField]
+    private Camera m_uiCam;
+
+    [SerializeField]
     private LayerMask m_blockingLayers = Physics.DefaultRaycastLayers;
     [SerializeField]
     private float m_lookOffset = 2.0f;
@@ -30,9 +35,9 @@ public class CameraManager : MonoBehaviour
     private float m_hSmoothness = 2.0f;
     [SerializeField] [Range(0, 10)]
     private float m_vSmoothness = 4.0f;
-
-    private Camera m_cam;
-    public Camera Camera { get { return m_cam; } }
+    
+    public Camera MainCam { get { return m_mainCam; } }
+    public Camera UICam { get { return m_uiCam; } }
 
     private Player m_player;
     public Player Owner { get { return m_player; } }
@@ -45,7 +50,6 @@ public class CameraManager : MonoBehaviour
 
     private void Awake()
     {
-        m_cam = GetComponent<Camera>();
         m_tInterpolator = GetComponent<TransformInterpolator>();
     }
 
@@ -53,15 +57,23 @@ public class CameraManager : MonoBehaviour
     {
         m_player = player;
 
-        m_cam.rect = GetSplitscreen(player.PlayerNum, playerCount);
+        Rect slipscreen = GetSplitscreen(player.PlayerNum, playerCount);
+        m_mainCam.rect = slipscreen;
+        m_uiCam.rect = slipscreen;
 
-        SettingManager.Instance.ConfigureCamera(m_cam, true);
+        SettingManager.Instance.ConfigureCamera(m_mainCam, true);
         
         transform.position = GetPosTarget();
         transform.rotation = GetRotTarget(GetLookTarget());
         m_tInterpolator.ForgetPreviousValues();
 
         return this;
+    }
+
+    public void SetCameraEnabled(bool enabled)
+    {
+        m_mainCam.enabled = enabled;
+        m_uiCam.enabled = enabled;
     }
 
     public void UpdateCamera()
@@ -79,7 +91,7 @@ public class CameraManager : MonoBehaviour
             Vector3 goalPos = new Vector3(hPos.x, vPos.y, hPos.z);
             Vector3 lookTarget = GetLookTarget();
             Vector3 disp = goalPos - lookTarget;
-            float radius = m_cam.nearClipPlane + 0.05f;
+            float radius = m_mainCam.nearClipPlane + 0.05f;
             float softDistance = disp.magnitude + m_softBlockDistance;
             float minSmooth = m_softBlockMinDistance / disp.magnitude;
 
