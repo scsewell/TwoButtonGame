@@ -96,7 +96,7 @@ public class Player : MonoBehaviour
         Waypoint wp = NextWaypoint;
         Vector3 disp = transform.position - m_lastPos;
         RaycastHit hit;
-        if (wp != null && wp.Trigger.Raycast(new Ray(m_lastPos, disp), out hit, disp.magnitude))
+        if (wp != null && disp.magnitude > 0.0001f && wp.Trigger.Raycast(new Ray(m_lastPos, disp.normalized), out hit, disp.magnitude))
         {
             m_waypointsCompleted++;
         }

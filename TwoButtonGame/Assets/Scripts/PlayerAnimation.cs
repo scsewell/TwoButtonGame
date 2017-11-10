@@ -84,15 +84,15 @@ public class PlayerAnimation : MonoBehaviour
 
         m_velocity = Vector3.Lerp(m_velocity, localVel, 6.0f * Time.deltaTime);
 
-        SetFloatSmooth("VelocityX", m_velocity.x, m_velocitySmoothing);
-        SetFloatSmooth("VelocityY", m_velocity.y, m_velocitySmoothing);
-        SetFloatSmooth("VelocityZ", m_velocity.z, m_velocitySmoothing);
+        SetFloatLerp("VelocityX", m_velocity.x, m_velocitySmoothing);
+        SetFloatLerp("VelocityY", m_velocity.y, m_velocitySmoothing);
+        SetFloatLerp("VelocityZ", m_velocity.z, m_velocitySmoothing);
         
         float leftEngine = Mathf.Lerp(movement.LeftEngine ? 1 : 0, 2, movement.BoostFactor);
         float rightEngine = Mathf.Lerp(movement.RightEngine ? 1 : 0, 2, movement.BoostFactor);
 
-        SetFloatSmooth("LeftBoost", leftEngine, m_boostSmoothing);
-        SetFloatSmooth("RightBoost", rightEngine, m_boostSmoothing);
+        SetFloatMoveTowards("LeftBoost", leftEngine, m_boostSmoothing);
+        SetFloatMoveTowards("RightBoost", rightEngine, m_boostSmoothing);
 
         m_anim.SetBool("IsFlying", !(movement.IsGrounded && movement.Velocity.magnitude < m_idleVelThresh));
 
@@ -167,7 +167,19 @@ public class PlayerAnimation : MonoBehaviour
         return Mathf.Lerp(a, b, h) - (k * h * (1.0f - h));
     }
 
-    private void SetFloatSmooth(string key, float value, float smoothing)
+    private void SetFloatLerp(string key, float value, float smoothing)
+    {
+        if (smoothing > 0)
+        {
+            m_anim.SetFloat(key, Mathf.Lerp(m_anim.GetFloat(key), value, 3 * Time.deltaTime / smoothing));
+        }
+        else
+        {
+            m_anim.SetFloat(key, value);
+        }
+    }
+
+    private void SetFloatMoveTowards(string key, float value, float smoothing)
     {
         if (smoothing > 0)
         {

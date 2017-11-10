@@ -42,6 +42,8 @@ public class CameraManager : MonoBehaviour
     private Player m_player;
     public Player Owner { get { return m_player; } }
 
+    public int PlayerLayer { get { return m_player.PlayerNum + 8; } }
+
     private TransformInterpolator m_tInterpolator;
     private RaycastHit[] m_hits = new RaycastHit[20];
     private List<Vector3> m_blockHits = new List<Vector3>();
@@ -62,7 +64,10 @@ public class CameraManager : MonoBehaviour
         m_uiCam.rect = slipscreen;
 
         SettingManager.Instance.ConfigureCamera(m_mainCam, true);
-        
+
+        m_mainCam.cullingMask |= (1 << PlayerLayer);
+        m_uiCam.cullingMask |= (1 << PlayerLayer);
+
         transform.position = GetPosTarget();
         transform.rotation = GetRotTarget(GetLookTarget());
         m_tInterpolator.ForgetPreviousValues();

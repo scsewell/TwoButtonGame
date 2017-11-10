@@ -1,8 +1,15 @@
 ### To Do ###
 
-Make boost sound start more intense
-Help people judge distance better
+camera dust particles - fade near center screen
+camera shake when fast, cam fov kick?
+increase level hight
+Bigger gates
+Dim boost gates when used, explosion of particles
+paritcle motion trail behind engine
+lap time - show all at end as well
+boost bar blinks red - engines spark -  auditory feedback
 
+Make boost sound start more intense
 Collision/sliding sound
 Checkpoint sound
 Player finish line sounds

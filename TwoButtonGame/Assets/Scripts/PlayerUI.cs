@@ -121,12 +121,8 @@ public class PlayerUI : MonoBehaviour
         m_camera = cam;
         
         m_raceManager = Main.Instance.RaceManager;
-
-        int baseLayer = 8;
-        int uiLayer = player.PlayerNum + baseLayer;
         
-        cam.UICam.cullingMask |= (1 << uiLayer);
-        m_arrow.GetComponentsInChildren<Transform>().ToList().ForEach(t => t.gameObject.layer = uiLayer);
+        m_arrow.GetComponentsInChildren<Transform>().ToList().ForEach(t => t.gameObject.layer = cam.PlayerLayer);
 
         RectTransform rt = GetComponent<RectTransform>();
         Rect splitscreen = CameraManager.GetSplitscreen(player.PlayerNum, playerCount);
