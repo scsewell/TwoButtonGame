@@ -1,6 +1,5 @@
 ### To Do ###
 
-Change gate detection to be more reliable
 Make boost sound start more intense
 Help people judge distance better
 

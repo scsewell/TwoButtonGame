@@ -61,11 +61,13 @@ public class Player : MonoBehaviour
     private PlayerAnimation m_animation;
     private RacePath m_racePath;
     private Dictionary<BoostGate, int> m_lastUseProgress = new Dictionary<BoostGate, int>();
+    private Vector3 m_lastPos;
 
 
     private void Awake()
     {
         m_movement = GetComponentInChildren<MemeBoots>();
+        m_lastPos = transform.position;
     }
 
     public Player Init(int playerNum, PlayerInput input, PlayerConfig config)
@@ -90,6 +92,15 @@ public class Player : MonoBehaviour
         {
             m_energy = Mathf.Min(m_energy + (m_config.EnergyRechargeRate * Time.deltaTime), MaxEnergy);
         }
+
+        Waypoint wp = NextWaypoint;
+        Vector3 disp = transform.position - m_lastPos;
+        RaycastHit hit;
+        if (wp != null && wp.Trigger.Raycast(new Ray(m_lastPos, disp), out hit, disp.magnitude))
+        {
+            m_waypointsCompleted++;
+        }
+        m_lastPos = transform.position;
 
         bool finished = m_racePath.IsFinished(m_waypointsCompleted);
         if (finished != m_isFinished)
@@ -124,12 +135,6 @@ public class Player : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        Waypoint waypoint = other.GetComponentInParent<Waypoint>();
-        if (waypoint == NextWaypoint)
-        {
-            m_waypointsCompleted++;
-        }
-
         BoostGate boostGate = other.GetComponentInParent<BoostGate>();
         if (boostGate != null)
         {

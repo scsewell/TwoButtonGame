@@ -7,6 +7,8 @@ public class Waypoint : MonoBehaviour, OnWillRenderReceiver
 {
     [SerializeField]
     private Transform m_gate;
+    [SerializeField]
+    private Collider m_trigger;
 
     [Header("Glow")]
     [SerializeField]
@@ -52,6 +54,11 @@ public class Waypoint : MonoBehaviour, OnWillRenderReceiver
     public Vector3 Position
     {
         get { return m_gate.position; }
+    }
+
+    public Collider Trigger
+    {
+        get { return m_trigger; }
     }
 
     private void Awake()
@@ -159,7 +166,7 @@ public class Waypoint : MonoBehaviour, OnWillRenderReceiver
     public void OnWillRender(Camera cam)
     {
         // make the waypoint glow only for a player's camera if this is the next waypoint
-        CameraManager camManager = cam.GetComponent<CameraManager>();
+        CameraManager camManager = cam.GetComponentInParent<CameraManager>();
 
         Color diffuse = new Color(0.35f, 0.35f, 0.35f);
         Color glow = Color.black;

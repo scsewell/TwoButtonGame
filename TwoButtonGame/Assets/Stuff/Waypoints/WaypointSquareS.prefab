@@ -918,6 +918,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_gate: {fileID: 4024387344713396}
+  m_trigger: {fileID: 65814204613180500}
   m_glowMaterialIndex: 1
   m_nextGlowIntensity: 1.85
   m_secondNextGlowIntensity: 1.45
