@@ -5,9 +5,13 @@ public class PlayerConfig : ScriptableObject
 {
     [Header("Description")]
     [SerializeField]
+    private int m_sortOrder = 100;
+    public int SortOrder { get { return m_sortOrder; } }
+
+    [SerializeField]
     private string m_name;
     public string Name { get { return m_name; } }
-
+    
     [Header("Graphics")]
     [SerializeField]
     private GameObject m_characterGraphics;

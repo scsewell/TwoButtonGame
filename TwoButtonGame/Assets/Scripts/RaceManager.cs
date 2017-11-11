@@ -34,6 +34,8 @@ public class RaceManager : MonoBehaviour
     private bool m_skipIntro = false;
     [SerializeField]
     private bool m_skipCoundown = false;
+    [SerializeField] [Range(0, Consts.MAX_PLAYERS)]
+    private int m_AICount = 0;
 
     private RacePath m_racePath;
     public RacePath RacePath { get { return m_racePath; } }
@@ -84,16 +86,15 @@ public class RaceManager : MonoBehaviour
         {
             m_skipCoundown = false;
             m_skipIntro = false;
+            m_AICount = 0;
         }
 
         m_raceParams = raceParams;
-        int playerCount = raceParams.PlayerIndicies.Count;
-
-        m_racePath = FindObjectOfType<RacePath>().Init(raceParams.Laps);
+        int playerCount = Mathf.Min(raceParams.HumanCount + m_AICount, Consts.MAX_PLAYERS);
 
         Instantiate(m_camClearPrefab);
-
-        m_raceMenu = Instantiate(m_raceMenuPrefab).Init(playerCount);
+        m_racePath = FindObjectOfType<RacePath>().Init(raceParams.Laps);
+        m_raceMenu = Instantiate(m_raceMenuPrefab).Init(raceParams.HumanCount);
 
         List<Transform> spawns = m_racePath.Spawns.Take(playerCount).ToList();
 
@@ -104,21 +105,28 @@ public class RaceManager : MonoBehaviour
             spawns.RemoveAt(index);
 
             Player player = Instantiate(m_playerPrefab, spawn.position, spawn.rotation);
+            m_players.Add(player);
 
             PlayerConfig config = raceParams.PlayerConfigs[playerNum];
             GameObject graphics = Instantiate(config.CharacterGraphics, spawn.position, spawn.rotation, player.transform);
             graphics.transform.localPosition = config.GraphicsOffset;
 
-            player.Init(playerNum, raceParams.GetPlayerInput(playerNum), raceParams.PlayerConfigs[playerNum]);
-            m_players.Add(player);
+            if (playerNum < raceParams.HumanCount)
+            {
+                player.InitHuman(playerNum, raceParams.PlayerConfigs[playerNum], raceParams.GetPlayerInput(playerNum));
 
-            CameraManager camera = Instantiate(m_playerCameraPrefab).Init(player, playerCount);
-            camera.MainCam.enabled = false;
-            m_cameras.Add(camera);
+                CameraManager camera = Instantiate(m_playerCameraPrefab).Init(player, raceParams.HumanCount);
+                camera.MainCam.enabled = false;
+                m_cameras.Add(camera);
 
-            PlayerUI ui = Instantiate(m_playerUIPrefab);
-            m_raceMenu.AddPlayerUI(ui);
-            ui.Init(player, camera, playerCount);
+                PlayerUI ui = Instantiate(m_playerUIPrefab);
+                m_raceMenu.AddPlayerUI(ui);
+                ui.Init(player, camera, raceParams.HumanCount);
+            }
+            else
+            {
+                player.InitAI(playerNum, raceParams.PlayerConfigs[playerNum]);
+            }
         }
 
         float introLength = 0;

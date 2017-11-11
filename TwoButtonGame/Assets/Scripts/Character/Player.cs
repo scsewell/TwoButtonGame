@@ -7,40 +7,25 @@ using Framework.Interpolation;
 [RequireComponent(typeof(TransformInterpolator))]
 public class Player : MonoBehaviour
 {
+    // Configuration
+    private bool m_isHuman;
+    public bool IsHuman { get { return m_isHuman; } }
+
     private int m_playerNum = -1;
     public int PlayerNum { get { return m_playerNum; } }
 
     private PlayerConfig m_config;
     public PlayerConfig Config { get { return m_config; } }
-
-    private PlayerInput m_input;
-    public PlayerInput Input { get { return m_input; } }
-
+    
     public Color GetColor()
     {
-        return Consts.PLAYER_COLORS[m_playerNum];
+        return Consts.PLAYER_COLORS[m_playerNum % Consts.PLAYER_COLORS.Length];
     }
-
-
+    
+    // Level Progress
     private int m_waypointsCompleted = 0;
     public int WaypointsCompleted { get { return m_waypointsCompleted; } }
-
-    public int CurrentLap
-    {
-        get { return m_racePath.GetCurrentLap(m_waypointsCompleted); }
-    }
-
-    private bool m_isFinished = false;
-    public bool IsFinished { get { return m_isFinished; } }
-
-    private List<float> m_lapTimes = new List<float>();
-    public List<float> LapTimes { get { return m_lapTimes; } }
-
-    public float FinishTime
-    {
-        get { return m_lapTimes.Sum(); }
-    }
-
+    
     public Waypoint NextWaypoint
     {
         get { return m_racePath.GetWaypoint(m_waypointsCompleted); }
@@ -51,7 +36,23 @@ public class Player : MonoBehaviour
         get { return m_racePath.GetWaypoint(m_waypointsCompleted + 1); }
     }
 
+    public int CurrentLap
+    {
+        get { return m_racePath.GetCurrentLap(m_waypointsCompleted); }
+    }
 
+    private List<float> m_lapTimes = new List<float>();
+    public List<float> LapTimes { get { return m_lapTimes; } }
+
+    public float FinishTime
+    {
+        get { return m_lapTimes.Sum(); }
+    }
+
+    private bool m_isFinished = false;
+    public bool IsFinished { get { return m_isFinished; } }
+
+    // Energy
     public delegate void EnergyGainedHandler(float total, float delta);
     public event EnergyGainedHandler EnergyGained;
 
@@ -69,9 +70,11 @@ public class Player : MonoBehaviour
         get { return m_energy; }
     }
 
+    // General
     private MemeBoots m_movement;
     public MemeBoots Movement { get { return m_movement; } }
-    
+
+    private IInputProvider m_inputProvider;
     private PlayerAnimation m_animation;
     private RacePath m_racePath;
     private Vector3 m_lastPos;
@@ -83,23 +86,36 @@ public class Player : MonoBehaviour
         m_lastPos = transform.position;
     }
 
-    public Player Init(int playerNum, PlayerInput input, PlayerConfig config)
+    public Player InitHuman(int playerNum, PlayerConfig config, PlayerInput input)
+    {
+        m_isHuman = true;
+        m_inputProvider = new PlayerInputProvider(input);
+        return Init(playerNum, config);
+    }
+
+    public Player InitAI(int playerNum, PlayerConfig config)
+    {
+        m_isHuman = false;
+        m_inputProvider = new PlayerAI(this);
+        return Init(playerNum, config);
+    }
+
+    private Player Init(int playerNum, PlayerConfig config)
     {
         m_playerNum = playerNum;
-        m_input = input;
         m_config = config;
 
         m_animation = GetComponentInChildren<PlayerAnimation>();
         m_racePath = Main.Instance.RaceManager.RacePath;
-        
-        m_energy = 0;
 
+        m_energy = 0;
         return this;
     }
 
     public void FixedUpdatePlayer(bool isAfterIntro, bool isAfterStart)
     {
-        m_movement.FixedUpdateMovement(isAfterIntro && !m_isFinished, !isAfterStart);
+        m_inputProvider.FixedUpdateProvider();
+        m_movement.FixedUpdateMovement(m_inputProvider.GetInput(), isAfterIntro && !m_isFinished, !isAfterStart);
 
         if (isAfterStart && !m_isFinished && !m_movement.IsBoosting)
         {
@@ -131,7 +147,7 @@ public class Player : MonoBehaviour
 
     public void UpdatePlayer()
     {
-        m_movement.UpdateMovement();
+        m_inputProvider.UpdateProvider();
 
         if (m_animation != null)
         {

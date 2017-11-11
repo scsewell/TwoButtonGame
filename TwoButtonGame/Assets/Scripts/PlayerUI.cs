@@ -136,7 +136,7 @@ public class PlayerUI : MonoBehaviour
         SetAlpha(m_newLapText, 0);
     }
 
-    public PlayerUI Init(Player player, CameraManager cam, int playerCount)
+    public PlayerUI Init(Player player, CameraManager cam, int humanCount)
     {
         m_player = player;
         m_camera = cam;
@@ -146,7 +146,7 @@ public class PlayerUI : MonoBehaviour
         m_arrow.gameObject.layer = cam.PlayerUILayer;
 
         RectTransform rt = GetComponent<RectTransform>();
-        Rect splitscreen = CameraManager.GetSplitscreen(player.PlayerNum, playerCount);
+        Rect splitscreen = CameraManager.GetSplitscreen(player.PlayerNum, humanCount);
 
         rt.localScale = Vector3.one;
         rt.anchorMin = new Vector2(splitscreen.x, splitscreen.y);
@@ -270,7 +270,7 @@ public class PlayerUI : MonoBehaviour
         }
         
         // set rank text
-        Color rankColor = m_rankColors[rank - 1];
+        Color rankColor = m_rankColors[Mathf.Min(rank - 1, m_rankColors.Length - 1)];
         SetColorNoAlpha(m_rankText, rankColor);
         SetColorNoAlpha(m_rankSubText, rankColor);
         SetColorNoAlpha(m_finalRankText, rankColor);

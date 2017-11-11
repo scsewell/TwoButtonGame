@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Framework;
@@ -15,13 +16,22 @@ public class Main : ComponentSingleton<Main>
     private RaceParameters m_raceParams = null;
     public RaceParameters LastRaceParams { get { return m_raceParams; } }
 
+    private PlayerConfig[] m_playerConfigs;
+    public PlayerConfig[] PlayerConfigs { get { return m_playerConfigs; } }
+
+    private LevelConfig[] m_levelConfigs;
+    public LevelConfig[] LevelConfigs { get { return m_levelConfigs; } }
+
     protected override void Awake()
     {
         base.Awake();
         DontDestroyOnLoad(gameObject);
 
-        m_raceManagerPrefab = Resources.Load<RaceManager>("RaceManager");
         gameObject.AddComponent<AudioListener>();
+
+        m_raceManagerPrefab = Resources.Load<RaceManager>("RaceManager");
+        m_playerConfigs = Resources.LoadAll<PlayerConfig>("PlayerConfigs/").OrderBy(c => c.SortOrder).ToArray();
+        m_levelConfigs = Resources.LoadAll<LevelConfig>("LevelConfigs/").OrderBy(c => c.SortOrder).ToArray();
 
         SettingManager.Instance.Load();
         SettingManager.Instance.Apply();
@@ -49,7 +59,7 @@ public class Main : ComponentSingleton<Main>
 
         if (Input.GetKeyDown(KeyCode.F11))
         {
-            ScreenCapture.CaptureScreenshot("Capture.png");
+            ScreenCapture.CaptureScreenshot("screenshot_" + DateTime.Now.ToString("MM-dd-yy_H-mm-ss") + ".png");
         }
     }
 
@@ -92,6 +102,7 @@ public class Main : ComponentSingleton<Main>
 
     private IEnumerator LoadLevel(AsyncOperation loading, Action onComplete)
     {
+        Application.backgroundLoadingPriority = ThreadPriority.BelowNormal;
         loading.allowSceneActivation = false;
         yield return new WaitWhile(() => !loading.allowSceneActivation);
         AudioListener.volume = 0;

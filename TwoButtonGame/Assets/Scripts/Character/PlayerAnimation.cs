@@ -56,6 +56,7 @@ public class PlayerAnimation : MonoBehaviour
     [SerializeField] [Range(0, 1)]
     private float m_audioSmoothing = 0.065f;
     
+    private Player m_player;
     private Animator m_anim;
     private AudioSource m_audio;
     private Material m_leftGlow;
@@ -67,6 +68,7 @@ public class PlayerAnimation : MonoBehaviour
 
     private void Awake()
     {
+        m_player = GetComponentInParent<Player>();
         m_anim = GetComponent<Animator>();
         m_audio = GetComponent<AudioSource>();
 
@@ -107,6 +109,8 @@ public class PlayerAnimation : MonoBehaviour
         
         float targetVolume = (leftEngine + rightEngine) / 4;
         float targetPitch = Mathf.Lerp(m_enginePitch, m_boostPitch, movement.BoostFactor);
+
+        m_audio.enabled = m_player.IsHuman;
 
         m_volume = Mathf.Lerp(m_volume, targetVolume, Time.deltaTime / m_audioSmoothing);
         m_pitch = Mathf.Lerp(m_pitch, targetPitch, Time.deltaTime / m_audioSmoothing);

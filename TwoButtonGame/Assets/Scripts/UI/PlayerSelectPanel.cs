@@ -48,7 +48,6 @@ public class PlayerSelectPanel : MonoBehaviour
     
     private State m_state;
     private bool m_continue;
-    private PlayerConfig[] m_configs;
     private Camera m_previewCam;
     private RenderTexture m_previewTex;
     private int m_previewLayer;
@@ -72,7 +71,7 @@ public class PlayerSelectPanel : MonoBehaviour
         FreeTexture();
     }
 
-    public void Init(int index, PlayerConfig[] configs)
+    public void Init(int index)
     {
         m_previewCam = new GameObject("PreviewCamera").AddComponent<Camera>();
         m_previewCam.transform.position = m_previewCamPos;
@@ -87,11 +86,10 @@ public class PlayerSelectPanel : MonoBehaviour
         m_previewCam.cullingMask = (1 << m_previewLayer);
 
         m_previewCam.gameObject.AddComponent<PostProcessingBehaviour>().profile = m_cameraPost;
-
-        m_configs = configs;
+        
         m_input = InputManager.Instance.PlayerInputs[index];
 
-        foreach (PlayerConfig config in m_configs)
+        foreach (PlayerConfig config in Main.Instance.PlayerConfigs)
         {
             GameObject previewObject = Instantiate(config.CharacterGraphics);
             previewObject.GetComponentsInChildren<Transform>(true).ToList().ForEach(r => r.gameObject.layer = m_previewLayer);
@@ -119,7 +117,7 @@ public class PlayerSelectPanel : MonoBehaviour
     public void FromConfig(PlayerConfig selectedConfig)
     {
         m_state = State.Select;
-        SelectCharacter(System.Array.IndexOf(m_configs, selectedConfig));
+        SelectCharacter(System.Array.IndexOf(Main.Instance.PlayerConfigs, selectedConfig));
     }
 
     public void SetCameraActive(bool isActive)
@@ -212,7 +210,7 @@ public class PlayerSelectPanel : MonoBehaviour
             }
         }
 
-        PlayerConfig config = m_configs[m_selectedConfig];
+        PlayerConfig config = Main.Instance.PlayerConfigs[m_selectedConfig];
 
         SetCameraActive(m_state != State.Join);
 
@@ -277,11 +275,11 @@ public class PlayerSelectPanel : MonoBehaviour
 
     private void SelectCharacter(int index)
     {
-        m_selectedConfig = index % m_configs.Length;
+        m_selectedConfig = index % Main.Instance.PlayerConfigs.Length;
         m_selectTime = Time.unscaledTime;
         
         GameObject previewObject = null;
-        if (m_configToPreview.TryGetValue(m_configs[m_selectedConfig], out previewObject))
+        if (m_configToPreview.TryGetValue(Main.Instance.PlayerConfigs[m_selectedConfig], out previewObject))
         {
             previewObject.transform.rotation = Quaternion.identity;
         }

@@ -5,6 +5,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using Framework;
 using Framework.SettingManagement;
 using Framework.UI;
 
@@ -28,7 +29,6 @@ public class MainMenu : Menu
     [SerializeField] private GameObject m_continueBar;
     [SerializeField] private Image m_continueBanner;
     [SerializeField] private ControlPanel m_continueControls;
-    [SerializeField] private PlayerConfig[] m_playerConfigs;
 
     private List<PlayerSelectPanel> m_playerSelectPanels = new List<PlayerSelectPanel>();
     private bool m_canContine = false;
@@ -44,7 +44,6 @@ public class MainMenu : Menu
     [SerializeField] private ControlPanel m_levelControls1;
     [SerializeField] private ControlPanel m_levelControls2;
     [SerializeField] private ControlPanel m_levelControls3;
-    [SerializeField] private LevelConfig[] m_levelConfigs;
 
     private int m_selectedLevel = 0;
     
@@ -139,7 +138,7 @@ public class MainMenu : Menu
         for (int i = 0; i < 4; i++)
         {
             PlayerSelectPanel p = Instantiate(m_playerSelectPrefab, m_playerSelectContent);
-            p.Init(i, m_playerConfigs);
+            p.Init(i);
             m_playerSelectPanels.Add(p);
         }
 
@@ -148,7 +147,7 @@ public class MainMenu : Menu
         RaceParameters previousParams = Main.Instance.LastRaceParams;
         if (previousParams != null)
         {
-            m_selectedLevel = Array.IndexOf(m_levelConfigs, previousParams.LevelConfig);
+            m_selectedLevel = Array.IndexOf(Main.Instance.LevelConfigs, previousParams.LevelConfig);
             m_lapCount = previousParams.Laps;
 
             for (int i = 0; i < previousParams.PlayerIndicies.Count; i++)
@@ -322,7 +321,7 @@ public class MainMenu : Menu
         }
         else if (input.Button2Pressed)
         {
-            m_selectedLevel = (m_selectedLevel += 1) % m_levelConfigs.Length;
+            m_selectedLevel = (m_selectedLevel += 1) % Main.Instance.LevelConfigs.Length;
             m_lapCount = m_defaultLapCount;
             m_levelHighlight.color = new Color(1, 1, 1, 0.5f);
             PlaySelectSound();
@@ -337,7 +336,7 @@ public class MainMenu : Menu
 
     private void UpdateLevelSelectGraphics()
     {
-        LevelConfig config = m_levelConfigs[m_selectedLevel];
+        LevelConfig config = Main.Instance.LevelConfigs[m_selectedLevel];
         m_levelName.text = config.Name;
         m_levelDifficulty.text = config.LevelDifficulty.ToString();
         m_levelPreview.sprite = config.Preview;
@@ -465,7 +464,7 @@ public class MainMenu : Menu
 
     private void LaunchRace()
     {
-        LevelConfig levelConfig = m_levelConfigs[m_selectedLevel];
+        LevelConfig levelConfig = Main.Instance.LevelConfigs[m_selectedLevel];
 
         List<int> playerIndicies = new List<int>();
         for (int i = 0; i < 4; i++)
@@ -477,9 +476,17 @@ public class MainMenu : Menu
         }
         
         List<PlayerConfig> playerConfigs = m_playerSelectPanels.Where(p => p.IsReady)
-            .Select(p => m_playerConfigs[p.SelectedConfig]).ToList();
+            .Select(p => Main.Instance.PlayerConfigs[p.SelectedConfig]).ToList();
 
-        RaceParameters raceParams = new RaceParameters(levelConfig, m_lapCount, playerIndicies, playerConfigs);
+        int humanCount = playerIndicies.Count;
+        int aiCount = Consts.MAX_PLAYERS - playerIndicies.Count;
+
+        for (int i = 0; i < aiCount; i++)
+        {
+            playerConfigs.Add(Utils.PickRandom(Main.Instance.PlayerConfigs));
+        }
+
+        RaceParameters raceParams = new RaceParameters(humanCount, playerIndicies, aiCount, playerConfigs, levelConfig, m_lapCount);
 
         m_loading = Main.Instance.LoadRace(raceParams);
         m_loadFadeTime = Time.unscaledTime;

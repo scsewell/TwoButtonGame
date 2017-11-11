@@ -73,11 +73,11 @@ public class CameraManager : MonoBehaviour
         m_dustParticles = GetComponentInChildren<ParticleSystem>();
     }
 
-    public CameraManager Init(Player player, int playerCount)
+    public CameraManager Init(Player player, int humanCount)
     {
         m_player = player;
 
-        Rect slipscreen = GetSplitscreen(player.PlayerNum, playerCount);
+        Rect slipscreen = GetSplitscreen(player.PlayerNum, humanCount);
         m_mainCam.rect = slipscreen;
         m_uiCam.rect = slipscreen;
 
@@ -251,7 +251,7 @@ public class CameraManager : MonoBehaviour
         }
     }
 
-    public static Rect GetSplitscreen(int playerNum, int playerCount)
+    public static Rect GetSplitscreen(int playerNum, int humanCount)
     {
         const float pixelMargin = 4f;
         Vector2 m = new Vector2(pixelMargin / Screen.width, pixelMargin / Screen.height) / 2;
@@ -264,7 +264,7 @@ public class CameraManager : MonoBehaviour
         Rect BOTTOM_L   = new Rect(0,           0,              0.5f - m.x,     0.5f - m.y);
         Rect BOTTOM_R   = new Rect(0.5f + m.x,  0,              0.5f - m.x,     0.5f - m.y);
 
-        switch (playerCount)
+        switch (humanCount)
         {
             case 1: return FULL;
             case 2:

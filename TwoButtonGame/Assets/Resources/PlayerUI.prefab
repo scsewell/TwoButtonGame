@@ -724,8 +724,8 @@ MonoBehaviour:
   m_indicatorNearFadeEnd: 7.5
   m_indicatorFarFadeStart: 400
   m_indicatorFarFadeEnd: 500
-  m_indicatorMinSize: 0.15
-  m_indicatorMaxSize: 0.5
+  m_indicatorMinSize: 0.135
+  m_indicatorMaxSize: 0.365
   m_indicatorMaxAlpha: 0.7
   m_countdownText: {fileID: 114693424851636968}
   m_timerText: {fileID: 114669988801070722}
@@ -764,7 +764,7 @@ MonoBehaviour:
   m_energyFailFrequency: 6
   m_energyBarHighlight: {fileID: 114765985619097186}
   m_energyHighlightDuration: 0.35
-  m_energyFullIntensity: 0.8
+  m_energyFullIntensity: 0.7
   m_energyFullFrequency: 5
   m_energyCantBoostAlpha: 0.4
 --- !u!114 &114563735406378320

@@ -5,8 +5,8 @@ using UnityEngine;
 public class PlayerInput
 {
     private const float DOUBLE_PRESS_TIME = 0.075f;
-    private const float DOUBLE_TAP_TIME = 0.265f;
-    private const float DOUBLE_TAP_TOLERANCE = 0.095f;
+    private const float DOUBLE_TAP_TIME = 0.285f;
+    private const float DOUBLE_TAP_TOLERANCE = 0.1f;
 
     private InputButton m_button1;
     public InputButton Button1 { get { return m_button1; } }
@@ -126,7 +126,7 @@ public class PlayerInput
                 input3.Type == BufferedInput.EventType.Down &&
                 input3.Time - input1.Time < DOUBLE_TAP_TIME)
             {
-                return input1.Time;
+                return input3.Time;
             }
         }
         return float.MinValue;
