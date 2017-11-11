@@ -16,7 +16,7 @@ public class MemeBoots : MonoBehaviour
     private float m_minBoostTime = 0.25f;
     [SerializeField] [Range(0, 100)]
     private float m_boundsCorrectionStrength = 10.0f;
-    
+
     private Player m_player;
     private CapsuleCollider m_capsule;
     private Rigidbody m_body;
@@ -27,6 +27,8 @@ public class MemeBoots : MonoBehaviour
     private float m_boostDuration = 0;
     private float m_boostEndTime = float.MinValue;
     private float m_boostFactor = 0;
+
+    private TrajectoryVisualization m_trajectoryVisualization;
 
     public bool CanBoost
     {
@@ -57,6 +59,8 @@ public class MemeBoots : MonoBehaviour
         m_player = GetComponentInParent<Player>();
         m_body = GetComponent<Rigidbody>();
         m_capsule = GetComponent<CapsuleCollider>();
+
+        m_trajectoryVisualization = new TrajectoryVisualization(false);
     }
     
     public void FixedUpdateMovement(MovementInputs input, bool acceptInput, bool inPreWarm)
@@ -181,6 +185,8 @@ public class MemeBoots : MonoBehaviour
                 break;
             }
         }
+
+        m_trajectoryVisualization.FixedUpdateTrajectory(m_body.position, m_body.velocity);
     }
 
     private void OnCollisionStay(Collision collision)
