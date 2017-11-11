@@ -54,6 +54,8 @@ public class PlayerUI : MonoBehaviour
     private float m_arrowScale = 0.1f;
     [SerializeField] [Range(0, 1)]
     private float m_arrowSmoothing = 0.2f;
+    [SerializeField] [Range(0, 30)]
+    private float m_arrowNextBlendDistance = 15.0f;
 
     private Transform m_arrow;
 
@@ -160,7 +162,7 @@ public class PlayerUI : MonoBehaviour
         m_playerText.text = "Player " + (player.PlayerNum + 1);
         m_playerText.color = Color.Lerp(player.GetColor(), Color.white, 0.35f);
         
-        SetArrow(m_player.NextWaypoint, 0);
+        SetArrow(0);
 
         player.EnergyGained += Player_EnergyGained;
         player.EnergyUseFailed += Player_EnergyUseFailed;
@@ -198,10 +200,9 @@ public class PlayerUI : MonoBehaviour
 
         int lap = m_player.CurrentLap;
         RacePath path = m_raceManager.RacePath;
-        Waypoint waypoint = m_player.NextWaypoint;
         bool finished = m_player.IsFinished;
         
-        m_arrow.gameObject.SetActive(!finished && waypoint != null);
+        m_arrow.gameObject.SetActive(!finished);
         m_rankText.gameObject.SetActive(!finished && !isSolo);
         m_rankSubText.gameObject.SetActive(!finished && !isSolo);
         m_newLapText.gameObject.SetActive(!finished);
@@ -212,7 +213,7 @@ public class PlayerUI : MonoBehaviour
 
         if (m_arrow.gameObject.activeInHierarchy)
         {
-            SetArrow(waypoint, m_arrowSmoothing);
+            SetArrow(m_arrowSmoothing);
         }
         
         foreach (Player player in m_raceManager.Players.OrderBy(p => Vector3.Distance(m_camera.transform.position, p.transform.position)))
@@ -392,12 +393,22 @@ public class PlayerUI : MonoBehaviour
         m_energyFailTime = Time.time;
     }
 
-    private void SetArrow(Waypoint waypoint, float smoothing)
+    private void SetArrow(float smoothing)
     {
-        if (waypoint != null)
+        Waypoint next = m_player.NextWaypoint;
+
+        if (next != null)
         {
             Vector3 arrowPos = m_camera.MainCam.ViewportToWorldPoint(new Vector3(0.5f, m_arrowPosition, 1));
-            Quaternion arrowRot = Quaternion.LookRotation(waypoint.Position - m_player.transform.position);
+            Vector3 disp = next.Position - m_player.transform.position;
+            Quaternion arrowRot = Quaternion.LookRotation(disp);
+
+            Waypoint secNext = m_player.SecondNextWaypoint;
+            if (secNext != null)
+            {
+                Quaternion nextArrowRot = Quaternion.LookRotation(secNext.Position - m_player.transform.position);
+                arrowRot = Quaternion.Slerp(arrowRot, nextArrowRot, 1 - Mathf.Clamp01(disp.magnitude / m_arrowNextBlendDistance));
+            }
 
             m_arrow.position = arrowPos;
             m_arrow.rotation = m_arrowSmoothing > 0 ? Quaternion.Slerp(m_arrow.rotation, arrowRot, Time.deltaTime / smoothing) : arrowRot;
