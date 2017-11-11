@@ -752,10 +752,13 @@ MonoBehaviour:
   m_newLapAlphaSmoothing: 0.25
   m_energyBar: {fileID: 1359897158899084}
   m_energyBarBorder: {fileID: 114180899052957840}
+  m_energyBarBack: {fileID: 114905854352293892}
   m_energyBarFill: {fileID: 114349125299710572}
   m_energyBarHighlight: {fileID: 114765985619097186}
   m_energyHighlightDuration: 0.35
-  m_energyCantBoostAlpha: 0.265
+  m_energyFullIntensity: 0.65
+  m_energyFullFrequency: 5
+  m_energyCantBoostAlpha: 0.4
 --- !u!114 &114563735406378320
 MonoBehaviour:
   m_ObjectHideFlags: 1

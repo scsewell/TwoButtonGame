@@ -96,11 +96,17 @@ public class PlayerUI : MonoBehaviour
     [SerializeField]
     private Image m_energyBarBorder;
     [SerializeField]
+    private Image m_energyBarBack;
+    [SerializeField]
     private Image m_energyBarFill;
     [SerializeField]
     private Image m_energyBarHighlight;
     [SerializeField] [Range(0.01f, 1)]
     private float m_energyHighlightDuration = 0.35f;
+    [SerializeField] [Range(0, 1)]
+    private float m_energyFullIntensity = 0.65f;
+    [SerializeField] [Range(0.5f, 20)]
+    private float m_energyFullFrequency = 50.0f;
     [SerializeField] [Range(0.01f, 1)]
     private float m_energyCantBoostAlpha = 0.35f;
 
@@ -278,16 +284,20 @@ public class PlayerUI : MonoBehaviour
         }
 
         // timer
-        m_timerText.text = ConvertTime(m_player.IsFinished ? m_player.FinishTime : m_raceManager.GetStartRelativeTime(Time.time));
+        float raceTime = m_player.IsFinished ? m_player.FinishTime : m_raceManager.GetStartRelativeTime(Time.time);
+        m_timerText.text = ConvertTime(raceTime);
 
         string lapTimes = "";
-        foreach (float lapTime in m_player.LapTimes)
+        if (path.Laps > 1)
         {
-            lapTimes += ConvertTime(lapTime) + '\n';
-        }
-        if (!finished)
-        {
-            lapTimes += ConvertTime(-1);
+            foreach (float lapTime in m_player.LapTimes)
+            {
+                lapTimes += ConvertTime(lapTime) + '\n';
+            }
+            if (!finished && m_player.LapTimes.Count > 0)
+            {
+                lapTimes += ConvertTime(raceTime - m_player.LapTimes.Sum());
+            }
         }
         m_lapTimeText.text = lapTimes;
 
@@ -325,16 +335,26 @@ public class PlayerUI : MonoBehaviour
         m_lastLap = lap;
 
         // energy bar
+        bool boostEnabled = m_player.Movement.CanBoost || m_player.Movement.IsBoosting;
         float energyFill = m_player.Energy / m_player.MaxEnergy;
+
         m_energyBarFill.fillAmount = energyFill;
         m_energyBarHighlight.fillAmount = energyFill;
-
-        SetColorNoAlpha(m_energyBarFill, Color.Lerp(m_player.GetColor(), Color.white, 0.35f));
-        SetAlpha(m_energyBarFill, m_player.Movement.CanBoost || m_player.Movement.IsBoosting ? 1 : m_energyCantBoostAlpha);
-
-        SetAlpha(m_energyBarHighlight, 1 - Mathf.Clamp01((Time.time - m_energyGainTime) / m_energyHighlightDuration));
         
-        SetColorNoAlpha(m_energyBarBorder, Color.Lerp(m_player.GetColor(), Color.white * 0.75f, m_player.Movement.IsBoosting ? 0 : 0.75f));
+        Color barColorBase = boostEnabled ? 0.95f * Color.white : Color.black;
+        float barAlpha = boostEnabled ? 1 : m_energyCantBoostAlpha;
+        SetColorNoAlpha(m_energyBarFill, Color.Lerp(m_player.GetColor(), barColorBase, 0.5f));
+        SetAlpha(m_energyBarFill, barAlpha);
+
+        float energyHighlight = 1 - Mathf.Clamp01((Time.time - m_energyGainTime) / m_energyHighlightDuration);
+        if (energyFill >= 1)
+        {
+            float energyFullFac = (0.5f * Mathf.Sin(Time.time * m_energyFullFrequency * 2 * Mathf.PI)) + 0.5f;
+            energyHighlight = Mathf.Lerp(energyHighlight, m_energyFullIntensity, energyFullFac);
+        }
+        SetAlpha(m_energyBarHighlight, energyHighlight);
+        
+        SetColorNoAlpha(m_energyBarBorder, Color.Lerp(m_player.GetColor(), Color.white * 0.65f, m_player.Movement.IsBoosting ? 0 : 0.75f));
     }
 
     private void Player_EnergyGained(float total, float delta)
