@@ -50,6 +50,12 @@ public class PlayerAnimation : MonoBehaviour
     [SerializeField] [Range(0, 1)]
     private float m_enginePitch = 0.35f;
     [SerializeField] [Range(0, 1)]
+    private float m_engineStartVol = 0.8f;
+    [SerializeField] [Range(0, 10)]
+    private float m_engineStartDuration = 1.5f;
+    [SerializeField] [Range(0, 1)]
+    private float m_engineNormVol = 0.35f;
+    [SerializeField] [Range(0, 1)]
     private float m_volumePower = 0.4f;
     [SerializeField] [Range(0, 1)]
     private float m_boostPitch = 0.45f;
@@ -63,7 +69,12 @@ public class PlayerAnimation : MonoBehaviour
     private Material m_rightGlow;
     private Quaternion m_headRotation;
     private Vector3 m_velocity;
-    private float m_volume;
+    private bool m_left = false;
+    private bool m_right = false;
+    private float m_leftActiveTime = float.MinValue;
+    private float m_rightActiveTime = float.MinValue;
+    private float m_leftVolume = 0;
+    private float m_rightVolume = 0;
     private float m_pitch;
 
     private void Awake()
@@ -75,7 +86,8 @@ public class PlayerAnimation : MonoBehaviour
         m_leftGlow = InstanceSharedMat(m_boosterGlowLMat, m_leftBoosters);
         m_rightGlow = InstanceSharedMat(m_boosterGlowRMat, m_rightBoosters);
 
-        m_volume = 0;
+        m_leftVolume = 0;
+        m_rightVolume = 0;
         m_pitch = m_enginePitch;
     }
     
@@ -90,8 +102,19 @@ public class PlayerAnimation : MonoBehaviour
         SetFloatLerp("VelocityY", m_velocity.y, m_velocitySmoothing);
         SetFloatLerp("VelocityZ", m_velocity.z, m_velocitySmoothing);
         
-        float leftEngine = Mathf.Lerp(movement.LeftEngine ? 1 : 0, 2, movement.BoostFactor);
-        float rightEngine = Mathf.Lerp(movement.RightEngine ? 1 : 0, 2, movement.BoostFactor);
+        if (m_left != movement.LeftEngine)
+        {
+            m_left = movement.LeftEngine;
+            m_leftActiveTime = Time.time;
+        }
+        if (m_right != movement.RightEngine)
+        {
+            m_right = movement.RightEngine;
+            m_rightActiveTime = Time.time;
+        }
+
+        float leftEngine = Mathf.Lerp(m_left ? 1 : 0, 2, movement.BoostFactor);
+        float rightEngine = Mathf.Lerp(m_right ? 1 : 0, 2, movement.BoostFactor);
 
         SetFloatMoveTowards("LeftBoost", leftEngine, m_boostSmoothing);
         SetFloatMoveTowards("RightBoost", rightEngine, m_boostSmoothing);
@@ -107,15 +130,18 @@ public class PlayerAnimation : MonoBehaviour
         m_leftGlow.SetColor("_EmissionColor", glow * Mathf.LerpUnclamped(m_notBoostGlow, m_boostGlow, leftNoiseFac));
         m_rightGlow.SetColor("_EmissionColor", glow * Mathf.LerpUnclamped(m_notBoostGlow, m_boostGlow, rightNoiseFac));
         
-        float targetVolume = (leftEngine + rightEngine) / 4;
-        float targetPitch = Mathf.Lerp(m_enginePitch, m_boostPitch, movement.BoostFactor);
-
         m_audio.enabled = m_player.IsHuman;
+        float audioSmoothing = Time.deltaTime / m_audioSmoothing;
 
-        m_volume = Mathf.Lerp(m_volume, targetVolume, Time.deltaTime / m_audioSmoothing);
-        m_pitch = Mathf.Lerp(m_pitch, targetPitch, Time.deltaTime / m_audioSmoothing);
+        float leftVolTarget = (m_left ? Mathf.Lerp(m_engineStartVol, m_engineNormVol, (Time.time - m_leftActiveTime) / m_engineStartDuration) : 0);
+        float rightVolTarget = (m_right ? Mathf.Lerp(m_engineStartVol, m_engineNormVol, (Time.time - m_rightActiveTime) / m_engineStartDuration) : 0);
+        m_leftVolume = Mathf.Lerp(m_leftVolume, movement.IsBoosting ? 1 : leftVolTarget, audioSmoothing) / 2;
+        m_rightVolume = Mathf.Lerp(m_rightVolume, movement.IsBoosting ? 1 : rightVolTarget, audioSmoothing) / 2;
 
-        m_audio.volume = Mathf.Pow(m_volume, m_volumePower) * m_engineVolume;
+        float targetPitch = Mathf.Lerp(m_enginePitch, m_boostPitch, movement.BoostFactor);
+        m_pitch = Mathf.Lerp(m_pitch, targetPitch, audioSmoothing);
+
+        m_audio.volume = Mathf.Pow(m_leftVolume + m_rightVolume, m_volumePower) * m_engineVolume;
         m_audio.pitch = m_pitch;
     }
 

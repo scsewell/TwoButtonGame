@@ -4897,11 +4897,14 @@ MonoBehaviour:
   m_velocitySmoothing: 0.335
   m_boostSmoothing: 0.125
   m_idleVelThresh: 2
-  m_engineVolume: 0.1
+  m_engineVolume: 0.4
   m_enginePitch: 0.45
-  m_volumePower: 0.5
+  m_engineStartVol: 1
+  m_engineStartDuration: 0.5
+  m_engineNormVol: 0.15
+  m_volumePower: 0.55
   m_boostPitch: 0.55
-  m_audioSmoothing: 0.065
+  m_audioSmoothing: 0.2
 --- !u!137 &137364885047586638
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 1

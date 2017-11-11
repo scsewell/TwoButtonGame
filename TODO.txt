@@ -1,10 +1,8 @@
 ### To Do ###
 
-Smoothly blend arrow to the next gate
 Engines spark on boost fail
 paritcle motion trail behind engine
 
-Make boost sound start more intense
 Boost fail sound
 Collision/sliding sound
 Checkpoint sound
