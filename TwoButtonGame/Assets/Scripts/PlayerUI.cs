@@ -10,6 +10,8 @@ public class PlayerUI : MonoBehaviour
     private RectTransform m_playerIndicatorPrefab;
     [SerializeField]
     private RectTransform m_playerIndicatorParent;
+    [SerializeField]
+    private LayerMask m_indicatorBlockingLayers;
     [SerializeField] [Range(0, 2)]
     private float m_indicatorVerticalOffset = 0.85f;
     [SerializeField] [Range(0, 50)]
@@ -243,7 +245,7 @@ public class PlayerUI : MonoBehaviour
                 Ray ray = new Ray(camPos, inticatorDisp);
                 RaycastHit hit;
 
-                if (active && !Physics.Raycast(ray, distance) && !m_arrow.GetComponent<Collider>().Raycast(ray, out hit, distance))
+                if (active && !Physics.Raycast(ray, distance, m_indicatorBlockingLayers) && !m_arrow.GetComponent<Collider>().Raycast(ray, out hit, distance))
                 {
                     indicator.gameObject.SetActive(true);
                     indicator.SetAsFirstSibling();

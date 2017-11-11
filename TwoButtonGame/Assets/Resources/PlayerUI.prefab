@@ -716,6 +716,9 @@ MonoBehaviour:
   m_playerIndicatorPrefab: {fileID: 224965659448172650, guid: 8d6bf07635b8cb445bd871109e7d4dd5,
     type: 2}
   m_playerIndicatorParent: {fileID: 224512164442394756}
+  m_indicatorBlockingLayers:
+    serializedVersion: 2
+    m_Bits: 33554433
   m_indicatorVerticalOffset: 0.85
   m_indicatorNearFadeStart: 4
   m_indicatorNearFadeEnd: 7.5

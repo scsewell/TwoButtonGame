@@ -69,16 +69,52 @@ public class MemeBoots : MonoBehaviour
             m_bothDoubleTap = true;
         }
     }
-
+    
     public void FixedUpdateMovement(bool acceptInput, bool inPreWarm)
     {
         PlayerConfig config = m_player.Config;
 
         ConfigurePhysics(config);
 
-        m_leftEngine = acceptInput ? m_player.Input.Button2.IsDown : false;
-        m_rightEngine = acceptInput ? m_player.Input.Button1.IsDown : false;
-        
+        if (false)
+        {
+            m_leftEngine = false;
+            m_rightEngine = false;
+            Waypoint next = m_player.NextWaypoint;
+            if (next != null)
+            {
+                Vector3 disp = next.Position - transform.position;
+
+                Vector3 foreCross = Vector3.Cross(disp, transform.forward);
+                float facing = Mathf.Acos(Vector3.Dot(Vector3.ProjectOnPlane(disp, Vector3.up).normalized, transform.forward)) * Mathf.Rad2Deg;
+
+                if (facing > 3.5f)
+                {
+                    m_leftEngine = acceptInput && foreCross.y < 0;
+                    m_rightEngine = acceptInput && foreCross.y > 0;
+                }
+                else
+                {
+                    if (disp.magnitude > 65 && Mathf.Abs(disp.normalized.y) < 0.1f)
+                    {
+                        m_bothDoubleTap = true;
+                    }
+
+                    if (disp.y > 0)
+                    {
+                        m_leftEngine = acceptInput;
+                        m_rightEngine = acceptInput;
+                    }
+                }
+            }
+        }
+        else
+        {
+            m_leftEngine = acceptInput ? m_player.Input.Button2.IsDown : false;
+            m_rightEngine = acceptInput ? m_player.Input.Button1.IsDown : false;
+        }
+
+
         if (acceptInput && !inPreWarm)
         {
             if (m_bothDoubleTap)

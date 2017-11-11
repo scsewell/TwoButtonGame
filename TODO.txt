@@ -1,6 +1,6 @@
 ### To Do ###
 
-Energy bar blinks red on boost fail - engines spark
+Engines spark on boost fail
 Smoothly blend arrow to the next gate
 paritcle motion trail behind engine
 
@@ -51,3 +51,17 @@ Corruption		7:00.017059
 Eighties Action		2:39.558456
 Harmful or Fatal	5:19.921844
 Exit the Premises	3:24.419144
+
+### Jason Memes ###
+    ### To Do ###
+        New Character Physics
+        New Levels
+    ### Optional ###
+	Procedural Courses
+        AI
+        Replays
+        Ghosting
+    ### Super Exclusive Jason Memes ###
+        Random Character Physics
+        Pickups
+        Trajectory Rendering
