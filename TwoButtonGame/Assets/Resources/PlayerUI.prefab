@@ -754,9 +754,14 @@ MonoBehaviour:
   m_energyBarBorder: {fileID: 114180899052957840}
   m_energyBarBack: {fileID: 114905854352293892}
   m_energyBarFill: {fileID: 114349125299710572}
+  m_energyBackAlpha: 0.4
+  m_energyFailAlpha: 1
+  m_energyFailDuration: 0.5
+  m_energyFailFadeDuration: 0.2
+  m_energyFailFrequency: 6
   m_energyBarHighlight: {fileID: 114765985619097186}
   m_energyHighlightDuration: 0.35
-  m_energyFullIntensity: 0.65
+  m_energyFullIntensity: 0.8
   m_energyFullFrequency: 5
   m_energyCantBoostAlpha: 0.4
 --- !u!114 &114563735406378320

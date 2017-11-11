@@ -83,10 +83,17 @@ public class MemeBoots : MonoBehaviour
         {
             if (m_bothDoubleTap)
             {
-                if (!m_isBoosting && CanBoost)
+                if (!m_isBoosting)
                 {
-                    m_isBoosting = true;
-                    m_boostDuration = 0;
+                    if (CanBoost)
+                    {
+                        m_isBoosting = true;
+                        m_boostDuration = 0;
+                    }
+                    else
+                    {
+                        m_player.OnEnergyUseFail();
+                    }
                 }
             }
             else if (!m_player.Input.BothDoubleTapHeld)
@@ -175,7 +182,7 @@ public class MemeBoots : MonoBehaviour
         Vector3 lowerSphereCenter = transform.TransformPoint(m_capsule.center + (((m_capsule.height / 2) - m_capsule.radius) * Vector3.down));
 
         // Check if touching the ground
-        int hitCount = Physics.SphereCastNonAlloc(lowerSphereCenter, m_capsule.radius * 0.95f, Vector3.down, m_hits, 0.1f, m_groundLayers);
+        int hitCount = Physics.SphereCastNonAlloc(lowerSphereCenter, m_capsule.radius * 0.8f, Vector3.down, m_hits, 0.1f, m_groundLayers);
 
         m_isGrounded = false;
         for (int i = 0; i < hitCount; i++)

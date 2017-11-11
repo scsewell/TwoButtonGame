@@ -38,6 +38,8 @@ public class CameraManager : MonoBehaviour
 
     [Header("Dust Particles")]
     [SerializeField] [Range(0, 1)]
+    private float m_dustBrightness = 0.75f;
+    [SerializeField] [Range(0, 1)]
     private float m_dustAlpha = 0.1f;
     [SerializeField] [Range(1, 200)]
     private float m_dustMinVelocity = 5.0f;
@@ -106,7 +108,7 @@ public class CameraManager : MonoBehaviour
             float targetDustFade = Mathf.Pow(Mathf.Clamp01((m_player.Movement.Velocity.magnitude - m_dustMinVelocity) / m_dustMaxVelocity), m_dustVelocityPower);
             m_dustFade = Mathf.Lerp(m_dustFade, targetDustFade, Time.deltaTime / m_dustFadeSmoothing);
 
-            Color dustColor = Color.white;
+            Color dustColor = m_dustBrightness * Color.white;
             dustColor.a = Mathf.Lerp(0, m_dustAlpha, targetDustFade);
             m_dustParticles.GetComponent<Renderer>().material.SetColor("_TintColor", dustColor);
 

@@ -23,7 +23,7 @@ MonoBehaviour:
   m_verticalAccel: 12
   m_turnRatio: 0.025
   m_energyCap: 200
-  m_energyRechargeRate: 3.65
+  m_energyRechargeRate: 3.55
   m_boostEnergyUseRate: 100
   m_boostSoftCap: 130
   m_boostAcceleration: 265

@@ -99,6 +99,16 @@ public class PlayerUI : MonoBehaviour
     private Image m_energyBarBack;
     [SerializeField]
     private Image m_energyBarFill;
+    [SerializeField] [Range(0, 1)]
+    private float m_energyBackAlpha = 0.2f;
+    [SerializeField] [Range(0, 1)]
+    private float m_energyFailAlpha = 0.65f;
+    [SerializeField] [Range(0, 1)]
+    private float m_energyFailDuration = 0.65f;
+    [SerializeField] [Range(0, 1)]
+    private float m_energyFailFadeDuration = 0.25f;
+    [SerializeField] [Range(0.5f, 20)]
+    private float m_energyFailFrequency = 5.0f;
     [SerializeField]
     private Image m_energyBarHighlight;
     [SerializeField] [Range(0.01f, 1)]
@@ -106,11 +116,12 @@ public class PlayerUI : MonoBehaviour
     [SerializeField] [Range(0, 1)]
     private float m_energyFullIntensity = 0.65f;
     [SerializeField] [Range(0.5f, 20)]
-    private float m_energyFullFrequency = 50.0f;
+    private float m_energyFullFrequency = 5.0f;
     [SerializeField] [Range(0.01f, 1)]
     private float m_energyCantBoostAlpha = 0.35f;
 
     private float m_energyGainTime = float.NegativeInfinity;
+    private float m_energyFailTime = float.NegativeInfinity;
 
     private Player m_player;
     private CameraManager m_camera;
@@ -150,6 +161,7 @@ public class PlayerUI : MonoBehaviour
         SetArrow(m_player.NextWaypoint, 0);
 
         player.EnergyGained += Player_EnergyGained;
+        player.EnergyUseFailed += Player_EnergyUseFailed;
 
         return this;
     }
@@ -160,6 +172,11 @@ public class PlayerUI : MonoBehaviour
         {
             Destroy(m_arrow);
             m_arrow = null;
+        }
+        if (m_player != null)
+        {
+            m_player.EnergyGained -= Player_EnergyGained;
+            m_player.EnergyUseFailed -= Player_EnergyUseFailed;
         }
     }
 
@@ -335,15 +352,21 @@ public class PlayerUI : MonoBehaviour
         m_lastLap = lap;
 
         // energy bar
-        bool boostEnabled = m_player.Movement.CanBoost || m_player.Movement.IsBoosting;
+        bool usingEnergy = m_player.Movement.IsBoosting;
+        bool canUseEnergy = m_player.Movement.CanBoost;
         float energyFill = m_player.Energy / m_player.MaxEnergy;
 
         m_energyBarFill.fillAmount = energyFill;
         m_energyBarHighlight.fillAmount = energyFill;
         
-        Color barColorBase = boostEnabled ? 0.95f * Color.white : Color.black;
-        float barAlpha = boostEnabled ? 1 : m_energyCantBoostAlpha;
-        SetColorNoAlpha(m_energyBarFill, Color.Lerp(m_player.GetColor(), barColorBase, 0.5f));
+        float energyFailFac = 1 - Mathf.Clamp01((Time.time - (m_energyFailTime + m_energyFailFadeDuration)) / m_energyFailDuration);
+        energyFailFac = Mathf.Lerp(0, energyFailFac, Mathf.Pow(0.5f * Mathf.Sin(Time.time * m_energyFailFrequency * 2 * Mathf.PI) + 0.5f, 0.35f));
+        SetColorNoAlpha(m_energyBarBack, Color.Lerp(Color.black, Color.red, energyFailFac));
+        SetAlpha(m_energyBarBack, Mathf.Lerp(m_energyBackAlpha, m_energyFailAlpha, energyFailFac));
+
+        Color barColorBase = usingEnergy ? Color.white : (canUseEnergy ? 0.85f * Color.white : Color.black);
+        float barAlpha = (usingEnergy || canUseEnergy) ? 1 : m_energyCantBoostAlpha;
+        SetColorNoAlpha(m_energyBarFill, Color.Lerp(m_player.GetColor(), barColorBase, usingEnergy ? 0.15f : 0.5f));
         SetAlpha(m_energyBarFill, barAlpha);
 
         float energyHighlight = 1 - Mathf.Clamp01((Time.time - m_energyGainTime) / m_energyHighlightDuration);
@@ -354,12 +377,17 @@ public class PlayerUI : MonoBehaviour
         }
         SetAlpha(m_energyBarHighlight, energyHighlight);
         
-        SetColorNoAlpha(m_energyBarBorder, Color.Lerp(m_player.GetColor(), Color.white * 0.65f, m_player.Movement.IsBoosting ? 0 : 0.75f));
+        SetColorNoAlpha(m_energyBarBorder, Color.Lerp(m_player.GetColor(), Color.white * 0.65f, usingEnergy ? 0 : 0.75f));
     }
 
     private void Player_EnergyGained(float total, float delta)
     {
         m_energyGainTime = Time.time;
+    }
+
+    private void Player_EnergyUseFailed()
+    {
+        m_energyFailTime = Time.time;
     }
 
     private void SetArrow(Waypoint waypoint, float smoothing)

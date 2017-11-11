@@ -1,7 +1,7 @@
 ### To Do ###
 
 Energy bar blinks red on boost fail - engines spark
-Energy bar full pulsing
+Smoothly blend arrow to the next gate
 paritcle motion trail behind engine
 
 Make boost sound start more intense

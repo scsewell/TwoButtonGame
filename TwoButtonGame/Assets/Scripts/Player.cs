@@ -55,6 +55,9 @@ public class Player : MonoBehaviour
     public delegate void EnergyGainedHandler(float total, float delta);
     public event EnergyGainedHandler EnergyGained;
 
+    public delegate void EnergyUseFailHandler();
+    public event EnergyUseFailHandler EnergyUseFailed;
+
     public float MaxEnergy
     {
         get { return m_config.EnergyCap; }
@@ -155,6 +158,14 @@ public class Player : MonoBehaviour
         if (boostGate != null && boostGate.UseGate(this))
         {
             OnEnergyGained(boostGate.Energy);
+        }
+    }
+
+    public void OnEnergyUseFail()
+    {
+        if (EnergyUseFailed != null)
+        {
+            EnergyUseFailed();
         }
     }
 
