@@ -53,8 +53,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_camClearPrefab: {fileID: 20152883271897542, guid: 7285fc462a99be14cada1308b91a9c9d,
     type: 2}
-  m_camUIPrefab: {fileID: 20687122174168202, guid: 31935f04eab8212469f47a12e76fef60,
-    type: 2}
   m_cameraRigPrefab: {fileID: 114117289867158092, guid: 84fa99131d6c11c4fb8b535a6aee935c,
     type: 2}
   m_raceMenuPrefab: {fileID: 114856836458412740, guid: 6d43815a00386be4dbea0fb5064d975d,
@@ -72,5 +70,5 @@ MonoBehaviour:
   m_countdownScale: 1.15
   m_countdownSound: {fileID: 8300000, guid: 249b1823055eec542b9a26b915bdefce, type: 3}
   m_goSound: {fileID: 8300000, guid: 3bd94b4b8ec8a334b84134d52b6cab9c, type: 3}
-  m_skipIntro: 1
-  m_skipCoundown: 1
+  m_skipIntro: 0
+  m_skipCoundown: 0

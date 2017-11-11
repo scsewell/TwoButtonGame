@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Framework.Interpolation;
 
@@ -23,13 +24,23 @@ public class Player : MonoBehaviour
 
     private int m_waypointsCompleted = 0;
     public int WaypointsCompleted { get { return m_waypointsCompleted; } }
-    
+
+    public int CurrentLap
+    {
+        get { return m_racePath.GetCurrentLap(m_waypointsCompleted); }
+    }
+
     private bool m_isFinished = false;
     public bool IsFinished { get { return m_isFinished; } }
 
-    private float m_finishTime = float.MaxValue;
-    public float FinishTime { get { return m_finishTime; } }
-    
+    private List<float> m_lapTimes = new List<float>();
+    public List<float> LapTimes { get { return m_lapTimes; } }
+
+    public float FinishTime
+    {
+        get { return m_lapTimes.Sum(); }
+    }
+
     public Waypoint NextWaypoint
     {
         get { return m_racePath.GetWaypoint(m_waypointsCompleted); }
@@ -60,7 +71,6 @@ public class Player : MonoBehaviour
     
     private PlayerAnimation m_animation;
     private RacePath m_racePath;
-    private Dictionary<BoostGate, int> m_lastUseProgress = new Dictionary<BoostGate, int>();
     private Vector3 m_lastPos;
 
 
@@ -93,19 +103,25 @@ public class Player : MonoBehaviour
             m_energy = Mathf.Min(m_energy + (m_config.EnergyRechargeRate * Time.deltaTime), MaxEnergy);
         }
 
+        int previousLap = CurrentLap;
         Waypoint wp = NextWaypoint;
         Vector3 disp = transform.position - m_lastPos;
         RaycastHit hit;
         if (wp != null && disp.magnitude > 0.0001f && wp.Trigger.Raycast(new Ray(m_lastPos, disp.normalized), out hit, disp.magnitude))
         {
             m_waypointsCompleted++;
+            m_racePath.ResetEnergyGates(this);
+            if (previousLap != CurrentLap)
+            {
+                RecordLapTime();
+            }
         }
         m_lastPos = transform.position;
 
         bool finished = m_racePath.IsFinished(m_waypointsCompleted);
         if (finished != m_isFinished)
         {
-            m_finishTime = Time.time;
+            RecordLapTime();
             m_isFinished = finished;
         }
     }
@@ -136,19 +152,9 @@ public class Player : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         BoostGate boostGate = other.GetComponentInParent<BoostGate>();
-        if (boostGate != null)
+        if (boostGate != null && boostGate.UseGate(this))
         {
-            int lastProgress;
-            if (!m_lastUseProgress.TryGetValue(boostGate, out lastProgress))
-            {
-                lastProgress = int.MinValue;
-            }
-
-            if (m_waypointsCompleted != lastProgress)
-            {
-                OnEnergyGained(boostGate.Energy);
-                m_lastUseProgress[boostGate] = m_waypointsCompleted;
-            }
+            OnEnergyGained(boostGate.Energy);
         }
     }
 
@@ -170,5 +176,11 @@ public class Player : MonoBehaviour
         float delta = Mathf.Max(m_energy - amountLost, 0) - m_energy;
         m_energy += delta;
         return Mathf.Abs(delta);
+    }
+
+    private void RecordLapTime()
+    {
+        float currentTime = Main.Instance.RaceManager.GetStartRelativeTime(Time.time);
+        m_lapTimes.Add(currentTime - m_lapTimes.Sum());
     }
 }

@@ -13,12 +13,16 @@ public class RacePath : MonoBehaviour
     private int m_laps;
     public int Laps { get { return m_laps; } }
 
+    private BoostGate[] m_energyGates;
+
     private void Awake()
     {
         if (Main.Instance.LastRaceParams == null)
         {
             Main.Instance.LoadMainMenu();
         }
+
+        m_energyGates = GetComponentsInChildren<BoostGate>();
     }
 
     public RacePath Init(int laps)
@@ -73,6 +77,18 @@ public class RacePath : MonoBehaviour
         foreach (Waypoint waypoint in m_path)
         {
             waypoint.UpdateWaypoint();
+        }
+        foreach (BoostGate energyGate in m_energyGates)
+        {
+            energyGate.UpdateGate();
+        }
+    }
+
+    public void ResetEnergyGates(Player player)
+    {
+        foreach (BoostGate energyGate in m_energyGates)
+        {
+            energyGate.ResetGate(player);
         }
     }
 

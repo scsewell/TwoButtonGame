@@ -301,10 +301,10 @@ MonoBehaviour:
   m_softBlockSmoothing: 0.25
   m_hSmoothness: 1.5
   m_vSmoothness: 3.75
-  m_dustAlpha: 0.065
-  m_dustMinVelocity: 8
+  m_dustAlpha: 0.0725
+  m_dustMinVelocity: 5.5
   m_dustMaxVelocity: 80
-  m_dustVelocityPower: 3.5
+  m_dustVelocityPower: 3
   m_dustFadeSmoothing: 0.25
 --- !u!198 &198205130447769740
 ParticleSystem:

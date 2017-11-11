@@ -33,9 +33,11 @@ public class PlayerUI : MonoBehaviour
     [SerializeField]
     private Text m_countdownText;
 
-    [Header("Timer")]
+    [Header("Time")]
     [SerializeField]
     private Text m_timerText;
+    [SerializeField]
+    private Text m_lapTimeText;
 
     [Header("Player")]
     [SerializeField]
@@ -166,20 +168,12 @@ public class PlayerUI : MonoBehaviour
             m_countdownText.text = (countdown > 0) ? Mathf.CeilToInt(countdown).ToString() : "GO!";
         }
 
-        // timer
-        float time = Mathf.Max(m_raceManager.GetStartRelativeTime(m_player.IsFinished ? m_player.FinishTime : Time.time), 0);
-        int minutes = Mathf.FloorToInt(time / 60);
-        int seconds = Mathf.FloorToInt(time - (minutes * 60));
-        int milliseconds = Mathf.FloorToInt((time - seconds - (minutes * 60)) * 100);
-
-        m_timerText.text = string.Format(minutes.ToString() + ":" + seconds.ToString("D2") + ":" + milliseconds.ToString("D2"));
-        
         int rank = m_raceManager.GetPlayerRank(m_player);
         bool isSolo = m_raceManager.PlayerCount == 1;
 
+        int lap = m_player.CurrentLap;
         RacePath path = m_raceManager.RacePath;
         Waypoint waypoint = m_player.NextWaypoint;
-        int lap = path.GetCurrentLap(m_player.WaypointsCompleted);
         bool finished = m_player.IsFinished;
         
         m_arrow.gameObject.SetActive(!finished && waypoint != null);
@@ -219,7 +213,7 @@ public class PlayerUI : MonoBehaviour
                 Vector3 indicatorPos = player.transform.position + m_indicatorVerticalOffset * Vector3.up;
                 Vector3 viewportPoint = m_camera.MainCam.WorldToViewportPoint(indicatorPos);
 
-                bool active = 0 < viewportPoint.z && !finished && !player.IsFinished;
+                bool active = 0 < viewportPoint.z;
 
                 Vector3 inticatorDisp = indicatorPos - camPos;
                 float distance = inticatorDisp.magnitude;
@@ -282,6 +276,20 @@ public class PlayerUI : MonoBehaviour
         {
             m_rankRect.localScale = Vector3.Lerp(m_rankRect.localScale, Vector3.one, Time.deltaTime * 3);
         }
+
+        // timer
+        m_timerText.text = ConvertTime(m_player.IsFinished ? m_player.FinishTime : m_raceManager.GetStartRelativeTime(Time.time));
+
+        string lapTimes = "";
+        foreach (float lapTime in m_player.LapTimes)
+        {
+            lapTimes += ConvertTime(lapTime) + '\n';
+        }
+        if (!finished)
+        {
+            lapTimes += ConvertTime(-1);
+        }
+        m_lapTimeText.text = lapTimes;
 
         // set lap text
         m_lapText.text = "LAP " + lap + "/" + path.Laps;
@@ -357,5 +365,20 @@ public class PlayerUI : MonoBehaviour
         Color col = g.color;
         col.a = alpha;
         g.color = col;
+    }
+
+    private string ConvertTime(float time)
+    {
+        if (time < 0)
+        {
+            return "-:--:--";
+        }
+        else
+        {
+            int minutes = Mathf.FloorToInt(time / 60);
+            int seconds = Mathf.FloorToInt(time - (minutes * 60));
+            int milliseconds = Mathf.FloorToInt((time - seconds - (minutes * 60)) * 100);
+            return string.Format(minutes.ToString() + ":" + seconds.ToString("D2") + ":" + milliseconds.ToString("D2"));
+        }
     }
 }

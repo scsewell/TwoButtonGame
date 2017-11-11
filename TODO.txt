@@ -1,14 +1,12 @@
 ### To Do ###
 
-camera dust particles - fade near center screen
+boost bar blinks red - engines spark
+Boost full pulsing
 camera shake when fast, cam fov kick?
-Bigger gates
-lap time - show all at end as well
-Dim boost gates when used, explosion of particles
 paritcle motion trail behind engine
-boost bar blinks red - engines spark -  auditory feedback
 
 Make boost sound start more intense
+Boost fail sound
 Collision/sliding sound
 Checkpoint sound
 Player finish line sounds

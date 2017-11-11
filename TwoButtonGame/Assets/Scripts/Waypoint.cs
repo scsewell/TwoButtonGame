@@ -165,27 +165,30 @@ public class Waypoint : MonoBehaviour, OnWillRenderReceiver
 
     public void OnWillRender(Camera cam)
     {
-        // make the waypoint glow only for a player's camera if this is the next waypoint
-        CameraManager camManager = cam.GetComponentInParent<CameraManager>();
-
-        Color diffuse = new Color(0.35f, 0.35f, 0.35f);
-        Color glow = Color.black;
-
-        if (camManager != null && m_glowMat != null)
+        if (m_glowMat != null)
         {
-            float glowFac;
-            if (!m_playerToGlow.TryGetValue(camManager.Owner, out glowFac))
+            // make the waypoint glow only for a player's camera if this is the next waypoint
+            CameraManager camManager = cam.GetComponentInParent<CameraManager>();
+
+            Color diffuse = new Color(0.35f, 0.35f, 0.35f);
+            Color glow = Color.black;
+
+            if (camManager != null)
             {
-                glowFac = 0;
+                float glowFac;
+                if (!m_playerToGlow.TryGetValue(camManager.Owner, out glowFac))
+                {
+                    glowFac = 0;
+                }
+                Color playerColor = camManager.Owner.GetColor();
+
+                diffuse = SampleGradient(glowFac, diffuse, Color.white, playerColor);
+                glow = SampleGradient(glowFac, glow, m_secondNextGlowIntensity * Color.white, m_nextGlowIntensity * playerColor);
             }
-            Color playerColor = camManager.Owner.GetColor();
 
-            diffuse = SampleGradient(glowFac, diffuse, Color.white, playerColor);
-            glow = SampleGradient(glowFac, glow, m_secondNextGlowIntensity * Color.white, m_nextGlowIntensity * playerColor);
+            m_glowMat.SetColor("_Color", diffuse);
+            m_glowMat.SetColor("_EmissionColor", glow);
         }
-
-        m_glowMat.SetColor("_Color", diffuse);
-        m_glowMat.SetColor("_EmissionColor", glow);
     }
 
     private Color SampleGradient(float fac, Color off, Color secondNext, Color next)
