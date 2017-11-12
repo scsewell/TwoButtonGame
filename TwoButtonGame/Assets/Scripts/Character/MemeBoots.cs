@@ -6,6 +6,8 @@ using Framework.Interpolation;
 [RequireComponent(typeof(TransformInterpolator))]
 public class MemeBoots : MonoBehaviour
 {
+    public float TENSOR = 0.4f;
+
     [SerializeField]
     private LayerMask m_boundsLayers;
     [SerializeField]
@@ -138,9 +140,8 @@ public class MemeBoots : MonoBehaviour
 
         m_boostFactor = 1 - Mathf.Clamp01((Time.time - m_boostEndTime) / 0.2f);
         float boostStrength = Mathf.Clamp01(Mathf.Exp(-Vector3.Dot(m_body.velocity, transform.forward) / config.BoostSoftCap));
-        Vector3 boostForce = m_boostFactor * config.BoostAcceleration * boostStrength * Time.deltaTime * transform.forward;
-        boostForce = ApplyBoundsCorrection(boostForce);
-        m_body.AddForce(boostForce, ForceMode.Impulse);
+        Vector3 boostForce = m_boostFactor * config.BoostAcceleration * boostStrength * transform.forward;
+        force += ApplyBoundsCorrection(boostForce);
 
         Vector3 gravity = (1 - m_boostFactor) * config.GravityFac * Physics.gravity;
         force += ApplyBoundsCorrection(gravity);
@@ -174,17 +175,15 @@ public class MemeBoots : MonoBehaviour
 
             force += ApplyBoundsCorrection(linearForce);
         }
-        
-        m_body.AddForce(force);
 
-        // The 2.5 is arbitrary, but works to mimic Physx for some reason...
-        m_angVelocity += 2.5f * torque * Time.deltaTime;
-        m_angVelocity *= Mathf.Clamp01(1 - (m_body.angularDrag * Time.deltaTime));
+        m_body.velocity = StepVelocity(m_body.velocity, force, m_body.mass, config.LinearDrag, Time.deltaTime);
+        m_angVelocity = StepAngularVelocity(m_angVelocity, torque, TENSOR, config.AngularDrag, Time.deltaTime);
+        
         transform.Rotate(Vector3.up, 180 * m_angVelocity * Time.deltaTime);
 
+        // Check if touching the ground
         Vector3 lowerSphereCenter = transform.TransformPoint(m_capsule.center + (((m_capsule.height / 2) - m_capsule.radius) * Vector3.down));
 
-        // Check if touching the ground
         int hitCount = Physics.SphereCastNonAlloc(lowerSphereCenter, m_capsule.radius * 0.8f, Vector3.down, m_hits, 0.1f, m_groundLayers);
 
         m_isGrounded = false;
@@ -229,12 +228,78 @@ public class MemeBoots : MonoBehaviour
 
     private void ConfigurePhysics(PlayerConfig config)
     {
-        m_capsule.material = config.PhysicsMat;
-        m_body.useGravity = false;
         m_body.solverIterations = 12;
         m_body.solverVelocityIterations = 2;
-        m_body.drag = config.LinearDrag;
-        m_body.angularDrag = config.AngularDrag;
+        m_body.useGravity = false;
+        m_body.drag = 0;
+        m_body.angularDrag = 0;
+        m_capsule.material = config.PhysicsMat;
+    }
+    
+    public void PredictStep(int steps, List<Vector3> pos, Vector3 velocity, List<float> rot, float angularVelocity, bool leftEngine, bool rightEngine, bool boost, float deltaTime)
+    {
+        PlayerConfig config = m_player.Config;
+
+        for (int i = 0; i < steps; i++)
+        {
+            Vector3 forward = Quaternion.Euler(0, rot.Last(), 0) * Vector3.forward;
+
+            Vector3 force = Vector3.zero;
+            float torque = 0;
+
+            if (boost)
+            {
+                float boostStrength = Mathf.Clamp01(Mathf.Exp(-Vector3.Dot(velocity, forward) / config.BoostSoftCap));
+                force += config.BoostAcceleration * boostStrength * forward;
+            }
+            else
+            {
+                force += config.GravityFac * Physics.gravity;
+
+                Vector3 engineForeForce = config.ForwardAccel * forward;
+                Vector3 engineUpForce = config.VerticalAccel * config.GravityFac * Vector3.up;
+
+                Vector3 engineForce = engineForeForce + engineUpForce;
+                Vector3 forceOffset = config.TurnRatio * Vector3.Cross(forward, Vector3.up).normalized;
+
+                if (leftEngine)
+                {
+                    force += engineForce;
+                    if (!rightEngine)
+                    {
+                        torque += Vector3.Dot(Vector3.Cross(-forceOffset, engineForce), Vector3.up);
+                    }
+                }
+                if (rightEngine)
+                {
+                    force += engineForce;
+                    if (!leftEngine)
+                    {
+                        torque += Vector3.Dot(Vector3.Cross(forceOffset, engineForce), Vector3.up);
+                    }
+                }
+            }
+
+            velocity = StepVelocity(velocity, force, m_body.mass, m_player.Config.LinearDrag, deltaTime);
+            angularVelocity = StepAngularVelocity(angularVelocity, torque, TENSOR, m_player.Config.AngularDrag, deltaTime);
+
+            pos.Add(pos.Last() + (velocity * deltaTime));
+            rot.Add(rot.Last() + (180 * angularVelocity * deltaTime));
+        }
+    }
+
+    private static Vector3 StepVelocity(Vector3 velocity, Vector3 force, float mass, float drag, float deltaTime)
+    {
+        velocity = PhysicsUtils.ApplyForce(velocity, force, mass, deltaTime);
+        velocity = PhysicsUtils.ApplyDamping(velocity, drag, deltaTime);
+        return velocity;
+    }
+
+    private static float StepAngularVelocity(float angularVelocity, float torque, float tensor, float drag, float deltaTime)
+    {
+        angularVelocity = PhysicsUtils.ApplyTorque(angularVelocity, torque, tensor, deltaTime);
+        angularVelocity = PhysicsUtils.ApplyAngularDamping(angularVelocity, drag, deltaTime);
+        return angularVelocity;
     }
 
     private Vector3 ApplyBoundsCorrection(Vector3 force)
