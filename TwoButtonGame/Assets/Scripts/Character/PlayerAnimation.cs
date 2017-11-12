@@ -69,12 +69,12 @@ public class PlayerAnimation : MonoBehaviour
     private Material m_rightGlow;
     private Quaternion m_headRotation;
     private Vector3 m_velocity;
-    private bool m_left = false;
-    private bool m_right = false;
-    private float m_leftActiveTime = float.MinValue;
-    private float m_rightActiveTime = float.MinValue;
-    private float m_leftVolume = 0;
-    private float m_rightVolume = 0;
+    private bool m_left;
+    private bool m_right;
+    private float m_leftActiveTime;
+    private float m_rightActiveTime;
+    private float m_leftVolume;
+    private float m_rightVolume;
     private float m_pitch;
 
     private void Awake()
@@ -85,10 +85,6 @@ public class PlayerAnimation : MonoBehaviour
 
         m_leftGlow = InstanceSharedMat(m_boosterGlowLMat, m_leftBoosters);
         m_rightGlow = InstanceSharedMat(m_boosterGlowRMat, m_rightBoosters);
-
-        m_leftVolume = 0;
-        m_rightVolume = 0;
-        m_pitch = m_enginePitch;
     }
     
     public void UpdateAnimation(MemeBoots movement)

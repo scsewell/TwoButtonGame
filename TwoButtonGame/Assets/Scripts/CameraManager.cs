@@ -63,9 +63,9 @@ public class CameraManager : MonoBehaviour
     private ParticleSystem m_dustParticles;
     private RaycastHit[] m_hits = new RaycastHit[20];
     private List<Vector3> m_blockHits = new List<Vector3>();
-    private float m_blockSmooth = 1;
-    private float m_lookSmooth = 1;
-    private float m_dustFade = 0;
+    private float m_blockSmooth;
+    private float m_lookSmooth;
+    private float m_dustFade;
 
     private void Awake()
     {
@@ -87,12 +87,21 @@ public class CameraManager : MonoBehaviour
         m_uiCam.cullingMask |= (1 << PlayerUILayer);
 
         m_dustParticles.gameObject.layer = PlayerMainLayer;
+        
+        return this;
+    }
+
+    public void ResetCam()
+    {    
+        m_blockSmooth = 1;
+        m_lookSmooth = 1;
+        m_dustFade = 0;
+
+        m_dustParticles.Clear(true);
 
         transform.position = GetPosTarget();
         transform.rotation = GetRotTarget(GetLookTarget());
         m_tInterpolator.ForgetPreviousValues();
-
-        return this;
     }
 
     public void SetCameraEnabled(bool enabled)

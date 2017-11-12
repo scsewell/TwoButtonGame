@@ -75,7 +75,7 @@ public class PlayerUI : MonoBehaviour
     [SerializeField] [Range(0.01f, 4)]
     private float m_finalRankFadeTime = 1.0f;
 
-    private int m_lastRank = 1;
+    private int m_lastRank;
 
     [Header("Lap Text")]
     [SerializeField]
@@ -91,8 +91,8 @@ public class PlayerUI : MonoBehaviour
     [SerializeField] [Range(0.01f, 1)]
     private float m_newLapAlphaSmoothing = 0.25f;
 
-    private int m_lastLap = 1;
-    private float m_lapChangeTime = float.NegativeInfinity;
+    private int m_lastLap;
+    private float m_lapChangeTime;
 
     [Header("Energy Bar")]
     [SerializeField]
@@ -124,8 +124,8 @@ public class PlayerUI : MonoBehaviour
     [SerializeField] [Range(0.01f, 1)]
     private float m_energyCantBoostAlpha = 0.35f;
 
-    private float m_energyGainTime = float.NegativeInfinity;
-    private float m_energyFailTime = float.NegativeInfinity;
+    private float m_energyGainTime;
+    private float m_energyFailTime;
 
     private Player m_player;
     private CameraManager m_camera;
@@ -133,9 +133,9 @@ public class PlayerUI : MonoBehaviour
 
     private void Awake()
     {
-        m_arrow = Instantiate(m_arrowPrefab);
+        m_playerToIndicators = new Dictionary<Player, RectTransform>();
 
-        SetAlpha(m_newLapText, 0);
+        m_arrow = Instantiate(m_arrowPrefab);
     }
 
     public PlayerUI Init(Player player, CameraManager cam, int humanCount)
@@ -155,19 +155,30 @@ public class PlayerUI : MonoBehaviour
         rt.anchorMax = new Vector2(splitscreen.x + splitscreen.width, splitscreen.y + splitscreen.height);
         rt.anchoredPosition = Vector2.zero;
         rt.sizeDelta = Vector2.zero;
-
-        // Set up UI
-        m_playerToIndicators = new Dictionary<Player, RectTransform>();
-
+        
         m_playerText.text = "Player " + (player.PlayerNum + 1);
         m_playerText.color = Color.Lerp(player.GetColor(), Color.white, 0.35f);
-        
-        SetArrow(0);
 
-        player.EnergyGained += Player_EnergyGained;
-        player.EnergyUseFailed += Player_EnergyUseFailed;
+        m_player.EnergyGained += Player_EnergyGained;
+        m_player.EnergyUseFailed += Player_EnergyUseFailed;
+
+        ResetPlayerUI();
 
         return this;
+    }
+
+    private void ResetPlayerUI()
+    {
+        m_lastRank = 1;
+
+        m_lastLap = 1;
+        m_lapChangeTime = float.NegativeInfinity;
+
+        m_energyGainTime = float.NegativeInfinity;
+        m_energyFailTime = float.NegativeInfinity;
+
+        SetAlpha(m_newLapText, 0);
+        SetArrow(0);
     }
 
     private void OnDestroy()

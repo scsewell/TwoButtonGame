@@ -39,14 +39,13 @@ public class Waypoint : MonoBehaviour, OnWillRenderReceiver
     private bool m_flipDirection = false;
     [SerializeField] [Range(0, 1)]
     private float m_startOffset = 0;
-
-    private RaceManager m_raceManager;
+    
     private TransformInterpolator m_interpolator;
+    private float m_bobCycleOffset;
+    private float m_bobFreq;
     private GateEngine[] m_engines;
     private Material m_glowMat;
     private Dictionary<Player, float> m_playerToGlow = new Dictionary<Player, float>();
-    private float m_bobCycleOffset;
-    private float m_bobFreq;
     private Vector3 m_lastPosition;
     private Vector3 m_lastVelocity;
     private Vector3 m_engineForce;
@@ -77,22 +76,30 @@ public class Waypoint : MonoBehaviour, OnWillRenderReceiver
         {
             engine.gameObject.SetActive(m_path != null);
         }
-    }
 
-    public void Init()
-    {
         m_bobCycleOffset = Random.value;
         m_bobFreq = m_bobFrequency * Random.Range(1 - m_bobFrequencyVariance, 1 + m_bobFrequencyVariance);
-        
+    }
+
+    public void ResetGate()
+    {
         if (m_path != null)
         {
             m_gate.position = m_path.GetPointWithWaits(GetPathTime(), m_wrapMode);
-            m_lastPosition = m_gate.position;
         }
+
+        m_lastPosition = m_gate.position;
+        m_lastVelocity = Vector3.zero;
+        m_engineForce = Vector3.zero;
 
         if (m_interpolator != null)
         {
             m_interpolator.ForgetPreviousValues();
+        }
+
+        foreach (Player player in Main.Instance.RaceManager.Players)
+        {
+            m_playerToGlow[player] = 0;
         }
     }
 
@@ -134,11 +141,7 @@ public class Waypoint : MonoBehaviour, OnWillRenderReceiver
     {
         foreach (Player player in Main.Instance.RaceManager.Players)
         {
-            float glowFac;
-            if (!m_playerToGlow.TryGetValue(player, out glowFac))
-            {
-                glowFac = 0;
-            }
+            float glowFac = m_playerToGlow[player];
 
             bool isNextWaypoint = (player.NextWaypoint == this);
             bool isSecondNextWaypoint = (player.SecondNextWaypoint == this);

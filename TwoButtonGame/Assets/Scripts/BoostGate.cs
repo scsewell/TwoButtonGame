@@ -17,34 +17,23 @@ public class BoostGate : MonoBehaviour
     private float m_glowSmoothing = 0.35f;
 
     private Material m_mat;
-    private Dictionary<Player, bool> m_playerUsed = new Dictionary<Player, bool>();
-    private Dictionary<Player, float> m_playerToGlow = new Dictionary<Player, float>();
+    private Dictionary<Player, bool> m_playerUsed;
+    private Dictionary<Player, float> m_playerToGlow;
 
     private void Awake()
     {
+        m_playerUsed = new Dictionary<Player, bool>();
+        m_playerToGlow = new Dictionary<Player, float>();
+
         m_mat = GetComponentInChildren<MeshRenderer>().material;
     }
 
-    public void UpdateGate()
+    public void ResetGate()
     {
         foreach (Player player in Main.Instance.RaceManager.Players)
         {
-            float glow;
-            if (!m_playerToGlow.TryGetValue(player, out glow))
-            {
-                glow = 0;
-            }
-
-            bool used;
-            if (!m_playerUsed.TryGetValue(player, out used))
-            {
-                used = false;
-            }
-            
-            float glowTarget = used ? m_glowUsed : m_glowReady;
-            glow = Mathf.MoveTowards(glow, glowTarget, Time.deltaTime / m_glowSmoothing);
-            
-            m_playerToGlow[player] = glow;
+            m_playerUsed[player] = false;
+            m_playerToGlow[player] = m_glowReady;
         }
     }
 
@@ -53,13 +42,22 @@ public class BoostGate : MonoBehaviour
         m_playerUsed[player] = false;
     }
 
+    public void UpdateGate()
+    {
+        foreach (Player player in Main.Instance.RaceManager.Players)
+        {
+            float glow = m_playerToGlow[player];
+            
+            float glowTarget = m_playerUsed[player] ? m_glowUsed : m_glowReady;
+            glow = Mathf.MoveTowards(glow, glowTarget, Time.deltaTime / m_glowSmoothing);
+            
+            m_playerToGlow[player] = glow;
+        }
+    }
+
     public bool UseGate(Player player)
     {
-        bool used;
-        if (!m_playerUsed.TryGetValue(player, out used))
-        {
-            used = false;
-        }
+        bool used = m_playerUsed[player];
 
         if (!used)
         {
@@ -77,10 +75,7 @@ public class BoostGate : MonoBehaviour
 
         if (camManager != null)
         {
-            if (!m_playerToGlow.TryGetValue(camManager.Owner, out glow))
-            {
-                glow = m_glowReady;
-            }
+            glow = m_playerToGlow[camManager.Owner];
         }
 
         m_mat.SetColor("_EmissionColor", Color.red * glow);

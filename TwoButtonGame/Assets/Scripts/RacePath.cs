@@ -28,13 +28,19 @@ public class RacePath : MonoBehaviour
     public RacePath Init(int laps)
     {
         m_laps = laps;
-        
+        return this;
+    }
+
+    public void ResetPath()
+    {
         foreach (Waypoint waypoint in m_path)
         {
-            waypoint.Init();
+            waypoint.ResetGate();
         }
-
-        return this;
+        foreach (BoostGate energyGate in m_energyGates)
+        {
+            energyGate.ResetGate();
+        }
     }
 
     public bool IsFinished(int waypointIndex)
