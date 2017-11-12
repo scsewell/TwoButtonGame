@@ -204,7 +204,8 @@ public class MemeBoots : MonoBehaviour
         // Visualizations
         if (m_showPrediction && m_trajectoryVisualization == null)
         {
-            m_trajectoryVisualization = new TrajectoryVisualization(false);
+            //m_trajectoryVisualization = new TrajectoryVisualization(false, true);
+            m_trajectoryVisualization = new TrajectoryVisualization(true, false);
         }
         else if (!m_showPrediction && m_trajectoryVisualization != null)
         {

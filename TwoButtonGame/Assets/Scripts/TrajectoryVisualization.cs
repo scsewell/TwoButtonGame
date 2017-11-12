@@ -9,38 +9,52 @@ public class TrajectoryVisualization
     private const int FRAMES_PER_SEGMENT = 10;
 
     private GameObject m_crosshairBox;
-    private GameObject m_accelerationCrosshairBox;
     private GameObject m_trajectoryBox;
-    private GameObject[] m_accelerationBoxes;
+    private Dictionary<int, GameObject> m_accelerationCrosshairBox;
+    private Dictionary<int, GameObject[]> m_accelerationBoxes;
     private Vector3 m_lastVelocity;
-    private List<Vector3> m_positions = new List<Vector3>(SEGMENTS * FRAMES_PER_SEGMENT);
-    private List<float> m_rotations = new List<float>(SEGMENTS * FRAMES_PER_SEGMENT);
+    private List<Vector3> m_positions;
+    private List<float> m_rotations;
+    private bool m_cubical;
 
-    public TrajectoryVisualization(bool interpolated)
+    public TrajectoryVisualization(bool interpolated, bool cubical)
     {
-        m_crosshairBox = MakeBox(Color.green);
+        m_cubical = cubical;
+
+        m_crosshairBox = MakeBox(Color.green, interpolated, cubical);
         m_crosshairBox.transform.localScale = 1.0f * Vector3.one;
 
-        m_accelerationCrosshairBox = MakeBox(Color.yellow);
-        m_accelerationCrosshairBox.transform.localScale = 1.0f * Vector3.one;
-        
-        m_trajectoryBox = MakeBox(Color.blue);
+        m_trajectoryBox = MakeBox(Color.blue, interpolated, cubical);
 
-        m_accelerationBoxes = new GameObject[SEGMENTS];
-        for (int i = 0; i < SEGMENTS; i++)
+        m_accelerationCrosshairBox = new Dictionary<int, GameObject>();
+        m_accelerationBoxes = new Dictionary<int, GameObject[]>();
+        for (int input = 0; input < 5; input++)
         {
-            m_accelerationBoxes[i] = MakeBox(Color.Lerp(Color.red, Color.magenta, i / (float)SEGMENTS));
+            m_accelerationCrosshairBox[input] = MakeBox(Color.yellow, interpolated, cubical);
+            m_accelerationCrosshairBox[input].transform.localScale = 1.0f * Vector3.one;
+
+            m_accelerationBoxes[input] = new GameObject[SEGMENTS];
+            for (int i = 0; i < SEGMENTS; i++)
+            {
+                m_accelerationBoxes[input][i] = MakeBox(Color.Lerp(Color.red, Color.magenta, i / (float)SEGMENTS), interpolated, cubical);
+            }
         }
+
+        m_positions = new List<Vector3>(SEGMENTS * FRAMES_PER_SEGMENT);
+        m_rotations = new List<float>(SEGMENTS * FRAMES_PER_SEGMENT);
 
         m_lastVelocity = Vector3.zero;
     }
 
-    public GameObject MakeBox(Color color)
+    public GameObject MakeBox(Color color, bool interpolated, bool cubical)
     {
-        GameObject box = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        GameObject box = GameObject.CreatePrimitive(m_cubical ? PrimitiveType.Cube : PrimitiveType.Cylinder);
         Object.DestroyImmediate(box.GetComponent<Collider>());
-        box.AddComponent<TransformInterpolator>();
         box.GetComponent<MeshRenderer>().material.color = color;
+        if (interpolated)
+        {
+            box.AddComponent<TransformInterpolator>();
+        }
         return box;
     }
 
@@ -52,19 +66,23 @@ public class TrajectoryVisualization
         PositionBox(m_trajectoryBox, position, endpoint);
         m_crosshairBox.transform.position = endpoint;
 
-        m_positions.Clear();
-        m_rotations.Clear();
-
-        m_positions.Add(position);
-        m_rotations.Add(rotation);
-
-        memeBoots.PredictStep(SEGMENTS * FRAMES_PER_SEGMENT, m_positions, velocity, m_rotations, angularVelocity, leftEngine, rightEngine, boost, 2 * Time.fixedDeltaTime);
-
-        for (int i = 0; i < SEGMENTS; i++)
+        for (int input = 0; input < 5; input++)
         {
-            PositionBox(m_accelerationBoxes[i], m_positions[i * FRAMES_PER_SEGMENT], m_positions[(i + 1) * FRAMES_PER_SEGMENT]);
+            m_positions.Clear();
+            m_rotations.Clear();
+            m_positions.Add(position);
+            m_rotations.Add(rotation);
+            memeBoots.PredictStep(SEGMENTS * FRAMES_PER_SEGMENT, m_positions, velocity, m_rotations, angularVelocity, input%2==0, input>1, input>3, Time.fixedDeltaTime);
+
+            for (int i = 0; i < SEGMENTS; i++)
+            {
+                PositionBox(m_accelerationBoxes[input][i], m_positions[i * FRAMES_PER_SEGMENT], m_positions[(i + 1) * FRAMES_PER_SEGMENT]);
+                m_accelerationBoxes[input][i].GetComponent<MeshRenderer>().material.color =
+                    ((input % 2 == 0) == leftEngine) && ((input > 1) == rightEngine) && ((input > 3) == boost) ?
+                    Color.Lerp(Color.green, Color.white, i / (float)SEGMENTS) : Color.Lerp(Color.red, Color.magenta, i / (float)SEGMENTS);
+            }
+            m_accelerationCrosshairBox[input].transform.position = m_positions[SEGMENTS * FRAMES_PER_SEGMENT];
         }
-        m_accelerationCrosshairBox.transform.position = m_positions[SEGMENTS * FRAMES_PER_SEGMENT];
 
         m_lastVelocity = velocity;
     }
@@ -84,24 +102,31 @@ public class TrajectoryVisualization
         {
             for (int j = 0; j < FRAMES_PER_SEGMENT; j++)
             {
-                //estimatedVelocity += Time.fixedDeltaTime * acceleration;
                 estimatedVelocity += acceleration;
                 newEstimatedPosition += Time.fixedDeltaTime * estimatedVelocity;
             }
 
-            PositionBox(m_accelerationBoxes[i], estimatedPosition, newEstimatedPosition);
+            PositionBox(m_accelerationBoxes[0][i], estimatedPosition, newEstimatedPosition);
             estimatedPosition = newEstimatedPosition;
         }
-        m_accelerationCrosshairBox.transform.position = newEstimatedPosition;
+        m_accelerationCrosshairBox[0].transform.position = newEstimatedPosition;
 
         m_lastVelocity = velocity;
     }
 
     public void PositionBox(GameObject box, Vector3 start, Vector3 end)
     {
-        box.transform.localScale = new Vector3(0.5f, 0.5f, (end - start).magnitude);
         box.transform.position = (start + end) / 2;
-        box.transform.LookAt(end);
+        if (m_cubical)
+        {
+            box.transform.localScale = new Vector3(0.5f, 0.5f, (end - start).magnitude);
+            box.transform.LookAt(end);
+        }
+        else
+        {
+            box.transform.localScale = new Vector3(0.3f, (end - start).magnitude / 2, 0.3f);
+            box.transform.rotation = Quaternion.LookRotation(end - start) * Quaternion.Euler(90, 0, 0);
+        }
     }
 
     public void EndVisualization()
@@ -117,18 +142,39 @@ public class TrajectoryVisualization
             m_crosshairBox = null;
         }
 
-        if (m_accelerationCrosshairBox)
+        for (int input = 0; input < 5; input++)
         {
-            Object.Destroy(m_accelerationCrosshairBox);
+            if (m_accelerationCrosshairBox != null)
+            {
+                if (m_accelerationCrosshairBox[input] != null)
+                {
+                    Object.Destroy(m_accelerationCrosshairBox[input]);
+                    m_accelerationCrosshairBox[input] = null;
+                }
+            }
+            if (m_accelerationBoxes != null)
+            {
+                if (m_accelerationBoxes[input] != null)
+                {
+                    for (int i = 0; i < SEGMENTS; i++)
+                    {
+                        if (m_accelerationBoxes[input][i] != null)
+                        {
+                            Object.Destroy(m_accelerationBoxes[input][i]);
+                            m_accelerationBoxes[input][i] = null;
+                        }
+                    }
+                    m_accelerationBoxes[input] = null;
+                }
+            }
+        }
+        if (m_accelerationCrosshairBox != null)
+        {
             m_accelerationCrosshairBox = null;
         }
-        for (int i = 0; i < SEGMENTS; i++)
+        if (m_accelerationBoxes != null)
         {
-            if (m_accelerationBoxes[i])
-            {
-                Object.Destroy(m_accelerationBoxes[i]);
-                m_accelerationBoxes[i] = null;
-            }
+            m_accelerationBoxes = null;
         }
     }
 }
