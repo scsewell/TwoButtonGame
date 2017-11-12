@@ -70,6 +70,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58759e4c08d429843968e917aee52589, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  TENSOR: 0.4
   m_boundsLayers:
     serializedVersion: 2
     m_Bits: 134217728
@@ -106,6 +107,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b35ea56cd4eeb14c8e01c9123f06680, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_energyFailSound: {fileID: 8300000, guid: 17c689288dbeb024fa7379a225945b14, type: 3}
+  m_energyFailVolume: 1
 --- !u!136 &136027555362995916
 CapsuleCollider:
   m_ObjectHideFlags: 1

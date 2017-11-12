@@ -7,6 +7,7 @@ public class PlayerAI : IInputProvider
 {
     private Player m_player;
     private MovementInputs m_input;
+    private float m_lastBoostTime = float.MinValue;
 
     public PlayerAI(Player player)
     {
@@ -37,9 +38,10 @@ public class PlayerAI : IInputProvider
             }
             else
             {
-                if (disp.magnitude > 65 && Mathf.Abs(disp.normalized.y) < 0.1f)
+                if (disp.magnitude > 65 && Mathf.Abs(disp.normalized.y) < 0.1f && Time.time - m_lastBoostTime > 0.5f)
                 {
                     m_input.boost = true;
+                    m_lastBoostTime = Time.time;
                 }
 
                 if (disp.y > 0)

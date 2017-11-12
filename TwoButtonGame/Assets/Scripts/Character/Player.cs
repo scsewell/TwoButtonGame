@@ -7,6 +7,12 @@ using Framework.Interpolation;
 [RequireComponent(typeof(TransformInterpolator))]
 public class Player : MonoBehaviour
 {
+    [Header("Sound")]
+    [SerializeField]
+    private AudioClip m_energyFailSound;
+    [SerializeField] [Range(0, 1)]
+    private float m_energyFailVolume = 1.0f;
+
     // Configuration
     private bool m_isHuman;
     public bool IsHuman { get { return m_isHuman; } }
@@ -181,6 +187,7 @@ public class Player : MonoBehaviour
     {
         if (EnergyUseFailed != null)
         {
+            AudioManager.Instance.PlaySound(m_energyFailSound, m_energyFailVolume);
             EnergyUseFailed();
         }
     }

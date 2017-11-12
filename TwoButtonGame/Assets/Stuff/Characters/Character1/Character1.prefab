@@ -4900,8 +4900,8 @@ MonoBehaviour:
   m_engineVolume: 0.4
   m_enginePitch: 0.45
   m_engineStartVol: 1
-  m_engineStartDuration: 0.5
-  m_engineNormVol: 0.15
+  m_engineStartDuration: 0.35
+  m_engineNormVol: 0.115
   m_volumePower: 0.55
   m_boostPitch: 0.55
   m_audioSmoothing: 0.2
