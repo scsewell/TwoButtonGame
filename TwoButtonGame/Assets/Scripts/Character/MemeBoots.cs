@@ -32,6 +32,7 @@ public class MemeBoots : MonoBehaviour
     private float m_boostDuration = 0;
     private float m_boostEndTime = float.MinValue;
     private float m_boostFactor = 0;
+    private bool m_boostPressed = false;
 
     private TrajectoryVisualization m_trajectoryVisualization;
 
@@ -101,14 +102,16 @@ public class MemeBoots : MonoBehaviour
                         m_isBoosting = true;
                         m_boostDuration = 0;
                     }
-                    else
+                    else if (!m_boostPressed)
                     {
                         m_player.OnEnergyUseFail();
                     }
+                    m_boostPressed = true;
                 }
             }
-            else if (!input.boostHold)
+            else
             {
+                m_boostPressed = false;
                 if (m_boostDuration >= m_minBoostTime)
                 {
                     m_isBoosting = false;
@@ -202,9 +205,8 @@ public class MemeBoots : MonoBehaviour
         }
 
         // Visualizations
-        if (m_showPrediction && m_trajectoryVisualization == null)
+        if (Application.isEditor && m_showPrediction && m_trajectoryVisualization == null)
         {
-            //m_trajectoryVisualization = new TrajectoryVisualization(false, true);
             m_trajectoryVisualization = new TrajectoryVisualization(true, false);
         }
         else if (!m_showPrediction && m_trajectoryVisualization != null)

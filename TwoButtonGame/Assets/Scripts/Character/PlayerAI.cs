@@ -26,11 +26,11 @@ public class PlayerAI : IInputProvider
 
     MovementInputs[] testInputs = new MovementInputs[]
     {
-        new MovementInputs(false,   false,  false,  false),
-        new MovementInputs(false,   true,   false,  false),
-        new MovementInputs(true,    false,  false,  false),
-        new MovementInputs(true,    true,   false,  false),
-        new MovementInputs(true,    true,   true,   false),
+        new MovementInputs(false,   false,  false),
+        new MovementInputs(false,   true,   false),
+        new MovementInputs(true,    false,  false),
+        new MovementInputs(true,    true,   false),
+        new MovementInputs(true,    true,   true),
     };
 
     public void FixedUpdateProvider()
