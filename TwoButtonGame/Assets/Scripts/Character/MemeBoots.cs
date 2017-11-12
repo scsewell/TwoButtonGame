@@ -260,7 +260,7 @@ public class MemeBoots : MonoBehaviour
                 Vector3 engineUpForce = config.VerticalAccel * config.GravityFac * Vector3.up;
 
                 Vector3 engineForce = engineForeForce + engineUpForce;
-                Vector3 forceOffset = config.TurnRatio * Vector3.Cross(forward, Vector3.up).normalized;
+                Vector3 forceOffset = config.TurnRatio * Vector3.Cross(Vector3.up, forward).normalized;
 
                 if (leftEngine)
                 {
