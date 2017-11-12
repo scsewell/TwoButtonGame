@@ -5,14 +5,16 @@ using System.Collections.Generic;
 
 public class TrajectoryVisualization
 {
-    private static readonly int SEGMENTS = 10;
-    private static readonly int FRAMES_PER_SEGMENT = 10;
+    private const int SEGMENTS = 10;
+    private const int FRAMES_PER_SEGMENT = 10;
 
     private GameObject m_crosshairBox;
     private GameObject m_accelerationCrosshairBox;
     private GameObject m_trajectoryBox;
     private GameObject[] m_accelerationBoxes;
     private Vector3 m_lastVelocity;
+    private List<Vector3> m_positions = new List<Vector3>(SEGMENTS * FRAMES_PER_SEGMENT);
+    private List<float> m_rotations = new List<float>(SEGMENTS * FRAMES_PER_SEGMENT);
 
     public TrajectoryVisualization(bool interpolated)
     {
@@ -49,18 +51,20 @@ public class TrajectoryVisualization
 
         PositionBox(m_trajectoryBox, position, endpoint);
         m_crosshairBox.transform.position = endpoint;
-        
-        List<Vector3> positions = new List<Vector3>();
-        positions.Add(position);
-        List<float> rotations = new List<float>();
-        rotations.Add(rotation);
-        memeBoots.PredictStep(SEGMENTS * FRAMES_PER_SEGMENT, positions, velocity, rotations, angularVelocity, leftEngine, rightEngine, boost, Time.fixedDeltaTime);
+
+        m_positions.Clear();
+        m_rotations.Clear();
+
+        m_positions.Add(position);
+        m_rotations.Add(rotation);
+
+        memeBoots.PredictStep(SEGMENTS * FRAMES_PER_SEGMENT, m_positions, velocity, m_rotations, angularVelocity, leftEngine, rightEngine, boost, 2 * Time.fixedDeltaTime);
 
         for (int i = 0; i < SEGMENTS; i++)
         {
-            PositionBox(m_accelerationBoxes[i], positions[i * FRAMES_PER_SEGMENT], positions[(i + 1) * FRAMES_PER_SEGMENT]);
+            PositionBox(m_accelerationBoxes[i], m_positions[i * FRAMES_PER_SEGMENT], m_positions[(i + 1) * FRAMES_PER_SEGMENT]);
         }
-        m_accelerationCrosshairBox.transform.position = positions[SEGMENTS * FRAMES_PER_SEGMENT];
+        m_accelerationCrosshairBox.transform.position = m_positions[SEGMENTS * FRAMES_PER_SEGMENT];
 
         m_lastVelocity = velocity;
     }

@@ -72,4 +72,4 @@ MonoBehaviour:
   m_goSound: {fileID: 8300000, guid: 3bd94b4b8ec8a334b84134d52b6cab9c, type: 3}
   m_skipIntro: 1
   m_skipCoundown: 1
-  m_AICount: 12
+  m_AICount: 1

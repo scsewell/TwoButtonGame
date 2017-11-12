@@ -27,7 +27,6 @@ public class MemeBoots : MonoBehaviour
     private CapsuleCollider m_capsule;
     private Rigidbody m_body;
     private RaycastHit[] m_hits = new RaycastHit[20];
-    private float m_angVelocity = 0;
     private float m_boundsEffect = 0;
     private Vector3 m_boundsCorrectDir = Vector3.up;
     private float m_boostDuration = 0;
@@ -58,6 +57,12 @@ public class MemeBoots : MonoBehaviour
     public Vector3 Velocity
     {
         get { return m_body.velocity; }
+    }
+
+    private float m_angVelocity = 0;
+    public float AngularVelocity
+    {
+        get { return m_angVelocity; }
     }
 
     private void Awake()
