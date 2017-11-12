@@ -11,7 +11,7 @@ public class ControlPanel : MonoBehaviour
     private Text m_description;
 
     private List<string> m_buttonNames = new List<string>();
-    private List<RectTransform> m_buttons = new List<RectTransform>();
+    //private List<RectTransform> m_buttons = new List<RectTransform>();
 
     private RectTransform m_key;
 
