@@ -1,11 +1,12 @@
 ﻿using System.Collections;
 using UnityEngine;
 using Framework.Interpolation;
+using System.Collections.Generic;
 
 public class TrajectoryVisualization
 {
     private static readonly int SEGMENTS = 10;
-    private static readonly int FRAMES = 10;
+    private static readonly int FRAMES_PER_SEGMENT = 10;
 
     private GameObject m_crosshairBox;
     private GameObject m_accelerationCrosshairBox;
@@ -41,6 +42,29 @@ public class TrajectoryVisualization
         return box;
     }
 
+    public void FixedMemeUpdateTrajectory(MemeBoots memeBoots, Vector3 position, Vector3 velocity, float rotation, float angularVelocity, bool leftEngine, bool rightEngine, bool boost)
+    {
+        Vector3 acceleration = velocity - m_lastVelocity;
+        Vector3 endpoint = position + velocity;
+
+        PositionBox(m_trajectoryBox, position, endpoint);
+        m_crosshairBox.transform.position = endpoint;
+        
+        List<Vector3> positions = new List<Vector3>();
+        positions.Add(position);
+        List<float> rotations = new List<float>();
+        rotations.Add(rotation);
+        memeBoots.PredictStep(SEGMENTS * FRAMES_PER_SEGMENT, positions, velocity, rotations, angularVelocity, leftEngine, rightEngine, boost, Time.fixedDeltaTime);
+
+        for (int i = 0; i < SEGMENTS; i++)
+        {
+            PositionBox(m_accelerationBoxes[i], positions[i * FRAMES_PER_SEGMENT], positions[(i + 1) * FRAMES_PER_SEGMENT]);
+        }
+        m_accelerationCrosshairBox.transform.position = positions[SEGMENTS * FRAMES_PER_SEGMENT];
+
+        m_lastVelocity = velocity;
+    }
+
     public void FixedUpdateTrajectory(Vector3 position, Vector3 velocity)
     {
         Vector3 acceleration = velocity - m_lastVelocity;
@@ -54,7 +78,7 @@ public class TrajectoryVisualization
         Vector3 estimatedVelocity = velocity;
         for (int i = 0; i < SEGMENTS; i++)
         {
-            for (int j = 0; j < FRAMES; j++)
+            for (int j = 0; j < FRAMES_PER_SEGMENT; j++)
             {
                 //estimatedVelocity += Time.fixedDeltaTime * acceleration;
                 estimatedVelocity += acceleration;

@@ -208,7 +208,7 @@ public class MemeBoots : MonoBehaviour
         }
         if (m_trajectoryVisualization != null)
         {
-            m_trajectoryVisualization.FixedUpdateTrajectory(m_body.position, m_body.velocity);
+            m_trajectoryVisualization.FixedMemeUpdateTrajectory(this, m_body.position, m_body.velocity, transform.rotation.eulerAngles.y, m_angVelocity, m_leftEngine, m_rightEngine, m_isBoosting);
         }
     }
 
