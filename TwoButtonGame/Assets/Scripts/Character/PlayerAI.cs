@@ -70,7 +70,7 @@ public class PlayerAI : IInputProvider
                     float velFac = Mathf.Sign(velDot) * Mathf.Pow(Mathf.Abs(velDot), 4);
                     float angVelFac = Mathf.Lerp(0, (Mathf.Abs(angVel) / 3.0f), velFac);
 
-                    float value = -distFac;//velFac - angVelFac - distFac;
+                    float value = velFac - angVelFac - distFac;
                     if (bestValue < value)
                     {
                         bestValue = value;
