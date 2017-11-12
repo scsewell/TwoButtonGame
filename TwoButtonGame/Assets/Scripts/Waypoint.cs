@@ -104,7 +104,6 @@ public class Waypoint : MonoBehaviour, OnWillRenderReceiver
         if (m_path != null)
         {
             pos = m_path.GetPointWithWaits(GetPathTime(), m_wrapMode);
-            
             Vector3 velocity = (pos - m_lastPosition) / Time.deltaTime;
             Vector3 acceleration = (velocity - m_lastVelocity) / Time.deltaTime;
             

@@ -17,6 +17,10 @@ public class MemeBoots : MonoBehaviour
     [SerializeField] [Range(0, 100)]
     private float m_boundsCorrectionStrength = 10.0f;
 
+    [Header("Visualization")]
+    [SerializeField]
+    private bool m_showPrediction = false;
+
     private Player m_player;
     private CapsuleCollider m_capsule;
     private Rigidbody m_body;
@@ -59,10 +63,17 @@ public class MemeBoots : MonoBehaviour
         m_player = GetComponentInParent<Player>();
         m_body = GetComponent<Rigidbody>();
         m_capsule = GetComponent<CapsuleCollider>();
-
-        m_trajectoryVisualization = new TrajectoryVisualization(false);
     }
-    
+
+    private void OnDestroy()
+    {
+        if (m_trajectoryVisualization != null)
+        {
+            m_trajectoryVisualization.EndVisualization();
+            m_trajectoryVisualization = null;
+        }
+    }
+
     public void FixedUpdateMovement(MovementInputs input, bool acceptInput, bool inPreWarm)
     {
         PlayerConfig config = m_player.Config;
@@ -186,7 +197,20 @@ public class MemeBoots : MonoBehaviour
             }
         }
 
-        m_trajectoryVisualization.FixedUpdateTrajectory(m_body.position, m_body.velocity);
+        // Visualizations
+        if (m_showPrediction && m_trajectoryVisualization == null)
+        {
+            m_trajectoryVisualization = new TrajectoryVisualization(false);
+        }
+        else if (!m_showPrediction && m_trajectoryVisualization != null)
+        {
+            m_trajectoryVisualization.EndVisualization();
+            m_trajectoryVisualization = null;
+        }
+        if (m_trajectoryVisualization != null)
+        {
+            m_trajectoryVisualization.FixedUpdateTrajectory(m_body.position, m_body.velocity);
+        }
     }
 
     private void OnCollisionStay(Collision collision)

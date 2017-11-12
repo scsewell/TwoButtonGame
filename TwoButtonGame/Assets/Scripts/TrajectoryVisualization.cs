@@ -1,41 +1,41 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using System.Collections;
+using UnityEngine;
 using Framework.Interpolation;
 
 public class TrajectoryVisualization
 {
-    private GameObject crosshairBox;
-    private GameObject accelerationCrosshairBox;
-    private GameObject trajectoryBox;
-    private GameObject[] accelerationBoxes;
-    private Vector3 lastVelocity;
+    private static readonly int SEGMENTS = 10;
+    private static readonly int FRAMES = 10;
 
-    private static readonly int segments = 10;
-    private static readonly int frames = 4;
+    private GameObject m_crosshairBox;
+    private GameObject m_accelerationCrosshairBox;
+    private GameObject m_trajectoryBox;
+    private GameObject[] m_accelerationBoxes;
+    private Vector3 m_lastVelocity;
 
     public TrajectoryVisualization(bool interpolated)
     {
-        crosshairBox = makeBox(Color.green);
-        crosshairBox.transform.localScale = new Vector3(1, 1, 1);
+        m_crosshairBox = MakeBox(Color.green);
+        m_crosshairBox.transform.localScale = 1.0f * Vector3.one;
 
-        accelerationCrosshairBox = makeBox(Color.yellow);
-        accelerationCrosshairBox.transform.localScale = new Vector3(1, 1, 1);
+        m_accelerationCrosshairBox = MakeBox(Color.yellow);
+        m_accelerationCrosshairBox.transform.localScale = 1.0f * Vector3.one;
         
-        trajectoryBox = makeBox(Color.blue);
+        m_trajectoryBox = MakeBox(Color.blue);
 
-        accelerationBoxes = new GameObject[segments];
-        for (int i = 0; i < segments; i++)
+        m_accelerationBoxes = new GameObject[SEGMENTS];
+        for (int i = 0; i < SEGMENTS; i++)
         {
-            accelerationBoxes[i] = makeBox(Color.Lerp(Color.red, Color.magenta, i / (float) segments));
+            m_accelerationBoxes[i] = MakeBox(Color.Lerp(Color.red, Color.magenta, i / (float)SEGMENTS));
         }
 
-        lastVelocity = Vector3.zero;
+        m_lastVelocity = Vector3.zero;
     }
 
-    public GameObject makeBox(Color color)
+    public GameObject MakeBox(Color color)
     {
         GameObject box = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        Object.Destroy(box.GetComponent<Collider>());
+        Object.DestroyImmediate(box.GetComponent<Collider>());
         box.AddComponent<TransformInterpolator>();
         box.GetComponent<MeshRenderer>().material.color = color;
         return box;
@@ -43,33 +43,33 @@ public class TrajectoryVisualization
 
     public void FixedUpdateTrajectory(Vector3 position, Vector3 velocity)
     {
-        Vector3 acceleration = velocity - lastVelocity;
+        Vector3 acceleration = velocity - m_lastVelocity;
         Vector3 endpoint = position + velocity;
 
-        positionBox(trajectoryBox, position, endpoint);
-        crosshairBox.transform.position = endpoint;
+        PositionBox(m_trajectoryBox, position, endpoint);
+        m_crosshairBox.transform.position = endpoint;
 
         Vector3 estimatedPosition = position;
         Vector3 newEstimatedPosition = position;
         Vector3 estimatedVelocity = velocity;
-        for (int i = 0; i < segments; i++)
+        for (int i = 0; i < SEGMENTS; i++)
         {
-            for (int j = 0; j < frames; j++)
+            for (int j = 0; j < FRAMES; j++)
             {
                 //estimatedVelocity += Time.fixedDeltaTime * acceleration;
                 estimatedVelocity += acceleration;
                 newEstimatedPosition += Time.fixedDeltaTime * estimatedVelocity;
             }
 
-            positionBox(accelerationBoxes[i], estimatedPosition, newEstimatedPosition);
+            PositionBox(m_accelerationBoxes[i], estimatedPosition, newEstimatedPosition);
             estimatedPosition = newEstimatedPosition;
         }
-        accelerationCrosshairBox.transform.position = newEstimatedPosition;
+        m_accelerationCrosshairBox.transform.position = newEstimatedPosition;
 
-        lastVelocity = velocity;
+        m_lastVelocity = velocity;
     }
 
-    public void positionBox(GameObject box, Vector3 start, Vector3 end)
+    public void PositionBox(GameObject box, Vector3 start, Vector3 end)
     {
         box.transform.localScale = new Vector3(0.5f, 0.5f, (end - start).magnitude);
         box.transform.position = (start + end) / 2;
@@ -78,21 +78,29 @@ public class TrajectoryVisualization
 
     public void EndVisualization()
     {
-        if (trajectoryBox)
+        if (m_trajectoryBox)
         {
-            Object.Destroy(trajectoryBox);
+            Object.Destroy(m_trajectoryBox);
+            m_trajectoryBox = null;
         }
-        if (crosshairBox)
+        if (m_crosshairBox)
         {
-            Object.Destroy(crosshairBox);
+            Object.Destroy(m_crosshairBox);
+            m_crosshairBox = null;
         }
-        for (int i = 0; i < segments; i++)
+
+        if (m_accelerationCrosshairBox)
         {
-            if (accelerationBoxes[i])
+            Object.Destroy(m_accelerationCrosshairBox);
+            m_accelerationCrosshairBox = null;
+        }
+        for (int i = 0; i < SEGMENTS; i++)
+        {
+            if (m_accelerationBoxes[i])
             {
-                Object.Destroy(accelerationBoxes[i]);
+                Object.Destroy(m_accelerationBoxes[i]);
+                m_accelerationBoxes[i] = null;
             }
         }
     }
-    
 }
