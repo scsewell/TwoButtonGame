@@ -66,7 +66,17 @@ public class MainMenu : Menu
     [SerializeField] private Button m_howToBackButton;
     [SerializeField] private Button m_howToPreviousButton;
     [SerializeField] private Button m_howToNextButton;
+    [SerializeField] private Image m_howToImage;
+    [SerializeField] private Text m_howToText;
+    [SerializeField] private HowToPlay[] m_howToPlay;
 
+    [Serializable]
+    public class HowToPlay
+    {
+        public Sprite image;
+        [TextArea]
+        public string text;
+    }
     private int m_currentHowTo = 0;
 
     [Header("Settings")]
@@ -125,7 +135,7 @@ public class MainMenu : Menu
         
         m_howToBackButton.onClick.AddListener(() => SetMenu(Menu.Root));
         m_howToPreviousButton.onClick.AddListener(() => m_currentHowTo = Mathf.Max(m_currentHowTo - 1, 0));
-        m_howToNextButton.onClick.AddListener(() => m_currentHowTo = Mathf.Min(m_currentHowTo + 1, 2));
+        m_howToNextButton.onClick.AddListener(() => m_currentHowTo = Mathf.Min(m_currentHowTo + 1, m_howToPlay.Length - 1));
 
         m_settingsBackButton.onClick.AddListener(() => SetMenu(Menu.Root));
         m_settingsUseDefaultsButton.onClick.AddListener(() => UseDefaultSettings());
@@ -400,6 +410,12 @@ public class MainMenu : Menu
 
     private void UpdateHowToPlay()
     {
+        if (m_currentHowTo < m_howToPlay.Length)
+        {
+            HowToPlay howToPlay = m_howToPlay[m_currentHowTo];
+            m_howToImage.sprite = howToPlay.image;
+            m_howToText.text = howToPlay.text;
+        }
     }
 
     private void CreateSettings()

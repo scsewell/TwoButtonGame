@@ -3,6 +3,7 @@
 Engines spark on boost fail
 paritcle motion trail behind engine
 
+How to Play use left right arrow kets
 vairable replay speed
 Collision/sliding sound
 Player finish line sounds
@@ -26,7 +27,6 @@ Levels
 	Arctic - ice caves
 	Volano
 
-How to Play
 Update level preview images
 Ensure music is credited
 
@@ -39,7 +39,7 @@ Level preview camera shots in menu
 Input selection
 Player n is nth joiner (But what about if 1st player leaves?)
 Leaderboard
-Replays / Ghosting
+Ghosting
 
 ### Music Loop Times ###
 The Lift		7:27.467896
