@@ -150,7 +150,7 @@ public class RaceManager : MonoBehaviour
             }
         }
 
-        m_raceRecording = new RaceRecording(m_players);
+        m_raceRecording = new RaceRecording(m_players.Count);
         m_replayStartTime = float.PositiveInfinity;
 
         m_state = State.Racing;
@@ -235,11 +235,6 @@ public class RaceManager : MonoBehaviour
         if (isAfterIntro)
         {
             m_fixedFramesSoFar++;
-
-            if (m_state != State.Replay && m_fixedFramesSoFar == 100)
-            {
-                m_replayStartTime = Time.time + m_replayStartWait;
-            }
         }
 
         if (Time.time >= m_replayStartTime)
@@ -248,10 +243,6 @@ public class RaceManager : MonoBehaviour
             {
                 m_state = State.Replay;
                 
-                byte[] comp = RaceRecording.CompressToBytes(m_raceRecording);
-                Debug.Log(comp.Length);
-                m_raceRecording = RaceRecording.DecompressFromBytes(comp);
-
                 AudioManager.Instance.StopMusic();
                 AudioManager.Instance.PlayMusic(m_replayMusic);
             }

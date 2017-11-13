@@ -1,26 +1,22 @@
 ﻿using UnityEngine;
-using System.Collections;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 using System.IO.Compression;
 
 [Serializable]
 public class RaceRecording
 {
-    // this constant has big tradeoff on bytes/sec to jerkiness
-    private static readonly int FRAMES_PER_POSITION = 50;
-
+    private int m_playerCount;
+    
+    private static readonly int FRAMES_PER_POSITION = 10;
     private List<Vector3>[] m_positions;
     private List<Vector3>[] m_velocities;
     private List<float>[] m_rotations;
     private List<float>[] m_angularVelocities;
 
     private static readonly int FRAMES_PER_INPUT = 1;
-    
     private List<int>[] m_toggleFramesLeft;
     private List<int>[] m_toggleFramesRight;
     private List<int>[] m_toggleFramesBoost;
@@ -28,19 +24,22 @@ public class RaceRecording
     private MovementInputs[] m_lastFrameInputs;
     private int[][] m_nextInputIndices;
 
-    public RaceRecording(List<Player> players)
+    public RaceRecording(int playerCount)
     {
-        m_positions         = new List<Vector3>[players.Count];
-        m_velocities        = new List<Vector3>[players.Count];
-        m_rotations         = new List<float>[players.Count];
-        m_angularVelocities = new List<float>[players.Count];
-        m_toggleFramesLeft  = new List<int>[players.Count];
-        m_toggleFramesRight = new List<int>[players.Count];
-        m_toggleFramesBoost = new List<int>[players.Count];
+        m_playerCount = playerCount;
 
-        m_lastFrameInputs   = new MovementInputs[players.Count];
-        m_nextInputIndices  = new int[players.Count][];
-        for (int playerIndex = 0; playerIndex < players.Count; playerIndex++)
+        m_positions         = new List<Vector3>[m_playerCount];
+        m_velocities        = new List<Vector3>[m_playerCount];
+        m_rotations         = new List<float>[m_playerCount];
+        m_angularVelocities = new List<float>[m_playerCount];
+        m_toggleFramesLeft  = new List<int>[m_playerCount];
+        m_toggleFramesRight = new List<int>[m_playerCount];
+        m_toggleFramesBoost = new List<int>[m_playerCount];
+
+        m_lastFrameInputs   = new MovementInputs[m_playerCount];
+        m_nextInputIndices  = new int[m_playerCount][];
+
+        for (int playerIndex = 0; playerIndex < m_playerCount; playerIndex++)
         {
             m_positions[playerIndex]            = new List<Vector3>();
             m_velocities[playerIndex]           = new List<Vector3>();
@@ -52,7 +51,52 @@ public class RaceRecording
 
             m_nextInputIndices[playerIndex] = new int[3];
         }
+
         ResetRecorder();
+    }
+
+    public RaceRecording(byte[] bytes) : this(ReadValue<int>(bytes, 0, sizeof(int)))
+    {
+        int offset = sizeof(int); // already read the player count
+
+        for (int i = 0; i < m_playerCount; i++)
+        {
+            m_positions[i]          = ReadVector3Array(bytes, ref offset).ToList();
+            m_velocities[i]         = ReadVector3Array(bytes, ref offset).ToList();
+            m_rotations[i]          = ReadArray<float>(bytes, ref offset, sizeof(float)).ToList();
+            m_angularVelocities[i]  = ReadArray<float>(bytes, ref offset, sizeof(float)).ToList();
+            m_toggleFramesLeft[i]   = ReadArray<int>(bytes, ref offset, sizeof(int)).ToList();
+            m_toggleFramesRight[i]  = ReadArray<int>(bytes, ref offset, sizeof(int)).ToList();
+            m_toggleFramesBoost[i]  = ReadArray<int>(bytes, ref offset, sizeof(int)).ToList();
+        }
+    }
+
+    private byte[] ToBytes()
+    {
+        int totalOutputSize = 0;
+        List<Write> writes = new List<Write>();
+        
+        totalOutputSize += PlanWriteValue(writes, m_playerCount, sizeof(int));
+        
+        for (int i = 0; i < m_playerCount; i++)
+        {
+            totalOutputSize += PlanWriteVector3Array(writes, m_positions[i].ToArray());
+            totalOutputSize += PlanWriteVector3Array(writes, m_velocities[i].ToArray());
+            totalOutputSize += PlanWriteArray(writes, m_rotations[i].ToArray(),         sizeof(float));
+            totalOutputSize += PlanWriteArray(writes, m_angularVelocities[i].ToArray(), sizeof(float));
+            totalOutputSize += PlanWriteArray(writes, m_toggleFramesLeft[i].ToArray(),  sizeof(int));
+            totalOutputSize += PlanWriteArray(writes, m_toggleFramesRight[i].ToArray(), sizeof(int));
+            totalOutputSize += PlanWriteArray(writes, m_toggleFramesBoost[i].ToArray(), sizeof(int));
+        }
+
+        byte[] output = new byte[totalOutputSize];
+        int offset = 0;
+        foreach (Write write in writes)
+        {
+            offset = write(output, offset);
+        }
+        
+        return output;
     }
 
     public void Record(List<Player> players, int fixedFramesSoFar)
@@ -155,7 +199,8 @@ public class RaceRecording
         {
             using (DeflateStream dstream = new DeflateStream(output, CompressionLevel.Optimal, true))
             {
-                MakeFormatter().Serialize(dstream, recording);
+                byte[] data = recording.ToBytes();
+                dstream.Write(data, 0, data.Length);
             }
             return output.ToArray();
         }
@@ -165,78 +210,87 @@ public class RaceRecording
     {
         using (MemoryStream input = new MemoryStream(recording))
         {
-            using (DeflateStream dstream = new DeflateStream(input, CompressionMode.Decompress))
+            using (MemoryStream output = new MemoryStream())
             {
-                return (RaceRecording)(MakeFormatter().Deserialize(dstream));
+                using (DeflateStream dstream = new DeflateStream(input, CompressionMode.Decompress))
+                {
+                    dstream.CopyTo(output);
+                }
+                return new RaceRecording(output.ToArray());
             }
         }
     }
 
-    private static BinaryFormatter MakeFormatter()
+    private delegate int Write(byte[] buf, int offset);
+    
+    private static int PlanWriteValue<T>(List<Write> plannedWrites, T val, int sizeOfT)
     {
-        SurrogateSelector ss = new SurrogateSelector();
-
-        ss.AddSurrogate(typeof(Vector3),
-                        new StreamingContext(StreamingContextStates.All),
-                        new Vector3SerializationSurrogate());
-
-        ss.AddSurrogate(typeof(Quaternion),
-                        new StreamingContext(StreamingContextStates.All),
-                        new QuaternionSerializationSurrogate());
-
-        return new BinaryFormatter
-        {
-            SurrogateSelector = ss
-        };
+        PlanWriteArray(plannedWrites, new T[] { val }, sizeOfT, false);
+        return sizeOfT;
     }
-}
 
-sealed class Vector3SerializationSurrogate : ISerializationSurrogate
-{
-    public void GetObjectData(System.Object obj,
-                              SerializationInfo info, StreamingContext context)
+    private static int PlanWriteArray<T>(List<Write> plannedWrites, T[] vals, int sizeOfT, bool includeHeader = true)
     {
-        Vector3 v3 = (Vector3)obj;
-        info.AddValue("x", v3.x);
-        info.AddValue("y", v3.y);
-        info.AddValue("z", v3.z);
+        int headerSize = 0;
+        if (includeHeader)
+        {
+            headerSize = PlanWriteValue(plannedWrites, vals.Length, sizeof(int));
+        }
+
+        plannedWrites.Add(new Write((buff, offset) =>
+        {
+            int valsSize = vals.Length * sizeOfT;
+            Buffer.BlockCopy(vals, 0, buff, offset, valsSize);
+            return offset + valsSize;
+        }));
+        return (vals.Length * sizeOfT) + headerSize;
+    }
+
+    private static int PlanWriteVector3Array(List<Write> plannedWrites, Vector3[] vals, bool includeHeader = true)
+    {
+        float[] floatArray = new float[vals.Length * 3];
+        for (int i = 0; i < vals.Length; i++)
+        {
+            Vector3 v = vals[i];
+            floatArray[(i * 3) + 0] = v.x;
+            floatArray[(i * 3) + 1] = v.y;
+            floatArray[(i * 3) + 2] = v.z;
+        }
+        return PlanWriteArray(plannedWrites, floatArray, sizeof(float), true);
     }
     
-    public System.Object SetObjectData(System.Object obj,
-                                       SerializationInfo info, StreamingContext context,
-                                       ISurrogateSelector selector)
+    private static T ReadValue<T>(byte[] buff, int offset, int sizeOfT)
     {
-        Vector3 v3 = (Vector3)obj;
-        v3.x = (float)info.GetSingle("x");
-        v3.y = (float)info.GetSingle("y");
-        v3.z = (float)info.GetSingle("z");
-        obj = v3;
-        return obj;
-    }
-}
-
-sealed class QuaternionSerializationSurrogate : ISerializationSurrogate
-{
-    public void GetObjectData(System.Object obj,
-                              SerializationInfo info, StreamingContext context)
-    {
-        Quaternion quaternion = (Quaternion)obj;
-        info.AddValue("x", quaternion.x);
-        info.AddValue("y", quaternion.y);
-        info.AddValue("z", quaternion.z);
-        info.AddValue("w", quaternion.w);
+        return ReadArray<T>(buff, ref offset, sizeOfT, false)[0];
     }
 
-    public System.Object SetObjectData(System.Object obj,
-                                       SerializationInfo info, StreamingContext context,
-                                       ISurrogateSelector selector)
+    private static T ReadValue<T>(byte[] buff, ref int offset, int sizeOfT)
     {
-        Quaternion quaternion = (Quaternion)obj;
-        quaternion.x = (float)info.GetSingle("x");
-        quaternion.y = (float)info.GetSingle("y");
-        quaternion.z = (float)info.GetSingle("z");
-        quaternion.w = (float)info.GetSingle("w");
-        obj = quaternion;
-        return obj;
+        return ReadArray<T>(buff, ref offset, sizeOfT, false)[0];
+    }
+
+    private static T[] ReadArray<T>(byte[] buff, ref int offset, int sizeOfT, bool readHeader = true)
+    {
+        T[] vals = new T[readHeader ? ReadValue<int>(buff, ref offset, sizeof(int)) : 1];
+        int valsSize = vals.Length * sizeOfT;
+        Buffer.BlockCopy(buff, offset, vals, 0, valsSize);
+        offset += valsSize;
+        return vals;
+    }
+
+    private static Vector3[] ReadVector3Array(byte[] buff, ref int offset)
+    {
+        float[] floatArray = ReadArray<float>(buff, ref offset, sizeof(float));
+        Vector3[] vals = new Vector3[floatArray.Length / 3];
+
+        for (int i = 0; i < vals.Length; i++)
+        {
+            vals[i] = new Vector3(
+                floatArray[(i * 3) + 0],
+                floatArray[(i * 3) + 1],
+                floatArray[(i * 3) + 2]
+            );
+        }
+        return vals;
     }
 }
