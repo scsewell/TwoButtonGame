@@ -92,13 +92,14 @@ public class Player : MonoBehaviour
     }
 
     // General
+    private TransformInterpolator m_interpolator;
+    public TransformInterpolator Interpolator { get { return m_interpolator; } }
+
     private MemeBoots m_movement;
     public MemeBoots Movement { get { return m_movement; } }
     
     public MovementInputs Inputs { get { return m_inputProvider.GetInput(); } }
-
-    private TransformInterpolator m_interpolator;
-
+    
     private IInputProvider m_inputProvider;
     private PlayerAnimation m_animation;
     private RacePath m_racePath;

@@ -60,6 +60,8 @@ public class CameraManager : MonoBehaviour
     public int PlayerUILayer { get { return m_player.PlayerNum + 16; } }
 
     private TransformInterpolator m_tInterpolator;
+    public TransformInterpolator Interpolator { get { return m_tInterpolator; } }
+
     private ParticleSystem m_dustParticles;
     private RaycastHit[] m_hits = new RaycastHit[20];
     private List<Vector3> m_blockHits = new List<Vector3>();

@@ -23,7 +23,7 @@ public struct MovementInputs
             return false;
         }
 
-        var inputs = (MovementInputs)obj;
+        MovementInputs inputs = (MovementInputs)obj;
         return left == inputs.left &&
                right == inputs.right &&
                boost == inputs.boost;

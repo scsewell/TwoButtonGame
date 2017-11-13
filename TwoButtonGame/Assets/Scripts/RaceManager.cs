@@ -5,8 +5,7 @@ using UnityEngine;
 public class RaceManager : MonoBehaviour
 {
     [Header("Prefabs")]
-    [SerializeField]
-    private Camera m_camClearPrefab;
+    [SerializeField] private Camera m_camClearPrefab;
     [SerializeField] private CameraRig m_cameraRigPrefab;
     [SerializeField] private InRaceMenu m_raceMenuPrefab;
     [SerializeField] private Player m_playerPrefab;
@@ -160,15 +159,6 @@ public class RaceManager : MonoBehaviour
 
     public void ResetRace()
     {
-        m_raceRecording.ResetRecorder();
-
-        //Serialization works!
-        byte[] asdf = RaceRecording.ToByteArray(m_raceRecording);
-        RaceRecording qwer = m_raceRecording;
-        Debug.Log(asdf.Length);
-        m_raceRecording = RaceRecording.FromByteArray(asdf);
-
-
         float introLength = 0;
         if (!m_skipIntro)
         {
@@ -199,6 +189,7 @@ public class RaceManager : MonoBehaviour
             cameraManager.ResetCam();
         }
 
+        m_raceRecording.ResetRecorder();
         m_fixedFramesSoFar = 0;
     }
 
@@ -209,7 +200,7 @@ public class RaceManager : MonoBehaviour
         
         if (m_state == State.Replay)
         {
-            m_raceRecording.MoveGhosts(m_players, m_fixedFramesSoFar, isAfterStart);
+            m_raceRecording.MoveGhosts(m_players, m_cameras, m_fixedFramesSoFar, isAfterStart);
         }
         else
         {
@@ -245,9 +236,9 @@ public class RaceManager : MonoBehaviour
         {
             m_fixedFramesSoFar++;
 
-            if (m_fixedFramesSoFar == 750)
+            if (m_state != State.Replay && m_fixedFramesSoFar == 100)
             {
-                //m_replayStartTime = Time.time + m_replayStartWait;
+                m_replayStartTime = Time.time + m_replayStartWait;
             }
         }
 
@@ -256,6 +247,11 @@ public class RaceManager : MonoBehaviour
             if (m_state != State.Replay)
             {
                 m_state = State.Replay;
+                
+                byte[] comp = RaceRecording.CompressToBytes(m_raceRecording);
+                Debug.Log(comp.Length);
+                m_raceRecording = RaceRecording.DecompressFromBytes(comp);
+
                 AudioManager.Instance.StopMusic();
                 AudioManager.Instance.PlayMusic(m_replayMusic);
             }
