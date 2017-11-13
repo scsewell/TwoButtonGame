@@ -106,6 +106,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b35ea56cd4eeb14c8e01c9123f06680, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_gateCompleteSound: {fileID: 8300000, guid: 25de9c28a719c004c8bb5456f64a448b, type: 3}
+  m_gateCompleteVolume: 0.45
+  m_lapCompleteSound: {fileID: 8300000, guid: 5623ae43f67ddca479cae1f67e26794a, type: 3}
+  m_lapCompleteVolume: 1
   m_energyFailSound: {fileID: 8300000, guid: 17c689288dbeb024fa7379a225945b14, type: 3}
   m_energyFailVolume: 1
 --- !u!136 &136027555362995916

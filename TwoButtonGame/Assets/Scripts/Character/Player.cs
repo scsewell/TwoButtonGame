@@ -9,6 +9,16 @@ public class Player : MonoBehaviour
 {
     [Header("Sound")]
     [SerializeField]
+    private AudioClip m_gateCompleteSound;
+    [SerializeField] [Range(0, 1)]
+    private float m_gateCompleteVolume = 1.0f;
+
+    [SerializeField]
+    private AudioClip m_lapCompleteSound;
+    [SerializeField] [Range(0, 1)]
+    private float m_lapCompleteVolume = 1.0f;
+
+    [SerializeField]
     private AudioClip m_energyFailSound;
     [SerializeField] [Range(0, 1)]
     private float m_energyFailVolume = 1.0f;
@@ -136,9 +146,23 @@ public class Player : MonoBehaviour
         {
             m_waypointsCompleted++;
             m_racePath.ResetEnergyGates(this);
-            if (previousLap != CurrentLap)
+            bool completedLap = previousLap != CurrentLap;
+
+            if (completedLap)
             {
                 RecordLapTime();
+            }
+
+            if (m_isHuman)
+            {
+                if (completedLap)
+                {
+                    AudioManager.Instance.PlaySound(m_lapCompleteSound, m_lapCompleteVolume);
+                }
+                else
+                {
+                    AudioManager.Instance.PlaySound(m_gateCompleteSound, m_gateCompleteVolume);
+                }
             }
         }
         m_lastPos = transform.position;

@@ -4,10 +4,9 @@ Engines spark on boost fail
 paritcle motion trail behind engine
 
 Collision/sliding sound
-Checkpoint sound
 Player finish line sounds
-Waypoint engine sound
 Energy gate sounds
+Waypoint engine sound
 
 Player Models (fatty, floating boosters fancy tech, robot, other race?, really abstract?)
 Character blurbs
