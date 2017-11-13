@@ -39,7 +39,7 @@ public class Player : MonoBehaviour
     }
     
     // Level Progress
-    private int m_waypointsCompleted = 0;
+    private int m_waypointsCompleted;
     public int WaypointsCompleted { get { return m_waypointsCompleted; } }
     
     public Waypoint NextWaypoint
@@ -65,7 +65,7 @@ public class Player : MonoBehaviour
         get { return m_lapTimes.Sum(); }
     }
 
-    private bool m_isFinished = false;
+    private bool m_isFinished;
     public bool IsFinished { get { return m_isFinished; } }
 
     // Energy
@@ -80,7 +80,7 @@ public class Player : MonoBehaviour
         get { return m_config.EnergyCap; }
     }
 
-    private float m_energy = 0;
+    private float m_energy;
     public float Energy
     {
         get { return m_energy; }
@@ -89,17 +89,24 @@ public class Player : MonoBehaviour
     // General
     private MemeBoots m_movement;
     public MemeBoots Movement { get { return m_movement; } }
+    
+    public MovementInputs Inputs { get { return m_inputProvider.GetInput(); } }
+
+    private TransformInterpolator m_interpolator;
 
     private IInputProvider m_inputProvider;
     private PlayerAnimation m_animation;
     private RacePath m_racePath;
     private Vector3 m_lastPos;
+    public Vector3 m_spawnPosition;
+    private Quaternion m_spawnRotation;
 
 
     private void Awake()
     {
+        m_interpolator = GetComponentInChildren<TransformInterpolator>();
+
         m_movement = GetComponentInChildren<MemeBoots>();
-        m_lastPos = transform.position;
     }
 
     public Player InitHuman(int playerNum, PlayerConfig config, PlayerInput input)
@@ -124,14 +131,43 @@ public class Player : MonoBehaviour
         m_animation = GetComponentInChildren<PlayerAnimation>();
         m_racePath = Main.Instance.RaceManager.RacePath;
 
-        m_energy = 0;
+        m_lastPos = transform.position;
+        m_spawnPosition = transform.position;
+        m_spawnRotation = transform.rotation;
         return this;
     }
 
-    public void FixedUpdatePlayer(bool isAfterIntro, bool isAfterStart)
+    public void ResetPlayer()
+    {
+        transform.position = m_spawnPosition;
+        transform.rotation = m_spawnRotation;
+        m_lastPos = m_spawnPosition;
+
+        m_movement.ResetMovement();
+        m_inputProvider.ResetProvider();
+        if (m_animation)
+        {
+            m_animation.ResetAnimation();
+        }
+
+        m_interpolator.ForgetPreviousValues();
+
+        m_energy = 0;
+
+        m_lapTimes.Clear();
+        m_waypointsCompleted = 0;
+        m_isFinished = false;
+    }
+
+    public void ProcessPlaying(bool isAfterIntro, bool isAfterStart)
     {
         m_inputProvider.FixedUpdateProvider();
-        m_movement.FixedUpdateMovement(m_inputProvider.GetInput(), isAfterIntro && !m_isFinished, !isAfterStart);
+        ProcessReplaying(isAfterIntro, isAfterStart, m_inputProvider.GetInput());
+    }
+
+    public void ProcessReplaying(bool isAfterIntro, bool isAfterStart, MovementInputs inputs)
+    {
+        m_movement.FixedUpdateMovement(inputs, isAfterIntro && !m_isFinished, !isAfterStart);
 
         if (isAfterStart && !m_isFinished && !m_movement.IsBoosting)
         {
@@ -174,6 +210,7 @@ public class Player : MonoBehaviour
             m_isFinished = finished;
         }
     }
+
 
     public void UpdatePlayer()
     {

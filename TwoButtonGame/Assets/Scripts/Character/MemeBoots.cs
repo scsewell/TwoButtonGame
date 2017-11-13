@@ -2,6 +2,7 @@
 using System.Linq;
 using UnityEngine;
 using Framework.Interpolation;
+using System;
 
 [RequireComponent(typeof(TransformInterpolator))]
 public class MemeBoots : MonoBehaviour
@@ -12,11 +13,14 @@ public class MemeBoots : MonoBehaviour
     private LayerMask m_groundLayers;
     [SerializeField]
     private LayerMask m_boundsLayers;
-    [SerializeField] [Range(0, 100)]
+    [SerializeField]
+    [Range(0, 100)]
     private float m_boundsCorrectionStrength = 10.0f;
-    [SerializeField] [Range(0, 20)]
+    [SerializeField]
+    [Range(0, 20)]
     private float m_collisionTorqueIntensity = 0.0f;
-    [SerializeField] [Range(0, 1)]
+    [SerializeField]
+    [Range(0, 1)]
     private float m_minBoostTime = 0.25f;
 
     [Header("Visualization")]
@@ -27,12 +31,11 @@ public class MemeBoots : MonoBehaviour
     private CapsuleCollider m_capsule;
     private Rigidbody m_body;
     private RaycastHit[] m_hits = new RaycastHit[20];
-    private float m_boundsEffect = 0;
-    private Vector3 m_boundsCorrectDir = Vector3.up;
-    private float m_boostDuration = 0;
-    private float m_boostEndTime = float.MinValue;
-    private float m_boostFactor = 0;
-    private bool m_boostPressed = false;
+    private float m_boundsEffect;
+    private Vector3 m_boundsCorrectDir;
+    private float m_boostDuration;
+    private float m_boostEndTime;
+    private bool m_boostPressed;
 
     private TrajectoryVisualization m_trajectoryVisualization;
 
@@ -41,18 +44,19 @@ public class MemeBoots : MonoBehaviour
         get { return m_player.Energy >= m_player.Config.BoostEnergyUseRate * m_minBoostTime; }
     }
 
-    private bool m_isGrounded = true;
+    private bool m_isGrounded;
     public bool IsGrounded { get { return m_isGrounded; } }
 
-    private bool m_leftEngine = true;
+    private bool m_leftEngine;
     public bool LeftEngine { get { return m_leftEngine; } }
 
-    private bool m_rightEngine = true;
+    private bool m_rightEngine;
     public bool RightEngine { get { return m_rightEngine; } }
 
-    private bool m_isBoosting = false;
+    private bool m_isBoosting;
     public bool IsBoosting { get { return m_isBoosting; } }
 
+    private float m_boostFactor;
     public float BoostFactor { get { return m_boostFactor; } }
 
     public Vector3 Velocity
@@ -73,6 +77,24 @@ public class MemeBoots : MonoBehaviour
         m_capsule = GetComponent<CapsuleCollider>();
     }
 
+    public void ResetMovement()
+    {
+        m_body.velocity = Vector3.zero;
+        m_angVelocity = 0;
+
+        m_boundsEffect = 0;
+        m_boundsCorrectDir = Vector3.up;
+        m_boostDuration = 0;
+        m_boostEndTime = float.MinValue;
+        m_boostFactor = 0;
+        m_boostPressed = false;
+
+        m_isGrounded = true;
+        m_leftEngine = false;
+        m_rightEngine = false;
+        m_isBoosting = false;
+    }
+
     private void OnDestroy()
     {
         if (m_trajectoryVisualization != null)
@@ -87,10 +109,10 @@ public class MemeBoots : MonoBehaviour
         PlayerConfig config = m_player.Config;
 
         ConfigurePhysics(config);
-        
+
         m_leftEngine = acceptInput ? input.left : false;
         m_rightEngine = acceptInput ? input.right : false;
-        
+
         if (acceptInput && !inPreWarm)
         {
             if (input.boost)
@@ -134,7 +156,7 @@ public class MemeBoots : MonoBehaviour
                 m_isBoosting = false;
             }
         }
-        
+
         Vector3 force = Vector3.zero;
 
         RaycastHit boundsHit;
@@ -186,7 +208,7 @@ public class MemeBoots : MonoBehaviour
 
         m_body.velocity = StepVelocity(m_body.velocity, force, m_body.mass, config.LinearDrag, Time.deltaTime);
         m_angVelocity = StepAngularVelocity(m_angVelocity, torque, TENSOR, config.AngularDrag, Time.deltaTime);
-        
+
         transform.Rotate(Vector3.up, 180 * m_angVelocity * Time.deltaTime);
 
         // Check if touching the ground
@@ -243,7 +265,7 @@ public class MemeBoots : MonoBehaviour
         m_body.angularDrag = 0;
         m_capsule.material = config.PhysicsMat;
     }
-    
+
     public void PredictStep(int steps, List<Vector3> pos, Vector3 velocity, List<float> rot, float angularVelocity, bool leftEngine, bool rightEngine, bool boost, float deltaTime)
     {
         PlayerConfig config = m_player.Config;

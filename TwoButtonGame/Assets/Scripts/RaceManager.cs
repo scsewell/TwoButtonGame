@@ -5,7 +5,8 @@ using UnityEngine;
 public class RaceManager : MonoBehaviour
 {
     [Header("Prefabs")]
-    [SerializeField] private Camera m_camClearPrefab;
+    [SerializeField]
+    private Camera m_camClearPrefab;
     [SerializeField] private CameraRig m_cameraRigPrefab;
     [SerializeField] private InRaceMenu m_raceMenuPrefab;
     [SerializeField] private Player m_playerPrefab;
@@ -13,19 +14,24 @@ public class RaceManager : MonoBehaviour
     [SerializeField] private PlayerUI m_playerUIPrefab;
 
     [Header("Fade")]
-    [SerializeField] [Range(0.01f, 5)]
+    [SerializeField]
+    [Range(0.01f, 5)]
     private float m_fadeInTime = 1.0f;
-    [SerializeField] [Range(0.01f, 5)]
+    [SerializeField]
+    [Range(0.01f, 5)]
     private float m_introFadeTime = 0.5f;
-    [SerializeField] [Range(0.01f, 5)]
+    [SerializeField]
+    [Range(0.01f, 5)]
     private float m_fadeOutTime = 1.0f;
 
     [Header("Countdown")]
-    [SerializeField] [Range(0, 10)]
+    [SerializeField]
+    [Range(0, 10)]
     private int m_countdownDuration = 5;
-    [SerializeField] [Range(0.5f, 5)]
+    [SerializeField]
+    [Range(0.5f, 5)]
     private float m_countdownScale = 1.65f;
-    
+
     [SerializeField] private AudioClip m_countdownSound;
     [SerializeField] private AudioClip m_goSound;
 
@@ -34,7 +40,8 @@ public class RaceManager : MonoBehaviour
     private bool m_skipIntro = false;
     [SerializeField]
     private bool m_skipCoundown = false;
-    [SerializeField] [Range(0, Consts.MAX_PLAYERS)]
+    [SerializeField]
+    [Range(0, Consts.MAX_PLAYERS)]
     private int m_AICount = 0;
 
     private RacePath m_racePath;
@@ -56,6 +63,8 @@ public class RaceManager : MonoBehaviour
     private int m_countdownSecond;
     private bool m_musicStarted = false;
     private float m_fadeFac = 1;
+    private RaceRecording m_raceRecording;
+    private int m_fixedFramesSoFar;
 
     private Dictionary<Player, int> m_playerRanks = new Dictionary<Player, int>();
 
@@ -90,11 +99,11 @@ public class RaceManager : MonoBehaviour
         }
 
         m_raceParams = raceParams;
-        int playerCount = Mathf.Min(raceParams.HumanCount + m_AICount, Consts.MAX_PLAYERS);
+        int playerCount = Mathf.Min(m_raceParams.HumanCount + m_AICount, Consts.MAX_PLAYERS);
 
         Instantiate(m_camClearPrefab);
-        m_racePath = FindObjectOfType<RacePath>().Init(raceParams.Laps);
-        m_raceMenu = Instantiate(m_raceMenuPrefab).Init(raceParams.HumanCount);
+        m_racePath = FindObjectOfType<RacePath>().Init(m_raceParams.Laps);
+        m_raceMenu = Instantiate(m_raceMenuPrefab).Init(m_raceParams.HumanCount);
 
         List<Transform> spawns = m_racePath.Spawns.Take(playerCount).ToList();
 
@@ -107,35 +116,44 @@ public class RaceManager : MonoBehaviour
             Player player = Instantiate(m_playerPrefab, spawn.position, spawn.rotation);
             m_players.Add(player);
 
-            PlayerConfig config = raceParams.PlayerConfigs[playerNum];
+            PlayerConfig config = m_raceParams.PlayerConfigs[playerNum];
             GameObject graphics = Instantiate(config.CharacterGraphics, spawn.position, spawn.rotation, player.transform);
             graphics.transform.localPosition = config.GraphicsOffset;
 
-            if (playerNum < raceParams.HumanCount)
+            if (playerNum < m_raceParams.HumanCount)
             {
-                player.InitHuman(playerNum, raceParams.PlayerConfigs[playerNum], raceParams.GetPlayerInput(playerNum));
+                player.InitHuman(playerNum, m_raceParams.PlayerConfigs[playerNum], m_raceParams.GetPlayerInput(playerNum));
 
-                CameraManager camera = Instantiate(m_playerCameraPrefab).Init(player, raceParams.HumanCount);
+                CameraManager camera = Instantiate(m_playerCameraPrefab).Init(player, m_raceParams.HumanCount);
                 camera.MainCam.enabled = false;
                 m_cameras.Add(camera);
 
                 PlayerUI ui = Instantiate(m_playerUIPrefab);
                 m_raceMenu.AddPlayerUI(ui);
-                ui.Init(player, camera, raceParams.HumanCount);
+                ui.Init(player, camera, m_raceParams.HumanCount);
             }
             else
             {
-                player.InitAI(playerNum, raceParams.PlayerConfigs[playerNum]);
+                player.InitAI(playerNum, m_raceParams.PlayerConfigs[playerNum]);
             }
         }
 
+        m_raceRecording = new RaceRecording(m_players);
+        m_fixedFramesSoFar = 0;
+
+        ResetRace();
+    }
+
+    public void ResetRace()
+    {
         float introLength = 0;
         if (!m_skipIntro)
         {
-            m_cameraRig = Instantiate(m_cameraRigPrefab).Init(raceParams.LevelConfig);
+            m_cameraRig = Instantiate(m_cameraRigPrefab).Init(m_raceParams.LevelConfig);
             m_cameraRig.PlayIntroSequence();
             introLength = m_cameraRig.GetIntroSequenceLength();
         }
+        m_skipIntro = true;
 
         float coundownLength = 0;
         if (!m_skipCoundown)
@@ -146,13 +164,50 @@ public class RaceManager : MonoBehaviour
         m_raceLoadTime = Time.time;
         m_introEndTime = m_raceLoadTime + introLength;
         m_raceStartTime = m_introEndTime + coundownLength;
+
+        m_racePath.ResetPath();
+
+        foreach (Player player in m_players)
+        {
+            player.ResetPlayer();
+        }
+
+        foreach (CameraManager cameraManager in m_cameras)
+        {
+            cameraManager.ResetCam();
+        }
+
     }
 
     public void FixedUpdateRace()
     {
+        if (GetStartRelativeTime() >= 0)
+        {
+            m_fixedFramesSoFar++;
+        }
+
         if (m_state == State.Racing || m_state == State.Finished)
         {
-            m_players.ForEach(p => p.FixedUpdatePlayer(Time.time - m_introEndTime >= 0, GetStartRelativeTime() >= 0));
+            int recordingLength = 1000;
+            int loopLength = 1200;
+            if (m_fixedFramesSoFar < recordingLength)
+            {
+                m_raceRecording.Record(m_players, m_fixedFramesSoFar);
+                m_players.ForEach(p => p.ProcessPlaying(Time.time - m_introEndTime >= 0, GetStartRelativeTime() >= 0));
+            }
+            else
+            {
+                if (m_fixedFramesSoFar % loopLength == 0)
+                {
+                    for (int i = 0; i < m_players.Count; i++)
+                    {
+                        //Debug.Log(i + ":" + m_players[i].transform.position.x + ":" + m_players[i].transform.position.y + ":" + m_players[i].transform.position.z);
+                        //Debug.Log(i + ":" + m_players[i].transform.position);
+                    }
+                    ResetRace();
+                }
+                m_raceRecording.MoveGhosts(m_players, m_fixedFramesSoFar % loopLength);
+            }
             m_cameras.ForEach(c => c.UpdateCamera());
 
             m_racePath.FixedUpdatePath();
@@ -190,7 +245,7 @@ public class RaceManager : MonoBehaviour
         {
             m_quitStartTime = Time.unscaledTime;
         }
-        
+
         if (!m_musicStarted && Time.time - m_raceLoadTime > m_raceParams.LevelConfig.MusicDelay)
         {
             MusicParams music = m_raceParams.LevelConfig.Music;
@@ -215,7 +270,7 @@ public class RaceManager : MonoBehaviour
 
         AudioManager.Instance.MusicPausable = (Time.time - m_raceStartTime < 0);
         AudioManager.Instance.Volume = Mathf.MoveTowards(AudioManager.Instance.Volume, 1 - GetFadeFactor(true), Time.unscaledDeltaTime / 0.5f);
-        
+
         m_players.ForEach(p => p.UpdatePlayer());
         m_racePath.UpdatePath();
     }
@@ -274,7 +329,7 @@ public class RaceManager : MonoBehaviour
         {
             fadeFac = Mathf.Lerp(fadeFac, 1, 1 - Mathf.Clamp01(Mathf.Abs(Time.time - m_introEndTime) / m_introFadeTime));
         }
-        
+
         if (m_loading != null)
         {
             fadeFac = Mathf.Lerp(fadeFac, 1, Mathf.Clamp01((Time.unscaledTime - m_quitStartTime) / m_fadeOutTime));

@@ -5,6 +5,7 @@ using System.Text;
 
 public interface IInputProvider
 {
+    void ResetProvider();
     void UpdateProvider();
     void FixedUpdateProvider();
     MovementInputs GetInput();

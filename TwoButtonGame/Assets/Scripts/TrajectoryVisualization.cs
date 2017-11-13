@@ -60,7 +60,7 @@ public class TrajectoryVisualization
 
     public void FixedMemeUpdateTrajectory(MemeBoots memeBoots, Vector3 position, Vector3 velocity, float rotation, float angularVelocity, bool leftEngine, bool rightEngine, bool boost)
     {
-        Vector3 acceleration = velocity - m_lastVelocity;
+        //Vector3 acceleration = velocity - m_lastVelocity;
         Vector3 endpoint = position + velocity;
 
         PositionBox(m_trajectoryBox, position, endpoint);

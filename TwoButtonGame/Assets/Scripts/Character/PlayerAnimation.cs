@@ -86,7 +86,31 @@ public class PlayerAnimation : MonoBehaviour
         m_leftGlow = InstanceSharedMat(m_boosterGlowLMat, m_leftBoosters);
         m_rightGlow = InstanceSharedMat(m_boosterGlowRMat, m_rightBoosters);
     }
-    
+
+    public void ResetAnimation()
+    {
+        m_left = false;
+        m_right = false;
+        m_leftActiveTime = float.MinValue;
+        m_rightActiveTime = float.MinValue;
+        m_leftVolume = 0;
+        m_rightVolume = 0;
+        m_pitch = m_enginePitch;
+
+        m_headRotation = m_head.rotation;
+        m_velocity = Vector3.zero;
+
+        m_anim.SetFloat("VelocityX", 0);
+        m_anim.SetFloat("VelocityY", 0);
+        m_anim.SetFloat("VelocityZ", 0);
+        m_anim.SetFloat("LeftBoost", 0);
+        m_anim.SetFloat("RightBoost", 0);
+        m_anim.SetBool("IsFlying", false);
+
+        m_leftGlow.SetColor("_EmissionColor", m_glowCol * m_notBoostGlow);
+        m_rightGlow.SetColor("_EmissionColor", m_glowCol * m_notBoostGlow);
+    }
+
     public void UpdateAnimation(MemeBoots movement)
     {
         Vector3 localVel = movement.transform.InverseTransformVector(movement.Velocity);

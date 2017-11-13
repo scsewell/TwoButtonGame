@@ -13,6 +13,10 @@ public class PlayerInputProvider : IInputProvider
         m_playerInput = input;
     }
 
+    public void ResetProvider()
+    {
+    }
+
     public void UpdateProvider()
     {
     }
