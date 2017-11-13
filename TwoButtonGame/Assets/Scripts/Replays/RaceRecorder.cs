@@ -80,7 +80,7 @@ public class RaceRecording
         Debug.Log(m_lastFrameInputs);
     }
 
-    public void MoveGhosts(List<Player> players, int fixedFrameToDisplay)
+    public void MoveGhosts(List<Player> players, int fixedFrameToDisplay, bool isAfterStart)
     {
         for (int playerIndex = 0; playerIndex < players.Count; playerIndex++)
         {
@@ -102,7 +102,7 @@ public class RaceRecording
                 //    m_nextInputIndices[playerIndex, 2]++;
                 //    m_lastFrameInputs[playerIndex].boost ^= true;
                 //}
-                player.ProcessReplaying(true, true, m_lastFrameInputs[playerIndex]);
+                //player.ProcessReplaying(true, true, m_lastFrameInputs[playerIndex]);
 
                 //if (fixedFrameToDisplay == 0)
                 //{
@@ -113,12 +113,12 @@ public class RaceRecording
                 //}
 
                 ////players[playerIndex].transform.position = m_positions[playerIndex][fixedFrameToDisplay / FRAMES_PER_POSITION];
-                //player.ProcessReplaying(true, true, m_inputs[playerIndex][fixedFrameToDisplay / FRAMES_PER_POSITION]);
+                player.ProcessReplaying(true, isAfterStart, m_inputs[playerIndex][fixedFrameToDisplay / FRAMES_PER_POSITION]);
                 ////players[playerIndex].ProcessReplaying(????, ????
             }
             else
             {
-                player.ProcessReplaying(true, true, new MovementInputs());
+                player.ProcessReplaying(true, isAfterStart, new MovementInputs());
             }
         }
     }

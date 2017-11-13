@@ -111,4 +111,10 @@ public class AudioManager : ComponentSingleton<AudioManager>
         m_lastLoopTime = time;
         m_lastMusicSource = source;
     }
+
+    public void StopMusic()
+    {
+        m_musicSources[0].Stop();
+        m_musicSources[1].Stop();
+    }
 }

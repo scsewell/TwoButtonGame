@@ -29,6 +29,13 @@ public class CameraRig : MonoBehaviour
         m_cam = m_anim.GetComponentInChildren<Camera>();
 
         SettingManager.Instance.ConfigureCamera(m_cam, false);
+
+        m_shotsToPlay = new Queue<LevelConfig.CameraShot>();
+
+        m_graph = PlayableGraph.Create();
+        m_graph.SetTimeUpdateMode(DirectorUpdateMode.GameTime);
+
+        m_animOutput = AnimationPlayableOutput.Create(m_graph, "IntroAnimation", m_anim);
     }
 
     public CameraRig Init(LevelConfig config)
@@ -39,12 +46,10 @@ public class CameraRig : MonoBehaviour
 
     public void PlayIntroSequence()
     {
-        m_graph = PlayableGraph.Create();
-        m_graph.SetTimeUpdateMode(DirectorUpdateMode.GameTime);
-
-        m_animOutput = AnimationPlayableOutput.Create(m_graph, "IntroAnimation", m_anim);
-
-        m_shotsToPlay = new Queue<LevelConfig.CameraShot>(m_levelConfig.IntroSequence);
+        foreach (LevelConfig.CameraShot shot in m_levelConfig.IntroSequence)
+        {
+            m_shotsToPlay.Enqueue(shot);
+        }
     }
 
     public float GetIntroSequenceLength()

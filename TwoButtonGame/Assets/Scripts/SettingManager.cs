@@ -107,11 +107,11 @@ public class SettingManager : Singleton<SettingManager>
         profile.motionBlur.enabled = m_useMotionBlur.Value && permitMotionBlur;
 
         int aaVal = m_aa.Value;
-        if (aaVal < 2)
+        if (aaVal > 0)
         {
             profile.antialiasing.enabled = true;
             AntialiasingModel.Settings aa = profile.antialiasing.settings;
-            aa.method = (aaVal == 0) ? AntialiasingModel.Method.Taa : AntialiasingModel.Method.Fxaa;
+            aa.method = (aaVal == 1) ? AntialiasingModel.Method.Fxaa : AntialiasingModel.Method.Taa;
             profile.antialiasing.settings = aa;
         }
         else
@@ -127,10 +127,10 @@ public class SettingManager : Singleton<SettingManager>
         float distance = 20;
         switch (QualitySettings.GetQualityLevel())
         {
-            case 0: distance = 500; break;
-            case 1: distance = 450; break;
+            case 4: distance = 500; break;
+            case 3: distance = 450; break;
             case 2: distance = 300; break;
-            case 3: distance = 100; break;
+            case 1: distance = 100; break;
         }
         QualitySettings.shadowDistance = distance;
     }
