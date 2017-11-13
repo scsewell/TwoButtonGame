@@ -19,6 +19,11 @@ public class Player : MonoBehaviour
     private float m_lapCompleteVolume = 1.0f;
 
     [SerializeField]
+    private AudioClip m_finishSound;
+    [SerializeField] [Range(0, 1)]
+    private float m_finishVolume = 1.0f;
+
+    [SerializeField]
     private AudioClip m_energyFailSound;
     [SerializeField] [Range(0, 1)]
     private float m_energyFailVolume = 1.0f;
@@ -182,6 +187,14 @@ public class Player : MonoBehaviour
         {
             m_waypointsCompleted++;
             m_racePath.ResetEnergyGates(this);
+
+            bool finished = m_racePath.IsFinished(m_waypointsCompleted);
+            if (finished != m_isFinished)
+            {
+                m_isFinished = finished;
+                RecordLapTime();
+            }
+
             bool completedLap = previousLap != CurrentLap;
 
             if (completedLap)
@@ -191,7 +204,11 @@ public class Player : MonoBehaviour
 
             if (m_isHuman)
             {
-                if (completedLap)
+                if (finished)
+                {
+                    AudioManager.Instance.PlaySound(m_finishSound, m_finishVolume);
+                }
+                else if (completedLap)
                 {
                     AudioManager.Instance.PlaySound(m_lapCompleteSound, m_lapCompleteVolume);
                 }
@@ -202,13 +219,6 @@ public class Player : MonoBehaviour
             }
         }
         m_lastPos = transform.position;
-
-        bool finished = m_racePath.IsFinished(m_waypointsCompleted);
-        if (finished != m_isFinished)
-        {
-            RecordLapTime();
-            m_isFinished = finished;
-        }
     }
 
 

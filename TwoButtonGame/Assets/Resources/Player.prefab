@@ -110,8 +110,11 @@ MonoBehaviour:
   m_gateCompleteVolume: 0.45
   m_lapCompleteSound: {fileID: 8300000, guid: 5623ae43f67ddca479cae1f67e26794a, type: 3}
   m_lapCompleteVolume: 1
+  m_finishSound: {fileID: 8300000, guid: 5623ae43f67ddca479cae1f67e26794a, type: 3}
+  m_finishVolume: 1
   m_energyFailSound: {fileID: 8300000, guid: 17c689288dbeb024fa7379a225945b14, type: 3}
   m_energyFailVolume: 1
+  m_spawnPosition: {x: 0, y: 0, z: 0}
 --- !u!136 &136027555362995916
 CapsuleCollider:
   m_ObjectHideFlags: 1

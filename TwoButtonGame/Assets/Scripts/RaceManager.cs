@@ -39,7 +39,7 @@ public class RaceManager : MonoBehaviour
 
     [Header("Replay")]
     [SerializeField]
-    [Range(0, 10)]
+    [Range(0, 30)]
     private float m_replayStartWait = 5.0f;
     [SerializeField]
     private MusicParams m_replayMusic;
@@ -151,6 +151,7 @@ public class RaceManager : MonoBehaviour
         }
 
         m_raceRecording = new RaceRecording(m_players);
+        m_replayStartTime = float.PositiveInfinity;
 
         m_state = State.Racing;
         ResetRace();
@@ -175,7 +176,6 @@ public class RaceManager : MonoBehaviour
         m_raceLoadTime = Time.time;
         m_introEndTime = m_raceLoadTime + introLength;
         m_raceStartTime = m_introEndTime + coundownLength;
-        m_replayStartTime = float.PositiveInfinity;
 
         m_racePath.ResetPath();
 
@@ -237,7 +237,7 @@ public class RaceManager : MonoBehaviour
 
             if (m_fixedFramesSoFar == 750)
             {
-                m_replayStartTime = Time.time + m_replayStartWait;
+                //m_replayStartTime = Time.time + m_replayStartWait;
             }
         }
         
@@ -249,6 +249,7 @@ public class RaceManager : MonoBehaviour
                 AudioManager.Instance.PlayMusic(m_replayMusic);
             }
             m_state = State.Replay;
+            m_replayStartTime = m_replayStartTime + (Time.time - m_introEndTime);
             ResetRace();
         }
     }
