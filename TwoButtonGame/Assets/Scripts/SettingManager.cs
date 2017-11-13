@@ -9,8 +9,8 @@ using Framework.IO;
 public class SettingManager : Singleton<SettingManager>
 {
     private static readonly string[] BOOL_VALS = new string[] { "On", "Off" };
-    private static readonly string[] AA_VALS = new string[] { "High", "Low", "Off" };
-    private static readonly string[] SHADOW_VALS = new string[] { "Ultra", "High", "Medium", "Low", "Off" };
+    private static readonly string[] AA_VALS = new string[] { "Off", "Low", "High", };
+    private static readonly string[] SHADOW_VALS = new string[] { "Off", "Low", "Medium", "High", "Ultra", };
 
     public struct Categories
     {
@@ -54,9 +54,9 @@ public class SettingManager : Singleton<SettingManager>
         m_settings.Add(Categories.Screen, "Fullscreen", true, BOOL_VALS, SerializeBool, ParseBool, (v) => Screen.fullScreen = v);
         m_settings.Add(Categories.Screen, "VSync", true, BOOL_VALS, SerializeBool, ParseBool, (v) => QualitySettings.vSyncCount = (v ? 1 : 0));
 
-        m_aa = m_settings.Add(Categories.Screen, "Anti Aliasing", 0, AA_VALS, (v) => AA_VALS[v], (s) => ParseIndex(s, AA_VALS));
+        m_aa = m_settings.Add(Categories.Screen, "Anti Aliasing", 2, AA_VALS, (v) => AA_VALS[v], (s) => ParseIndex(s, AA_VALS));
         m_useMotionBlur = m_settings.Add(Categories.Screen, "Motion Blur", true, BOOL_VALS, SerializeBool, ParseBool);
-        m_settings.Add(Categories.Screen, "Shadow Quality", 1, SHADOW_VALS, (v) => SHADOW_VALS[v], (s) => ParseIndex(s, SHADOW_VALS), (v) => QualitySettings.SetQualityLevel(v));
+        m_settings.Add(Categories.Screen, "Shadow Quality", 3, SHADOW_VALS, (v) => SHADOW_VALS[v], (s) => ParseIndex(s, SHADOW_VALS), (v) => QualitySettings.SetQualityLevel(v));
 
         string[] volumeValues = Enumerable.Range(0, 101).Where(i => i % 2 == 0).Select(v => v.ToString()).ToArray();
         m_masterVolume = m_settings.Add(Categories.Audio, "Master Volume", 100, volumeValues, (v) => v.ToString(), (s) => int.Parse(s));
@@ -160,7 +160,6 @@ public class SettingManager : Singleton<SettingManager>
                 resolutions.Add(resolution);
             }
         }
-        resolutions.Reverse();
         return resolutions.ToArray();
     }
 
