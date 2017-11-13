@@ -5,7 +5,8 @@ using UnityEngine;
 public class RaceManager : MonoBehaviour
 {
     [Header("Prefabs")]
-    [SerializeField] private Camera m_camClearPrefab;
+    [SerializeField]
+    private Camera m_camClearPrefab;
     [SerializeField] private CameraRig m_cameraRigPrefab;
     [SerializeField] private InRaceMenu m_raceMenuPrefab;
     [SerializeField] private Player m_playerPrefab;
@@ -159,6 +160,15 @@ public class RaceManager : MonoBehaviour
 
     public void ResetRace()
     {
+        m_raceRecording.ResetRecorder();
+
+        //Serialization works!
+        byte[] asdf = RaceRecording.ToByteArray(m_raceRecording);
+        RaceRecording qwer = m_raceRecording;
+        Debug.Log(asdf.Length);
+        m_raceRecording = RaceRecording.FromByteArray(asdf);
+
+
         float introLength = 0;
         if (!m_skipIntro)
         {
@@ -196,7 +206,7 @@ public class RaceManager : MonoBehaviour
     {
         bool isAfterIntro = Time.time >= m_introEndTime;
         bool isAfterStart = Time.time >= m_raceStartTime;
-
+        
         if (m_state == State.Replay)
         {
             m_raceRecording.MoveGhosts(m_players, m_fixedFramesSoFar, isAfterStart);
@@ -240,16 +250,16 @@ public class RaceManager : MonoBehaviour
                 //m_replayStartTime = Time.time + m_replayStartWait;
             }
         }
-        
+
         if (Time.time >= m_replayStartTime)
         {
             if (m_state != State.Replay)
             {
+                m_state = State.Replay;
                 AudioManager.Instance.StopMusic();
                 AudioManager.Instance.PlayMusic(m_replayMusic);
             }
-            m_state = State.Replay;
-            m_replayStartTime = m_replayStartTime + (Time.time - m_introEndTime);
+            m_replayStartTime += (Time.time - m_introEndTime);
             ResetRace();
         }
     }

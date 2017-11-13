@@ -62,12 +62,14 @@ public class MemeBoots : MonoBehaviour
     public Vector3 Velocity
     {
         get { return m_body.velocity; }
+        set { m_body.velocity = value; }
     }
 
     private float m_angVelocity = 0;
     public float AngularVelocity
     {
         get { return m_angVelocity; }
+        set { m_angVelocity = value; }
     }
 
     private void Awake()
