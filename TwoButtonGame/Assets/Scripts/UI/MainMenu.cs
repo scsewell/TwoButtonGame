@@ -64,7 +64,9 @@ public class MainMenu : Menu
     [Header("How To Play")]
     [SerializeField] private Canvas m_howToMenu;
     [SerializeField] private Button m_howToBackButton;
+    [SerializeField] private GameObject m_howToPrevious;
     [SerializeField] private Button m_howToPreviousButton;
+    [SerializeField] private GameObject m_howToNext;
     [SerializeField] private Button m_howToNextButton;
     [SerializeField] private Image m_howToImage;
     [SerializeField] private Text m_howToText;
@@ -415,6 +417,9 @@ public class MainMenu : Menu
             HowToPlay howToPlay = m_howToPlay[m_currentHowTo];
             m_howToImage.sprite = howToPlay.image;
             m_howToText.text = howToPlay.text;
+            
+            m_howToPrevious.gameObject.SetActive(m_currentHowTo > 0);
+            m_howToNext.gameObject.SetActive(m_currentHowTo < m_howToPlay.Length - 1);
         }
     }
 

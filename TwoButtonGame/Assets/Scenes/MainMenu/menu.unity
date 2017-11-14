@@ -194,7 +194,7 @@ MonoBehaviour:
     m_RichText: 1
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
-    m_LineSpacing: 1
+    m_LineSpacing: 1.15
   m_Text: "Created for a McGill Monthly Game Jam\n\xA9 2017 Scott Sewell\n\nThe source
     code may be found at:\ngithub.com/scsewell/TwoButtonGame\n\nMusic\n\"Corruption\",
     \"Deep Haze\", \"Eighties Action\", \"The Lift\"\r\nKevin MacLeod (incompetech.com)\r\nLicensed
@@ -1017,7 +1017,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -400}
+  m_AnchoredPosition: {x: 0, y: -350}
   m_SizeDelta: {x: -400, y: 400}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &191279667
@@ -1055,7 +1055,7 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
     m_Font: {fileID: 12800000, guid: 5b2b142e5f5f48c4580f0c67c966faf7, type: 3}
-    m_FontSize: 46
+    m_FontSize: 40
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 1
@@ -1216,8 +1216,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -300}
-  m_SizeDelta: {x: -800, y: 100.00003}
+  m_AnchoredPosition: {x: 0, y: -275}
+  m_SizeDelta: {x: -800, y: 50.000015}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &274288264
 MonoBehaviour:
@@ -1523,7 +1523,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 75.50236, y: 0}
+  m_AnchoredPosition: {x: 75.47022, y: 0}
   m_SizeDelta: {x: 0, y: 60}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!114 &426575909
@@ -2805,7 +2805,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 75.50236, y: 0}
+  m_AnchoredPosition: {x: 75.47022, y: 0}
   m_SizeDelta: {x: 0, y: 60}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!114 &725697890
@@ -3240,7 +3240,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 75.50236, y: 0}
+  m_AnchoredPosition: {x: 75.47022, y: 0}
   m_SizeDelta: {x: 0, y: 60}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!114 &857078010
@@ -5258,7 +5258,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 75.50236, y: 0}
+  m_AnchoredPosition: {x: 75.47022, y: 0}
   m_SizeDelta: {x: 0, y: 60}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!114 &1326150478
@@ -5768,7 +5768,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 75.50236, y: 0}
+  m_AnchoredPosition: {x: 75.47022, y: 0}
   m_SizeDelta: {x: 0, y: 60}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!114 &1396923131
@@ -7197,7 +7197,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 75.50236, y: 0}
+  m_AnchoredPosition: {x: 75.47022, y: 0}
   m_SizeDelta: {x: 0, y: 60}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!114 &1819149896
@@ -8311,7 +8311,9 @@ MonoBehaviour:
   m_defaultLapCount: 3
   m_howToMenu: {fileID: 1192437211}
   m_howToBackButton: {fileID: 685759486}
+  m_howToPrevious: {fileID: 2051373423}
   m_howToPreviousButton: {fileID: 1307046936}
+  m_howToNext: {fileID: 1880970264}
   m_howToNextButton: {fileID: 1847275978}
   m_howToImage: {fileID: 274288265}
   m_howToText: {fileID: 191279668}
