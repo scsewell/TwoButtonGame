@@ -69,10 +69,6 @@ public class PlayerAnimation : MonoBehaviour
     private Material m_rightGlow;
     private Quaternion m_headRotation;
     private Vector3 m_velocity;
-    private bool m_left;
-    private bool m_right;
-    private float m_leftActiveTime;
-    private float m_rightActiveTime;
     private float m_leftVolume;
     private float m_rightVolume;
     private float m_pitch;
@@ -89,10 +85,6 @@ public class PlayerAnimation : MonoBehaviour
 
     public void ResetAnimation()
     {
-        m_left = false;
-        m_right = false;
-        m_leftActiveTime = float.MinValue;
-        m_rightActiveTime = float.MinValue;
         m_leftVolume = 0;
         m_rightVolume = 0;
         m_pitch = m_enginePitch;
@@ -122,19 +114,8 @@ public class PlayerAnimation : MonoBehaviour
         SetFloatLerp("VelocityY", m_velocity.y, m_velocitySmoothing);
         SetFloatLerp("VelocityZ", m_velocity.z, m_velocitySmoothing);
         
-        if (m_left != movement.LeftEngine)
-        {
-            m_left = movement.LeftEngine;
-            m_leftActiveTime = Time.time;
-        }
-        if (m_right != movement.RightEngine)
-        {
-            m_right = movement.RightEngine;
-            m_rightActiveTime = Time.time;
-        }
-
-        float leftEngine = Mathf.Lerp(m_left ? 1 : 0, 2, movement.BoostFactor);
-        float rightEngine = Mathf.Lerp(m_right ? 1 : 0, 2, movement.BoostFactor);
+        float leftEngine = Mathf.Lerp(movement.LeftEngine, 2, movement.BoostFactor);
+        float rightEngine = Mathf.Lerp(movement.RightEngine, 2, movement.BoostFactor);
 
         SetFloatMoveTowards("LeftBoost", leftEngine, m_boostSmoothing);
         SetFloatMoveTowards("RightBoost", rightEngine, m_boostSmoothing);
@@ -153,8 +134,10 @@ public class PlayerAnimation : MonoBehaviour
         m_audio.enabled = m_player.IsHuman;
         float audioSmoothing = Time.deltaTime / m_audioSmoothing;
 
-        float leftVolTarget = (m_left ? Mathf.Lerp(m_engineStartVol, m_engineNormVol, (Time.time - m_leftActiveTime) / m_engineStartDuration) : 0);
-        float rightVolTarget = (m_right ? Mathf.Lerp(m_engineStartVol, m_engineNormVol, (Time.time - m_rightActiveTime) / m_engineStartDuration) : 0);
+        //float leftVolTarget =  (m_left ? Mathf.Lerp(m_engineStartVol, m_engineNormVol, (Time.time - m_leftActiveTime) / m_engineStartDuration) : 0);
+        //float rightVolTarget = (m_right ? Mathf.Lerp(m_engineStartVol, m_engineNormVol, (Time.time - m_rightActiveTime) / m_engineStartDuration) : 0);
+        float leftVolTarget = leftEngine * m_engineNormVol;
+        float rightVolTarget =  rightEngine *  m_engineNormVol;
         m_leftVolume = Mathf.Lerp(m_leftVolume, movement.IsBoosting ? 1 : leftVolTarget, audioSmoothing) / 2;
         m_rightVolume = Mathf.Lerp(m_rightVolume, movement.IsBoosting ? 1 : rightVolTarget, audioSmoothing) / 2;
 

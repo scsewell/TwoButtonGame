@@ -12,6 +12,7 @@ public class PlayerAI : IInputProvider
     private MovementInputs m_input;
     private List<Vector3> m_positions = new List<Vector3>(PREDICTION_STEPS);
     private List<float> m_rotations = new List<float>(PREDICTION_STEPS);
+    private float m_lastBoostTime;
 
     public PlayerAI(Player player)
     {
@@ -28,18 +29,7 @@ public class PlayerAI : IInputProvider
     public void UpdateProvider()
     {
     }
-
-    private float m_lastBoostTime;
-
-    MovementInputs[] testInputs = new MovementInputs[]
-    {
-        new MovementInputs(false,   false,  false),
-        new MovementInputs(false,   true,   false),
-        new MovementInputs(true,    false,  false),
-        new MovementInputs(true,    true,   false),
-        new MovementInputs(true,    true,   true),
-    };
-
+    
     public void FixedUpdateProvider()
     {
         bool goooo = false;
@@ -57,35 +47,32 @@ public class PlayerAI : IInputProvider
 
                 MovementInputs bestInputs = m_input;
                 float bestValue = float.MinValue;
+                
+                m_positions.Clear();
+                m_rotations.Clear();
 
-                foreach (MovementInputs inputs in testInputs)
+                m_positions.Add(position);
+                m_rotations.Add(rotation);
+
+                m_player.Movement.PredictStep(PREDICTION_STEPS, m_positions, m_player.Movement.Velocity, m_rotations, m_player.Movement.AngularVelocity, m_input, deltaTime);
+
+                for (int i = 1; i < m_positions.Count; i++)
                 {
-                    m_positions.Clear();
-                    m_rotations.Clear();
+                    Vector3 disp = next.Position - m_positions[i];
+                    Vector3 vel = (m_positions[i] - m_positions[i - 1]) / deltaTime;
+                    float angVel = (m_rotations[i] - m_rotations[i - 1]) / deltaTime;
 
-                    m_positions.Add(position);
-                    m_rotations.Add(rotation);
+                    float distFac = (disp.magnitude / 200) * Mathf.Lerp(1, 3, i / m_positions.Count);
 
-                    m_player.Movement.PredictStep(PREDICTION_STEPS, m_positions, m_player.Movement.Velocity, m_rotations, m_player.Movement.AngularVelocity, inputs.left, inputs.right, inputs.boost, deltaTime);
+                    float velDot = Vector3.Dot(vel, disp.normalized) / 100.0f;
+                    float velFac = Mathf.Sign(velDot) * Mathf.Pow(Mathf.Abs(velDot), 4);
+                    float angVelFac = Mathf.Lerp(0, (Mathf.Abs(angVel) / 3.0f), velFac);
 
-                    for (int i = 1; i < m_positions.Count; i++)
+                    float value = velFac - angVelFac - distFac;
+                    if (bestValue < value)
                     {
-                        Vector3 disp = next.Position - m_positions[i];
-                        Vector3 vel = (m_positions[i] - m_positions[i - 1]) / deltaTime;
-                        float angVel = (m_rotations[i] - m_rotations[i - 1]) / deltaTime;
-
-                        float distFac = (disp.magnitude / 200) * Mathf.Lerp(1, 3, i / m_positions.Count);
-
-                        float velDot = Vector3.Dot(vel, disp.normalized) / 100.0f;
-                        float velFac = Mathf.Sign(velDot) * Mathf.Pow(Mathf.Abs(velDot), 4);
-                        float angVelFac = Mathf.Lerp(0, (Mathf.Abs(angVel) / 3.0f), velFac);
-
-                        float value = velFac - angVelFac - distFac;
-                        if (bestValue < value)
-                        {
-                            bestValue = value;
-                            bestInputs = inputs;
-                        }
+                        bestValue = value;
+                        bestInputs = m_input;
                     }
                 }
                 m_input = bestInputs;
@@ -106,8 +93,7 @@ public class PlayerAI : IInputProvider
 
                 if (facing > 3.5f)
                 {
-                    m_input.left = foreCross.y < 0;
-                    m_input.right = foreCross.y > 0;
+                    m_input.h = foreCross.y;
                 }
                 else
                 {
@@ -119,8 +105,7 @@ public class PlayerAI : IInputProvider
 
                     if (disp.y > 0)
                     {
-                        m_input.left = true;
-                        m_input.right = true;
+                        m_input.v = 1;
                     }
                 }
             }

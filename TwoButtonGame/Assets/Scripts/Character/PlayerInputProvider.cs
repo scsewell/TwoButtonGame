@@ -23,10 +23,13 @@ public class PlayerInputProvider : IInputProvider
 
     public void FixedUpdateProvider()
     {
+        float hAxis = Input.GetAxis("Horizontal");
+        float vAxis = Input.GetAxis("Vertical");
+        
         m_movementInputs = new MovementInputs();
-        m_movementInputs.left       = m_playerInput.Button2.IsDown;
-        m_movementInputs.right      = m_playerInput.Button1.IsDown;
-        m_movementInputs.boost      = m_playerInput.BothDoubleTapHeld;
+        m_movementInputs.h = hAxis + (Input.GetKey(KeyCode.A) ? -1 : 0) + (Input.GetKey(KeyCode.D) ? 1 : 0);
+        m_movementInputs.v = vAxis + (Input.GetKey(KeyCode.A) && Input.GetKey(KeyCode.D) ? 1 : 0) + (Input.GetKey(KeyCode.S) ? -1 : 0);
+        m_movementInputs.boost  = Input.GetKey(KeyCode.Joystick1Button0) || Input.GetKey(KeyCode.W);
     }
     
     public MovementInputs GetInput()

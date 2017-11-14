@@ -17,8 +17,8 @@ public class RaceRecording
     private List<float>[] m_angularVelocities;
 
     private static readonly int FRAMES_PER_INPUT = 1;
-    private List<int>[] m_toggleFramesLeft;
-    private List<int>[] m_toggleFramesRight;
+    private List<float>[] m_h;
+    private List<float>[] m_v;
     private List<int>[] m_toggleFramesBoost;
 
     private MovementInputs[] m_lastFrameInputs;
@@ -32,8 +32,8 @@ public class RaceRecording
         m_velocities        = new List<Vector3>[m_playerCount];
         m_rotations         = new List<float>[m_playerCount];
         m_angularVelocities = new List<float>[m_playerCount];
-        m_toggleFramesLeft  = new List<int>[m_playerCount];
-        m_toggleFramesRight = new List<int>[m_playerCount];
+        m_h                 = new List<float>[m_playerCount];
+        m_v                 = new List<float>[m_playerCount];
         m_toggleFramesBoost = new List<int>[m_playerCount];
 
         m_lastFrameInputs   = new MovementInputs[m_playerCount];
@@ -45,8 +45,8 @@ public class RaceRecording
             m_velocities[playerIndex]           = new List<Vector3>();
             m_rotations[playerIndex]            = new List<float>();
             m_angularVelocities[playerIndex]    = new List<float>();
-            m_toggleFramesLeft[playerIndex]     = new List<int>();
-            m_toggleFramesRight[playerIndex]    = new List<int>();
+            m_h[playerIndex]                    = new List<float>();
+            m_v[playerIndex]                    = new List<float>();
             m_toggleFramesBoost[playerIndex]    = new List<int>();
 
             m_nextInputIndices[playerIndex] = new int[3];
@@ -65,8 +65,8 @@ public class RaceRecording
             m_velocities[i]         = ReadVector3Array(bytes, ref offset).ToList();
             m_rotations[i]          = ReadArray<float>(bytes, ref offset, sizeof(float)).ToList();
             m_angularVelocities[i]  = ReadArray<float>(bytes, ref offset, sizeof(float)).ToList();
-            m_toggleFramesLeft[i]   = ReadArray<int>(bytes, ref offset, sizeof(int)).ToList();
-            m_toggleFramesRight[i]  = ReadArray<int>(bytes, ref offset, sizeof(int)).ToList();
+            m_h[i]                  = ReadArray<float>(bytes, ref offset, sizeof(float)).ToList();
+            m_v[i]                  = ReadArray<float>(bytes, ref offset, sizeof(float)).ToList();
             m_toggleFramesBoost[i]  = ReadArray<int>(bytes, ref offset, sizeof(int)).ToList();
         }
     }
@@ -84,8 +84,8 @@ public class RaceRecording
             totalOutputSize += PlanWriteVector3Array(writes, m_velocities[i].ToArray());
             totalOutputSize += PlanWriteArray(writes, m_rotations[i].ToArray(),         sizeof(float));
             totalOutputSize += PlanWriteArray(writes, m_angularVelocities[i].ToArray(), sizeof(float));
-            totalOutputSize += PlanWriteArray(writes, m_toggleFramesLeft[i].ToArray(),  sizeof(int));
-            totalOutputSize += PlanWriteArray(writes, m_toggleFramesRight[i].ToArray(), sizeof(int));
+            totalOutputSize += PlanWriteArray(writes, m_h[i].ToArray(),  sizeof(int));
+            totalOutputSize += PlanWriteArray(writes, m_v[i].ToArray(), sizeof(int));
             totalOutputSize += PlanWriteArray(writes, m_toggleFramesBoost[i].ToArray(), sizeof(int));
         }
 
@@ -113,16 +113,8 @@ public class RaceRecording
             }
             if (fixedFramesSoFar % FRAMES_PER_INPUT == 0)
             {
-                if (m_lastFrameInputs[playerIndex].left != player.Inputs.left)
-                {
-                    m_lastFrameInputs[playerIndex].left ^= true;
-                    m_toggleFramesLeft[playerIndex].Add(fixedFramesSoFar);
-                }
-                if (m_lastFrameInputs[playerIndex].right != player.Inputs.right)
-                {
-                    m_lastFrameInputs[playerIndex].right ^= true;
-                    m_toggleFramesRight[playerIndex].Add(fixedFramesSoFar);
-                }
+                m_h[playerIndex].Add(player.Inputs.h);
+                m_v[playerIndex].Add(player.Inputs.v);
                 if (m_lastFrameInputs[playerIndex].boost != player.Inputs.boost)
                 {
                     m_lastFrameInputs[playerIndex].boost ^= true;
@@ -146,34 +138,17 @@ public class RaceRecording
         for (int playerIndex = 0; playerIndex < players.Count; playerIndex++)
         {
             Player player = players[playerIndex];
+            MovementInputs inputs;
 
             if (fixIndex < m_positions[playerIndex].Count)
             {
-                if ((m_nextInputIndices[playerIndex][0] < m_toggleFramesLeft[playerIndex].Count) && (m_toggleFramesLeft[playerIndex][m_nextInputIndices[playerIndex][0]] == fixedFrameToDisplay))
-                {
-                    m_nextInputIndices[playerIndex][0]++;
-                    m_lastFrameInputs[playerIndex].left ^= true;
-                }
-                if ((m_nextInputIndices[playerIndex][1] < m_toggleFramesRight[playerIndex].Count) && (m_toggleFramesRight[playerIndex][m_nextInputIndices[playerIndex][1]] == fixedFrameToDisplay))
-                {
-                    m_nextInputIndices[playerIndex][1]++;
-                    m_lastFrameInputs[playerIndex].right ^= true;
-                }
-                if ((m_nextInputIndices[playerIndex][2] < m_toggleFramesBoost[playerIndex].Count) && (m_toggleFramesBoost[playerIndex][m_nextInputIndices[playerIndex][2]] == fixedFrameToDisplay))
-                {
-                    m_nextInputIndices[playerIndex][2]++;
-                    m_lastFrameInputs[playerIndex].boost ^= true;
-                }
-
-                player.ProcessReplaying(true, isAfterStart, m_lastFrameInputs[playerIndex]);
-
                 if (fixedFrameToDisplay % FRAMES_PER_POSITION == 0)
                 {
-                    Vector3 pos     = m_positions[playerIndex][fixIndex];
-                    float rot       = m_rotations[playerIndex][fixIndex];
-                    Vector3 vel     = m_velocities[playerIndex][fixIndex];
-                    float angVel    = m_angularVelocities[playerIndex][fixIndex];
-                    
+                    Vector3 pos = m_positions[playerIndex][fixIndex];
+                    float rot = m_rotations[playerIndex][fixIndex];
+                    Vector3 vel = m_velocities[playerIndex][fixIndex];
+                    float angVel = m_angularVelocities[playerIndex][fixIndex];
+
                     if (cameras.Count > playerIndex)
                     {
                         CameraManager camera = cameras[playerIndex];
@@ -185,11 +160,23 @@ public class RaceRecording
                     player.Movement.Velocity = vel;
                     player.Movement.AngularVelocity = angVel;
                 }
+
+                m_lastFrameInputs[playerIndex].h = m_h[playerIndex][inputIndex];
+                m_lastFrameInputs[playerIndex].v = m_v[playerIndex][inputIndex];
+                if ((m_nextInputIndices[playerIndex][2] < m_toggleFramesBoost[playerIndex].Count) && (m_toggleFramesBoost[playerIndex][m_nextInputIndices[playerIndex][2]] == fixedFrameToDisplay))
+                {
+                    m_nextInputIndices[playerIndex][2]++;
+                    m_lastFrameInputs[playerIndex].boost ^= true;
+                }
+
+                inputs = m_lastFrameInputs[playerIndex];
             }
             else
             {
-                player.ProcessReplaying(true, isAfterStart, new MovementInputs());
+                inputs = new MovementInputs();
             }
+
+            player.ProcessReplaying(true, isAfterStart, inputs);
         }
     }
 

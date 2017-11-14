@@ -2,7 +2,6 @@
 using System.Linq;
 using UnityEngine;
 using Framework.Interpolation;
-using System;
 
 [RequireComponent(typeof(TransformInterpolator))]
 public class MemeBoots : MonoBehaviour
@@ -47,11 +46,14 @@ public class MemeBoots : MonoBehaviour
     private bool m_isGrounded;
     public bool IsGrounded { get { return m_isGrounded; } }
 
-    private bool m_leftEngine;
-    public bool LeftEngine { get { return m_leftEngine; } }
+    private float m_leftEngine;
+    public float LeftEngine { get { return m_leftEngine; } }
 
-    private bool m_rightEngine;
-    public bool RightEngine { get { return m_rightEngine; } }
+    private float m_rightEngine;
+    public float RightEngine { get { return m_rightEngine; } }
+
+    private float m_brake;
+    public float Brake { get { return m_brake; } }
 
     private bool m_isBoosting;
     public bool IsBoosting { get { return m_isBoosting; } }
@@ -92,8 +94,9 @@ public class MemeBoots : MonoBehaviour
         m_boostPressed = false;
 
         m_isGrounded = true;
-        m_leftEngine = false;
-        m_rightEngine = false;
+        m_leftEngine = 0;
+        m_rightEngine = 0;
+        m_brake = 0;
         m_isBoosting = false;
     }
 
@@ -109,12 +112,8 @@ public class MemeBoots : MonoBehaviour
     public void FixedUpdateMovement(MovementInputs input, bool acceptInput, bool inPreWarm)
     {
         PlayerConfig config = m_player.Config;
-
         ConfigurePhysics(config);
-
-        m_leftEngine = acceptInput ? input.left : false;
-        m_rightEngine = acceptInput ? input.right : false;
-
+        
         if (acceptInput && !inPreWarm)
         {
             if (input.boost)
@@ -146,7 +145,7 @@ public class MemeBoots : MonoBehaviour
         {
             m_isBoosting = false;
         }
-
+        
         if (m_isBoosting)
         {
             m_player.ConsumeEnergy(config.BoostEnergyUseRate * Time.deltaTime);
@@ -159,6 +158,8 @@ public class MemeBoots : MonoBehaviour
             }
         }
 
+        GetEngines(input, acceptInput, out m_leftEngine, out m_rightEngine, out m_brake);
+        
         Vector3 force = Vector3.zero;
 
         RaycastHit boundsHit;
@@ -188,27 +189,17 @@ public class MemeBoots : MonoBehaviour
             Vector3 forceOffset = config.TurnRatio * transform.right;
 
             Vector3 linearForce = Vector3.zero;
-            if (m_leftEngine)
-            {
-                linearForce += engineForce;
-                if (!m_rightEngine)
-                {
-                    torque += Vector3.Dot(Vector3.Cross(-forceOffset, engineForce), Vector3.up);
-                }
-            }
-            if (m_rightEngine)
-            {
-                linearForce += engineForce;
-                if (!m_leftEngine)
-                {
-                    torque += Vector3.Dot(Vector3.Cross(forceOffset, engineForce), Vector3.up);
-                }
-            }
+
+            linearForce += m_leftEngine * engineForce;
+            torque += m_leftEngine * Vector3.Dot(Vector3.Cross(-forceOffset, engineForce), Vector3.up);
+            
+            linearForce += m_rightEngine * engineForce;
+            torque += m_rightEngine * Vector3.Dot(Vector3.Cross(forceOffset, engineForce), Vector3.up);
 
             force += ApplyBoundsCorrection(linearForce);
         }
 
-        m_body.velocity = StepVelocity(m_body.velocity, force, m_body.mass, config.LinearDrag, Time.deltaTime);
+        m_body.velocity = StepVelocity(m_body.velocity, force, m_body.mass, config.LinearDrag + (m_brake * config.BrakeDrag), Time.deltaTime);
         m_angVelocity = StepAngularVelocity(m_angVelocity, torque, TENSOR, config.AngularDrag, Time.deltaTime);
 
         transform.Rotate(Vector3.up, 180 * m_angVelocity * Time.deltaTime);
@@ -240,7 +231,7 @@ public class MemeBoots : MonoBehaviour
         }
         if (m_trajectoryVisualization != null)
         {
-            m_trajectoryVisualization.FixedMemeUpdateTrajectory(this, m_body.position, m_body.velocity, transform.rotation.eulerAngles.y, m_angVelocity, m_leftEngine, m_rightEngine, m_isBoosting);
+            m_trajectoryVisualization.FixedMemeUpdateTrajectory(this, m_body.position, m_body.velocity, transform.rotation.eulerAngles.y, m_angVelocity, input);
         }
     }
 
@@ -268,9 +259,12 @@ public class MemeBoots : MonoBehaviour
         m_capsule.material = config.PhysicsMat;
     }
 
-    public void PredictStep(int steps, List<Vector3> pos, Vector3 velocity, List<float> rot, float angularVelocity, bool leftEngine, bool rightEngine, bool boost, float deltaTime)
+    public void PredictStep(int steps, List<Vector3> pos, Vector3 velocity, List<float> rot, float angularVelocity, MovementInputs input, float deltaTime)
     {
         PlayerConfig config = m_player.Config;
+
+        float left, right, brake;
+        GetEngines(input, true, out left, out right, out brake);
 
         for (int i = 0; i < steps; i++)
         {
@@ -279,7 +273,7 @@ public class MemeBoots : MonoBehaviour
             Vector3 force = Vector3.zero;
             float torque = 0;
 
-            if (boost)
+            if (input.boost)
             {
                 float boostStrength = Mathf.Clamp01(Mathf.Exp(-Vector3.Dot(velocity, forward) / config.BoostSoftCap));
                 force += config.BoostAcceleration * boostStrength * forward;
@@ -293,26 +287,15 @@ public class MemeBoots : MonoBehaviour
 
                 Vector3 engineForce = engineForeForce + engineUpForce;
                 Vector3 forceOffset = config.TurnRatio * Vector3.Cross(Vector3.up, forward).normalized;
+                
+                force += left * engineForce;
+                torque += left * Vector3.Dot(Vector3.Cross(-forceOffset, engineForce), Vector3.up);
 
-                if (leftEngine)
-                {
-                    force += engineForce;
-                    if (!rightEngine)
-                    {
-                        torque += Vector3.Dot(Vector3.Cross(-forceOffset, engineForce), Vector3.up);
-                    }
-                }
-                if (rightEngine)
-                {
-                    force += engineForce;
-                    if (!leftEngine)
-                    {
-                        torque += Vector3.Dot(Vector3.Cross(forceOffset, engineForce), Vector3.up);
-                    }
-                }
+                force += right * engineForce;
+                torque += right * Vector3.Dot(Vector3.Cross(forceOffset, engineForce), Vector3.up);
             }
 
-            velocity = StepVelocity(velocity, force, m_body.mass, m_player.Config.LinearDrag, deltaTime);
+            velocity = StepVelocity(velocity, force, m_body.mass, m_player.Config.LinearDrag + (brake * config.BrakeDrag), deltaTime);
             angularVelocity = StepAngularVelocity(angularVelocity, torque, TENSOR, m_player.Config.AngularDrag, deltaTime);
 
             pos.Add(pos.Last() + (velocity * deltaTime));
@@ -343,5 +326,13 @@ public class MemeBoots : MonoBehaviour
             return force - (effectIntensity * m_boundsCorrectDir * outwardDot);
         }
         return force;
+    }
+
+    private void GetEngines(MovementInputs input, bool acceptInput, out float left, out float right, out float brake)
+    {
+        Vector2 v = Vector2.ClampMagnitude(new Vector2(input.h, input.v), 1);
+        left = acceptInput ? Mathf.Clamp01(Mathf.Sqrt(Mathf.Clamp01(v.y) + Mathf.Clamp01(v.x))) : 0;
+        right = acceptInput ? Mathf.Clamp01(Mathf.Sqrt(Mathf.Clamp01(v.y) + Mathf.Clamp01(-v.x))) : 0;
+        brake = acceptInput ? Mathf.Clamp01(-v.y) : 0;
     }
 }

@@ -1,36 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-[Serializable]
-public struct MovementInputs
+﻿public struct MovementInputs
 {
-    public bool left;
-    public bool right;
+    public float h;
+    public float v;
     public bool boost;
 
-    public MovementInputs(bool left, bool right, bool boost)
+    public MovementInputs(float h, float v, bool boost)
     {    
-        this.left = left;
-        this.right = right;
+        this.h = h;
+        this.v = v;
         this.boost = boost;
-    }
-
-    public override bool Equals(object obj)
-    {
-        if (!(obj is MovementInputs))
-        {
-            return false;
-        }
-
-        MovementInputs inputs = (MovementInputs)obj;
-        return left == inputs.left &&
-               right == inputs.right &&
-               boost == inputs.boost;
-    }
-
-    public override int GetHashCode()
-    {
-        return base.GetHashCode();
     }
 }

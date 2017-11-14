@@ -29,6 +29,10 @@ public class PlayerConfig : ScriptableObject
     [SerializeField] [Range(0, 2)]
     private float m_linearDrag = 0.35f;
     public float LinearDrag { get { return m_linearDrag; } }
+    
+    [SerializeField] [Range(0, 2)]
+    private float m_brakeDrag = 1.0f;
+    public float BrakeDrag { get { return m_brakeDrag; } }
 
     [SerializeField] [Range(0, 20)]
     private float m_angularDrag = 4.0f;

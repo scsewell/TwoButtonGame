@@ -28,7 +28,7 @@ public class TrajectoryVisualization
 
         m_accelerationCrosshairBox = new Dictionary<int, GameObject>();
         m_accelerationBoxes = new Dictionary<int, GameObject[]>();
-        for (int input = 0; input < 5; input++)
+        for (int input = 0; input < 6; input++)
         {
             m_accelerationCrosshairBox[input] = MakeBox(Color.yellow, interpolated, cubical);
             m_accelerationCrosshairBox[input].transform.localScale = 1.0f * Vector3.one;
@@ -58,28 +58,40 @@ public class TrajectoryVisualization
         return box;
     }
 
-    public void FixedMemeUpdateTrajectory(MemeBoots memeBoots, Vector3 position, Vector3 velocity, float rotation, float angularVelocity, bool leftEngine, bool rightEngine, bool boost)
+    public void FixedMemeUpdateTrajectory(MemeBoots memeBoots, Vector3 position, Vector3 velocity, float rotation, float angularVelocity, MovementInputs inputs)
     {
         //Vector3 acceleration = velocity - m_lastVelocity;
         Vector3 endpoint = position + velocity;
 
         PositionBox(m_trajectoryBox, position, endpoint);
         m_crosshairBox.transform.position = endpoint;
+        
+        m_positions.Clear();
+        m_rotations.Clear();
+        m_positions.Add(position);
+        m_rotations.Add(rotation);
+        memeBoots.PredictStep(SEGMENTS * FRAMES_PER_SEGMENT, m_positions, velocity, m_rotations, angularVelocity, inputs, Time.fixedDeltaTime);
 
-        for (int input = 0; input < 5; input++)
+        for (int i = 0; i < SEGMENTS; i++)
+        {
+            PositionBox(m_accelerationBoxes[0][i], m_positions[i * FRAMES_PER_SEGMENT], m_positions[(i + 1) * FRAMES_PER_SEGMENT]);
+            m_accelerationBoxes[0][i].GetComponent<MeshRenderer>().material.color = Color.Lerp(Color.green, Color.white, i / (float)SEGMENTS);
+        }
+        m_accelerationCrosshairBox[0].transform.position = m_positions[SEGMENTS * FRAMES_PER_SEGMENT];
+
+        for (int input = 1; input < 6; input++)
         {
             m_positions.Clear();
             m_rotations.Clear();
             m_positions.Add(position);
             m_rotations.Add(rotation);
-            memeBoots.PredictStep(SEGMENTS * FRAMES_PER_SEGMENT, m_positions, velocity, m_rotations, angularVelocity, input%2==0, input>1, input>3, Time.fixedDeltaTime);
+            memeBoots.PredictStep(SEGMENTS * FRAMES_PER_SEGMENT, m_positions, velocity, m_rotations, angularVelocity, new MovementInputs((2 * (input % 2)) - 1, (2 * (input / 2)) - 1, input > 3), Time.fixedDeltaTime);
 
             for (int i = 0; i < SEGMENTS; i++)
             {
                 PositionBox(m_accelerationBoxes[input][i], m_positions[i * FRAMES_PER_SEGMENT], m_positions[(i + 1) * FRAMES_PER_SEGMENT]);
-                m_accelerationBoxes[input][i].GetComponent<MeshRenderer>().material.color =
-                    ((input % 2 == 0) == leftEngine) && ((input > 1) == rightEngine) && ((input > 3) == boost) ?
-                    Color.Lerp(Color.green, Color.white, i / (float)SEGMENTS) : Color.Lerp(Color.red, Color.magenta, i / (float)SEGMENTS);
+                m_accelerationBoxes[input][i].GetComponent<MeshRenderer>().material.color = Color.Lerp(Color.red, Color.magenta, i / (float)SEGMENTS);
+                
             }
             m_accelerationCrosshairBox[input].transform.position = m_positions[SEGMENTS * FRAMES_PER_SEGMENT];
         }

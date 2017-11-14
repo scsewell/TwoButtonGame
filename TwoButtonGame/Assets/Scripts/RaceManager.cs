@@ -5,7 +5,8 @@ using UnityEngine;
 public class RaceManager : MonoBehaviour
 {
     [Header("Prefabs")]
-    [SerializeField] private Camera m_camClearPrefab;
+    [SerializeField] private Camera m_clearCameraPrefab;
+    [SerializeField] private ReplayCamera m_replayCameraPrefab;
     [SerializeField] private CameraRig m_cameraRigPrefab;
     [SerializeField] private InRaceMenu m_raceMenuPrefab;
     [SerializeField] private Player m_playerPrefab;
@@ -63,6 +64,7 @@ public class RaceManager : MonoBehaviour
 
     private InRaceMenu m_raceMenu;
     private CameraRig m_cameraRig;
+    private ReplayCamera m_replayCamera;
     private RaceParameters m_raceParams;
     private AsyncOperation m_loading;
     private float m_raceLoadTime;
@@ -110,13 +112,15 @@ public class RaceManager : MonoBehaviour
         }
 
         m_raceParams = raceParams;
-        int playerCount = Mathf.Min(m_raceParams.HumanCount + m_AICount, Consts.MAX_PLAYERS);
-
-        Instantiate(m_camClearPrefab);
         m_racePath = FindObjectOfType<RacePath>().Init(m_raceParams.Laps);
         m_raceMenu = Instantiate(m_raceMenuPrefab).Init(m_raceParams.HumanCount);
+
+        Instantiate(m_clearCameraPrefab);
+        m_replayCamera = Instantiate(m_replayCameraPrefab);
         m_cameraRig = Instantiate(m_cameraRigPrefab).Init(m_raceParams.LevelConfig);
 
+        int playerCount = Mathf.Min(m_raceParams.HumanCount + m_AICount, Consts.MAX_PLAYERS);
+        
         List<Transform> spawns = m_racePath.Spawns.Take(playerCount).ToList();
 
         for (int playerNum = 0; playerNum < playerCount; playerNum++)
@@ -242,6 +246,7 @@ public class RaceManager : MonoBehaviour
             if (m_state != State.Replay)
             {
                 m_state = State.Replay;
+                m_replayCamera.Activate();
                 
                 AudioManager.Instance.StopMusic();
                 AudioManager.Instance.PlayMusic(m_replayMusic);
@@ -287,17 +292,26 @@ public class RaceManager : MonoBehaviour
 
         m_players.ForEach(p => p.UpdatePlayer());
         m_racePath.UpdatePath();
+
+        foreach (Player player in m_players)
+        {
+            if (GetPlayerRank(player) == 1)
+            {
+                m_replayCamera.SetTarget(player.transform);
+            }
+        }
     }
 
     public void LateUpdateRace()
     {
         bool isInIntro = (m_cameraRig != null && m_cameraRig.IsPlaying);
+        bool showPlayerUI = !isInIntro && m_state != State.Replay;
+        bool allowQuit = m_state == State.Finished || m_state == State.Replay;
 
         m_players.ForEach(p => p.LateUpdatePlayer());
-        m_cameras.ForEach(c => c.SetCameraEnabled(!isInIntro));
+        m_cameras.ForEach(c => c.SetCameraEnabled(showPlayerUI));
 
-        bool allowQuit = m_state == State.Finished || m_state == State.Replay;
-        m_raceMenu.UpdateUI(this, !isInIntro, m_state == State.Paused, allowQuit, m_loading != null, m_fadeFac);
+        m_raceMenu.UpdateUI(this, showPlayerUI, m_state == State.Paused, allowQuit, m_loading != null, m_fadeFac);
     }
 
     public void Pause()

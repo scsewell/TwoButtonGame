@@ -3,14 +3,13 @@
 Engines spark on boost fail
 paritcle motion trail behind engine
 
-How to Play use left right arrow kets
 vairable replay speed
 Collision/sliding sound
 Player finish line sounds
 Energy gate sounds
 Waypoint engine sound
 
-Player Models (fatty, floating boosters fancy tech, robot, other race?, really abstract?)
+Player Models (fatty, airbrake flaps!!!!, floating boosters fancy tech, robot, other race?, really abstract?)
 Character blurbs
 Ready up anim
 
@@ -35,10 +34,11 @@ Outline is very expensive on UI, especially the player time...
 Camera can clip with the gates, perhaps use a fading material when close...
 
 ### Long Term ###
-Level preview camera shots in menu
 Input selection
 Player n is nth joiner (But what about if 1st player leaves?)
 Leaderboard
+tutorial
+Level preview camera shots in menu
 Ghosting
 
 ### Music Loop Times ###

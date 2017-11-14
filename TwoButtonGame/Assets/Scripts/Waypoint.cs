@@ -173,7 +173,7 @@ public class Waypoint : MonoBehaviour, OnWillRenderReceiver
             CameraManager camManager = cam.GetComponentInParent<CameraManager>();
 
             Color diffuse = new Color(0.35f, 0.35f, 0.35f);
-            Color glow = Color.black;
+            Color glow = new Color(1, 0.41f, 0) * 1.75f;
 
             if (camManager != null)
             {

@@ -104,7 +104,7 @@ public class Player : MonoBehaviour
     private PlayerAnimation m_animation;
     private RacePath m_racePath;
     private Vector3 m_lastPos;
-    public Vector3 m_spawnPosition;
+    private Vector3 m_spawnPosition;
     private Quaternion m_spawnRotation;
 
 
