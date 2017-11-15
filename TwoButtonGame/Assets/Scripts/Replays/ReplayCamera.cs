@@ -20,7 +20,6 @@ public class ReplayCamera : MonoBehaviour
     private Camera m_camera;
     private CinemachineBrain m_brain;
     private CinemachineVirtualCamera[] m_virtualCams;
-    private ICinemachineCamera m_lastActiveCam;
     private float m_viewSizeStart;
     private float m_viewSizeEnd;
     private float m_viewSizeDuration;
@@ -91,7 +90,6 @@ public class ReplayCamera : MonoBehaviour
         {
             if (!CinemachineCore.Instance.IsLive(virtualCam))
             {
-                m_lastActiveCam = m_brain.ActiveVirtualCamera;
                 virtualCam.m_Lens.FieldOfView = ToFOV(m_viewSizeStart, 100);
             }
         }
