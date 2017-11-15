@@ -154,7 +154,7 @@ public class TrajectoryVisualization
             m_crosshairBox = null;
         }
 
-        for (int input = 0; input < 5; input++)
+        for (int input = 0; input < 6; input++)
         {
             if (m_accelerationCrosshairBox != null)
             {

@@ -333,6 +333,6 @@ public class MemeBoots : MonoBehaviour
         Vector2 v = Vector2.ClampMagnitude(new Vector2(input.h, input.v), 1);
         left = acceptInput ? Mathf.Clamp01(Mathf.Sqrt(Mathf.Clamp01(v.y) + Mathf.Clamp01(v.x))) : 0;
         right = acceptInput ? Mathf.Clamp01(Mathf.Sqrt(Mathf.Clamp01(v.y) + Mathf.Clamp01(-v.x))) : 0;
-        brake = acceptInput ? Mathf.Clamp01(-v.y) : 0;
+        brake = acceptInput && !input.boost ? Mathf.Clamp01(-v.y) : 0;
     }
 }

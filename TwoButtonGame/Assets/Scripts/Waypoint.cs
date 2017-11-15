@@ -185,7 +185,7 @@ public class Waypoint : MonoBehaviour, OnWillRenderReceiver
                 Color playerColor = camManager.Owner.GetColor();
 
                 diffuse = SampleGradient(glowFac, diffuse, Color.white, playerColor);
-                glow = SampleGradient(glowFac, glow, m_secondNextGlowIntensity * Color.white, m_nextGlowIntensity * playerColor);
+                glow = SampleGradient(glowFac, Color.black, m_secondNextGlowIntensity * Color.white, m_nextGlowIntensity * playerColor);
             }
 
             m_glowMat.SetColor("_Color", diffuse);

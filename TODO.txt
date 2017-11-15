@@ -3,6 +3,10 @@
 Engines spark on boost fail
 paritcle motion trail behind engine
 
+replays - speed, cameras(cinemachine, players all at once, players single), save load
+Input selection - multi joystick and keyboard support
+Player n is nth joiner (But what about if 1st player leaves?)
+
 vairable replay speed
 Collision/sliding sound
 Player finish line sounds
@@ -34,8 +38,6 @@ Outline is very expensive on UI, especially the player time...
 Camera can clip with the gates, perhaps use a fading material when close...
 
 ### Long Term ###
-Input selection
-Player n is nth joiner (But what about if 1st player leaves?)
 Leaderboard
 tutorial
 Level preview camera shots in menu

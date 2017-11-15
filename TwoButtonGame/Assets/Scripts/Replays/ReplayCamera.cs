@@ -19,7 +19,8 @@ public class ReplayCamera : MonoBehaviour
 
     private Camera m_camera;
     private CinemachineBrain m_brain;
-    private List<CinemachineVirtualCamera> m_virtualCams;
+    private CinemachineVirtualCamera[] m_virtualCams;
+    private ICinemachineCamera m_lastActiveCam;
     private float m_viewSizeStart;
     private float m_viewSizeEnd;
     private float m_viewSizeDuration;
@@ -27,16 +28,22 @@ public class ReplayCamera : MonoBehaviour
 
     private void Awake()
     {
-        m_camera = GetComponent<Camera>();
-        m_brain = GetComponent<CinemachineBrain>();
-        m_virtualCams = new List<CinemachineVirtualCamera>();
+        m_camera = GetComponentInChildren<Camera>();
+        m_brain = m_camera.GetComponent<CinemachineBrain>();
         
         SettingManager.Instance.ConfigureCamera(m_camera, true);
-        GetComponent<CinemachinePostFX>().m_Profile = GetComponent<PostProcessingBehaviour>().profile;
+        m_camera.GetComponent<CinemachinePostFX>().m_Profile = m_camera.GetComponent<PostProcessingBehaviour>().profile;
 
-        m_virtualCams.AddRange(FindObjectsOfType<CinemachineVirtualCamera>());
+        m_virtualCams = FindObjectsOfType<CinemachineVirtualCamera>();
+        foreach (CinemachineVirtualCamera virtualCam in m_virtualCams)
+        {
+            virtualCam.m_Lens.FieldOfView = ToFOV(Random.Range(m_minViewSize, m_maxViewSize), 100);
+            virtualCam.gameObject.transform.SetParent(transform);
+        }
 
-        m_brain.m_CameraActivatedEvent.AddListener(() => PickNewSettings());
+        GetComponent<CinemachineClearShot>().m_ChildCameras = m_virtualCams;
+
+        m_brain.m_CameraCutEvent.AddListener(() => PickNewSettings());
 
         m_viewSizeStart = 2;
         m_viewSizeEnd = 2;
@@ -60,15 +67,15 @@ public class ReplayCamera : MonoBehaviour
     {
         foreach (CinemachineVirtualCamera virtualCam in m_virtualCams)
         {
-            virtualCam.LookAt = target;   
-            virtualCam.m_Lens.FieldOfView = ToFOV(Mathf.Lerp(m_viewSizeStart, m_viewSizeEnd, 1 - (0.5f * Mathf.Cos(Mathf.Clamp01((Time.time - m_viewSizeChangeTime) / m_viewSizeDuration) * Mathf.PI) + 0.5f)), target, virtualCam.transform);
+            virtualCam.LookAt = target;
+            float distance = Mathf.Sqrt(Vector3.Distance(target.position, virtualCam.transform.position));
+            virtualCam.m_Lens.FieldOfView = ToFOV(Mathf.Lerp(m_viewSizeStart, m_viewSizeEnd, 1 - (0.5f * Mathf.Cos(Mathf.Clamp01((Time.time - m_viewSizeChangeTime) / m_viewSizeDuration) * Mathf.PI) + 0.5f)), distance);
         }
     }
 
     private void PickNewSettings()
     {
         m_viewSizeChangeTime = Time.time;
-        m_viewSizeStart = Random.Range(m_minViewSize, m_maxViewSize);
 
         if (Random.value < m_viewChangeChance)
         {
@@ -82,13 +89,16 @@ public class ReplayCamera : MonoBehaviour
 
         foreach (CinemachineVirtualCamera virtualCam in m_virtualCams)
         {
-            virtualCam.m_Lens.FieldOfView = ToFOV(m_viewSizeStart, virtualCam.LookAt, virtualCam.transform);
+            if (!CinemachineCore.Instance.IsLive(virtualCam))
+            {
+                m_lastActiveCam = m_brain.ActiveVirtualCamera;
+                virtualCam.m_Lens.FieldOfView = ToFOV(m_viewSizeStart, 100);
+            }
         }
     }
 
-    private float ToFOV(float viewSize, Transform target, Transform cam)
+    private float ToFOV(float viewSize, float distance)
     {
-        float distance = Mathf.Sqrt(Vector3.Distance(target.position, cam.position));
         return 2 * Mathf.Atan(viewSize / (2 * distance)) * (180 / Mathf.PI);
     }
 }
