@@ -21,7 +21,7 @@ GameObject:
   - component: {fileID: 4023454707272348}
   - component: {fileID: 136027555362995916}
   - component: {fileID: 54949050245293530}
-  - component: {fileID: 114499073984249860}
+  - component: {fileID: 114590990659802636}
   - component: {fileID: 114948392826785060}
   - component: {fileID: 114159723490493402}
   m_Layer: 2
@@ -80,7 +80,7 @@ MonoBehaviour:
   m_collisionTorqueIntensity: 4
   m_minBoostTime: 0.25
   m_showPrediction: 0
---- !u!114 &114499073984249860
+--- !u!114 &114590990659802636
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -88,7 +88,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1678875234706754}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 71352e4032e959f4cb1a045bf61a29ce, type: 3}
+  m_Script: {fileID: 11500000, guid: 9268bdf68925c894bb03bf51c1901cdd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   useThresholds: 0
@@ -114,7 +114,6 @@ MonoBehaviour:
   m_finishVolume: 1
   m_energyFailSound: {fileID: 8300000, guid: 17c689288dbeb024fa7379a225945b14, type: 3}
   m_energyFailVolume: 1
-  m_spawnPosition: {x: 0, y: 0, z: 0}
 --- !u!136 &136027555362995916
 CapsuleCollider:
   m_ObjectHideFlags: 1

@@ -19,7 +19,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4668820342098264}
-  - component: {fileID: 114684376958025522}
+  - component: {fileID: 114982849421272040}
   - component: {fileID: 114839623293009952}
   m_Layer: 0
   m_Name: CameraManager
@@ -259,21 +259,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   profile: {fileID: 11400000, guid: daf6b9c2f49d1aa40918779b110c7d2a, type: 2}
---- !u!114 &114684376958025522
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1018363580824694}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 71352e4032e959f4cb1a045bf61a29ce, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  useThresholds: 0
-  m_postionThreshold: 0.001
-  m_rotationThreshold: 0.1
-  m_scaleThreshold: 0.001
 --- !u!114 &114839623293009952
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -307,6 +292,21 @@ MonoBehaviour:
   m_dustMaxVelocity: 80
   m_dustVelocityPower: 3
   m_dustFadeSmoothing: 0.25
+--- !u!114 &114982849421272040
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1018363580824694}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9268bdf68925c894bb03bf51c1901cdd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  useThresholds: 0
+  m_postionThreshold: 0.001
+  m_rotationThreshold: 0.1
+  m_scaleThreshold: 0.001
 --- !u!198 &198205130447769740
 ParticleSystem:
   m_ObjectHideFlags: 1

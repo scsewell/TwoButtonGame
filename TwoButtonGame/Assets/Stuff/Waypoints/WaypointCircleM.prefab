@@ -57,7 +57,7 @@ GameObject:
   - component: {fileID: 23519929021970396}
   - component: {fileID: 64983812697162440}
   - component: {fileID: 64730547911401448}
-  - component: {fileID: 114152697511365620}
+  - component: {fileID: 114395544385731084}
   - component: {fileID: 114910352149041204}
   m_Layer: 0
   m_Name: Gate
@@ -926,7 +926,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1591013213356658}
-  m_LocalRotation: {x: -0.65328157, y: -0.27059805, z: -0.6532815, w: 0.27059808}
+  m_LocalRotation: {x: -0.6532815, y: -0.27059802, z: -0.65328145, w: 0.27059805}
   m_LocalPosition: {x: 4.1, y: 4.1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -968,7 +968,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1173661211648340}
-  m_LocalRotation: {x: -0.27059802, y: -0.6532815, z: -0.27059805, w: 0.65328145}
+  m_LocalRotation: {x: -0.27059805, y: -0.65328157, z: -0.27059808, w: 0.6532815}
   m_LocalPosition: {x: -4.1, y: 4.1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -1499,21 +1499,6 @@ MonoBehaviour:
   m_flameScale: 1
   m_accelerationScale: 0.75
   m_maxAcceleration: 3.5
---- !u!114 &114152697511365620
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1075774448212202}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 71352e4032e959f4cb1a045bf61a29ce, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  useThresholds: 1
-  m_postionThreshold: 0.01
-  m_rotationThreshold: 0.1
-  m_scaleThreshold: 0.001
 --- !u!114 &114170127216626644
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1587,6 +1572,21 @@ MonoBehaviour:
   m_wrapMode: 0
   m_flipDirection: 0
   m_startOffset: 0
+--- !u!114 &114395544385731084
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1075774448212202}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9268bdf68925c894bb03bf51c1901cdd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  useThresholds: 1
+  m_postionThreshold: 0.001
+  m_rotationThreshold: 0.1
+  m_scaleThreshold: 0.001
 --- !u!114 &114398748453171034
 MonoBehaviour:
   m_ObjectHideFlags: 1

@@ -235,7 +235,7 @@ public class RaceManager : MonoBehaviour
             m_replayStartTime = Time.time + m_replayStartWait;
             m_raceMenu.OnFinish();
         }
-
+        
         if (isAfterIntro)
         {
             m_fixedFramesSoFar++;
@@ -245,6 +245,8 @@ public class RaceManager : MonoBehaviour
         {
             if (m_state != State.Replay)
             {
+                RecordingManager.Instance.SaveRecording(m_raceRecording);
+
                 m_state = State.Replay;
                 m_replayCamera.Activate();
                 

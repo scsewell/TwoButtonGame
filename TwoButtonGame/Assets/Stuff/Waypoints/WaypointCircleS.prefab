@@ -241,7 +241,7 @@ GameObject:
   - component: {fileID: 23801410366886918}
   - component: {fileID: 64071235055883912}
   - component: {fileID: 64911734707487938}
-  - component: {fileID: 114713714745595008}
+  - component: {fileID: 114748907093826862}
   - component: {fileID: 114925435420650568}
   m_Layer: 0
   m_Name: Gate
@@ -882,7 +882,7 @@ MonoBehaviour:
   m_flameScale: 1
   m_accelerationScale: 0.75
   m_maxAcceleration: 3.5
---- !u!114 &114713714745595008
+--- !u!114 &114748907093826862
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -890,11 +890,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1855723000028214}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 71352e4032e959f4cb1a045bf61a29ce, type: 3}
+  m_Script: {fileID: 11500000, guid: 9268bdf68925c894bb03bf51c1901cdd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   useThresholds: 1
-  m_postionThreshold: 0.01
+  m_postionThreshold: 0.001
   m_rotationThreshold: 0.1
   m_scaleThreshold: 0.001
 --- !u!114 &114754414299291028

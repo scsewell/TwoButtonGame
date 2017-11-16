@@ -493,7 +493,7 @@ GameObject:
   - component: {fileID: 23063748720659234}
   - component: {fileID: 64273026423889814}
   - component: {fileID: 64236702671446046}
-  - component: {fileID: 114894480173568740}
+  - component: {fileID: 114533035413303630}
   - component: {fileID: 114342576758329654}
   m_Layer: 0
   m_Name: Gate
@@ -3533,6 +3533,21 @@ MonoBehaviour:
   m_flameScale: 1
   m_accelerationScale: 0.75
   m_maxAcceleration: 3.5
+--- !u!114 &114533035413303630
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1394214750381172}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9268bdf68925c894bb03bf51c1901cdd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  useThresholds: 1
+  m_postionThreshold: 0.001
+  m_rotationThreshold: 0.1
+  m_scaleThreshold: 0.001
 --- !u!114 &114555758556214436
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3702,21 +3717,6 @@ MonoBehaviour:
   m_flameScale: 1
   m_accelerationScale: 0.75
   m_maxAcceleration: 3.5
---- !u!114 &114894480173568740
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1394214750381172}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 71352e4032e959f4cb1a045bf61a29ce, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  useThresholds: 1
-  m_postionThreshold: 0.01
-  m_rotationThreshold: 0.1
-  m_scaleThreshold: 0.001
 --- !u!198 &198006912856897242
 ParticleSystem:
   m_ObjectHideFlags: 1
