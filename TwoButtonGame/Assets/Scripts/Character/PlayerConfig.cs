@@ -3,6 +3,10 @@
 [CreateAssetMenu(fileName = "PlayerConfig", menuName = "PlayerConfig", order = 1)]
 public class PlayerConfig : ScriptableObject
 {
+    [SerializeField]
+    private int m_id = 1000;
+    public int Id { get { return m_id; } }
+
     [Header("Description")]
     [SerializeField]
     private int m_sortOrder = 100;

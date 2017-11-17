@@ -4,6 +4,10 @@
 public class LevelConfig : ScriptableObject
 {
     [SerializeField]
+    private int m_id = 1000;
+    public int Id { get { return m_id; } }
+
+    [SerializeField]
     private int m_sortOrder = 100;
     public int SortOrder { get { return m_sortOrder; } }
 

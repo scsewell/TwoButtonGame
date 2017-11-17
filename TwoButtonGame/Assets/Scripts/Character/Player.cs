@@ -62,17 +62,9 @@ public class Player : MonoBehaviour
         get { return m_racePath.GetCurrentLap(m_waypointsCompleted); }
     }
 
-    private List<float> m_lapTimes = new List<float>();
-    public List<float> LapTimes { get { return m_lapTimes; } }
-
-    public float FinishTime
-    {
-        get { return m_lapTimes.Sum(); }
-    }
-
-    private bool m_isFinished;
-    public bool IsFinished { get { return m_isFinished; } }
-
+    private RaceResult m_raceResult;
+    public RaceResult RaceResult { get { return m_raceResult; } }
+    
     // Energy
     public delegate void EnergyGainedHandler(float total, float delta);
     public event EnergyGainedHandler EnergyGained;
@@ -111,8 +103,9 @@ public class Player : MonoBehaviour
     private void Awake()
     {
         m_interpolator = GetComponentInChildren<TransformInterpolator>();
-
         m_movement = GetComponentInChildren<MemeBoots>();
+
+        m_raceResult = new RaceResult();
     }
 
     public Player InitHuman(int playerNum, PlayerConfig config, PlayerInput input)
@@ -151,6 +144,7 @@ public class Player : MonoBehaviour
 
         m_movement.ResetMovement();
         m_inputProvider.ResetProvider();
+
         if (m_animation)
         {
             m_animation.ResetAnimation();
@@ -159,10 +153,9 @@ public class Player : MonoBehaviour
         m_interpolator.ForgetPreviousValues();
 
         m_energy = 0;
-
-        m_lapTimes.Clear();
         m_waypointsCompleted = 0;
-        m_isFinished = false;
+
+        m_raceResult.Reset();
     }
 
     public void ProcessPlaying(bool isAfterIntro, bool isAfterStart)
@@ -173,9 +166,9 @@ public class Player : MonoBehaviour
 
     public void ProcessReplaying(bool isAfterIntro, bool isAfterStart, MovementInputs inputs)
     {
-        m_movement.FixedUpdateMovement(inputs, isAfterIntro && !m_isFinished, !isAfterStart);
+        m_movement.FixedUpdateMovement(inputs, isAfterIntro && !m_raceResult.Finished, !isAfterStart);
 
-        if (isAfterStart && !m_isFinished && !m_movement.IsBoosting)
+        if (isAfterStart && !m_raceResult.Finished && !m_movement.IsBoosting)
         {
             m_energy = Mathf.Min(m_energy + (m_config.EnergyRechargeRate * Time.deltaTime), MaxEnergy);
         }
@@ -190,9 +183,9 @@ public class Player : MonoBehaviour
             m_racePath.ResetEnergyGates(this);
 
             bool finished = m_racePath.IsFinished(m_waypointsCompleted);
-            if (finished != m_isFinished)
+            if (finished != m_raceResult.Finished)
             {
-                m_isFinished = finished;
+                m_raceResult.Finished = true;
                 RecordLapTime();
             }
 
@@ -287,6 +280,6 @@ public class Player : MonoBehaviour
     private void RecordLapTime()
     {
         float currentTime = Main.Instance.RaceManager.GetStartRelativeTime(Time.time);
-        m_lapTimes.Add(currentTime - m_lapTimes.Sum());
+        m_raceResult.LapTimes.Add(currentTime - m_raceResult.LapTimes.Sum());
     }
 }

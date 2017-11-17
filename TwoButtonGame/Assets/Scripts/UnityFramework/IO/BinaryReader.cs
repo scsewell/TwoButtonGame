@@ -15,6 +15,11 @@ namespace Framework.IO
             m_data = data;
         }
 
+        public int GetReadPointer()
+        {
+            return m_index;
+        }
+
         public void SetReadPointer(int index)
         {
             m_index = index;
@@ -72,6 +77,12 @@ namespace Framework.IO
          * Wrapper methods to handle common types.
          */
 
+        private byte[] m_byteBuffer = new byte[1];
+        public byte ReadByte()
+        {
+            return ReadValue(m_byteBuffer);
+        }
+
         private int[] m_intBuffer = new int[1];
         public int ReadInt()
         {
@@ -95,6 +106,11 @@ namespace Framework.IO
         {
             return ReadValue(m_doubleBuffer);
         }
+        
+        public bool ReadBool()
+        {
+            return ReadByte() == 1;
+        }
 
         public Vector2 ReadVector2()
         {
@@ -109,6 +125,16 @@ namespace Framework.IO
         public Quaternion ReadQuaternion()
         {
             return new Quaternion(ReadFloat(), ReadFloat(), ReadFloat(), ReadFloat());
+        }
+
+        public bool[] ReadArray()
+        {
+            bool[] vals = new bool[ReadInt()];
+            for (int i = 0; i < vals.Length; i++)
+            {
+                vals[i] = ReadBool();
+            }
+            return vals;
         }
     }
 }

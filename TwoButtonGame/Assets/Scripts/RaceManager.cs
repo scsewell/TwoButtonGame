@@ -50,9 +50,6 @@ public class RaceManager : MonoBehaviour
     private bool m_skipIntro = false;
     [SerializeField]
     private bool m_skipCoundown = false;
-    [SerializeField]
-    [Range(0, Consts.MAX_PLAYERS)]
-    private int m_AICount = 0;
 
     private RacePath m_racePath;
     public RacePath RacePath { get { return m_racePath; } }
@@ -62,10 +59,10 @@ public class RaceManager : MonoBehaviour
 
     private List<CameraManager> m_cameras = new List<CameraManager>();
 
+    private RaceParameters m_raceParams;
     private InRaceMenu m_raceMenu;
     private CameraRig m_cameraRig;
     private ReplayCamera m_replayCamera;
-    private RaceParameters m_raceParams;
     private AsyncOperation m_loading;
     private float m_raceLoadTime;
     private float m_introEndTime;
@@ -75,17 +72,16 @@ public class RaceManager : MonoBehaviour
     private int m_countdownSecond;
     private bool m_musicStarted = false;
     private float m_fadeFac = 1;
+    private bool m_isReplay;
     private RaceRecording m_raceRecording;
     private int m_fixedFramesSoFar;
-
-    private Dictionary<Player, int> m_playerRanks = new Dictionary<Player, int>();
 
     public float CountdownTime
     {
         get { return (m_raceStartTime - Time.time) / m_countdownScale; }
     }
 
-    public int PlayerCount { get { return m_players.Count; } }
+    public int PlayerCount { get { return m_raceParams.PlayerCount; } }
 
     private enum State
     {
@@ -96,22 +92,51 @@ public class RaceManager : MonoBehaviour
     }
 
     private State m_state;
-
-    public bool InMenu
-    {
-        get { return m_state != State.Racing; }
-    }
-
+    
     public void StartRace(RaceParameters raceParams)
     {
         if (!Application.isEditor)
         {
             m_skipCoundown = false;
             m_skipIntro = false;
-            m_AICount = 0;
         }
 
         m_raceParams = raceParams;
+
+        m_isReplay = false;
+        m_raceRecording = new RaceRecording(m_raceParams);
+        m_replayStartTime = float.PositiveInfinity;
+        
+        InitRace();
+
+        m_state = State.Racing;
+    }
+
+    public void StartRace(RaceRecording recording)
+    {
+        if (!Application.isEditor)
+        {
+            m_skipCoundown = false;
+        }
+        m_skipIntro = true;
+
+        m_isReplay = true;
+        m_raceRecording = recording;
+        m_replayStartTime = Time.time;
+
+        m_raceParams = recording.RaceParams;
+        
+        InitRace();
+
+        m_state = State.Replay;
+        m_replayCamera.Activate();
+
+        AudioManager.Instance.PlayMusic(m_replayMusic);
+        m_musicStarted = true;
+    }
+
+    public void InitRace()
+    {
         m_racePath = FindObjectOfType<RacePath>().Init(m_raceParams.Laps);
         m_raceMenu = Instantiate(m_raceMenuPrefab).Init(m_raceParams.HumanCount);
 
@@ -119,11 +144,9 @@ public class RaceManager : MonoBehaviour
         m_replayCamera = Instantiate(m_replayCameraPrefab);
         m_cameraRig = Instantiate(m_cameraRigPrefab).Init(m_raceParams.LevelConfig);
 
-        int playerCount = Mathf.Min(m_raceParams.HumanCount + m_AICount, Consts.MAX_PLAYERS);
-        
-        List<Transform> spawns = m_racePath.Spawns.Take(playerCount).ToList();
+        List<Transform> spawns = m_racePath.Spawns.Take(PlayerCount).ToList();
 
-        for (int playerNum = 0; playerNum < playerCount; playerNum++)
+        for (int playerNum = 0; playerNum < PlayerCount; playerNum++)
         {
             int index = Random.Range(0, spawns.Count);
             Transform spawn = spawns[index];
@@ -154,14 +177,10 @@ public class RaceManager : MonoBehaviour
             }
         }
 
-        m_raceRecording = new RaceRecording(m_players.Count);
-        m_replayStartTime = float.PositiveInfinity;
-
-        m_state = State.Racing;
         ResetRace();
     }
 
-    public void ResetRace()
+    private void ResetRace()
     {
         float introLength = 0;
         if (!m_skipIntro)
@@ -204,13 +223,13 @@ public class RaceManager : MonoBehaviour
         
         if (m_state == State.Replay)
         {
-            m_raceRecording.MoveGhosts(m_players, m_cameras, m_fixedFramesSoFar, isAfterStart);
+            m_raceRecording.MoveGhosts(m_fixedFramesSoFar, m_players, m_cameras, isAfterStart);
         }
         else
         {
             if (isAfterIntro)
             {
-                m_raceRecording.Record(m_players, m_fixedFramesSoFar);
+                m_raceRecording.Record(m_fixedFramesSoFar, m_players);
             }
             m_players.ForEach(p => p.ProcessPlaying(isAfterIntro, isAfterStart));
         }
@@ -221,15 +240,45 @@ public class RaceManager : MonoBehaviour
 
         foreach (Player player in m_players)
         {
-            m_playerRanks[player] = m_players.Count(p => p != player && (
-                (p.IsFinished && player.IsFinished && p.FinishTime < player.FinishTime) ||
-                !player.IsFinished && (
-                (p.WaypointsCompleted > player.WaypointsCompleted) ||
-                (p.WaypointsCompleted == player.WaypointsCompleted && Vector3.Distance(p.NextWaypoint.Position, p.transform.position) < Vector3.Distance(player.NextWaypoint.Position, player.transform.position))
-                ))) + 1;
+            int rank = 1;
+            foreach (Player other in m_players)
+            {
+                if (other != player)
+                {
+                    RaceResult pRes = player.RaceResult;
+                    RaceResult oRes = other.RaceResult;
+                    if (pRes.Finished)
+                    {
+                        if (oRes.Finished && oRes.FinishTime < pRes.FinishTime)
+                        {
+                            rank++;
+                        }
+                    }
+                    else
+                    {
+                        int progressDiff = other.WaypointsCompleted - player.WaypointsCompleted;
+
+                        if (progressDiff > 0)
+                        {
+                            rank++;
+                        }
+                        else if (progressDiff == 0)
+                        {
+                            float otherDist = Vector3.Distance(other.NextWaypoint.Position, other.transform.position);
+                            float playerDist = Vector3.Distance(player.NextWaypoint.Position, player.transform.position);
+
+                            if (otherDist < playerDist)
+                            {
+                                rank++;
+                            }
+                        }
+                    }
+                }
+            }
+            player.RaceResult.Rank = rank;
         }
 
-        if (m_state == State.Racing && m_players.All(p => p.IsFinished))
+        if (m_state == State.Racing && m_players.All(p => p.RaceResult.Finished))
         {
             m_state = State.Finished;
             m_replayStartTime = Time.time + m_replayStartWait;
@@ -245,15 +294,13 @@ public class RaceManager : MonoBehaviour
         {
             if (m_state != State.Replay)
             {
-                RecordingManager.Instance.SaveRecording(m_raceRecording);
-
                 m_state = State.Replay;
                 m_replayCamera.Activate();
                 
                 AudioManager.Instance.StopMusic();
                 AudioManager.Instance.PlayMusic(m_replayMusic);
             }
-            m_replayStartTime += (Time.time - m_introEndTime);
+            m_replayStartTime = Time.time + m_raceRecording.Duration + m_replayStartWait;
             ResetRace();
         }
     }
@@ -297,7 +344,7 @@ public class RaceManager : MonoBehaviour
 
         foreach (Player player in m_players)
         {
-            if (GetPlayerRank(player) == 1)
+            if (player.RaceResult.Rank == 1)
             {
                 m_replayCamera.SetTarget(player.transform);
             }
@@ -346,6 +393,11 @@ public class RaceManager : MonoBehaviour
     {
         if (m_loading == null)
         {
+            if (!m_isReplay)
+            {
+                RecordingManager.Instance.SaveRecording(m_raceRecording, m_players);
+            }
+            
             m_loading = Main.Instance.LoadMainMenu();
             m_quitStartTime = Time.unscaledTime;
         }
@@ -387,15 +439,5 @@ public class RaceManager : MonoBehaviour
     public float GetStartRelativeTime(float time)
     {
         return time - m_raceStartTime;
-    }
-
-    public int GetPlayerRank(Player player)
-    {
-        int rank;
-        if (!m_playerRanks.TryGetValue(player, out rank))
-        {
-            rank = 1;
-        }
-        return Mathf.Max(rank, 1);
     }
 }

@@ -206,12 +206,12 @@ public class PlayerUI : MonoBehaviour
             m_countdownText.text = (countdown > 0) ? Mathf.CeilToInt(countdown).ToString() : "GO!";
         }
 
-        int rank = m_raceManager.GetPlayerRank(m_player);
+        int rank = m_player.RaceResult.Rank;
         bool isSolo = m_raceManager.PlayerCount == 1;
 
         int lap = m_player.CurrentLap;
         RacePath path = m_raceManager.RacePath;
-        bool finished = m_player.IsFinished;
+        bool finished = m_player.RaceResult.Finished;
         
         m_arrow.gameObject.SetActive(!finished);
         m_rankText.gameObject.SetActive(!finished && !isSolo);
@@ -315,19 +315,19 @@ public class PlayerUI : MonoBehaviour
         }
 
         // timer
-        float raceTime = m_player.IsFinished ? m_player.FinishTime : m_raceManager.GetStartRelativeTime(Time.time);
+        float raceTime = finished ? m_player.RaceResult.FinishTime : m_raceManager.GetStartRelativeTime(Time.time);
         m_timerText.text = ConvertTime(raceTime);
 
         string lapTimes = "";
         if (path.Laps > 1)
         {
-            foreach (float lapTime in m_player.LapTimes)
+            foreach (float lapTime in m_player.RaceResult.LapTimes)
             {
                 lapTimes += ConvertTime(lapTime) + '\n';
             }
-            if (!finished && m_player.LapTimes.Count > 0)
+            if (!finished && m_player.RaceResult.LapTimes.Count > 0)
             {
-                lapTimes += ConvertTime(raceTime - m_player.LapTimes.Sum());
+                lapTimes += ConvertTime(raceTime - m_player.RaceResult.LapTimes.Sum());
             }
         }
         m_lapTimeText.text = lapTimes;

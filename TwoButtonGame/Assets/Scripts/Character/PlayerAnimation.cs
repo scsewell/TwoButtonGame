@@ -50,10 +50,6 @@ public class PlayerAnimation : MonoBehaviour
     [SerializeField] [Range(0, 1)]
     private float m_enginePitch = 0.35f;
     [SerializeField] [Range(0, 1)]
-    private float m_engineStartVol = 0.8f;
-    [SerializeField] [Range(0, 10)]
-    private float m_engineStartDuration = 1.5f;
-    [SerializeField] [Range(0, 1)]
     private float m_engineNormVol = 0.35f;
     [SerializeField] [Range(0, 1)]
     private float m_volumePower = 0.4f;
@@ -133,9 +129,7 @@ public class PlayerAnimation : MonoBehaviour
         
         m_audio.enabled = m_player.IsHuman;
         float audioSmoothing = Time.deltaTime / m_audioSmoothing;
-
-        //float leftVolTarget =  (m_left ? Mathf.Lerp(m_engineStartVol, m_engineNormVol, (Time.time - m_leftActiveTime) / m_engineStartDuration) : 0);
-        //float rightVolTarget = (m_right ? Mathf.Lerp(m_engineStartVol, m_engineNormVol, (Time.time - m_rightActiveTime) / m_engineStartDuration) : 0);
+        
         float leftVolTarget = leftEngine * m_engineNormVol;
         float rightVolTarget =  rightEngine *  m_engineNormVol;
         m_leftVolume = Mathf.Lerp(m_leftVolume, movement.IsBoosting ? 1 : leftVolTarget, audioSmoothing) / 2;

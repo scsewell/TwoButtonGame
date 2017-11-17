@@ -37,7 +37,7 @@ public class PlayerInput
         m_button2 = new InputButton(button2);
     }
 
-    public void Update(bool inMenu)
+    public void Update()
     {
         m_button1.Update();
         m_button2.Update();
@@ -73,28 +73,25 @@ public class PlayerInput
                 Mathf.Abs(button1Last.Time - button2Last.Time) <= DOUBLE_PRESS_TIME)
             {
                 m_bothDown = true;
-                if (inMenu)
-                {
-                    button1Buf.Clear();
-                    button2Buf.Clear();
-                }
+                button1Buf.Clear();
+                button2Buf.Clear();
             }
         }
 
         m_button1Press = false;
-        if (WasPressed(button1Buf, inMenu))
+        if (WasPressed(button1Buf))
         {
             m_button1Press = true;
         }
 
         m_button2Press = false;
-        if (WasPressed(button2Buf, inMenu))
+        if (WasPressed(button2Buf))
         {
             m_button2Press = true;
         }
     }
 
-    private bool WasPressed(List<BufferedInput> buf, bool inMenu)
+    private bool WasPressed(List<BufferedInput> buf)
     {
         if (buf.Count > 0)
         {
@@ -103,10 +100,7 @@ public class PlayerInput
             if ((last.Type == BufferedInput.EventType.Down && Time.unscaledTime - last.Time > DOUBLE_PRESS_TIME) ||
                 last.Type == BufferedInput.EventType.Up)
             {
-                if (inMenu)
-                {
-                    buf.Clear();
-                }
+                buf.Clear();
                 return true;
             }
         }

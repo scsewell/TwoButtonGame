@@ -11,6 +11,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a524bd016ecbe644d87d885661f97870, type: 3}
   m_Name: TestChar
   m_EditorClassIdentifier: 
+  m_id: 7047
   m_sortOrder: 999
   m_name: Test Character
   m_characterGraphics: {fileID: 1309904247820802, guid: 54bf9a0ec326a3a479a4e0cedef80d70,

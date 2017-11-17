@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
+﻿using UnityEngine;
 using Framework;
 
 public class InputManager : Singleton<InputManager>
@@ -18,11 +16,11 @@ public class InputManager : Singleton<InputManager>
         get { return m_playerInputs; }
     }
 
-    public void Update(bool inMenu)
+    public void Update()
     {
         foreach (PlayerInput input in m_playerInputs)
         {
-            input.Update(inMenu);
+            input.Update();
         }
     }
 

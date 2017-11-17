@@ -68,12 +68,17 @@ public class ReplayCamera : MonoBehaviour
         {
             virtualCam.LookAt = target;
             float distance = Mathf.Sqrt(Vector3.Distance(target.position, virtualCam.transform.position));
-            virtualCam.m_Lens.FieldOfView = ToFOV(Mathf.Lerp(m_viewSizeStart, m_viewSizeEnd, 1 - (0.5f * Mathf.Cos(Mathf.Clamp01((Time.time - m_viewSizeChangeTime) / m_viewSizeDuration) * Mathf.PI) + 0.5f)), distance);
+
+            if (!CinemachineCore.Instance.IsLive(virtualCam))
+            {
+                virtualCam.m_Lens.FieldOfView = ToFOV(Mathf.Lerp(m_viewSizeStart, m_viewSizeEnd, 1 - (0.5f * Mathf.Cos(Mathf.Clamp01((Time.time - m_viewSizeChangeTime) / m_viewSizeDuration) * Mathf.PI) + 0.5f)), distance);
+            }
         }
     }
 
     private void PickNewSettings()
     {
+        m_viewSizeStart = Random.Range(m_minViewSize, m_maxViewSize);
         m_viewSizeChangeTime = Time.time;
 
         if (Random.value < m_viewChangeChance)

@@ -11,6 +11,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a6a0c07ab74de21488d2a40c54704dc6, type: 3}
   m_Name: TestLevel
   m_EditorClassIdentifier: 
+  m_id: 886
   m_sortOrder: 999
   m_name: Test Level
   m_difficulty: 0

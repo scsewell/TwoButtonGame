@@ -3,7 +3,8 @@
 Engines spark on boost fail
 paritcle motion trail behind engine
 
-replays - speed, cameras(cinemachine, players all at once, players single), save load
+Async loading for replays
+replays - speed, cameras(cinemachine, players all at once, players single, manual zoom/free camera), save load
 Input selection - multi joystick and keyboard support
 Player n is nth joiner (But what about if 1st player leaves?)
 

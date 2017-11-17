@@ -62,5 +62,23 @@ namespace Framework.IO
             }
             return output;
         }
+
+        /*
+         * Wrapper methods to handle common types.
+         */
+         
+        public void WriteValue(bool val)
+        {
+            WriteValue(val ? (byte)1 : (byte)0);
+        }
+
+        public void WriteArray(bool[] vals)
+        {
+            WriteValue(vals.Length);
+            for (int i = 0; i < vals.Length; i++)
+            {
+                WriteValue(vals[i]);
+            }
+        }
     }
 }

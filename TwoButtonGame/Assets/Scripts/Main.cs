@@ -50,7 +50,7 @@ public class Main : ComponentSingleton<Main>
     private void Update()
     {
         InterpolationController.Instance.VisualUpdate();
-        InputManager.Instance.Update(m_raceManager == null || m_raceManager.InMenu);
+        InputManager.Instance.Update();
 
         if (m_raceManager != null)
         {
@@ -87,9 +87,7 @@ public class Main : ComponentSingleton<Main>
     public AsyncOperation LoadRace(RaceParameters raceParams)
     {
         m_raceParams = raceParams;
-
         AsyncOperation loading = SceneManager.LoadSceneAsync(raceParams.LevelConfig.SceneName);
-
         StartCoroutine(LoadLevel(loading, () => StartRace(raceParams)));
         return loading;
     }
@@ -98,6 +96,20 @@ public class Main : ComponentSingleton<Main>
     {
         m_raceManager = Instantiate(m_raceManagerPrefab);
         m_raceManager.StartRace(raceParams);
+    }
+
+    public AsyncOperation LoadRace(RaceRecording recording)
+    {
+        m_raceParams = null;
+        AsyncOperation loading = SceneManager.LoadSceneAsync(recording.RaceParams.LevelConfig.SceneName);
+        StartCoroutine(LoadLevel(loading, () => StartRace(recording)));
+        return loading;
+    }
+
+    private void StartRace(RaceRecording recording)
+    {
+        m_raceManager = Instantiate(m_raceManagerPrefab);
+        m_raceManager.StartRace(recording);
     }
 
     private IEnumerator LoadLevel(AsyncOperation loading, Action onComplete)
@@ -118,5 +130,29 @@ public class Main : ComponentSingleton<Main>
         {
             SettingManager.Instance.Apply();
         }
+    }
+
+    public PlayerConfig GetPlayerConfig(int configID)
+    {
+        foreach (PlayerConfig config in m_playerConfigs)
+        {
+            if (config.Id == configID)
+            {
+                return config;
+            }
+        }
+        return null;
+    }
+
+    public LevelConfig GetLevelConfig(int configID)
+    {
+        foreach (LevelConfig config in m_levelConfigs)
+        {
+            if (config.Id == configID)
+            {
+                return config;
+            }
+        }
+        return null;
     }
 }

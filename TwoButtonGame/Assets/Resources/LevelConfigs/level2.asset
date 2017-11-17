@@ -11,6 +11,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a6a0c07ab74de21488d2a40c54704dc6, type: 3}
   m_Name: level2
   m_EditorClassIdentifier: 
+  m_id: 4644
+  m_sortOrder: 100
   m_name: Desert Canyon
   m_difficulty: 1
   m_preview: {fileID: 21300000, guid: 5c9c12c0fce613b4aa09e3784cbccd95, type: 3}

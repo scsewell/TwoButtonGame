@@ -11,19 +11,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a524bd016ecbe644d87d885661f97870, type: 3}
   m_Name: Character1
   m_EditorClassIdentifier: 
+  m_id: 794
   m_sortOrder: 100
   m_name: Zephyr
   m_characterGraphics: {fileID: 1223342234031220, guid: f39de2b587b4f074196a7d30af5bcafa,
     type: 2}
   m_graphicsOffset: {x: 0, y: -1, z: 0.2}
   m_physicsMat: {fileID: 13400000, guid: a98a30527bb05cb4e9413f0318de73d6, type: 2}
-  m_linearDrag: 0.535
+  m_linearDrag: 0.515
   m_brakeDrag: 0.7
   m_angularDrag: 4
   m_gravityFac: 3
-  m_forwardAccel: 42
+  m_forwardAccel: 46
   m_verticalAccel: 12
-  m_turnRatio: 0.025
+  m_turnRatio: 0.03
   m_energyCap: 200
   m_energyRechargeRate: 3.55
   m_boostEnergyUseRate: 100

@@ -495,12 +495,12 @@ public class MainMenu : Menu
                 playerIndicies.Add(i);
             }
         }
-        
+
         List<PlayerConfig> playerConfigs = m_playerSelectPanels.Where(p => p.IsReady)
             .Select(p => Main.Instance.PlayerConfigs[p.SelectedConfig]).ToList();
 
         int humanCount = playerIndicies.Count;
-        int aiCount = Consts.MAX_PLAYERS - playerIndicies.Count;
+        int aiCount = 0;
 
         for (int i = 0; i < aiCount; i++)
         {
