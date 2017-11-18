@@ -1523,7 +1523,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 75.47022, y: 0}
+  m_AnchoredPosition: {x: 76.166664, y: 0}
   m_SizeDelta: {x: 0, y: 60}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!114 &426575909
@@ -1538,8 +1538,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 814ef4c37a6363e439bf833e7917e2ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_buttonPrefab: {fileID: 224193806611323308, guid: 1dabe96c095f9b2498d94cd1db379db4,
-    type: 2}
   m_description: {fileID: 1704492731}
 --- !u!114 &426575910
 MonoBehaviour:
@@ -2805,7 +2803,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 75.47022, y: 0}
+  m_AnchoredPosition: {x: 76.166664, y: 0}
   m_SizeDelta: {x: 0, y: 60}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!114 &725697890
@@ -2820,8 +2818,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 814ef4c37a6363e439bf833e7917e2ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_buttonPrefab: {fileID: 224193806611323308, guid: 1dabe96c095f9b2498d94cd1db379db4,
-    type: 2}
   m_description: {fileID: 1152983337}
 --- !u!114 &725697891
 MonoBehaviour:
@@ -3240,7 +3236,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 75.47022, y: 0}
+  m_AnchoredPosition: {x: 76.166664, y: 0}
   m_SizeDelta: {x: 0, y: 60}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!114 &857078010
@@ -3291,8 +3287,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 814ef4c37a6363e439bf833e7917e2ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_buttonPrefab: {fileID: 224193806611323308, guid: 1dabe96c095f9b2498d94cd1db379db4,
-    type: 2}
   m_description: {fileID: 1867476149}
 --- !u!1 &869442100
 GameObject:
@@ -3740,8 +3734,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 814ef4c37a6363e439bf833e7917e2ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_buttonPrefab: {fileID: 224193806611323308, guid: 1dabe96c095f9b2498d94cd1db379db4,
-    type: 2}
   m_description: {fileID: 1002222305}
 --- !u!1 &968075562
 GameObject:
@@ -4806,7 +4798,7 @@ Canvas:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1192437209}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
   m_RenderMode: 0
   m_Camera: {fileID: 0}
@@ -5237,8 +5229,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 814ef4c37a6363e439bf833e7917e2ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_buttonPrefab: {fileID: 224193806611323308, guid: 1dabe96c095f9b2498d94cd1db379db4,
-    type: 2}
   m_description: {fileID: 1572611730}
 --- !u!224 &1326150477
 RectTransform:
@@ -5258,7 +5248,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 75.47022, y: 0}
+  m_AnchoredPosition: {x: 76.166664, y: 0}
   m_SizeDelta: {x: 0, y: 60}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!114 &1326150478
@@ -5768,7 +5758,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 75.47022, y: 0}
+  m_AnchoredPosition: {x: 76.166664, y: 0}
   m_SizeDelta: {x: 0, y: 60}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!114 &1396923131
@@ -5819,8 +5809,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 814ef4c37a6363e439bf833e7917e2ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_buttonPrefab: {fileID: 224193806611323308, guid: 1dabe96c095f9b2498d94cd1db379db4,
-    type: 2}
   m_description: {fileID: 1199408219}
 --- !u!1 &1446215394
 GameObject:
@@ -7197,7 +7185,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 75.47022, y: 0}
+  m_AnchoredPosition: {x: 76.166664, y: 0}
   m_SizeDelta: {x: 0, y: 60}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!114 &1819149896
@@ -7212,8 +7200,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 814ef4c37a6363e439bf833e7917e2ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_buttonPrefab: {fileID: 224193806611323308, guid: 1dabe96c095f9b2498d94cd1db379db4,
-    type: 2}
   m_description: {fileID: 1632873310}
 --- !u!114 &1819149897
 MonoBehaviour:
@@ -8040,7 +8026,7 @@ Canvas:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 2047810115}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
   m_RenderMode: 0
   m_Camera: {fileID: 0}

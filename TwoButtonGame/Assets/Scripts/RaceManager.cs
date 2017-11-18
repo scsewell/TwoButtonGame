@@ -161,7 +161,7 @@ public class RaceManager : MonoBehaviour
 
             if (playerNum < m_raceParams.HumanCount)
             {
-                player.InitHuman(playerNum, m_raceParams.PlayerConfigs[playerNum], m_raceParams.GetPlayerInput(playerNum));
+                player.InitHuman(playerNum, m_raceParams.PlayerConfigs[playerNum], m_raceParams.Inputs[playerNum]);
 
                 CameraManager camera = Instantiate(m_playerCameraPrefab).Init(player, m_raceParams.HumanCount);
                 camera.MainCam.enabled = false;

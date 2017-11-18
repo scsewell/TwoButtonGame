@@ -29,8 +29,8 @@ public class RaceRecording
     private List<float>[] m_angularVelocities;
 
     private static readonly int FRAMES_PER_INPUT = 1;
-    private List<float>[] m_h;
-    private List<float>[] m_v;
+    private List<sbyte>[] m_h;
+    private List<sbyte>[] m_v;
     private List<int>[] m_toggleFramesBoost;
 
     private MovementInputs[] m_lastFrameInputs;
@@ -62,8 +62,8 @@ public class RaceRecording
             m_velocities[i]         = reader.ReadArray<Vector3>().ToList();
             m_rotations[i]          = reader.ReadArray<float>().ToList();
             m_angularVelocities[i]  = reader.ReadArray<float>().ToList();
-            m_h[i]                  = reader.ReadArray<float>().ToList();
-            m_v[i]                  = reader.ReadArray<float>().ToList();
+            m_h[i]                  = reader.ReadArray<sbyte>().ToList();
+            m_v[i]                  = reader.ReadArray<sbyte>().ToList();
             m_toggleFramesBoost[i]  = reader.ReadArray<int>().ToList();
         }
     }
@@ -76,7 +76,7 @@ public class RaceRecording
         int aiCount         = reader.ReadInt();
         List<PlayerConfig> playerConfigs = reader.ReadArray<int>().Select(id => Main.Instance.GetPlayerConfig(id)).ToList();
 
-        return new RaceParameters(humanCount, new List<int>(), aiCount, playerConfigs, level, laps);
+        return new RaceParameters(level, laps, humanCount, aiCount, playerConfigs, new List<PlayerBaseInput>(), new List<int>());
     }
 
     public static RaceResult[] ParseRaceResults(BinaryReader reader, int playerCount)
@@ -138,8 +138,8 @@ public class RaceRecording
         m_velocities            = new List<Vector3>[PlayerCount];
         m_rotations             = new List<float>[PlayerCount];
         m_angularVelocities     = new List<float>[PlayerCount];
-        m_h                     = new List<float>[PlayerCount];
-        m_v                     = new List<float>[PlayerCount];
+        m_h                     = new List<sbyte>[PlayerCount];
+        m_v                     = new List<sbyte>[PlayerCount];
         m_toggleFramesBoost     = new List<int>[PlayerCount];
 
         m_lastFrameInputs       = new MovementInputs[PlayerCount];
@@ -151,8 +151,8 @@ public class RaceRecording
             m_velocities[i]         = new List<Vector3>();
             m_rotations[i]          = new List<float>();
             m_angularVelocities[i]  = new List<float>();
-            m_h[i]                  = new List<float>();
-            m_v[i]                  = new List<float>();
+            m_h[i]                  = new List<sbyte>();
+            m_v[i]                  = new List<sbyte>();
             m_toggleFramesBoost[i]  = new List<int>();
 
             m_nextInputIndices[i]   = new int[1];
@@ -185,8 +185,8 @@ public class RaceRecording
 
                 if (fixedFramesSoFar % FRAMES_PER_INPUT == 0)
                 {
-                    m_h[i].Add(player.Inputs.h);
-                    m_v[i].Add(player.Inputs.v);
+                    m_h[i].Add(PackFloat(player.Inputs.h));
+                    m_v[i].Add(PackFloat(player.Inputs.v));
                     if (m_lastFrameInputs[i].boost != player.Inputs.boost)
                     {
                         m_lastFrameInputs[i].boost ^= true;
@@ -233,8 +233,8 @@ public class RaceRecording
             
             if (inputIndex < m_h[i].Count)
             {
-                m_lastFrameInputs[i].h = m_h[i][inputIndex];
-                m_lastFrameInputs[i].v = m_v[i][inputIndex];
+                m_lastFrameInputs[i].h = UnpackFloat(m_h[i][inputIndex]);
+                m_lastFrameInputs[i].v = UnpackFloat(m_v[i][inputIndex]);
                 if ((m_nextInputIndices[i][0] < m_toggleFramesBoost[i].Count) && (m_toggleFramesBoost[i][m_nextInputIndices[i][0]] == fixedFrameToDisplay))
                 {
                     m_nextInputIndices[i][0]++;
@@ -250,5 +250,15 @@ public class RaceRecording
 
             player.ProcessReplaying(true, isAfterStart, inputs);
         }
+    }
+
+    private sbyte PackFloat(float val)
+    {
+        return (sbyte)Mathf.Clamp(Mathf.RoundToInt(val * sbyte.MaxValue), sbyte.MinValue, sbyte.MaxValue);
+    }
+
+    public float UnpackFloat(sbyte val)
+    {
+        return (float)val / sbyte.MaxValue;
     }
 }

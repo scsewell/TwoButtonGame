@@ -1,12 +1,12 @@
 ### To Do ###
-
-Engines spark on boost fail
-paritcle motion trail behind engine
-
+pauser controls pause menu
 Async loading for replays
 replays - speed, cameras(cinemachine, players all at once, players single, manual zoom/free camera), save load
 Input selection - multi joystick and keyboard support
 Player n is nth joiner (But what about if 1st player leaves?)
+
+Engines spark on boost fail
+paritcle motion trail behind engine
 
 vairable replay speed
 Collision/sliding sound

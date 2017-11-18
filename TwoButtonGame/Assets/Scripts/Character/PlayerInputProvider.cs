@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class PlayerInputProvider : IInputProvider
 {
-    private PlayerInput m_playerInput;
+    private PlayerBaseInput m_playerInput;
     private MovementInputs m_movementInputs;
 
-    public PlayerInputProvider(PlayerInput input)
+    public PlayerInputProvider(PlayerBaseInput input)
     {
         m_playerInput = input;
     }
@@ -23,13 +20,10 @@ public class PlayerInputProvider : IInputProvider
 
     public void FixedUpdateProvider()
     {
-        float hAxis = Input.GetAxis("Horizontal");
-        float vAxis = Input.GetAxis("Vertical");
-        
         m_movementInputs = new MovementInputs();
-        m_movementInputs.h = hAxis + (Input.GetKey(KeyCode.A) ? -1 : 0) + (Input.GetKey(KeyCode.D) ? 1 : 0);
-        m_movementInputs.v = vAxis + (Input.GetKey(KeyCode.A) && Input.GetKey(KeyCode.D) ? 1 : 0) + (Input.GetKey(KeyCode.S) ? -1 : 0);
-        m_movementInputs.boost  = Input.GetKey(KeyCode.Joystick1Button0) || Input.GetKey(KeyCode.W);
+        m_movementInputs.h = m_playerInput.H;
+        m_movementInputs.v = m_playerInput.V;
+        m_movementInputs.boost = m_playerInput.Boost;
     }
     
     public MovementInputs GetInput()

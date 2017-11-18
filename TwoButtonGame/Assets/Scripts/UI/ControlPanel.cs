@@ -1,45 +1,35 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class ControlPanel : MonoBehaviour
 {
     [SerializeField]
-    private RectTransform m_buttonPrefab;
-    [SerializeField]
     private Text m_description;
 
-    private List<string> m_buttonNames = new List<string>();
-    //private List<RectTransform> m_buttons = new List<RectTransform>();
-
-    private RectTransform m_key;
-
-    private void Awake()
-    {
-        m_key = Instantiate(m_buttonPrefab, transform, false);
-    }
+    private List<Sprite> m_buttonSprites = new List<Sprite>();
+    private List<Image> m_buttons = new List<Image>();
 
     public void SetActive(bool active)
     {
         gameObject.SetActive(active);
     }
 
-    public void UpdateUI(string descrption, string buttonName)
+    public void UpdateUI(string descrption, Sprite sprite)
     {
-        UpdateUI(descrption, new List<string>() { buttonName });
+        UpdateUI(descrption, new List<Sprite>() { sprite });
     }
 
-    public void UpdateUI(string descrption, List<string> buttonNames)
+    public void UpdateUI(string descrption, List<Sprite> sprites)
     {
         m_description.text = descrption;
 
-        bool needsRefresh = m_buttonNames.Count != buttonNames.Count;
+        bool needsRefresh = m_buttonSprites.Count != sprites.Count;
         if (!needsRefresh)
         {
-            for (int i = 0; i < buttonNames.Count; i++)
+            for (int i = 0; i < sprites.Count; i++)
             {
-                if (!m_buttonNames.Contains(buttonNames[i]))
+                if (!m_buttonSprites.Contains(sprites[i]))
                 {
                     needsRefresh = true;
                 }
@@ -48,45 +38,52 @@ public class ControlPanel : MonoBehaviour
 
         if (needsRefresh)
         {
-            m_buttonNames = new List<string>(buttonNames);
-
-            //*
-            string str = "";
-            for (int i = 0; i < m_buttonNames.Count; i++)
+            m_buttonSprites = new List<Sprite>(sprites);
+            
+            for (int i = 0; i < Mathf.Max(m_buttonSprites.Count, m_buttons.Count); i++)
             {
-                str += m_buttonNames[i];
-                if (i != m_buttonNames.Count - 1)
-                {
-                    str += " + ";
-                }
-            }
-            m_key.GetComponentInChildren<Text>().text = str;
-            /*/
-            for (int i = 0; i < Mathf.Max(m_buttonNames.Count, m_buttons.Count); i++)
-            {
-                RectTransform button;
+                Image image;
 
-                if (i < m_buttonNames.Count)
+                if (i < m_buttonSprites.Count)
                 {
+                    LayoutElement layout;
+
                     if (i >= m_buttons.Count)
                     {
-                        button = Instantiate(m_buttonPrefab, transform, false);
-                        m_buttons.Add(button);
+                        GameObject go = new GameObject();
+
+                        RectTransform rt = go.AddComponent<RectTransform>();
+                        rt.SetParent(transform);
+                        rt.localScale = Vector3.one;
+                        rt.pivot = 0.5f * Vector3.one;
+
+                        go.AddComponent<CanvasRenderer>();
+
+                        image = go.AddComponent<Image>();
+                        image.preserveAspect = true;
+
+                        layout = go.AddComponent<LayoutElement>();
+
+                        m_buttons.Add(image);
                     }
                     else
                     {
-                        button = m_buttons[i];
-                        button.gameObject.SetActive(true);
+                        image = m_buttons[i];
+                        image.gameObject.SetActive(true);
+                        layout = image.GetComponent<LayoutElement>();
                     }
-                    button.GetComponentInChildren<Text>().text = m_buttonNames[i];
+
+                    Sprite sprite = m_buttonSprites[i];
+                    image.sprite = sprite;
+                    layout.preferredWidth = 60;
+                    layout.preferredHeight = sprite.rect.width * (layout.preferredWidth / sprite.rect.height);
                 }
                 else
                 {
-                    button = m_buttons[i];
-                    button.gameObject.SetActive(false);
+                    image = m_buttons[i];
+                    image.gameObject.SetActive(false);
                 }
             }
-            //*/
         }
     }
 }

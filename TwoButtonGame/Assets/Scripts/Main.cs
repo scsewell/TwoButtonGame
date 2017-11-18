@@ -49,8 +49,8 @@ public class Main : ComponentSingleton<Main>
 
     private void Update()
     {
-        InterpolationController.Instance.VisualUpdate();
         InputManager.Instance.Update();
+        InterpolationController.Instance.VisualUpdate();
 
         if (m_raceManager != null)
         {

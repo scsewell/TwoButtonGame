@@ -108,7 +108,7 @@ public class Player : MonoBehaviour
         m_raceResult = new RaceResult();
     }
 
-    public Player InitHuman(int playerNum, PlayerConfig config, PlayerInput input)
+    public Player InitHuman(int playerNum, PlayerConfig config, PlayerBaseInput input)
     {
         m_isHuman = true;
         m_inputProvider = new PlayerInputProvider(input);

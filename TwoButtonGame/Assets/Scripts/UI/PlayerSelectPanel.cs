@@ -58,8 +58,8 @@ public class PlayerSelectPanel : MonoBehaviour
     private int m_selectedConfig;
     public int SelectedConfig { get { return m_selectedConfig; } }
 
-    private PlayerInput m_input;
-    public PlayerInput Input { get { return m_input; } }
+    private PlayerBaseInput m_input;
+    public PlayerBaseInput Input { get { return m_input; } }
 
     public bool IsJoined { get { return m_state != State.Join; } }
     public bool IsReady { get { return m_state == State.Ready; } }
@@ -128,7 +128,7 @@ public class PlayerSelectPanel : MonoBehaviour
     public bool UpdatePanel(int playerNum, Menu menu)
     {
         m_continue = false;
-        if (m_input.Button1Pressed)
+        if (m_input.UI_Accept)
         {
             switch (m_state)
             {
@@ -138,7 +138,7 @@ public class PlayerSelectPanel : MonoBehaviour
             }
         }
 
-        if (m_input.Button2Pressed)
+        if (m_input.UI_Right)
         {
             switch (m_state)
             {
@@ -151,7 +151,7 @@ public class PlayerSelectPanel : MonoBehaviour
         }
 
         bool back = false;
-        if (m_input.BothDown)
+        if (m_input.UI_Cancel)
         {
             switch (m_state)
             {
@@ -183,27 +183,27 @@ public class PlayerSelectPanel : MonoBehaviour
 
         if (m_input != null)
         {
-            m_joinControls.UpdateUI("Join", m_input.Button1.Name);
+            m_joinControls.UpdateUI("Join", m_input.SpriteAccept);
 
             switch (m_state)
             {
                 case State.Join:
                     m_controls1.SetActive(true);
-                    m_controls1.UpdateUI("Back", m_input.ButtonNames);
+                    m_controls1.UpdateUI("Back", m_input.SpriteCancel);
                     m_controls2.SetActive(false);
                     m_controls3.SetActive(false);
                     break;
                 case State.Select:
                     m_controls1.SetActive(true);
-                    m_controls1.UpdateUI("Leave", m_input.ButtonNames);
+                    m_controls1.UpdateUI("Leave", m_input.SpriteCancel);
                     m_controls2.SetActive(true);
-                    m_controls2.UpdateUI("Next", m_input.Button2.Name);
+                    m_controls2.UpdateUI("Next", m_input.SpriteLeftRight);
                     m_controls3.SetActive(true);
-                    m_controls3.UpdateUI("Select", m_input.Button1.Name);
+                    m_controls3.UpdateUI("Select", m_input.SpriteAccept);
                     break;
                 case State.Ready:
                     m_controls1.SetActive(true);
-                    m_controls1.UpdateUI("Cancel", m_input.ButtonNames);
+                    m_controls1.UpdateUI("Cancel", m_input.SpriteCancel);
                     m_controls2.SetActive(false);
                     m_controls3.SetActive(false);
                     break;

@@ -158,20 +158,20 @@ public class InRaceMenu : MonoBehaviour
             if (!m_confirmAction)
             {
                 m_title.text = "Paused";
-                m_menuControls1.UpdateUI("Resume", m_resumeKeys.Select(k => InputManager.GetName(k)).ToList());
-                m_menuControls2.UpdateUI("End Race", m_quitKeys.Select(k => InputManager.GetName(k)).ToList());
+                //m_menuControls1.UpdateUI("Resume", m_resumeKeys.Select(k => InputManager.GetName(k)).ToList());
+                //m_menuControls2.UpdateUI("End Race", m_quitKeys.Select(k => InputManager.GetName(k)).ToList());
             }
             else
             {
                 m_title.text = "Quit?";
-                m_menuControls1.UpdateUI("Cancel", m_cancelKeys.Select(k => InputManager.GetName(k)).ToList());
-                m_menuControls2.UpdateUI("OK", m_confirmKeys.Select(k => InputManager.GetName(k)).ToList());
+                //m_menuControls1.UpdateUI("Cancel", m_cancelKeys.Select(k => InputManager.GetName(k)).ToList());
+                //m_menuControls2.UpdateUI("OK", m_confirmKeys.Select(k => InputManager.GetName(k)).ToList());
             }
         }
         else if (isFinished)
         {
             m_title.text = "Race Over";
-            m_menuControls2.UpdateUI("End Race", m_quitKeys.Select(k => InputManager.GetName(k)).ToList());
+            //m_menuControls2.UpdateUI("End Race", m_quitKeys.Select(k => InputManager.GetName(k)).ToList());
         }
     }
 

@@ -307,7 +307,7 @@ public class MainMenu : Menu
         {
             PlayerSelectPanel firstPlayer = m_playerSelectPanels.First(p => p.IsReady);
 
-            m_continueControls.UpdateUI("Continue", firstPlayer.Input.Button1.Name);
+            m_continueControls.UpdateUI("Continue", firstPlayer.Input.SpriteAccept);
 
             if (firstPlayer.Continue)
             {
@@ -325,20 +325,20 @@ public class MainMenu : Menu
     private void UpdateLevelSelect()
     {
         List<PlayerSelectPanel> readyPlayers = m_playerSelectPanels.Where(p => p.IsReady).ToList();
-        PlayerInput input = readyPlayers.First().Input;
+        PlayerBaseInput input = readyPlayers.First().Input;
 
-        if (input.Button1Pressed)
+        if (input.UI_Accept)
         {
             SetMenu(Menu.LapChoose);
         }
-        else if (input.Button2Pressed)
+        else if (input.UI_Right)
         {
             m_selectedLevel = (m_selectedLevel += 1) % Main.Instance.LevelConfigs.Length;
             m_lapCount = m_defaultLapCount;
             m_levelHighlight.color = new Color(1, 1, 1, 0.5f);
             PlaySelectSound();
         }
-        else if (input.BothDown)
+        else if (input.UI_Cancel)
         {
             SetMenu(Menu.PlayerSelect, true);
         }
@@ -356,10 +356,10 @@ public class MainMenu : Menu
 
         if (m_playerSelectPanels.Any(p => p.IsReady))
         {
-            PlayerInput input = m_playerSelectPanels.Where(p => p.IsReady).First().Input;
-            m_levelControls1.UpdateUI("Select", input.Button1.Name);
-            m_levelControls2.UpdateUI("Next", input.Button2.Name);
-            m_levelControls3.UpdateUI("Back", input.ButtonNames);
+            PlayerBaseInput input = m_playerSelectPanels.Where(p => p.IsReady).First().Input;
+            m_levelControls1.UpdateUI("Select", input.SpriteAccept);
+            m_levelControls2.UpdateUI("Next", input.SpriteLeftRight);
+            m_levelControls3.UpdateUI("Back", input.SpriteCancel);
         }
     }
 
@@ -371,18 +371,18 @@ public class MainMenu : Menu
     private void UpdateLapChoose()
     {
         List<PlayerSelectPanel> readyPlayers = m_playerSelectPanels.Where(p => p.IsReady).ToList();
-        PlayerInput input = readyPlayers.First().Input;
+        PlayerBaseInput input = readyPlayers.First().Input;
 
-        if (input.Button1Pressed)
+        if (input.UI_Accept)
         {
             LaunchRace();
         }
-        else if (input.Button2Pressed)
+        else if (input.UI_Right)
         {
             m_lapCount = Mathf.Max((m_lapCount += 1) % (m_maxLapCount + 1), 1);
             PlaySelectSound();
         }
-        else if (input.BothDown)
+        else if (input.UI_Cancel)
         {
             SetMenu(Menu.LevelSelect, true);
         }
@@ -396,10 +396,10 @@ public class MainMenu : Menu
         
         if (m_playerSelectPanels.Any(p => p.IsReady))
         {
-            PlayerInput input = m_playerSelectPanels.Where(p => p.IsReady).First().Input;
-            m_lapControls1.UpdateUI("Race", input.Button1.Name);
-            m_lapControls2.UpdateUI("Change", input.Button2.Name);
-            m_lapControls3.UpdateUI("Back", input.ButtonNames);
+            PlayerBaseInput input = m_playerSelectPanels.Where(p => p.IsReady).First().Input;
+            m_lapControls1.UpdateUI("Race", input.SpriteAccept);
+            m_lapControls2.UpdateUI("Change", input.SpriteLeftRight);
+            m_lapControls3.UpdateUI("Back", input.SpriteCancel);
         }
     }
 
@@ -486,6 +486,20 @@ public class MainMenu : Menu
     private void LaunchRace()
     {
         LevelConfig levelConfig = Main.Instance.LevelConfigs[m_selectedLevel];
+        
+        List<PlayerSelectPanel> readyPlayers = m_playerSelectPanels.Where(p => p.IsReady).ToList();
+
+        int humanCount = readyPlayers.Count;
+        int aiCount = 0;
+
+        List<PlayerConfig> playerConfigs = readyPlayers.Select(p => Main.Instance.PlayerConfigs[p.SelectedConfig]).ToList();
+
+        for (int i = 0; i < aiCount; i++)
+        {
+            playerConfigs.Add(Utils.PickRandom(Main.Instance.PlayerConfigs));
+        }
+
+        List<PlayerBaseInput> inputs = readyPlayers.Select(p => p.Input).ToList();
 
         List<int> playerIndicies = new List<int>();
         for (int i = 0; i < 4; i++)
@@ -496,18 +510,7 @@ public class MainMenu : Menu
             }
         }
 
-        List<PlayerConfig> playerConfigs = m_playerSelectPanels.Where(p => p.IsReady)
-            .Select(p => Main.Instance.PlayerConfigs[p.SelectedConfig]).ToList();
-
-        int humanCount = playerIndicies.Count;
-        int aiCount = 0;
-
-        for (int i = 0; i < aiCount; i++)
-        {
-            playerConfigs.Add(Utils.PickRandom(Main.Instance.PlayerConfigs));
-        }
-
-        RaceParameters raceParams = new RaceParameters(humanCount, playerIndicies, aiCount, playerConfigs, levelConfig, m_lapCount);
+        RaceParameters raceParams = new RaceParameters(levelConfig, m_lapCount, humanCount, aiCount, playerConfigs, inputs, playerIndicies);
 
         m_loading = Main.Instance.LoadRace(raceParams);
         m_loadFadeTime = Time.unscaledTime;
