@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -23,6 +24,8 @@ public class ControlPanel : MonoBehaviour
     public void UpdateUI(string descrption, List<Sprite> sprites)
     {
         m_description.text = descrption;
+
+        sprites = sprites.Distinct().ToList();
 
         bool needsRefresh = m_buttonSprites.Count != sprites.Count;
         if (!needsRefresh)
@@ -50,19 +53,16 @@ public class ControlPanel : MonoBehaviour
 
                     if (i >= m_buttons.Count)
                     {
-                        GameObject go = new GameObject();
-
-                        RectTransform rt = go.AddComponent<RectTransform>();
-                        rt.SetParent(transform);
-                        rt.localScale = Vector3.one;
-                        rt.pivot = 0.5f * Vector3.one;
-
+                        GameObject go = CreateRT(transform);
                         go.AddComponent<CanvasRenderer>();
 
                         image = go.AddComponent<Image>();
                         image.preserveAspect = true;
 
                         layout = go.AddComponent<LayoutElement>();
+
+                        //LayoutElement spacer = CreateRT(transform).AddComponent<LayoutElement>();
+                        //spacer.minWidth = 5;
 
                         m_buttons.Add(image);
                     }
@@ -75,8 +75,8 @@ public class ControlPanel : MonoBehaviour
 
                     Sprite sprite = m_buttonSprites[i];
                     image.sprite = sprite;
-                    layout.preferredWidth = 60;
-                    layout.preferredHeight = sprite.rect.width * (layout.preferredWidth / sprite.rect.height);
+                    layout.preferredHeight = 50;
+                    layout.preferredWidth = sprite.rect.width * (layout.preferredHeight / sprite.rect.height);
                 }
                 else
                 {
@@ -85,5 +85,15 @@ public class ControlPanel : MonoBehaviour
                 }
             }
         }
+    }
+
+    private GameObject CreateRT(Transform parent)
+    {
+        GameObject go = new GameObject();
+        RectTransform rt = go.AddComponent<RectTransform>();
+        rt.SetParent(parent);
+        rt.localScale = Vector3.one;
+        rt.pivot = 0.5f * Vector3.one;
+        return go;
     }
 }

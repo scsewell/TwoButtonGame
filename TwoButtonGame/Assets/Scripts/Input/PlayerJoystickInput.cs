@@ -37,7 +37,7 @@ public class PlayerJoystickInput : PlayerBaseInput
     private KeyCode m_menu;
 
     public override float UI_H { get { return H + Input.GetAxis(m_DX); } }
-    public override float UI_V { get { return V - Input.GetAxis(m_DY); } }
+    public override float UI_V { get { return V + Input.GetAxis(m_DY); } }
 
     public override bool UI_Accept
     {

@@ -9,11 +9,11 @@ public class SoundListener : MonoBehaviour,
 {
     [SerializeField] private AudioClip m_submitOverrideClip;
 
-    private Menu m_menu;
+    private MenuBase m_menu;
 
 	private void Awake()
     {
-        m_menu = GetComponentInParent<Menu>();
+        m_menu = GetComponentInParent<MenuBase>();
     }
 
     public void OnPointerEnter(PointerEventData e)

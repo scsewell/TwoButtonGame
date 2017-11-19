@@ -9,13 +9,13 @@ public class SettingPanel : MonoBehaviour, IMoveHandler
     [SerializeField] private Text m_label;
     [SerializeField] private Text m_valueText;
 
-    private Menu m_menu;
+    private MenuBase m_menu;
     private Func<ISetting> m_getSetting;
     private string[] m_options;
 
     private void Awake()
     {
-        m_menu = GetComponentInParent<Menu>();
+        m_menu = GetComponentInParent<MenuBase>();
     }
 
     public SettingPanel Init(Func<ISetting> getSetting)

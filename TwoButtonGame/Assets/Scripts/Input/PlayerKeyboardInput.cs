@@ -32,11 +32,11 @@ public class PlayerKeyboardInput : PlayerBaseInput
     }
     public override float UI_V
     {
-        get { return KeyAsAxis(m_vpos) - KeyAsAxis(m_vneg); }
+        get { return KeyAsAxis(m_vneg) - KeyAsAxis(m_vpos); }
     }
     public override bool UI_Accept
     {
-        get { return Input.GetKeyDown(m_boost); }
+        get { return Input.GetKeyDown(m_accept); }
     }
     public override bool UI_Cancel
     {
@@ -85,6 +85,6 @@ public class PlayerKeyboardInput : PlayerBaseInput
 
     private Sprite LoadSprite(KeyCode key)
     {
-        return Resources.Load<Sprite>(key.ToString());
+        return Resources.Load<Sprite>("Keyboard_" + key.ToString());
     }
 }

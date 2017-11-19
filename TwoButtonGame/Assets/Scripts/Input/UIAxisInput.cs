@@ -3,8 +3,6 @@
 public class UIAxisInput
 {
     private static readonly float THRESH = 0.75f;
-    private static readonly float REPEAT_WAIT = 0.4f;
-    private static readonly float REPEAT_DELAY = 0.1f;
 
     private bool m_isNegative;
     private bool m_repeat;
@@ -31,7 +29,7 @@ public class UIAxisInput
             if (m_waitTime <= 0)
             {
                 m_pressed = true;
-                m_waitTime = m_repeat ? REPEAT_DELAY : REPEAT_WAIT;
+                m_waitTime = m_repeat ? CustomInputModule.REPEAT_DELAY : CustomInputModule.REPEAT_WAIT;
                 m_repeat = true;
             }
             else

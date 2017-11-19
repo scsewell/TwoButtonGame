@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class Menu : MonoBehaviour
+public class MenuBase : MonoBehaviour
 {
     [Header("Audio")]
     [SerializeField] private AudioClip m_selectSound;
