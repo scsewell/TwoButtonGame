@@ -12,7 +12,7 @@ namespace BoostBlasters.MainMenus
 
         public override void InitMenu(RaceParameters lastRace)
         {
-            m_creditsBackButton.onClick.AddListener(() => MainMenu.SetMenu(Menu.Root));
+            m_creditsBackButton.onClick.AddListener(() => MainMenu.SetMenu(Menu.Root, true));
         }
     }
 }

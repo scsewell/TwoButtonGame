@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-public class RecordingInfo
+public class ReplayInfo
 {
     private FileInfo m_file;
     public FileInfo File { get { return m_file; } }
@@ -10,8 +10,13 @@ public class RecordingInfo
 
     private RaceResult[] m_results;
     public RaceResult[] RaceResults { get { return m_results; } }
+    
+    public string Name
+    {
+        get { return m_file.Name.Substring(0, m_file.Name.IndexOf('.')); }
+    }
 
-    public RecordingInfo(FileInfo file, RaceParameters raceParams, RaceResult[] results)
+    public ReplayInfo(FileInfo file, RaceParameters raceParams, RaceResult[] results)
     {
         m_file = file;
         m_raceParams = raceParams;

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using Framework;
 
 public class AudioManager : ComponentSingleton<AudioManager>
@@ -37,6 +38,8 @@ public class AudioManager : ComponentSingleton<AudioManager>
     private MusicParams m_musicParams;
     private double m_lastLoopTime;
 
+    private Dictionary<AudioClip, float> m_lastPlayTimes;
+
     protected override void Awake()
     {
         base.Awake();
@@ -56,6 +59,8 @@ public class AudioManager : ComponentSingleton<AudioManager>
             m_musicSources[i] = gameObject.AddComponent<AudioSource>();
             m_musicSources[i].playOnAwake = false;
         }
+
+        m_lastPlayTimes = new Dictionary<AudioClip, float>();
     }
 
     private void Update()
@@ -86,13 +91,24 @@ public class AudioManager : ComponentSingleton<AudioManager>
     {
         if (clip != null && volume > 0)
         {
-            if (ignorePause)
+            float lastPlayTime;
+            if (!m_lastPlayTimes.TryGetValue(clip, out lastPlayTime))
             {
-                m_noPauseAudio.PlayOneShot(clip, volume);
+                lastPlayTime = -1;
             }
-            else
+
+            if (lastPlayTime != Time.time)
             {
-                m_audio.PlayOneShot(clip, volume);
+                m_lastPlayTimes[clip] = Time.time;
+
+                if (ignorePause)
+                {
+                    m_noPauseAudio.PlayOneShot(clip, volume);
+                }
+                else
+                {
+                    m_audio.PlayOneShot(clip, volume);
+                }
             }
         }
     }

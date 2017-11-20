@@ -59,11 +59,11 @@ struct v2f
 	UNITY_VERTEX_INPUT_INSTANCE_ID
 };
 
-UNITY_INSTANCING_CBUFFER_START(DecalProps)
-UNITY_DEFINE_INSTANCED_PROP(float, _MaskMultiplier)
-UNITY_DEFINE_INSTANCED_PROP(float, _Emission)
-UNITY_DEFINE_INSTANCED_PROP(float, _LimitTo)
-UNITY_INSTANCING_CBUFFER_END
+UNITY_INSTANCING_BUFFER_START(DecalProps)
+    UNITY_DEFINE_INSTANCED_PROP(float, _MaskMultiplier)
+    UNITY_DEFINE_INSTANCED_PROP(float, _Emission)
+    UNITY_DEFINE_INSTANCED_PROP(float, _LimitTo)
+UNITY_INSTANCING_BUFFER_END(DecalProps)
 
 v2f vert(appdata v)
 {
@@ -79,21 +79,21 @@ v2f vert(appdata v)
 	return o;
 }
 
-#define DEFERRED_FRAG_HEADER															\
-UNITY_SETUP_INSTANCE_ID (i);															\
-i.ray = i.ray * (_ProjectionParams.z / i.ray.z);										\
-float2 uv = i.uv.xy / i.uv.w;															\
-float limitTo = UNITY_ACCESS_INSTANCED_PROP(_LimitTo);									\
-if (!isnan(limitTo))																	\
-	clip(abs(limitTo - tex2D(_GameObjectIDTex, uv).r) > 0.1f ? -1 : 1);					\
-float depth = SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, uv);							\
-depth = Linear01Depth(depth);															\
-float4 vpos = float4(i.ray * depth,1);													\
-float3 wpos = mul(unity_CameraToWorld, vpos).xyz;										\
-float3 clipPos = mul(unity_WorldToObject, float4(wpos, 1)).xyz;							\
-clip(0.5 - abs(clipPos.xyz));															\
-float2 texUV = TRANSFORM_TEX((clipPos.xz + 0.5), _MainTex);								\
-float mask = tex2D(_MaskTex, texUV).r * UNITY_ACCESS_INSTANCED_PROP(_MaskMultiplier);	\
+#define DEFERRED_FRAG_HEADER															            \
+UNITY_SETUP_INSTANCE_ID (i);															            \
+i.ray = i.ray * (_ProjectionParams.z / i.ray.z);										            \
+float2 uv = i.uv.xy / i.uv.w;															            \
+float limitTo = UNITY_ACCESS_INSTANCED_PROP(DecalProps, _LimitTo);                                  \
+if (!isnan(limitTo))																	            \
+	clip(abs(limitTo - tex2D(_GameObjectIDTex, uv).r) > 0.1f ? -1 : 1);					            \
+float depth = SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, uv);							            \
+depth = Linear01Depth(depth);															            \
+float4 vpos = float4(i.ray * depth,1);													            \
+float3 wpos = mul(unity_CameraToWorld, vpos).xyz;										            \
+float3 clipPos = mul(unity_WorldToObject, float4(wpos, 1)).xyz;							            \
+clip(0.5 - abs(clipPos.xyz));															            \
+float2 texUV = TRANSFORM_TEX((clipPos.xz + 0.5), _MainTex);								            \
+float mask = tex2D(_MaskTex, texUV).r * UNITY_ACCESS_INSTANCED_PROP(DecalProps, _MaskMultiplier);	\
 clip(mask - 0.0005f);
 
 #define FACING_CLIP																		\

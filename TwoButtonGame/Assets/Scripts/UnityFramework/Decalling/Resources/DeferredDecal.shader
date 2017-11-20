@@ -53,18 +53,21 @@
 			CGPROGRAM
 			#pragma vertex vert
 			#pragma fragment frag
+            #pragma target 4.0
+
 			#pragma multi_compile __ EMISSION_ON
 			#pragma multi_compile __ UNITY_HDR_ON
 			#pragma multi_compile __ SMOOTH_EDGE
 			#pragma multi_compile_instancing
-			#include "DecallingCommon.cginc"
+
+			#include "Decalling.cginc"
 
 			void frag(v2f i, out float4 outAlbedo : SV_Target0, out float4 outEmission : SV_Target1)
 			{
 				DEFERRED_FRAG_HEADER
 
 				float3 gbuffer_normal = tex2D(_CameraGBufferTexture2, uv) * 2.0f - 1.0f;
-
+               
 #if SMOOTH_EDGE
 				FACING_CLIP_SMOOTH
 #else
@@ -80,7 +83,7 @@
 
 #if EMISSION_ON
 				float4 emission = tex2D(_EmissionTex, texUV) * _EmissionColor;
-				color.rgb += emission.rgb * emission.a * UNITY_ACCESS_INSTANCED_PROP(_Emission_arr, _Emission);
+				color.rgb += emission.rgb * emission.a * UNITY_ACCESS_INSTANCED_PROP(DecalProps, _Emission);
 #endif
 
 #ifndef UNITY_HDR_ON
@@ -101,11 +104,12 @@
 			CGPROGRAM
 			#pragma vertex vert
 			#pragma fragment frag
+            #pragma target 3.0
 			#pragma multi_compile __ NORMALS_ON MASKED_NORMALS_ON
 			#pragma multi_compile __ SPEC_SMOOTH_ON
 			#pragma multi_compile __ SMOOTH_EDGE
 			#pragma multi_compile_instancing
-			#include "DecallingCommon.cginc"
+			#include "Decalling.cginc"
 
 			void frag(v2f i, out float4 outSpecSmoothness : SV_Target0, out float4 outNormal : SV_Target1)
 			{
@@ -150,9 +154,9 @@
 #if MASKED_NORMALS_ON
 				float normalMask = mask;
 #elif SMOOTH_EDGE
-				float normalMask = UNITY_ACCESS_INSTANCED_PROP(_MaskMultiplier_arr, _MaskMultiplier) * facing;
+				float normalMask = UNITY_ACCESS_INSTANCED_PROP(DecalProps, _MaskMultiplier) * facing;
 #else
-				float normalMask = UNITY_ACCESS_INSTANCED_PROP(_MaskMultiplier_arr, _MaskMultiplier);
+				float normalMask = UNITY_ACCESS_INSTANCED_PROP(DecalProps, _MaskMultiplier);
 #endif
 				normal = (1.0f - normalMask) * gbuffer_normal + normalMask * normal;
 				normal = normalize(normal);

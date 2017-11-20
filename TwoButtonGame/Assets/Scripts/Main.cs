@@ -22,19 +22,36 @@ public class Main : ComponentSingleton<Main>
     private LevelConfig[] m_levelConfigs;
     public LevelConfig[] LevelConfigs { get { return m_levelConfigs; } }
 
+    private bool m_hasLoadedScene = false;
+    public bool HasLoadedScene { get { return m_hasLoadedScene; } }
+
+    private RaceType m_lastRaceType;
+    public RaceType LastRaceType { get { return m_lastRaceType; } }
+
+    public enum RaceType
+    {
+        Race,
+        Replay,
+        None,
+    }
+
     protected override void Awake()
     {
         base.Awake();
         DontDestroyOnLoad(gameObject);
 
-        gameObject.AddComponent<AudioListener>();
-
         m_raceManagerPrefab = Resources.Load<RaceManager>("RaceManager");
         m_playerConfigs = Resources.LoadAll<PlayerConfig>("PlayerConfigs/").OrderBy(c => c.SortOrder).ToArray();
         m_levelConfigs = Resources.LoadAll<LevelConfig>("LevelConfigs/").OrderBy(c => c.SortOrder).ToArray();
 
+        PlayerProfileManager.Instance.LoadProfiles();
+
         SettingManager.Instance.Load();
         SettingManager.Instance.Apply();
+
+        m_lastRaceType = RaceType.None;
+
+        gameObject.AddComponent<AudioListener>();
     }
 
     private void FixedUpdate()
@@ -86,6 +103,7 @@ public class Main : ComponentSingleton<Main>
 
     public AsyncOperation LoadRace(RaceParameters raceParams)
     {
+        m_lastRaceType = RaceType.Race;
         m_raceParams = raceParams;
         AsyncOperation loading = SceneManager.LoadSceneAsync(raceParams.LevelConfig.SceneName);
         StartCoroutine(LoadLevel(loading, () => StartRace(raceParams)));
@@ -100,6 +118,7 @@ public class Main : ComponentSingleton<Main>
 
     public AsyncOperation LoadRace(RaceRecording recording)
     {
+        m_lastRaceType = RaceType.Replay;
         m_raceParams = null;
         AsyncOperation loading = SceneManager.LoadSceneAsync(recording.RaceParams.LevelConfig.SceneName);
         StartCoroutine(LoadLevel(loading, () => StartRace(recording)));
@@ -114,6 +133,7 @@ public class Main : ComponentSingleton<Main>
 
     private IEnumerator LoadLevel(AsyncOperation loading, Action onComplete)
     {
+        m_hasLoadedScene = true;
         Application.backgroundLoadingPriority = ThreadPriority.BelowNormal;
         loading.allowSceneActivation = false;
         yield return new WaitWhile(() => !loading.allowSceneActivation);

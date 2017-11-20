@@ -34,9 +34,12 @@
 			CGPROGRAM
 			#pragma vertex vert
 			#pragma fragment frag
+            #pragma target 4.0
+
 			#pragma multi_compile __ SMOOTH_EDGE
 			#pragma multi_compile_instancing
-			#include "DecallingCommon.cginc"
+
+			#include "Decalling.cginc"
 
 			float4 frag(v2f i) : SV_Target0
 			{

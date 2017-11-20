@@ -1,12 +1,16 @@
 ### To Do ###
 
-Input selection - multi joystick and keyboard support
-Player n is nth joiner (But what about if 1st player leaves?)
 Grey out character when selected, Ready up anim, Character blurbs
+player profiles - (add edit remove) - name, best lap times, best finish times per course
+track layout previews in level selection, 3d?
 
 pauser controls pause menu
 Async loading for replays
-replays - speed, cameras(cinemachine, players all at once, players single, manual zoom/free camera), save load
+victory music should differ from replay music
+replays - store player profile id and name so it can be portable
+replays - speed, cameras(cinemachine, players all at once, players single (cycle through), manual zoom/free camera)
+
+look around
 
 Engines spark on boost fail
 paritcle motion trail behind engine

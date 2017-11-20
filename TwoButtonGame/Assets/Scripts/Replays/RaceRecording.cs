@@ -76,7 +76,10 @@ public class RaceRecording
         int aiCount         = reader.ReadInt();
         List<PlayerConfig> playerConfigs = reader.ReadArray<int>().Select(id => Main.Instance.GetPlayerConfig(id)).ToList();
 
-        return new RaceParameters(level, laps, humanCount, aiCount, playerConfigs, new List<PlayerBaseInput>(), new List<int>());
+        List<PlayerBaseInput> inputs = InputManager.Instance.PlayerInputs.ToList();
+        List<int> playerindicies = new List<int>();
+
+        return new RaceParameters(level, laps, humanCount, aiCount, playerConfigs, inputs, playerindicies);
     }
 
     public static RaceResult[] ParseRaceResults(BinaryReader reader, int playerCount)

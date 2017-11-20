@@ -7,6 +7,8 @@
         PlayerSelect,
         LevelSelect,
         HowToPlay,
+        Profiles,
+        Replays,
         Settings,
         Credits,
         Loading,

@@ -21,7 +21,7 @@ namespace BoostBlasters.MainMenus
 
         public override void InitMenu(RaceParameters lastRace)
         {
-            m_settingsBackButton.onClick.AddListener(       () => MainMenu.SetMenu(Menu.Root));
+            m_settingsBackButton.onClick.AddListener(       () => MainMenu.SetMenu(Menu.Root, true));
             m_settingsUseDefaultsButton.onClick.AddListener(() => UseDefaultSettings());
             m_settingsApplyButton.onClick.AddListener(      () => ApplySettings());
 

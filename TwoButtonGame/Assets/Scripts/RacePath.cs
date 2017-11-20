@@ -17,7 +17,7 @@ public class RacePath : MonoBehaviour
 
     private void Awake()
     {
-        if (Main.Instance.LastRaceParams == null)
+        if (!Main.Instance.HasLoadedScene)
         {
             Main.Instance.LoadMainMenu();
         }

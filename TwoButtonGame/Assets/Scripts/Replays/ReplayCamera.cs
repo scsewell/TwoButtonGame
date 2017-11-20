@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.PostProcessing;
 using Cinemachine;
@@ -62,12 +63,21 @@ public class ReplayCamera : MonoBehaviour
         m_camera.enabled = false;
     }
 
-    public void SetTarget(Transform target)
+    public void SetTarget(List<Player> players)
     {
+        if (players.Any(p => !p.RaceResult.Finished))
+        {
+            Transform replayTarget = players.Where(p => !p.RaceResult.Finished).OrderBy(p => p.RaceResult.Rank).First().transform;
+
+            foreach (CinemachineVirtualCamera virtualCam in m_virtualCams)
+            {
+                virtualCam.LookAt = replayTarget;
+            }
+        }
+
         foreach (CinemachineVirtualCamera virtualCam in m_virtualCams)
         {
-            virtualCam.LookAt = target;
-            float distance = Mathf.Sqrt(Vector3.Distance(target.position, virtualCam.transform.position));
+            float distance = Mathf.Sqrt(Vector3.Distance(virtualCam.LookAt.position, virtualCam.transform.position));
 
             if (!CinemachineCore.Instance.IsLive(virtualCam))
             {

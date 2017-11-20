@@ -42,7 +42,7 @@ public class CustomInput : BaseInput
         {
             if (buttonName == CustomInputModule.ACCEPT_BUTTON)
             {
-                return m_inputs.Any(i => i.UI_Accept) || Input.GetKeyDown(KeyCode.KeypadEnter);
+                return m_inputs.Any(i => i.UI_Accept) || Input.GetKeyDown(KeyCode.Return);
             }
             if (buttonName == CustomInputModule.CANCEL_BUTTON)
             {

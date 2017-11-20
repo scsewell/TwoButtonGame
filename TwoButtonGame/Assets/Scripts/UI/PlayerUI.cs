@@ -316,18 +316,18 @@ public class PlayerUI : MonoBehaviour
 
         // timer
         float raceTime = finished ? m_player.RaceResult.FinishTime : m_raceManager.GetStartRelativeTime(Time.time);
-        m_timerText.text = ConvertTime(raceTime);
+        m_timerText.text = UIUtils.FormatRaceTime(raceTime);
 
         string lapTimes = "";
         if (path.Laps > 1)
         {
             foreach (float lapTime in m_player.RaceResult.LapTimes)
             {
-                lapTimes += ConvertTime(lapTime) + '\n';
+                lapTimes += UIUtils.FormatRaceTime(lapTime) + '\n';
             }
             if (!finished && m_player.RaceResult.LapTimes.Count > 0)
             {
-                lapTimes += ConvertTime(raceTime - m_player.RaceResult.LapTimes.Sum());
+                lapTimes += UIUtils.FormatRaceTime(raceTime - m_player.RaceResult.LapTimes.Sum());
             }
         }
         m_lapTimeText.text = lapTimes;
@@ -437,20 +437,5 @@ public class PlayerUI : MonoBehaviour
         Color col = g.color;
         col.a = alpha;
         g.color = col;
-    }
-
-    private string ConvertTime(float time)
-    {
-        if (time < 0)
-        {
-            return "-:--:--";
-        }
-        else
-        {
-            int minutes = Mathf.FloorToInt(time / 60);
-            int seconds = Mathf.FloorToInt(time - (minutes * 60));
-            int milliseconds = Mathf.FloorToInt((time - seconds - (minutes * 60)) * 100);
-            return string.Format(minutes.ToString() + ":" + seconds.ToString("D2") + ":" + milliseconds.ToString("D2"));
-        }
     }
 }

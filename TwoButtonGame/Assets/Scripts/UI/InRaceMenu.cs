@@ -99,10 +99,12 @@ public class InRaceMenu : MonoBehaviour
 
         m_menu.enabled = (isPaused || isFinished) && !isQuitting;
 
+        float menuAlpha = 1;
         if (isFinished)
         {
-            m_menuGroup.alpha = Mathf.Clamp01((Time.unscaledTime - (m_finishTime + m_finishWait)) / m_finishFadeInTime);
+            menuAlpha = Mathf.Clamp01((Time.unscaledTime - (m_finishTime + m_finishWait)) / m_finishFadeInTime);
         }
+        m_menuGroup.alpha = menuAlpha * (isPaused ? 1 : (1 - fade));
 
         m_fade.color = new Color(0, 0, 0, fade);
 

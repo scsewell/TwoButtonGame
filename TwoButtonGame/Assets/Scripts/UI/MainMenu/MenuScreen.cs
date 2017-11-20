@@ -10,9 +10,13 @@ namespace BoostBlasters.MainMenus
     {
         [SerializeField]
         private Selectable m_defaultSelection;
+        [SerializeField]
+        private bool m_remeberLastSelection = false;
 
         private Canvas m_canvas;
         private Selectable m_lastSelected;
+
+        protected Selectable DefaultSelectionOverride { get; set; }
 
         private MainMenu m_menu;
         public MainMenu MainMenu { get { return m_menu; } }
@@ -58,9 +62,13 @@ namespace BoostBlasters.MainMenus
 
                 if (selected == null || !selected.activeInHierarchy)
                 {
-                    if (m_lastSelected != null)
+                    if (m_remeberLastSelection && m_lastSelected != null)
                     {
                         m_lastSelected.Select();
+                    }
+                    else if (DefaultSelectionOverride != null)
+                    {
+                        DefaultSelectionOverride.Select();
                     }
                     else if (m_defaultSelection != null)
                     {

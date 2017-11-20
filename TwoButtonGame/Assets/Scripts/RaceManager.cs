@@ -72,7 +72,6 @@ public class RaceManager : MonoBehaviour
     private int m_countdownSecond;
     private bool m_musicStarted = false;
     private float m_fadeFac = 1;
-    private bool m_isReplay;
     private RaceRecording m_raceRecording;
     private int m_fixedFramesSoFar;
 
@@ -102,8 +101,7 @@ public class RaceManager : MonoBehaviour
         }
 
         m_raceParams = raceParams;
-
-        m_isReplay = false;
+        
         m_raceRecording = new RaceRecording(m_raceParams);
         m_replayStartTime = float.PositiveInfinity;
         
@@ -119,8 +117,7 @@ public class RaceManager : MonoBehaviour
             m_skipCoundown = false;
         }
         m_skipIntro = true;
-
-        m_isReplay = true;
+        
         m_raceRecording = recording;
         m_replayStartTime = Time.time;
 
@@ -294,6 +291,8 @@ public class RaceManager : MonoBehaviour
         {
             if (m_state != State.Replay)
             {
+                ReplayManager.Instance.SaveRecording(m_raceRecording, m_players);
+
                 m_state = State.Replay;
                 m_replayCamera.Activate();
                 
@@ -308,7 +307,7 @@ public class RaceManager : MonoBehaviour
     public void UpdateRace()
     {
         m_fadeFac = GetFadeFactor(false);
-
+        
         if (m_loading != null && m_fadeFac == 1)
         {
             m_loading.allowSceneActivation = true;
@@ -342,13 +341,7 @@ public class RaceManager : MonoBehaviour
         m_players.ForEach(p => p.UpdatePlayer());
         m_racePath.UpdatePath();
 
-        foreach (Player player in m_players)
-        {
-            if (player.RaceResult.Rank == 1)
-            {
-                m_replayCamera.SetTarget(player.transform);
-            }
-        }
+        m_replayCamera.SetTarget(m_players);
     }
 
     public void LateUpdateRace()
@@ -393,9 +386,9 @@ public class RaceManager : MonoBehaviour
     {
         if (m_loading == null)
         {
-            if (!m_isReplay)
+            if (m_state != State.Replay)
             {
-                RecordingManager.Instance.SaveRecording(m_raceRecording, m_players);
+                ReplayManager.Instance.SaveRecording(m_raceRecording, m_players);
             }
             
             m_loading = Main.Instance.LoadMainMenu();
@@ -428,7 +421,7 @@ public class RaceManager : MonoBehaviour
             fadeFac = Mathf.Lerp(fadeFac, 1, 0.65f);
         }
 
-        return 1 - (0.5f * Mathf.Cos((Mathf.PI) * fadeFac) + 0.5f);
+        return 1 - (0.5f * Mathf.Cos(Mathf.PI * Mathf.Clamp01(fadeFac)) + 0.5f);
     }
 
     public float GetStartRelativeTime()

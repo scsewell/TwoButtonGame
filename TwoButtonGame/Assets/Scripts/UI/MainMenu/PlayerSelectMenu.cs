@@ -10,7 +10,6 @@ namespace BoostBlasters.MainMenus
     {
         [Header("UI Elements")]
         [SerializeField] private RectTransform m_playerSelectContent;
-        [SerializeField] private PlayerSelectPanel m_playerSelectPrefab;
         [SerializeField] private GameObject m_continueBar;
         [SerializeField] private Image m_continueBanner;
         [SerializeField] private ControlPanel m_continueControls;
@@ -43,11 +42,18 @@ namespace BoostBlasters.MainMenus
             m_playerSelectPanels = new List<PlayerSelectPanel>();
             m_readyPlayers = new List<PlayerSelectPanel>();
 
+            PlayerSelectPanel panel = m_playerSelectContent.GetComponentInChildren<PlayerSelectPanel>();
+            m_playerSelectPanels.Add(panel);
+
+            for (int i = 1; i < 4; i++)
+            {
+                PlayerSelectPanel p = Instantiate(panel, m_playerSelectContent);
+                m_playerSelectPanels.Add(p);
+            }
+            
             for (int i = 0; i < 4; i++)
             {
-                PlayerSelectPanel p = Instantiate(m_playerSelectPrefab, m_playerSelectContent);
-                p.Init(i);
-                m_playerSelectPanels.Add(p);
+                m_playerSelectPanels[i].Init(i);
             }
         }
 

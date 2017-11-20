@@ -27,6 +27,8 @@ public class MainMenu : MenuBase
     private RootMenu m_root;
     private PlayerSelectMenu m_playerSelect;
     private LevelSelectMenu m_levelSelect;
+    private ProfilesMenu m_profiles;
+    private ReplayMenu m_replays;
     private SettingsMenu m_settings;
     private CreditsMenu m_credits;
 
@@ -57,6 +59,8 @@ public class MainMenu : MenuBase
         m_root          = GetComponentInChildren<RootMenu>();
         m_playerSelect  = GetComponentInChildren<PlayerSelectMenu>();
         m_levelSelect   = GetComponentInChildren<LevelSelectMenu>();
+        m_profiles      = GetComponentInChildren<ProfilesMenu>();
+        m_replays       = GetComponentInChildren<ReplayMenu>();
         m_settings      = GetComponentInChildren<SettingsMenu>();
         m_credits       = GetComponentInChildren<CreditsMenu>();
 
@@ -71,8 +75,13 @@ public class MainMenu : MenuBase
         m_menuScreens = new List<MenuScreen>(GetComponentsInChildren<MenuScreen>());
         m_menuScreens.ForEach(m => m.InitMenu(lastRace));
 
-        SetMenu(lastRace != null ? Menu.PlayerSelect : Menu.Root);
-        
+        switch (Main.Instance.LastRaceType)
+        {
+            case Main.RaceType.Race:    SetMenu(Menu.LevelSelect); break;
+            case Main.RaceType.Replay:  SetMenu(Menu.Replays); break;
+            default: SetMenu(Menu.Root); break;
+        }
+
         StartCoroutine(FinishAwake());
     }
 
@@ -97,6 +106,8 @@ public class MainMenu : MenuBase
             m_root.enabled          = (menu == Menu.Root);
             m_playerSelect.enabled  = (menu == Menu.PlayerSelect);
             m_levelSelect.enabled   = (menu == Menu.LevelSelect);
+            m_profiles.enabled      = (menu == Menu.Profiles);
+            m_replays.enabled       = (menu == Menu.Replays);
             m_settings.enabled      = (menu == Menu.Settings);
             m_credits.enabled       = (menu == Menu.Credits);
 
@@ -124,6 +135,17 @@ public class MainMenu : MenuBase
         bool useCursor = Input.GetKey(KeyCode.LeftControl);
         Cursor.lockState = true ? CursorLockMode.None : CursorLockMode.Locked;
         Cursor.visible = useCursor;
+
+        if (m_availableInputs.Any(i => i.UI_Cancel))
+        {
+            switch (m_activeMenu)
+            {
+                case Menu.Loading: break;
+                case Menu.PlayerSelect: break;
+                case Menu.LevelSelect: SetMenu(Menu.PlayerSelect, true); break;
+                default: SetMenu(Menu.Root); break;
+            }
+        }
 
         m_menuScreens.ForEach(m => m.UpdateMenu());
 
@@ -154,6 +176,13 @@ public class MainMenu : MenuBase
             fac = Mathf.Lerp(fac, 1, Mathf.Clamp01((Time.unscaledTime - m_menuExitTime) / m_fadeOutDuration));
         }
         return Mathf.Sin((Mathf.PI / 2) * Mathf.Pow(fac, m_fadePower));
+    }
+
+    public void LaunchReplay(ReplayInfo info)
+    {
+        m_loading = Main.Instance.LoadRace(ReplayManager.Instance.LoadReplay(info));
+        m_menuExitTime = Time.unscaledTime;
+        SetMenu(Menu.Loading);
     }
 
     public void LaunchRace()
