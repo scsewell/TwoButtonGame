@@ -15,6 +15,7 @@ public class PlayerKeyboardInput : PlayerBaseInput
     }
     public override float V
     {
+        get { return (GetKey(m_hneg) && GetKey(m_hpos) ? 1 : 0) - KeyAsAxis(m_vneg); }
     }
     public override bool Boost
     {
