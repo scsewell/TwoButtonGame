@@ -15,11 +15,10 @@ public class PlayerKeyboardInput : PlayerBaseInput
     }
     public override float V
     {
-        get { return (Input.GetKey(m_hneg) && Input.GetKey(m_hpos) ? 1 : 0) - KeyAsAxis(m_vneg); }
     }
     public override bool Boost
     {
-        get { return Input.GetKey(m_boost); }
+        get { return GetKey(m_boost); }
     }
 
     private KeyCode m_accept;
@@ -36,17 +35,17 @@ public class PlayerKeyboardInput : PlayerBaseInput
     }
     public override bool UI_Accept
     {
-        get { return Input.GetKeyDown(m_accept); }
+        get { return GetKeyDown(m_accept); }
     }
     public override bool UI_Cancel
     {
-        get { return Input.GetKeyDown(m_cancel); }
+        get { return GetKeyDown(m_cancel); }
     }
     public override bool UI_Menu
     {
-        get { return Input.GetKeyDown(m_menu); }
+        get { return GetKeyDown(m_menu); }
     }
-
+    
     public PlayerKeyboardInput(
         KeyCode hneg, KeyCode hpos,
         KeyCode vneg, KeyCode vpos,
@@ -76,11 +75,6 @@ public class PlayerKeyboardInput : PlayerBaseInput
         m_spriteAccept  = new List<Sprite>() { LoadSprite(accept) };
         m_spriteCancel  = new List<Sprite>() { LoadSprite(cancel) };
         m_spriteMenu    = new List<Sprite>() { LoadSprite(menu) };
-    }
-
-    private float KeyAsAxis(KeyCode key)
-    {
-        return Input.GetKey(key) ? 1 : 0;
     }
 
     private Sprite LoadSprite(KeyCode key)

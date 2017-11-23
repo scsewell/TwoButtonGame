@@ -11,7 +11,7 @@ namespace BoostBlasters.MainMenus
     public class ReplayMenu : MenuScreen
     {
         [SerializeField]
-        private ReplayPanel m_replayPanelPrefab;
+        private GameObject m_selectPanelPrefab;
 
         [Header("UI Elements")]
         [SerializeField] private RectTransform m_replayListContent;
@@ -19,7 +19,7 @@ namespace BoostBlasters.MainMenus
         [SerializeField] private Image m_arrowRight;
         [SerializeField] private Text m_pageText;
         [SerializeField] private Button m_backButton;
-        [SerializeField] private GameObject m_resultsPanel;
+        [SerializeField] private GameObject m_mainPanel;
         [SerializeField] private Image m_levelPreview;
         [SerializeField] private Text m_levelNameText;
         [SerializeField] private Text m_lapsText;
@@ -34,11 +34,9 @@ namespace BoostBlasters.MainMenus
         private List<ReplayPanel> m_replayPanels;
         private List<PlayerResultPanel> m_playerResults;
         private int m_infoPage;
-
-        protected override void Awake()
+        
+        public override void InitMenu(RaceParameters lastRace)
         {
-            base.Awake();
-
             m_backButton.onClick.AddListener(() => MainMenu.SetMenu(Menu.Root, true));
 
             m_infos = new List<ReplayInfo>();
@@ -46,8 +44,7 @@ namespace BoostBlasters.MainMenus
 
             for (int i = 0; i < m_panelCount; i++)
             {
-                ReplayPanel panel = Instantiate(m_replayPanelPrefab, m_replayListContent);
-                m_replayPanels.Add(panel);
+                m_replayPanels.Add(Instantiate(m_selectPanelPrefab, m_replayListContent).AddComponent<ReplayPanel>());
             }
 
             m_playerResults = new List<PlayerResultPanel>();
@@ -57,18 +54,16 @@ namespace BoostBlasters.MainMenus
 
             for (int i = 0; i < Consts.MAX_PLAYERS - 1; i++)
             {
-                PlayerResultPanel panel = Instantiate(resultsTemplate, m_resultsContent);
-                m_playerResults.Add(panel);
+                m_playerResults.Add(Instantiate(resultsTemplate, m_resultsContent));
             }
-        }
-
-        public override void InitMenu(RaceParameters lastRace)
-        {
         }
 
         protected override void OnResetMenu(bool fullReset)
         {
-            m_infos = ReplayManager.Instance.GetReplays();
+            if (enabled)
+            {
+                m_infos = ReplayManager.Instance.GetReplays();
+            }
             m_infoPage = 0;
             ViewPage(0);
         }
@@ -90,12 +85,12 @@ namespace BoostBlasters.MainMenus
                 replay.UpdateGraphics();
             }
 
-            m_arrowLeft.enabled = m_infoPage > 0;
-            m_arrowRight.enabled = m_infoPage < maxPage;
+            m_mainPanel.SetActive(selectedReplay != null);
 
-            m_resultsPanel.SetActive(selectedReplay != null);
+            m_arrowLeft.enabled = m_infoPage > 0 && m_mainPanel.activeInHierarchy;
+            m_arrowRight.enabled = m_infoPage < maxPage && m_mainPanel.activeInHierarchy;
 
-            if (selectedReplay != null)
+            if (m_mainPanel.activeInHierarchy)
             {
                 ReplayInfo info = selectedReplay.ReplayInfo;
                 RaceResult[] results = info.RaceResults.OrderBy(r => r.Rank).ToArray();

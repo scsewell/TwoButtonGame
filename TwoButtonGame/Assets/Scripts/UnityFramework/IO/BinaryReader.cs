@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using System.Text;
 using UnityEngine;
 
 namespace Framework.IO
@@ -112,6 +113,11 @@ namespace Framework.IO
             return ReadByte() == 1;
         }
 
+        public string ReadString()
+        {
+            return Encoding.ASCII.GetString(ReadArray<byte>());
+        }
+
         public Vector2 ReadVector2()
         {
             return new Vector2(ReadFloat(), ReadFloat());
@@ -127,12 +133,22 @@ namespace Framework.IO
             return new Quaternion(ReadFloat(), ReadFloat(), ReadFloat(), ReadFloat());
         }
 
-        public bool[] ReadArray()
+        public bool[] ReadBoolArray()
         {
             bool[] vals = new bool[ReadInt()];
             for (int i = 0; i < vals.Length; i++)
             {
                 vals[i] = ReadBool();
+            }
+            return vals;
+        }
+
+        public string[] ReadStringArray()
+        {
+            string[] vals = new string[ReadInt()];
+            for (int i = 0; i < vals.Length; i++)
+            {
+                vals[i] = ReadString();
             }
             return vals;
         }

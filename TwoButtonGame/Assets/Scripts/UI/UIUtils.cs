@@ -39,4 +39,20 @@ public static class UIUtils
         }
         text.text = name;
     }
+
+    public static bool IsAlphaNumeric(char c)
+    {
+        if ('A' <= c && c <= 'Z') { return true; };
+        if ('a' <= c && c <= 'z') { return true; };
+        if ('0' <= c && c <= '9') { return true; }
+        return false;
+    }
+
+    public static bool IsAlphaNumeric(KeyCode c)
+    {
+        if (KeyCode.A <= c && c <= KeyCode.Z) { return true; };
+        if (KeyCode.Alpha0 <= c && c <= KeyCode.Alpha9) { return true; }
+        if (KeyCode.Keypad0 <= c && c <= KeyCode.Keypad9) { return true; }
+        return false;
+    }
 }

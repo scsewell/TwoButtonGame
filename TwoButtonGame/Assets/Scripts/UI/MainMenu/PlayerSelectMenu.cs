@@ -105,7 +105,7 @@ namespace BoostBlasters.MainMenus
             }
             else if (m_canContine)
             {
-                m_continueControls.UpdateUI("Continue", MainMenu.ActiveInputs.SelectMany(i => i.SpriteAccept).ToList());
+                m_continueControls.UpdateUI("Continue", MainMenu.ReservedInputs.SelectMany(i => i.SpriteAccept).ToList());
 
                 if (m_playerSelectPanels.Any(p => p.Continue))
                 {

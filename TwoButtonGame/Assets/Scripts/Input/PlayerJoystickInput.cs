@@ -29,7 +29,7 @@ public class PlayerJoystickInput : PlayerBaseInput
     }
     public override bool Boost
     {
-        get { return Input.GetKey(m_boost); }
+        get { return GetKey(m_boost); }
     }
 
     private KeyCode m_accept;
@@ -41,15 +41,15 @@ public class PlayerJoystickInput : PlayerBaseInput
 
     public override bool UI_Accept
     {
-        get { return Input.GetKeyDown(m_accept); }
+        get { return GetKeyDown(m_accept); }
     }
     public override bool UI_Cancel
     {
-        get { return Input.GetKeyDown(m_cancel); }
+        get { return GetKeyDown(m_cancel); }
     }
     public override bool UI_Menu
     {
-        get { return Input.GetKeyDown(m_menu); }
+        get { return GetKeyDown(m_menu); }
     }
 
     public PlayerJoystickInput(int number) : base()

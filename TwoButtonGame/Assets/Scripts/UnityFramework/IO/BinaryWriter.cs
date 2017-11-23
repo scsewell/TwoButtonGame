@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace Framework.IO
 {
@@ -73,6 +74,20 @@ namespace Framework.IO
         }
 
         public void WriteArray(bool[] vals)
+        {
+            WriteValue(vals.Length);
+            for (int i = 0; i < vals.Length; i++)
+            {
+                WriteValue(vals[i]);
+            }
+        }
+
+        public void WriteValue(string val)
+        {
+            WriteArray(Encoding.ASCII.GetBytes(val));
+        }
+
+        public void WriteArray(string[] vals)
         {
             WriteValue(vals.Length);
             for (int i = 0; i < vals.Length; i++)

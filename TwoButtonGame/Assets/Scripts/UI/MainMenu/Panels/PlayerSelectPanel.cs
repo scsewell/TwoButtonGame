@@ -141,7 +141,7 @@ namespace BoostBlasters.MainMenus
 
             if (m_state == State.Join)
             {
-                foreach (PlayerBaseInput input in menu.AvailableInputs)
+                foreach (PlayerBaseInput input in menu.UnreservedInputs)
                 {
                     if (input.UI_Accept)
                     {
@@ -208,10 +208,10 @@ namespace BoostBlasters.MainMenus
             if (m_state == State.Join)
             {
                 m_input = null;
-                m_joinControls.UpdateUI("Join", menu.AvailableInputs.SelectMany(i => i.SpriteAccept).ToList());
+                m_joinControls.UpdateUI("Join", menu.UnreservedInputs.SelectMany(i => i.SpriteAccept).ToList());
 
                 m_controls1.SetActive(true);
-                m_controls1.UpdateUI("Back", menu.AvailableInputs.SelectMany(i => i.SpriteCancel).ToList());
+                m_controls1.UpdateUI("Back", menu.UnreservedInputs.SelectMany(i => i.SpriteCancel).ToList());
                 m_controls2.SetActive(false);
                 m_controls3.SetActive(false);
             }

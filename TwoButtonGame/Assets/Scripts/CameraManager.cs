@@ -79,9 +79,9 @@ public class CameraManager : MonoBehaviour
     {
         m_player = player;
 
-        Rect slipscreen = GetSplitscreen(player.PlayerNum, humanCount);
-        m_mainCam.rect = slipscreen;
-        m_uiCam.rect = slipscreen;
+        Rect splitscreen = GetSplitscreen(player.PlayerNum, humanCount);
+        m_mainCam.rect = splitscreen;
+        m_uiCam.rect = splitscreen;
 
         SettingManager.Instance.ConfigureCamera(m_mainCam, true);
 
@@ -94,7 +94,7 @@ public class CameraManager : MonoBehaviour
     }
 
     public void ResetCam()
-    {    
+    {
         m_blockSmooth = 1;
         m_lookSmooth = 1;
         m_dustFade = 0;

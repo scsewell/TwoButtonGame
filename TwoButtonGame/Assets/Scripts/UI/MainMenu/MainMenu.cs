@@ -28,6 +28,8 @@ public class MainMenu : MenuBase
     private PlayerSelectMenu m_playerSelect;
     private LevelSelectMenu m_levelSelect;
     private ProfilesMenu m_profiles;
+    private ProfileNameMenu m_profileName;
+    public ProfileNameMenu ProfileName { get { return m_profileName; } }
     private ReplayMenu m_replays;
     private SettingsMenu m_settings;
     private CreditsMenu m_credits;
@@ -35,24 +37,31 @@ public class MainMenu : MenuBase
     private CustomInput m_customInput;
     private List<MenuScreen> m_menuScreens;
     private Menu m_activeMenu = Menu.None;
+    private Menu m_targetMenu;
     private AsyncOperation m_loading;
     private float m_menuLoadTime;
     private float m_menuExitTime;
-    private bool m_inputMute;
 
     private List<PlayerBaseInput> m_availableInputs;
     public List<PlayerBaseInput> AvailableInputs
     {
-        get { return m_inputMute ? new List<PlayerBaseInput>() : m_availableInputs.Where(i => !ActiveInputs.Contains(i)).ToList(); }
+        get { return m_availableInputs; }
     }
 
-    public List<PlayerBaseInput> ActiveInputs
+    public List<PlayerBaseInput> UnreservedInputs
     {
-        get { return m_inputMute ? new List<PlayerBaseInput>() : m_playerSelect.ActiveInputs; }
+        get { return m_availableInputs.Where(i => !ReservedInputs.Contains(i)).ToList(); }
     }
 
-    private void Awake()
+    public List<PlayerBaseInput> ReservedInputs
     {
+        get { return m_playerSelect.ActiveInputs; }
+    }
+
+    protected override void Awake()
+    {
+        base.Awake();
+
         // Ensure the GameController exists
         Debug.Log(Main.Instance.name);
 
@@ -60,6 +69,7 @@ public class MainMenu : MenuBase
         m_playerSelect  = GetComponentInChildren<PlayerSelectMenu>();
         m_levelSelect   = GetComponentInChildren<LevelSelectMenu>();
         m_profiles      = GetComponentInChildren<ProfilesMenu>();
+        m_profileName   = GetComponentInChildren<ProfileNameMenu>();
         m_replays       = GetComponentInChildren<ReplayMenu>();
         m_settings      = GetComponentInChildren<SettingsMenu>();
         m_credits       = GetComponentInChildren<CreditsMenu>();
@@ -97,22 +107,12 @@ public class MainMenu : MenuBase
 
     public void SetMenu(Menu menu, bool back = false)
     {
-        Menu previous = m_activeMenu;
+        Menu previous = m_targetMenu;
 
         if (previous != menu)
         {
-            m_activeMenu = menu;
+            m_targetMenu = menu;
             
-            m_root.enabled          = (menu == Menu.Root);
-            m_playerSelect.enabled  = (menu == Menu.PlayerSelect);
-            m_levelSelect.enabled   = (menu == Menu.LevelSelect);
-            m_profiles.enabled      = (menu == Menu.Profiles);
-            m_replays.enabled       = (menu == Menu.Replays);
-            m_settings.enabled      = (menu == Menu.Settings);
-            m_credits.enabled       = (menu == Menu.Credits);
-
-            m_menuScreens.ForEach(m => m.ResetMenu(previous == Menu.Root));
-
             if (previous != Menu.None)
             {
                 if (back)
@@ -124,9 +124,6 @@ public class MainMenu : MenuBase
                     PlayNextMenuSound();
                 }
             }
-
-            EventSystem.current.SetSelectedGameObject(null);
-            m_inputMute = true;
         }
     }
 
@@ -136,35 +133,41 @@ public class MainMenu : MenuBase
         Cursor.lockState = true ? CursorLockMode.None : CursorLockMode.Locked;
         Cursor.visible = useCursor;
 
-        if (m_availableInputs.Any(i => i.UI_Cancel))
-        {
-            switch (m_activeMenu)
-            {
-                case Menu.Loading: break;
-                case Menu.PlayerSelect: break;
-                case Menu.LevelSelect: SetMenu(Menu.PlayerSelect, true); break;
-                default: SetMenu(Menu.Root); break;
-            }
-        }
-
         m_menuScreens.ForEach(m => m.UpdateMenu());
 
         float factor = GetFadeFactor();
         m_fade.color = new Color(0, 0, 0, factor);
 
+        QualitySettings.shadowDistance = 20;
+
+        AudioManager.Instance.Volume = Mathf.MoveTowards(AudioManager.Instance.Volume, 1 - factor, Time.unscaledDeltaTime / 0.35f);
+
         if (m_loading != null && factor >= 1)
         {
             m_loading.allowSceneActivation = true;
         }
-
-        QualitySettings.shadowDistance = 20;
-
-        AudioManager.Instance.Volume = Mathf.MoveTowards(AudioManager.Instance.Volume, 1 - factor, Time.unscaledDeltaTime / 0.35f);
     }
 
     private void LateUpdate()
     {
-        m_inputMute = false;
+        if (m_activeMenu != m_targetMenu)
+        {
+            Menu previous = m_activeMenu;
+            m_activeMenu = m_targetMenu;
+
+            m_root.enabled          = (m_activeMenu == Menu.Root);
+            m_playerSelect.enabled  = (m_activeMenu == Menu.PlayerSelect);
+            m_levelSelect.enabled   = (m_activeMenu == Menu.LevelSelect);
+            m_profiles.enabled      = (m_activeMenu == Menu.Profiles);
+            m_profileName.enabled   = (m_activeMenu == Menu.ProfileName);
+            m_replays.enabled       = (m_activeMenu == Menu.Replays);
+            m_settings.enabled      = (m_activeMenu == Menu.Settings);
+            m_credits.enabled       = (m_activeMenu == Menu.Credits);
+
+            EventSystem.current.SetSelectedGameObject(null);
+
+            m_menuScreens.ForEach(m => m.ResetMenu(previous == Menu.Root));
+        }
         m_menuScreens.ForEach(m => m.UpdateGraphics());
     }
 

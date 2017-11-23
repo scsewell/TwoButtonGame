@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
@@ -9,7 +9,9 @@ namespace BoostBlasters.MainMenus
     public abstract class MenuScreen : MonoBehaviour
     {
         [SerializeField]
-        private Selectable m_defaultSelection;
+        private Menu m_backMenu = Menu.Root;
+        [SerializeField]
+        private Selectable m_defaultSelection = null;
         [SerializeField]
         private bool m_remeberLastSelection = false;
 
@@ -43,9 +45,10 @@ namespace BoostBlasters.MainMenus
 
         public void ResetMenu(bool fullReset)
         {
+            OnResetMenu(fullReset);
             if (enabled)
             {
-                OnResetMenu(fullReset);
+                HandleSelection();
             }
         }
 
@@ -53,29 +56,12 @@ namespace BoostBlasters.MainMenus
         {
             if (enabled)
             {
-                GameObject selected = EventSystem.current.currentSelectedGameObject;
-
-                if (selected != null && selected.transform.IsChildOf(transform))
+                if (MainMenu.AvailableInputs.Any(i => i.UI_Cancel))
                 {
-                    m_lastSelected = selected.GetComponent<Selectable>();
+                    OnBack();
                 }
 
-                if (selected == null || !selected.activeInHierarchy)
-                {
-                    if (m_remeberLastSelection && m_lastSelected != null)
-                    {
-                        m_lastSelected.Select();
-                    }
-                    else if (DefaultSelectionOverride != null)
-                    {
-                        DefaultSelectionOverride.Select();
-                    }
-                    else if (m_defaultSelection != null)
-                    {
-                        m_defaultSelection.Select();
-                    }
-                }
-
+                HandleSelection();
                 OnUpdate();
             }
         }
@@ -85,6 +71,40 @@ namespace BoostBlasters.MainMenus
             if (enabled)
             {
                 OnUpdateGraphics();
+            }
+        }
+
+        protected virtual void OnBack()
+        {
+            if (m_backMenu != Menu.None)
+            {
+                MainMenu.SetMenu(m_backMenu, true);
+            }
+        }
+
+        protected virtual void HandleSelection()
+        {
+            GameObject selected = EventSystem.current.currentSelectedGameObject;
+
+            if (selected != null && selected.transform.IsChildOf(transform))
+            {
+                m_lastSelected = selected.GetComponent<Selectable>();
+            }
+
+            if (selected == null || !selected.activeInHierarchy)
+            {
+                if (m_remeberLastSelection && m_lastSelected != null)
+                {
+                    m_lastSelected.Select();
+                }
+                else if (DefaultSelectionOverride != null)
+                {
+                    DefaultSelectionOverride.Select();
+                }
+                else if (m_defaultSelection != null)
+                {
+                    m_defaultSelection.Select();
+                }
             }
         }
 

@@ -10,13 +10,67 @@ public class PlayerProfileManager : Singleton<PlayerProfileManager>
     private static readonly string FILE_NAME = "profiles";
     private static readonly string FILE_EXTENTION = ".dat";
 
+    private Random m_random;
+
     private List<PlayerProfile> m_profiles;
-    public List<PlayerProfile> Profile { get { return m_profiles; } }
+    public IReadOnlyList<PlayerProfile> Profiles { get { return m_profiles; } }
+    
+    public PlayerProfileManager()
+    {
+        m_profiles = new List<PlayerProfile>();
+        m_random = new Random();
+    }
+
+    public PlayerProfile AddNewProfile()
+    {
+        byte[] buffer = new byte[sizeof(long)];
+        BinaryReader reader = new BinaryReader(buffer);
+
+        m_random.NextBytes(buffer);
+        long id = reader.ReadLong();
+        
+        while (m_profiles.Any(p => p.UniqueId == id))
+        {
+            reader.SetReadPointer(0);
+            m_random.NextBytes(buffer);
+            id = reader.ReadLong();
+        }
+
+        PlayerProfile profile = new PlayerProfile(id, GetUniqueName(null, "DefaultName"));
+
+        m_profiles.Add(profile);
+        SaveProfiles();
+
+        return profile;
+    }
+
+    public string GetUniqueName(PlayerProfile profile, string baseName)
+    {
+        List<PlayerProfile> others = m_profiles.Where(p => p != profile).ToList();
+
+        int count = 0;
+        string name = baseName;
+
+        while (others.Any(p => p.Name == name))
+        {
+            count++;
+            name = baseName + count;
+        }
+        return name;
+    }
+
+    public bool DeleteProfile(PlayerProfile profile)
+    {
+        bool removedProfile = m_profiles.Remove(profile);
+        if (removedProfile)
+        {
+            SaveProfiles();
+        }
+        return removedProfile;
+    }
 
     public void LoadProfiles()
     {
-        m_profiles = new List<PlayerProfile>();
-
         byte[] bytes = FileIO.ReadFileBytes(GetSavePath());
         if (bytes != null)
         {
@@ -39,8 +93,8 @@ public class PlayerProfileManager : Singleton<PlayerProfileManager>
         BinaryReader reader = new BinaryReader(bytes);
 
         int count       = reader.ReadInt();
-        int[] ids       = reader.ReadArray<int>();
-        string[] names  = reader.ReadArray<string>();
+        long[] ids      = reader.ReadArray<long>();
+        string[] names  = reader.ReadStringArray();
 
         m_profiles.Clear();
 
@@ -55,7 +109,7 @@ public class PlayerProfileManager : Singleton<PlayerProfileManager>
         BinaryWriter writer = new BinaryWriter();
         writer.WriteValue(m_profiles.Count);
         writer.WriteArray(m_profiles.Select(p => p.UniqueId).ToArray());
-        writer.WriteArray(m_profiles.Select(p => p.String).ToArray());
+        writer.WriteArray(m_profiles.Select(p => p.Name).ToArray());
         return writer.GetBytes();
     }
 }

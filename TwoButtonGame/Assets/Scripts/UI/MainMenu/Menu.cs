@@ -8,6 +8,7 @@
         LevelSelect,
         HowToPlay,
         Profiles,
+        ProfileName,
         Replays,
         Settings,
         Credits,

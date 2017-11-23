@@ -52,7 +52,7 @@ namespace BoostBlasters.MainMenus
 
         protected override void OnUpdate()
         {
-            foreach (PlayerBaseInput input in MainMenu.ActiveInputs)
+            foreach (PlayerBaseInput input in MainMenu.ReservedInputs)
             {
                 if (input.UI_Accept)
                 {
@@ -81,9 +81,9 @@ namespace BoostBlasters.MainMenus
 
             m_levelHighlight.color = new Color(1, 1, 1, Mathf.Lerp(m_levelHighlight.color.a, 0, Time.unscaledDeltaTime / 0.05f));
             
-            m_levelControls1.UpdateUI("Select", MainMenu.ActiveInputs.SelectMany(i => i.SpriteAccept).ToList());
-            m_levelControls2.UpdateUI("Next",   MainMenu.ActiveInputs.SelectMany(i => i.SpriteLeftRight).ToList());
-            m_levelControls3.UpdateUI("Back",   MainMenu.ActiveInputs.SelectMany(i => i.SpriteCancel).ToList());
+            m_levelControls1.UpdateUI("Select", MainMenu.ReservedInputs.SelectMany(i => i.SpriteAccept).ToList());
+            m_levelControls2.UpdateUI("Next",   MainMenu.ReservedInputs.SelectMany(i => i.SpriteLeftRight).ToList());
+            m_levelControls3.UpdateUI("Back",   MainMenu.ReservedInputs.SelectMany(i => i.SpriteCancel).ToList());
         }
     }
 }

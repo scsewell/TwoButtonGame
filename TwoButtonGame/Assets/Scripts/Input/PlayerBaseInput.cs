@@ -49,12 +49,16 @@ public abstract class PlayerBaseInput
     public bool UI_Down     { get { return m_down.Pressed; } }
     public bool UI_Up       { get { return m_up.Pressed; } }
 
+    protected InputMuting m_muting;
+
     protected PlayerBaseInput()
     {
         m_left  = new UIAxisInput(true);
         m_right = new UIAxisInput(false);
         m_down  = new UIAxisInput(true);
         m_up    = new UIAxisInput(false);
+
+        m_muting = InputMuting.None;
     }
 
     public void Update()
@@ -65,4 +69,33 @@ public abstract class PlayerBaseInput
         m_up.Update(UI_V);
     }
 
+    public void SetMuting(InputMuting muting)
+    {
+        m_muting = muting;
+    }
+
+    protected float KeyAsAxis(KeyCode key)
+    {
+        return GetKey(key) ? 1 : 0;
+    }
+
+    protected bool GetKey(KeyCode key)
+    {
+        return CanPress(key) && Input.GetKey(key);
+    }
+
+    protected bool GetKeyDown(KeyCode key)
+    {
+        return CanPress(key) && Input.GetKeyDown(key);
+    }
+
+    private bool CanPress(KeyCode key)
+    {
+        switch (m_muting)
+        {
+            case InputMuting.All:           return false;
+            case InputMuting.TypingKeys:    return !(UIUtils.IsAlphaNumeric(key) || key == KeyCode.Backspace || key == KeyCode.Delete);
+            default: return true;
+        }
+    }
 }

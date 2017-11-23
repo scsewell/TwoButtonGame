@@ -24,7 +24,7 @@ public class InputManager : Singleton<InputManager>
             KeyCode.D, 
             KeyCode.W, 
             KeyCode.S, 
-            KeyCode.W, 
+            KeyCode.W,
             KeyCode.E, 
             KeyCode.Q,
             KeyCode.Escape
@@ -41,6 +41,14 @@ public class InputManager : Singleton<InputManager>
         foreach (PlayerBaseInput input in m_playerInputs)
         {
             input.Update();
+        }
+    }
+
+    public void SetKeyboardMuting(InputMuting muting)
+    {
+        foreach (PlayerBaseInput input in m_playerInputs)
+        {
+            input.SetMuting(muting);
         }
     }
 }

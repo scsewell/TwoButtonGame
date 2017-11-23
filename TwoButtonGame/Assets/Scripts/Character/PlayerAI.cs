@@ -91,9 +91,9 @@ public class PlayerAI : IInputProvider
                 Vector3 foreCross = Vector3.Cross(disp, fore);
                 float facing = Mathf.Acos(Vector3.Dot(Vector3.ProjectOnPlane(disp, Vector3.up).normalized, fore)) * Mathf.Rad2Deg;
 
-                if (facing > 3.5f)
+                if (facing > Mathf.Lerp(10.0f, 0.5f, (disp.magnitude + 1.0f) / 150))
                 {
-                    m_input.h = foreCross.y;
+                    m_input.h = -foreCross.y;
                 }
                 else
                 {
@@ -103,7 +103,7 @@ public class PlayerAI : IInputProvider
                         m_lastBoostTime = Time.time;
                     }
 
-                    if (disp.y > 0)
+                    if (disp.y > -4)
                     {
                         m_input.v = 1;
                     }
