@@ -128,6 +128,7 @@ public class PlayerUI : MonoBehaviour
     private float m_energyFailTime;
 
     private Player m_player;
+    private PlayerBaseInput m_input;
     private CameraManager m_camera;
     private RaceManager m_raceManager;
 
@@ -138,9 +139,10 @@ public class PlayerUI : MonoBehaviour
         m_arrow = Instantiate(m_arrowPrefab);
     }
 
-    public PlayerUI Init(Player player, CameraManager cam, int humanCount)
+    public PlayerUI Init(Player player, PlayerBaseInput input, CameraManager cam, int humanCount)
     {
         m_player = player;
+        m_input = input;
         m_camera = cam;
         
         m_raceManager = Main.Instance.RaceManager;
@@ -156,7 +158,7 @@ public class PlayerUI : MonoBehaviour
         rt.anchoredPosition = Vector2.zero;
         rt.sizeDelta = Vector2.zero;
         
-        m_playerText.text = "Player " + (player.PlayerNum + 1);
+        m_playerText.text = player.Profile.Name;
         m_playerText.color = Color.Lerp(player.GetColor(), Color.white, 0.35f);
 
         m_player.EnergyGained += Player_EnergyGained;

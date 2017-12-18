@@ -39,7 +39,7 @@ namespace BoostBlasters.MainMenus
         {
             if (m_info != null)
             {
-                UIUtils.FixText(m_name, m_info.Name);
+                UIUtils.FitText(m_name, m_info.Name);
             }
         }
 

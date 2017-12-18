@@ -19,7 +19,7 @@ public class RaceRecording
 
     public float Duration
     {
-        get { return m_positions[0].Count * FRAMES_PER_POSITION * Time.fixedDeltaTime; }
+        get { return m_positions.Max(player => player.Count) * FRAMES_PER_POSITION * Time.fixedDeltaTime; }
     }
     
     private static readonly int FRAMES_PER_POSITION = 10;
@@ -48,7 +48,7 @@ public class RaceRecording
         BinaryReader reader = new BinaryReader(bytes);
         
         m_raceParams = ParseRaceParams(reader);
-        ParseRaceResults(reader, PlayerCount);
+        ParseRaceResults(reader, m_raceParams);
 
         CreateBuffers();
         
@@ -76,19 +76,27 @@ public class RaceRecording
         int aiCount         = reader.ReadInt();
         List<PlayerConfig> playerConfigs = reader.ReadArray<int>().Select(id => Main.Instance.GetPlayerConfig(id)).ToList();
 
+        List<PlayerProfile> proflies = new List<PlayerProfile>();
+        for (int i = 0; i < humanCount + aiCount; i++)
+        {
+            long id = reader.ReadLong();
+            string name = reader.ReadString();
+            proflies.Add(PlayerProfileManager.Instance.GetGuestProfile(name, false));
+        }
+
         List<PlayerBaseInput> inputs = InputManager.Instance.PlayerInputs.ToList();
         List<int> playerindicies = new List<int>();
 
-        return new RaceParameters(level, laps, humanCount, aiCount, playerConfigs, inputs, playerindicies);
+        return new RaceParameters(level, laps, humanCount, aiCount, playerConfigs, proflies, inputs, playerindicies);
     }
 
-    public static RaceResult[] ParseRaceResults(BinaryReader reader, int playerCount)
+    public static RaceResult[] ParseRaceResults(BinaryReader reader, RaceParameters raceParams)
     {
-        RaceResult[] results = new RaceResult[playerCount];
+        RaceResult[] results = new RaceResult[raceParams.PlayerCount];
         
-        for (int i = 0; i < playerCount; i++)
+        for (int i = 0; i < raceParams.PlayerCount; i++)
         {
-            results[i] = new RaceResult(reader.ReadInt(), reader.ReadBool(), reader.ReadArray<float>().ToList());
+            results[i] = new RaceResult(raceParams.Profiles[i], reader.ReadInt(), reader.ReadBool(), reader.ReadArray<float>().ToList());
         }
         return results;
     }
@@ -102,6 +110,13 @@ public class RaceRecording
         headerWriter.WriteValue(m_raceParams.HumanCount);
         headerWriter.WriteValue(m_raceParams.AICount);
         headerWriter.WriteArray(m_raceParams.PlayerConfigs.Select(c => c.Id).ToArray());
+
+        for (int i = 0; i < PlayerCount; i++)
+        {
+            Player player = players[i];
+            headerWriter.WriteValue(player.Profile.UniqueId);
+            headerWriter.WriteValue(player.Profile.Name);
+        }
 
         for (int i = 0; i < PlayerCount; i++)
         {

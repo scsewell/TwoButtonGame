@@ -52,6 +52,8 @@ public class PlayerJoystickInput : PlayerBaseInput
         get { return GetKeyDown(m_menu); }
     }
 
+    public override bool IsController { get { return true; } }
+
     public PlayerJoystickInput(int number) : base()
     {
         m_joystickNumber = number;
@@ -68,7 +70,7 @@ public class PlayerJoystickInput : PlayerBaseInput
         m_boost = GetButton(0);
         m_accept = GetButton(0);
         m_cancel = GetButton(1);
-        m_menu = GetButton(10);
+        m_menu = GetButton(7);
 
         m_spriteLeft    = new List<Sprite>() { LoadSprite("LS") };
         m_spriteRight   = new List<Sprite>() { LoadSprite("LS") };
@@ -76,6 +78,7 @@ public class PlayerJoystickInput : PlayerBaseInput
         m_spriteBrake   = new List<Sprite>() { LoadSprite("LS") };
         m_spriteBoost   = new List<Sprite>() { LoadSprite("A") };
 
+        m_spriteNavigate    = new List<Sprite>() { LoadSprite("LS"), LoadSprite("Dpad") };
         m_spriteLeftRight   = new List<Sprite>() { LoadSprite("Dpad_X") };
         m_spriteDownUp      = new List<Sprite>() { LoadSprite("Dpad_Y") };
         m_spriteAccept      = new List<Sprite>() { LoadSprite("A") };

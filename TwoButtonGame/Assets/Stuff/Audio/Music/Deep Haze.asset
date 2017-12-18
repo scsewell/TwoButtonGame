@@ -13,5 +13,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_track: {fileID: 8300000, guid: 8513b7ce574dff94fbf4c4d34bb917b6, type: 3}
   m_name: Deep Haze
+  m_artist: Kevin Macleod
   m_minutes: 1
   m_seconds: 28.677811

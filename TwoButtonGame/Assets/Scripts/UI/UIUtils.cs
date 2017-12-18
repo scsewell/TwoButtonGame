@@ -22,15 +22,15 @@ public static class UIUtils
         }
     }
 
-    public static void FixText(Text text, string value)
+    public static void FitText(Text text, string value)
     {
         RectTransform rt = text.GetComponent<RectTransform>();
 
-        float maxWidth = rt.lossyScale.x * rt.rect.width;
+        float maxWidth = Mathf.Abs(rt.lossyScale.x * rt.rect.width);
 
         TextGenerationSettings settings = text.GetGenerationSettings(Vector2.zero);
         string name = value;
-        int length = name.Length - 3;
+        int length = name.Length;
 
         while (length > 0 && text.cachedTextGenerator.GetPreferredWidth(name, settings) > maxWidth)
         {

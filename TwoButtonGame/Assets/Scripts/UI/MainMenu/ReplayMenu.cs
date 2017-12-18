@@ -62,16 +62,24 @@ namespace BoostBlasters.MainMenus
         {
             if (enabled)
             {
-                m_infos = ReplayManager.Instance.GetReplays();
+                ReplayManager.Instance.RefreshReplays();
+                m_infos = ReplayManager.Instance.Replays;
             }
             m_infoPage = 0;
             ViewPage(0);
         }
 
+        protected override void OnUpdate()
+        {
+            m_infos = ReplayManager.Instance.Replays;
+        }
+
         protected override void OnUpdateGraphics()
         {
-            int maxPage = (m_infos.Count / m_panelCount);
+            int maxPage = GetMaxPageCount();
             m_pageText.text = (m_infoPage + 1) + "/" + (maxPage + 1);
+
+            ViewPage(m_infoPage);
 
             GameObject selected = EventSystem.current.currentSelectedGameObject;
 
@@ -120,7 +128,9 @@ namespace BoostBlasters.MainMenus
         private void ChangePage(int offset)
         {
             int oldPage = m_infoPage;
-            m_infoPage = Mathf.Clamp(m_infoPage + offset, 0, m_infos.Count / m_panelCount);
+
+            m_infoPage = Mathf.Clamp(m_infoPage + offset, 0, GetMaxPageCount());
+
             if (m_infoPage != oldPage)
             {
                 ViewPage(m_infoPage);
@@ -139,23 +149,7 @@ namespace BoostBlasters.MainMenus
 
             if (m_replayPanels[0].isActiveAndEnabled)
             {
-                DefaultSelectionOverride = m_replayPanels[0].GetComponent<Selectable>();
-
-                Navigation explicitNav = new Navigation();
-                explicitNav.mode = Navigation.Mode.Explicit;
-
-                UIHelper.SetNavigationVertical(m_replayListContent, explicitNav, explicitNav, explicitNav);
-                Selectable last = m_replayPanels.Last(p => p.isActiveAndEnabled).GetComponent<Selectable>();
-
-                Navigation tempNav;
-
-                tempNav = last.navigation;
-                tempNav.selectOnDown = m_backButton;
-                last.navigation = tempNav;
-
-                tempNav = m_backButton.navigation;
-                tempNav.selectOnUp = last;
-                m_backButton.navigation = tempNav;
+                DefaultSelectionOverride = UIHelper.SetNavigationVertical(m_replayListContent, null, m_backButton, null, null).First();
             }
             else
             {
@@ -167,6 +161,11 @@ namespace BoostBlasters.MainMenus
                 tempNav.selectOnUp = null;
                 m_backButton.navigation = tempNav;
             }
+        }
+
+        private int GetMaxPageCount()
+        {
+            return (m_infos.Count / m_panelCount) + (m_infos.Count > 0 && m_infos.Count % m_panelCount == 0 ? -1 : 0);
         }
     }
 }

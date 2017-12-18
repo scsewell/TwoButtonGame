@@ -62,7 +62,7 @@ public class CameraRig : MonoBehaviour
         m_graph.Destroy();
     }
 
-    private void Update()
+    public void UpdateCamera(bool enableCamera)
     {
         if (m_shotsToPlay.Count > 0)
         {
@@ -81,7 +81,7 @@ public class CameraRig : MonoBehaviour
             }
         }
 
-        m_cam.enabled = !m_graph.IsDone();
+        m_cam.enabled = !m_graph.IsDone() && enableCamera;
     }
 
     private void LateUpdate()

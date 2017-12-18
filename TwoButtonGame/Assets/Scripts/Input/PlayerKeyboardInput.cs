@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class PlayerKeyboardInput : PlayerBaseInput
@@ -46,7 +47,9 @@ public class PlayerKeyboardInput : PlayerBaseInput
     {
         get { return GetKeyDown(m_menu); }
     }
-    
+
+    public override bool IsController { get { return false; } }
+
     public PlayerKeyboardInput(
         KeyCode hneg, KeyCode hpos,
         KeyCode vneg, KeyCode vpos,
@@ -65,21 +68,70 @@ public class PlayerKeyboardInput : PlayerBaseInput
         m_cancel = cancel;
         m_menu = menu;
 
-        m_spriteLeft    = new List<Sprite>() { LoadSprite(hneg) };
-        m_spriteRight   = new List<Sprite>() { LoadSprite(hpos) };
-        m_spriteFore    = new List<Sprite>() { m_spriteLeft[0], m_spriteRight[0] };
-        m_spriteBrake   = new List<Sprite>() { LoadSprite(vneg) };
-        m_spriteBoost   = new List<Sprite>() { LoadSprite(boost) };
+        m_spriteLeft    = GetSprite(hneg);
+        m_spriteRight   = GetSprite(hpos);
+        m_spriteFore    = GetSprites(hneg, hpos);
+        m_spriteBrake   = GetSprite(vneg);
+        m_spriteBoost   = GetSprite(boost);
+        
+        m_spriteNavigate    = GetSprites(hneg, hpos, vneg, vpos);
+        m_spriteLeftRight   = GetSprites(hneg, hpos);
+        m_spriteDownUp      = GetSprites(vneg, vpos);
+        m_spriteAccept      = GetSprite(accept);
+        m_spriteCancel      = GetSprite(cancel);
+        m_spriteMenu        = GetSprite(menu);
+    }
 
-        m_spriteLeftRight   = new List<Sprite>() { m_spriteLeft[0], m_spriteRight[0] };
-        m_spriteDownUp      = new List<Sprite>() { LoadSprite(vneg), LoadSprite(vpos) };
-        m_spriteAccept  = new List<Sprite>() { LoadSprite(accept) };
-        m_spriteCancel  = new List<Sprite>() { LoadSprite(cancel) };
-        m_spriteMenu    = new List<Sprite>() { LoadSprite(menu) };
+    private static readonly List<KeyCode> WASD = new List<KeyCode>
+    {
+        KeyCode.W,
+        KeyCode.A,
+        KeyCode.S,
+        KeyCode.D,
+    };
+
+    private static readonly List<KeyCode> ARROWS = new List<KeyCode>
+    {
+        KeyCode.LeftArrow,
+        KeyCode.RightArrow,
+        KeyCode.DownArrow,
+        KeyCode.UpArrow,
+    };
+
+    private List<Sprite> GetSprite(KeyCode key)
+    {
+        return new List<Sprite>() { LoadSprite(key) };
+    }
+
+    private List<Sprite> GetSprites(params KeyCode[] keys)
+    {
+        List<Sprite> sprites = new List<Sprite>();
+
+        if (ARROWS.All(k => keys.Contains(k)))
+        {
+            sprites.Add(LoadSprite("Arrows"));
+        }
+        else if (WASD.All(k => keys.Contains(k)))
+        {
+            sprites.Add(LoadSprite("WASD"));
+        }
+        else
+        {
+            foreach (KeyCode key in keys)
+            {
+                sprites.Add(LoadSprite(key));
+            }
+        }
+        return sprites;
     }
 
     private Sprite LoadSprite(KeyCode key)
     {
-        return Resources.Load<Sprite>("Keyboard_" + key.ToString());
+        return LoadSprite(key.ToString());
+    }
+
+    private Sprite LoadSprite(string str)
+    {
+        return Resources.Load<Sprite>("Keyboard_" + str);
     }
 }

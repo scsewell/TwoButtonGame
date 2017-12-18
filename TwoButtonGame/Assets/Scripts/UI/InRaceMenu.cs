@@ -2,33 +2,44 @@
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
+using Framework.UI;
 
-public class InRaceMenu : MonoBehaviour
+public class InRaceMenu : MenuBase
 {
     [Header("Audio")]
-    [SerializeField] private AudioClip m_quit;
     [SerializeField] [Range(0, 1)]
     private float m_quitVolume = 1.0f;
-
-    [SerializeField] private AudioClip m_pause;
     [SerializeField] [Range(0, 1)]
     private float m_pauseVolume = 1.0f;
-
-    [SerializeField] private AudioClip m_resume;
     [SerializeField] [Range(0, 1)]
     private float m_resumeVolume = 1.0f;
 
-    [SerializeField] private AudioClip m_confirm;
-    [SerializeField] [Range(0, 1)]
-    private float m_confirmVolume = 1.0f;
+    [Header("Intro Panel")]
+    [SerializeField] private Canvas m_titleCardMenu;
+    [SerializeField] private Text m_trackName;
+    [SerializeField] private Text m_songName;
+    [SerializeField] private ControlPanel m_skipControls;
+    [SerializeField] private CanvasGroup m_cardUpper;
+    [SerializeField] private CanvasGroup m_cardLower;
+    [SerializeField] private CanvasGroup m_cardBottom;
 
-    [SerializeField] private AudioClip m_cancel;
-    [SerializeField] [Range(0, 1)]
-    private float m_cancelVolume = 1.0f;
+    [SerializeField] [Range(0, 5)]
+    private float m_slideInWait = 1.0f;
+    [SerializeField] [Range(0, 10)]
+    private float m_titleHoldTime = 5.0f;
+    [SerializeField] [Range(0, 5)]
+    private float m_slideDutation = 0.5f;
     
+    private float m_introSkipTime;
+
     [Header("Menu")]
     [SerializeField] private Canvas m_menu;
     [SerializeField] private Text m_title;
+    [SerializeField] private RectTransform m_mainButtons;
+    [SerializeField] private Button m_resumeButton;
+    [SerializeField] private Button m_restartButton;
+    [SerializeField] private Button m_quitButton;
     [SerializeField] private ControlPanel m_menuControls1;
     [SerializeField] private ControlPanel m_menuControls2;
     [SerializeField] [Range(0, 10)]
@@ -36,45 +47,53 @@ public class InRaceMenu : MonoBehaviour
     [SerializeField] [Range(0, 5)]
     private float m_finishFadeInTime = 0.5f;
 
+    private CanvasGroup m_menuGroup;
+
     [Header("Other")]
     [SerializeField]
     private Canvas m_playerUIParent;
     [SerializeField]
     private Image m_fade;
 
-    private List<PlayerUI> m_playerUIs = new List<PlayerUI>();
-    private CanvasGroup m_menuGroup;
-    private List<KeyCode> m_pauseKeys;
-    private List<KeyCode> m_resumeKeys;
-    private List<KeyCode> m_confirmKeys;
-    private List<KeyCode> m_cancelKeys;
-    private List<KeyCode> m_quitKeys;
+    private List<PlayerUI> m_playerUIs;
+    private List<PlayerBaseInput> m_inputs;
     private float m_finishTime;
-    private bool m_confirmAction = false;
 
     private void Awake()
     {
-        m_menuGroup = m_menu.GetComponent<CanvasGroup>();
+        m_menuGroup = m_menu.GetComponentInChildren<CanvasGroup>();
 
-        m_pauseKeys     = new List<KeyCode>() { KeyCode.Escape, };
-        m_resumeKeys    = new List<KeyCode>() { KeyCode.Escape, };
-        m_quitKeys      = new List<KeyCode>() { KeyCode.Q, };
-        m_confirmKeys   = new List<KeyCode>() { KeyCode.Return, };
-        m_cancelKeys    = new List<KeyCode>() { KeyCode.Escape, };
+        m_resumeButton.onClick.AddListener(() => Main.Instance.RaceManager.Resume());
+        m_restartButton.onClick.AddListener(() => Main.Instance.RaceManager.ResetRace(0));
+        m_quitButton.onClick.AddListener(() => Quit());
+
+        UIHelper.SetNavigationVertical(m_mainButtons, null, null, null, null, true);
 
         m_menu.enabled = false;
         m_menuGroup.alpha = 1;
 
         m_fade.enabled = true;
         m_fade.color = new Color(0, 0, 0, 1);
+
+        m_playerUIs = new List<PlayerUI>();
     }
 
-    public InRaceMenu Init(int playerCount)
+    public InRaceMenu Init(RaceParameters raceParameters)
     {
+        m_inputs = raceParameters.Inputs;
+
         CanvasScaler scaler = m_playerUIParent.GetComponent<CanvasScaler>();
 
-        Rect splitscreen = CameraManager.GetSplitscreen(0, playerCount);
+        Rect splitscreen = CameraManager.GetSplitscreen(0, raceParameters.HumanCount);
         scaler.referenceResolution = new Vector2(scaler.referenceResolution.x / splitscreen.width, scaler.referenceResolution.y / splitscreen.height);
+
+        LevelConfig config = raceParameters.LevelConfig;
+        m_trackName.text = config.Name;
+        m_songName.text = "\"" + config.Music.Name + "\" - " + config.Music.Artist;
+
+        gameObject.AddComponent<CustomInputModule>();
+        CustomInput customInput = gameObject.GetComponent<CustomInput>();
+        customInput.SetInputs(m_inputs);
 
         return this;
     }
@@ -87,8 +106,9 @@ public class InRaceMenu : MonoBehaviour
 
     public void UpdateUI(RaceManager raceManager, bool showPlayerUI, bool isPaused, bool isFinished, bool isQuitting, float fade)
     {
-        m_playerUIParent.enabled = showPlayerUI;
+        m_fade.color = new Color(0, 0, 0, fade);
 
+        m_playerUIParent.enabled = showPlayerUI;
         if (m_playerUIParent.enabled)
         {
             foreach (PlayerUI ui in m_playerUIs)
@@ -97,7 +117,28 @@ public class InRaceMenu : MonoBehaviour
             }
         }
 
+        bool menuButton = m_inputs.Any(i => i.UI_Menu) || Input.GetKeyDown(KeyCode.Escape);
+        
+        if (!isFinished && menuButton)
+        {
+            if (isPaused)
+            {
+                raceManager.Resume();
+            }
+            else
+            {
+                raceManager.Pause();
+            }
+        }
+
         m_menu.enabled = (isPaused || isFinished) && !isQuitting;
+
+        GameObject selected = EventSystem.current.currentSelectedGameObject;
+        if (selected == null)
+        {
+            selected = m_menu.enabled ? m_resumeButton.gameObject : null;
+            EventSystem.current.SetSelectedGameObject(selected);
+        }
 
         float menuAlpha = 1;
         if (isFinished)
@@ -106,91 +147,61 @@ public class InRaceMenu : MonoBehaviour
         }
         m_menuGroup.alpha = menuAlpha * (isPaused ? 1 : (1 - fade));
 
-        m_fade.color = new Color(0, 0, 0, fade);
 
-        bool resume = m_resumeKeys.Any(     k => Input.GetKeyDown(k));
-        bool pause = m_pauseKeys.Any(       k => Input.GetKeyDown(k));
-        bool quit = m_quitKeys.Any(         k => Input.GetKeyDown(k));
-        bool confirm = m_confirmKeys.Any(   k => Input.GetKeyDown(k));
-        bool cancel = m_cancelKeys.Any(     k => Input.GetKeyDown(k));
-
-        if (isFinished && quit)
+        m_titleCardMenu.enabled = Time.time <= raceManager.TimeIntroEnd;
+        if (m_titleCardMenu.enabled)
         {
-            Quit(raceManager);
-        }
+            float inTime = raceManager.TimeRaceLoad + m_slideInWait;
+            float outTime = Mathf.Min(inTime + m_titleHoldTime, raceManager.TimeIntroSkip);
 
-        if (!isFinished)
-        {
-            if (isPaused)
+            SetIntroCardPos(m_cardUpper, inTime, outTime, 0);
+            SetIntroCardPos(m_cardLower, inTime, outTime, 0.1f);
+            SetIntroCardPos(m_cardBottom, inTime, Mathf.Min(float.MaxValue, raceManager.TimeIntroSkip), 0.3f);
+
+            m_skipControls.UpdateUI("Skip", m_inputs.SelectMany(i => i.SpriteAccept).ToList());
+
+            if (!m_menu.enabled)
             {
-                if (!m_confirmAction)
+                foreach (PlayerBaseInput input in m_inputs)
                 {
-                    if (resume)
+                    if (input.UI_Accept)
                     {
-                        raceManager.Resume();
-                    }
-                    else if (quit)
-                    {
-                        m_confirmAction = true;
-                        AudioManager.Instance.PlaySound(m_confirm, m_confirmVolume, true);
-                    }
-                }
-                else
-                {
-                    if (confirm)
-                    {
-                        Quit(raceManager);
-                    }
-                    else if (cancel)
-                    {
-                        m_confirmAction = false;
-                        AudioManager.Instance.PlaySound(m_cancel, m_cancelVolume, true);
+                        raceManager.SkipIntro();
+                        PlayNextMenuSound();
                     }
                 }
             }
-            else if (pause)
-            {
-                raceManager.Pause();
-            }
         }
 
-        m_menuControls1.SetActive(isPaused);
-        if (isPaused)
-        {
-            if (!m_confirmAction)
-            {
-                m_title.text = "Paused";
-                //m_menuControls1.UpdateUI("Resume", m_resumeKeys.Select(k => InputManager.GetName(k)).ToList());
-                //m_menuControls2.UpdateUI("End Race", m_quitKeys.Select(k => InputManager.GetName(k)).ToList());
-            }
-            else
-            {
-                m_title.text = "Quit?";
-                //m_menuControls1.UpdateUI("Cancel", m_cancelKeys.Select(k => InputManager.GetName(k)).ToList());
-                //m_menuControls2.UpdateUI("OK", m_confirmKeys.Select(k => InputManager.GetName(k)).ToList());
-            }
-        }
-        else if (isFinished)
-        {
-            m_title.text = "Race Over";
-            //m_menuControls2.UpdateUI("End Race", m_quitKeys.Select(k => InputManager.GetName(k)).ToList());
-        }
+        FlushSoundQueue();
     }
 
-    private void Quit(RaceManager raceManager)
+    private void SetIntroCardPos(CanvasGroup card, float inTime, float outTime, float timeOffset)
     {
-        AudioManager.Instance.PlaySound(m_quit, m_quitVolume, true);
-        raceManager.Quit();
+        float time = Mathf.Clamp01((Time.time - (inTime + timeOffset)) / m_slideDutation) - Mathf.Clamp01((Time.time - (outTime + timeOffset)) / m_slideDutation);
+        float fac = (0.5f * Mathf.Cos(time * Mathf.PI)) + 0.5f;
+
+        RectTransform rt = card.GetComponent<RectTransform>();
+        float x = -(rt.rect.width + 300) * fac;
+        rt.anchoredPosition = new Vector2(x, rt.anchoredPosition.y);
+
+        card.alpha = 1 - fac;
+    }
+    
+    private void Quit()
+    {
+        Main.Instance.RaceManager.Quit();
+        PlayNextMenuSound(m_quitVolume);
     }
 
     public void OnPause()
     {
-        AudioManager.Instance.PlaySound(m_pause, m_pauseVolume, true);
+        PlayOpenMenuSound(m_pauseVolume);
     }
 
     public void OnResume()
     {
-        AudioManager.Instance.PlaySound(m_resume, m_resumeVolume, true);
+        PlayBackMenuSound(m_resumeVolume);
     }
 
     public void OnFinish()

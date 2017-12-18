@@ -30,7 +30,11 @@ public class LevelConfig : ScriptableObject
     [SerializeField]
     private Sprite m_preview;
     public Sprite Preview { get { return m_preview; } }
-    
+
+    [SerializeField]
+    private GameObject m_preview3d;
+    public GameObject Preview3d { get { return m_preview3d; } }
+
     [SerializeField]
     private string m_sceneName;
     public string SceneName { get { return m_sceneName; } }
@@ -57,5 +61,10 @@ public class LevelConfig : ScriptableObject
         [SerializeField] [Range(0, 10)]
         private float m_speed = 1;
         public float Speed { get { return m_speed; } }
+    }
+
+    public override string ToString()
+    {
+        return Name;
     }
 }

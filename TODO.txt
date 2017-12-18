@@ -1,30 +1,28 @@
 ### To Do ###
-going back in player select goes all the way back to main menu
 
-Grey out character when selected, Ready up anim, Character blurbs
-player profiles - (add edit remove) - name, best lap times, best finish times per course
-track layout previews in level selection, 3d?
-
+restart race menu option
 pauser controls pause menu
-Async loading for replays
+list top scores (full and lap) for each track in track selection
+player profiles - best lap times, best finish times per course, race count, win percentage
+
+Show player names above heads (fade in when close)
+
 victory music should differ from replay music
 replays - store player profile id and name so it can be portable
 replays - speed, cameras(cinemachine, players all at once, players single (cycle through), manual zoom/free camera)
+replays - vairable replay speed
 
-Show player names above heads (fade in when close)
-skip cutscene
 look around
-
 Engines spark on boost fail
 paritcle motion trail behind engine
 
-vairable replay speed
 Collision/sliding sound
 Player finish line sounds
 Energy gate sounds
 Waypoint engine sound
 
 Characters (fatty, airbrake flaps!!!!, floating boosters fancy tech, robot, other race?, really abstract?)
+Abilities (down plummet, downwards boost, teleport)
 
 Alternate paths
 Moving gates - Add rotation
@@ -45,6 +43,7 @@ Ensure music is credited
 ### Bugs and stuff ###
 Outline is very expensive on UI, especially the player time...
 Camera can clip with the gates, perhaps use a fading material when close...
+What to do if a joystick disconnects in menu or game?
 
 ### Long Term ###
 Leaderboard

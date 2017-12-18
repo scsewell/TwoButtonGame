@@ -10,6 +10,12 @@ using BoostBlasters.MainMenus;
 
 public class MainMenu : MenuBase
 {
+    [Header("UI Elements")]
+    [SerializeField] private GameObject m_controls;
+    [SerializeField] private ControlPanel m_controls1;
+    [SerializeField] private ControlPanel m_controls2;
+    [SerializeField] private ControlPanel m_controls3;
+
     [Header("Options")]
     [SerializeField] private MusicParams m_music;
     [SerializeField] private GameObject m_background;
@@ -28,13 +34,16 @@ public class MainMenu : MenuBase
     private PlayerSelectMenu m_playerSelect;
     private LevelSelectMenu m_levelSelect;
     private ProfilesMenu m_profiles;
-    private ProfileNameMenu m_profileName;
-    public ProfileNameMenu ProfileName { get { return m_profileName; } }
     private ReplayMenu m_replays;
     private SettingsMenu m_settings;
     private CreditsMenu m_credits;
 
-    private CustomInput m_customInput;
+    private ProfileNameMenu m_profileName;
+    public ProfileNameMenu ProfileName { get { return m_profileName; } }
+
+    private ConfirmMenu m_confirmMenu;
+    public ConfirmMenu ConfirmMenu { get { return m_confirmMenu; } }
+    
     private List<MenuScreen> m_menuScreens;
     private Menu m_activeMenu = Menu.None;
     private Menu m_targetMenu;
@@ -58,10 +67,8 @@ public class MainMenu : MenuBase
         get { return m_playerSelect.ActiveInputs; }
     }
 
-    protected override void Awake()
+    private void Awake()
     {
-        base.Awake();
-
         // Ensure the GameController exists
         Debug.Log(Main.Instance.name);
 
@@ -73,17 +80,16 @@ public class MainMenu : MenuBase
         m_replays       = GetComponentInChildren<ReplayMenu>();
         m_settings      = GetComponentInChildren<SettingsMenu>();
         m_credits       = GetComponentInChildren<CreditsMenu>();
+        m_confirmMenu   = GetComponentInChildren<ConfirmMenu>();
 
         gameObject.AddComponent<CustomInputModule>();
-        m_customInput = gameObject.GetComponent<CustomInput>();
-        m_customInput.SetInputs(InputManager.Instance.PlayerInputs.ToList());
+        CustomInput customInput = gameObject.GetComponent<CustomInput>();
+        customInput.SetInputs(InputManager.Instance.PlayerInputs.ToList());
 
         m_availableInputs = new List<PlayerBaseInput>(InputManager.Instance.PlayerInputs);
-
-        RaceParameters lastRace = Main.Instance.LastRaceParams;
-
+        
         m_menuScreens = new List<MenuScreen>(GetComponentsInChildren<MenuScreen>());
-        m_menuScreens.ForEach(m => m.InitMenu(lastRace));
+        m_menuScreens.ForEach(m => m.InitMenu(Main.Instance.LastRaceParams));
 
         switch (Main.Instance.LastRaceType)
         {
@@ -163,12 +169,29 @@ public class MainMenu : MenuBase
             m_replays.enabled       = (m_activeMenu == Menu.Replays);
             m_settings.enabled      = (m_activeMenu == Menu.Settings);
             m_credits.enabled       = (m_activeMenu == Menu.Credits);
+            m_confirmMenu.enabled   = (m_activeMenu == Menu.Confirm);
 
             EventSystem.current.SetSelectedGameObject(null);
 
             m_menuScreens.ForEach(m => m.ResetMenu(previous == Menu.Root));
         }
         m_menuScreens.ForEach(m => m.UpdateGraphics());
+
+        FlushSoundQueue();
+        
+        switch (m_activeMenu)
+        {
+            case Menu.Root:
+                List<PlayerBaseInput> contolInputs = AvailableInputs.Where(i => !i.IsController).ToList();
+                m_controls.SetActive(true);
+                m_controls1.UpdateUI("Navigate", contolInputs.SelectMany(i => i.SpriteNavigate).ToList());
+                m_controls2.UpdateUI("Accept",   contolInputs.SelectMany(i => i.SpriteAccept).ToList());
+                m_controls3.UpdateUI("Cancel",   contolInputs.SelectMany(i => i.SpriteCancel).ToList());
+                break;
+            default:
+                m_controls.SetActive(false);
+                break;
+        }
     }
 
     private float GetFadeFactor()
@@ -190,22 +213,29 @@ public class MainMenu : MenuBase
 
     public void LaunchRace()
     {
-        LevelConfig levelConfig = m_levelSelect.SelectedLevel;
-        int lapCount = m_levelSelect.LapCount;
-        
-        List<PlayerConfig> playerConfigs = m_playerSelect.SelectedConfigs;
+        List<PlayerConfig> playerConfigs = new List<PlayerConfig>(m_playerSelect.CharacterConfigs);
+        List<PlayerProfile> playerProfiles = new List<PlayerProfile>(m_playerSelect.PlayerProfiles);
         List<PlayerBaseInput> inputs = m_playerSelect.ActiveInputs;
-        List<int> playerIndicies = m_playerSelect.PlayerIndices;
 
         int humanCount = inputs.Count;
-        int aiCount = 0;
+        int aiCount = m_levelSelect.AICountSelect.Value;
         
         for (int i = 0; i < aiCount; i++)
         {
             playerConfigs.Add(Utils.PickRandom(Main.Instance.PlayerConfigs));
+            playerProfiles.Add(PlayerProfileManager.Instance.GetGuestProfile("AI " + (i + 1), false));
         }
         
-        RaceParameters raceParams = new RaceParameters(levelConfig, lapCount, humanCount, aiCount, playerConfigs, inputs, playerIndicies);
+        RaceParameters raceParams = new RaceParameters(
+            m_levelSelect.TrackSelect.Value,
+            m_levelSelect.LapSelect.Value,
+            humanCount,
+            aiCount,
+            playerConfigs,
+            playerProfiles,
+            inputs,
+            m_playerSelect.PlayerIndices
+            );
 
         m_loading = Main.Instance.LoadRace(raceParams);
         m_menuExitTime = Time.unscaledTime;

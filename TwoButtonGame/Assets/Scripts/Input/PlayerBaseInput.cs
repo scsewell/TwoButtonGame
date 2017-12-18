@@ -26,12 +26,14 @@ public abstract class PlayerBaseInput
     abstract public bool UI_Cancel  { get; }
     abstract public bool UI_Menu    { get; }
 
+    protected List<Sprite> m_spriteNavigate;
     protected List<Sprite> m_spriteLeftRight;
     protected List<Sprite> m_spriteDownUp;
     protected List<Sprite> m_spriteAccept;
     protected List<Sprite> m_spriteCancel;
     protected List<Sprite> m_spriteMenu;
 
+    public List<Sprite> SpriteNavigate  { get { return m_spriteNavigate; } }
     public List<Sprite> SpriteLeftRight { get { return m_spriteLeftRight; } }
     public List<Sprite> SpriteDownUp    { get { return m_spriteDownUp; } }
     public List<Sprite> SpriteAccept    { get { return m_spriteAccept; } }
@@ -43,13 +45,15 @@ public abstract class PlayerBaseInput
     private UIAxisInput m_right;
     private UIAxisInput m_down;
     private UIAxisInput m_up;
-
+    
     public bool UI_Left     { get { return m_left.Pressed; } }
     public bool UI_Right    { get { return m_right.Pressed; } }
     public bool UI_Down     { get { return m_down.Pressed; } }
     public bool UI_Up       { get { return m_up.Pressed; } }
 
     protected InputMuting m_muting;
+
+    public abstract bool IsController { get; }
 
     protected PlayerBaseInput()
     {

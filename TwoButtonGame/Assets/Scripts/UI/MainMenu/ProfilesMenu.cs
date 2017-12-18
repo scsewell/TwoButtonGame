@@ -39,7 +39,7 @@ namespace BoostBlasters.MainMenus
             m_backButton.onClick.AddListener(   () => MainMenu.SetMenu(Menu.Root, true));
             m_closeButton.onClick.AddListener(  () => CloseSelectedProfile());
             m_editButton.onClick.AddListener(   () => EditSelectedProfile());
-            m_deleteButton.onClick.AddListener( () => DeleteSelectedProfile());
+            m_deleteButton.onClick.AddListener( () => ConfirmProfileDelete());
 
             m_selectPanels = new List<PlayerProfilePanel>();
 
@@ -88,7 +88,7 @@ namespace BoostBlasters.MainMenus
                 {
                     selectedPanel = panel;
                 }
-                panel.UpdateGraphics();
+                panel.UpdateGraphics(selectedPanel == panel, false);
             }
 
             m_mainContent.SetActive(m_selectedProfile != null);
@@ -102,7 +102,7 @@ namespace BoostBlasters.MainMenus
             }
         }
 
-        public void OnSelect(PlayerProfilePanel panel, PlayerProfile profile, bool createNew)
+        private void OnSelect(PlayerProfilePanel panel, PlayerProfile profile, PlayerProfilePanel.Mode mode)
         {
             m_selectedPanel = panel;
             m_selectedProfile = profile;
@@ -111,10 +111,11 @@ namespace BoostBlasters.MainMenus
             EventSystem.current.SetSelectedGameObject(null);
             HandleSelection();
 
-            if (createNew)
+            RemeberLastSelection = true;
+            
+            if (mode == PlayerProfilePanel.Mode.AddNew)
             {
-                MainMenu.SetMenu(Menu.ProfileName);
-                MainMenu.ProfileName.EditProfile(PlayerProfileManager.Instance.AddNewProfile(), true, Menu.Profiles);
+                MainMenu.ProfileName.EditProfile(PlayerProfileManager.Instance.AddNewProfile(), true, Menu.Profiles, null);
             }
         }
 
@@ -128,6 +129,8 @@ namespace BoostBlasters.MainMenus
 
         private void CloseSelectedProfile()
         {
+            RemeberLastSelection = false;
+
             if (m_selectedPanel != null)
             {
                 GameObject toSelect = m_selectPanels[Mathf.Min(m_selectPanels.IndexOf(m_selectedPanel), m_selectPanels.Count - 1)].gameObject;
@@ -141,24 +144,31 @@ namespace BoostBlasters.MainMenus
         private void EditSelectedProfile()
         {
             MainMenu.SetMenu(Menu.ProfileName);
-            MainMenu.ProfileName.EditProfile(m_selectedProfile, false, Menu.Profiles);
+            MainMenu.ProfileName.EditProfile(m_selectedProfile, false, Menu.Profiles, null);
         }
 
-        private void DeleteSelectedProfile()
+        private void ConfirmProfileDelete()
         {
-            PlayerProfileManager.Instance.DeleteProfile(m_selectedProfile);
-            CloseSelectedProfile();
-            ViewPage(m_page);
+            MainMenu.ConfirmMenu.ConfirmAction("Delete Profile:   " + m_selectedProfile.Name, DeleteSelectedProfile, Menu.Profiles);
         }
 
-        public void ViewPreviousPage()
+        private void DeleteSelectedProfile(bool confirmed)
         {
-            ChangePage(-1);
+            if (confirmed)
+            {
+                PlayerProfileManager.Instance.DeleteProfile(m_selectedProfile);
+                CloseSelectedProfile();
+                ViewPage(m_page);
+            }
         }
 
-        public void ViewNextPage()
+        private void OnMove(AxisEventData eventData)
         {
-            ChangePage(1);
+            switch (eventData.moveDir)
+            {
+                case MoveDirection.Left: ChangePage(-1); break;
+                case MoveDirection.Right: ChangePage(1); break;
+            }
         }
 
         private void ChangePage(int offset)
@@ -175,32 +185,22 @@ namespace BoostBlasters.MainMenus
 
         private void ViewPage(int page)
         {
+            m_page = Mathf.Clamp(page, 0, PlayerProfileManager.Instance.Profiles.Count / m_selectPanelCount);
+
             for (int i = 0; i < m_selectPanels.Count; i++)
             {
-                bool isAddNew = (i == 0 && page == 0);
-                int index = Mathf.Max((page * m_selectPanelCount) + i - 1, 0);
+                bool isAddNew = (i == 0 && m_page == 0);
+                int index = Mathf.Max((m_page * m_selectPanelCount) + i - 1, 0);
 
                 IReadOnlyList<PlayerProfile> profiles = PlayerProfileManager.Instance.Profiles;
-                m_selectPanels[i].SetProfile((!isAddNew && index < profiles.Count) ? profiles[index] : null, isAddNew);
+                PlayerProfilePanel.Mode mode = isAddNew ? PlayerProfilePanel.Mode.AddNew : PlayerProfilePanel.Mode.Profile;
+
+                m_selectPanels[i].SetProfile((!isAddNew && index < profiles.Count) ? profiles[index] : null, mode, OnSelect, OnMove);
             }
 
             if (m_selectPanels[0].isActiveAndEnabled)
             {
-                Navigation explicitNav = new Navigation();
-                explicitNav.mode = Navigation.Mode.Explicit;
-
-                UIHelper.SetNavigationVertical(m_selectContent, explicitNav, explicitNav, explicitNav);
-                Selectable last = m_selectPanels.Last(p => p.isActiveAndEnabled).GetComponent<Selectable>();
-
-                Navigation tempNav;
-
-                tempNav = last.navigation;
-                tempNav.selectOnDown = m_backButton;
-                last.navigation = tempNav;
-
-                tempNav = m_backButton.navigation;
-                tempNav.selectOnUp = last;
-                m_backButton.navigation = tempNav;
+                UIHelper.SetNavigationVertical(m_selectContent, null, m_backButton, null, null);
             }
             else
             {

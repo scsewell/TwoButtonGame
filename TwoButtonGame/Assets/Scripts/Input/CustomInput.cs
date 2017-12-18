@@ -11,8 +11,6 @@ public class CustomInput : BaseInput
     protected override void Awake()
     {
         base.Awake();
-
-        m_inputs = new List<PlayerBaseInput>();
     }
 
     public void SetInputs(List<PlayerBaseInput> inputs)
@@ -42,7 +40,7 @@ public class CustomInput : BaseInput
         {
             if (buttonName == CustomInputModule.ACCEPT_BUTTON)
             {
-                return m_inputs.Any(i => i.UI_Accept) || Input.GetKeyDown(KeyCode.Return);
+                return m_inputs.Any(i => i.UI_Accept) || Input.GetKeyDown(KeyCode.Space);
             }
             if (buttonName == CustomInputModule.CANCEL_BUTTON)
             {

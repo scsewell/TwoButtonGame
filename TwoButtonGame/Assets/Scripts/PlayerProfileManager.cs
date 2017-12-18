@@ -12,51 +12,36 @@ public class PlayerProfileManager : Singleton<PlayerProfileManager>
 
     private Random m_random;
 
+    private List<PlayerProfile> m_guestProfiles;
+    private List<PlayerProfile> m_uniqueGuestProfiles;
+
     private List<PlayerProfile> m_profiles;
     public IReadOnlyList<PlayerProfile> Profiles { get { return m_profiles; } }
-    
+
     public PlayerProfileManager()
     {
+        m_guestProfiles = new List<PlayerProfile>();
+        m_uniqueGuestProfiles = new List<PlayerProfile>();
         m_profiles = new List<PlayerProfile>();
         m_random = new Random();
     }
 
-    public PlayerProfile AddNewProfile()
+    public PlayerProfile GetGuestProfile(string name, bool enforceUnique)
     {
-        byte[] buffer = new byte[sizeof(long)];
-        BinaryReader reader = new BinaryReader(buffer);
-
-        m_random.NextBytes(buffer);
-        long id = reader.ReadLong();
-        
-        while (m_profiles.Any(p => p.UniqueId == id))
-        {
-            reader.SetReadPointer(0);
-            m_random.NextBytes(buffer);
-            id = reader.ReadLong();
-        }
-
-        PlayerProfile profile = new PlayerProfile(id, GetUniqueName(null, "DefaultName"));
-
-        m_profiles.Add(profile);
-        SaveProfiles();
-
-        return profile;
+        return CreateProfile(enforceUnique ? m_uniqueGuestProfiles : m_guestProfiles, true, name, enforceUnique);
     }
 
-    public string GetUniqueName(PlayerProfile profile, string baseName)
+    public void ReleaseGuestProfile(PlayerProfile profile)
     {
-        List<PlayerProfile> others = m_profiles.Where(p => p != profile).ToList();
+        m_guestProfiles.Remove(profile);
+        m_uniqueGuestProfiles.Remove(profile);
+    }
 
-        int count = 0;
-        string name = baseName;
-
-        while (others.Any(p => p.Name == name))
-        {
-            count++;
-            name = baseName + count;
-        }
-        return name;
+    public PlayerProfile AddNewProfile()
+    {
+        PlayerProfile profile = CreateProfile(m_profiles, false, "DefaultName", true);
+        SaveProfiles();
+        return profile;
     }
 
     public bool DeleteProfile(PlayerProfile profile)
@@ -67,6 +52,48 @@ public class PlayerProfileManager : Singleton<PlayerProfileManager>
             SaveProfiles();
         }
         return removedProfile;
+    }
+
+    public string GetUniqueName(PlayerProfile profile, string baseName)
+    {
+        return GetUniqueName(profile, baseName, false, m_profiles);
+    }
+
+    private PlayerProfile CreateProfile(List<PlayerProfile> profiles, bool isGuest, string baseName, bool uniqueName)
+    {
+        byte[] buffer = new byte[sizeof(long)];
+        BinaryReader reader = new BinaryReader(buffer);
+
+        m_random.NextBytes(buffer);
+        long id = reader.ReadLong();
+
+        while (profiles.Any(p => p.UniqueId == id))
+        {
+            reader.SetReadPointer(0);
+            m_random.NextBytes(buffer);
+            id = reader.ReadLong();
+        }
+
+        string name = uniqueName ? GetUniqueName(null, baseName, true, profiles) : baseName;
+
+        PlayerProfile profile = new PlayerProfile(id, isGuest, name);
+        profiles.Add(profile);
+        return profile;
+    }
+
+    private string GetUniqueName(PlayerProfile profile, string baseName, bool startWithCount, List<PlayerProfile> profiles)
+    {
+        List<PlayerProfile> others = profiles.Where(p => p != profile).ToList();
+
+        int count = 0;
+        string name = startWithCount ? baseName + (++count) : baseName;
+
+        while (others.Any(p => p.Name == name))
+        {
+            count++;
+            name = baseName + count;
+        }
+        return name;
     }
 
     public void LoadProfiles()
@@ -100,7 +127,7 @@ public class PlayerProfileManager : Singleton<PlayerProfileManager>
 
         for (int i = 0; i < count; i++)
         {
-            m_profiles.Add(new PlayerProfile(ids[i], names[i]));
+            m_profiles.Add(new PlayerProfile(ids[i], false, names[i]));
         }
     }
     

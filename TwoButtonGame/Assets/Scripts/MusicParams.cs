@@ -12,6 +12,10 @@ public class MusicParams : ScriptableObject
     public string Name { get { return m_name; } }
 
     [SerializeField]
+    private string m_artist;
+    public string Artist { get { return m_artist; } }
+
+    [SerializeField]
     private int m_minutes;
     [SerializeField]
     private double m_seconds;

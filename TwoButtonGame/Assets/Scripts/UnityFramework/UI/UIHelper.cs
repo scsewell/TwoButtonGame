@@ -40,9 +40,18 @@ namespace Framework.UI
             return rt;
         }
 
-        public static Selectable[] SetNavigationVertical(Transform parent, Navigation startNav, Navigation middleNav, Navigation endNav)
+        public static Selectable[] SetNavigationVertical(Transform parent, Selectable above, Selectable below, Selectable left, Selectable right, bool allowDisabled = false)
         {
-            Selectable[] selectables = parent.Cast<Transform>().Select(t => t.GetComponentInChildren<Selectable>()).Where(s => s != null).ToArray();
+            Selectable[] selectables = parent
+                .Cast<Transform>()
+                .Select(t => t.GetComponentInChildren<Selectable>())
+                .Where(s => s != null && (allowDisabled || s.isActiveAndEnabled))
+                .ToArray();
+            
+            Navigation explicitNav = new Navigation();
+            explicitNav.mode = Navigation.Mode.Explicit;
+            explicitNav.selectOnLeft = left;
+            explicitNav.selectOnRight = right;
 
             for (int i = 0; i < selectables.Length; i++)
             {
@@ -50,23 +59,56 @@ namespace Framework.UI
 
                 if (i == 0)
                 {
-                    startNav.selectOnDown = selectables[i + 1];
-                    current.navigation = startNav;
+                    explicitNav.selectOnUp = above;
+
+                    if (selectables.Length > 1)
+                    {
+                        explicitNav.selectOnDown = selectables[i + 1];
+                    }
                 }
                 else if (i == selectables.Length - 1)
                 {
-                    endNav.selectOnUp = selectables[i - 1];
-                    current.navigation = endNav;
+                    explicitNav.selectOnUp = selectables[i - 1];
+                    explicitNav.selectOnDown = below;
                 }
                 else
                 {
-                    Navigation nav = middleNav;
-                    nav.selectOnUp = selectables[i - 1];
-                    nav.selectOnDown = selectables[i + 1];
-                    current.navigation = nav;
+                    explicitNav.selectOnUp = selectables[i - 1];
+                    explicitNav.selectOnDown = selectables[i + 1];
                 }
+                current.navigation = explicitNav;
             }
-            
+
+            Navigation tempNav;
+
+            if (above != null)
+            {
+                tempNav = above.navigation;
+                tempNav.selectOnDown = selectables.First();
+                above.navigation = tempNav;
+            }
+
+            if (below != null)
+            {
+                tempNav = below.navigation;
+                tempNav.selectOnUp = selectables.Last();
+                below.navigation = tempNav;
+            }
+
+            if (left != null)
+            {
+                tempNav = left.navigation;
+                tempNav.selectOnRight = selectables.First();
+                left.navigation = tempNav;
+            }
+
+            if (right != null)
+            {
+                tempNav = right.navigation;
+                tempNav.selectOnLeft = selectables.First();
+                right.navigation = tempNav;
+            }
+
             return selectables;
         }
     }

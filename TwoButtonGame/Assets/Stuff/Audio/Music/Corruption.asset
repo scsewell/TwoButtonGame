@@ -13,5 +13,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_track: {fileID: 8300000, guid: ae4b2ce3511781442a26bb379b775ece, type: 3}
   m_name: Corruption
+  m_artist: Kevin Macleod
   m_minutes: 7
   m_seconds: 0.017059

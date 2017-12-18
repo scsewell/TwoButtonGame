@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 
 public class MenuBase : MonoBehaviour
 {
@@ -7,67 +9,93 @@ public class MenuBase : MonoBehaviour
     [SerializeField] private AudioClip m_deselectSound;
     [SerializeField] private AudioClip m_submitSound;
     [SerializeField] private AudioClip m_cancelSound;
+    [SerializeField] private AudioClip m_openMenu;
     [SerializeField] private AudioClip m_nextMenu;
     [SerializeField] private AudioClip m_backMenu;
-
-    private float m_lastSoundTime;
-    private float m_highestPrority;
-
-    protected virtual void Awake()
-    {
-        m_lastSoundTime = -1;
-        m_highestPrority = -1;
-    }
-
-    public void PlaySound(AudioClip clip, int priority)
+    
+    private List<MenuSoundClip> m_clips = new List<MenuSoundClip>();
+    
+    public void PlaySound(AudioClip clip, float volume, int priority)
     {
         if (clip != null)
         {
-            if (m_highestPrority < priority || m_lastSoundTime != Time.time)
+            m_clips.Add(new MenuSoundClip(clip, 1, priority));
+        }
+    }
+    
+    protected void FlushSoundQueue()
+    {
+        if (m_clips.Count > 0)
+        {
+            m_clips = m_clips.OrderByDescending(c => c.priority).ToList();
+
+            int prority = m_clips.First().priority;
+            foreach (MenuSoundClip clip in m_clips)
             {
-                m_lastSoundTime = Time.time;
-                m_highestPrority = priority;
+                if (clip.priority >= prority)
+                {
+                    AudioManager.Instance.PlaySound(clip.clip, clip.volume, true);
+                }
+                else
+                {
+                    break;
+                }
             }
-            else if (priority < m_highestPrority && m_lastSoundTime == Time.time)
-            {
-                return;
-            }
-            AudioManager.Instance.PlaySound(clip, 1, true);
+
+            m_clips.Clear();
         }
     }
 
-    public void PlaySelectSound()
+    public void PlaySelectSound(float volume = 1f)
     {
-        PlaySound(m_selectSound, 10);
+        PlaySound(m_selectSound, volume, 10);
     }
 
-    public void PlayDeselectSound()
+    public void PlayDeselectSound(float volume = 1f)
     {
-        PlaySound(m_deselectSound, 10);
+        PlaySound(m_deselectSound, volume, 10);
     }
 
-    public void PlaySubmitSound(AudioClip clip = null)
+    public void PlaySubmitSound(float volume = 1f, AudioClip clip = null)
     {
-        AudioClip clipToPlay = clip;
         if (clip == null)
         {
             clip = m_submitSound;
         }
-        PlaySound(clip, 20);
+        PlaySound(clip, volume, 20);
     }
 
-    public void PlayCancelSound()
+    public void PlayCancelSound(float volume = 1f)
     {
-        PlaySound(m_cancelSound, 20);
+        PlaySound(m_cancelSound, volume, 20);
     }
 
-    public void PlayNextMenuSound()
+    public void PlayOpenMenuSound(float volume = 1f)
     {
-        PlaySound(m_nextMenu, 30);
+        PlaySound(m_openMenu, volume, 30);
     }
 
-    public void PlayBackMenuSound()
+    public void PlayNextMenuSound(float volume = 1f)
     {
-        PlaySound(m_backMenu, 30);
+        PlaySound(m_nextMenu, volume, 30);
+    }
+
+    public void PlayBackMenuSound(float volume = 1f)
+    {
+        PlaySound(m_backMenu, volume, 30);
+    }
+
+    private struct MenuSoundClip
+    {
+        public AudioClip clip;
+        public float volume;
+        public int priority;
+
+        public MenuSoundClip(AudioClip clip, float volume, int priority)
+        {
+            this.clip = clip;
+            this.volume = volume;
+            this.priority = priority;
+        }
     }
 }

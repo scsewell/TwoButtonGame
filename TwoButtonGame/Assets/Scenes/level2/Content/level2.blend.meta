@@ -13,6 +13,8 @@ ModelImporter:
     100010: Level2Main_002
     100012: Level2Bounds
     100014: Level2Outer
+    100016: Level2Preview
+    100018: Level2PreviewDetail
     400000: //RootNode
     400002: Circle
     400004: Level2Main
@@ -21,6 +23,8 @@ ModelImporter:
     400010: Level2Main_002
     400012: Level2Bounds
     400014: Level2Outer
+    400016: Level2Preview
+    400018: Level2PreviewDetail
     2100000: Material
     2300000: //RootNode
     2300002: Circle
@@ -30,6 +34,8 @@ ModelImporter:
     2300010: Level2Main_002
     2300012: Level2Bounds
     2300014: Level2Outer
+    2300016: Level2Preview
+    2300018: Level2PreviewDetail
     3300000: //RootNode
     3300002: Circle
     3300004: Level2Main
@@ -38,6 +44,8 @@ ModelImporter:
     3300010: Level2Main_002
     3300012: Level2Bounds
     3300014: Level2Outer
+    3300016: Level2Preview
+    3300018: Level2PreviewDetail
     4300000: Level2Main
     4300002: Circle
     4300004: Level2Main_001
@@ -45,6 +53,8 @@ ModelImporter:
     4300008: Level2Main_002
     4300010: Level2Bounds
     4300012: Level2Outer
+    4300014: Level2Preview
+    4300016: Level2PreviewDetail
     7400000: Default Take
     9500000: //RootNode
   externalObjects: {}

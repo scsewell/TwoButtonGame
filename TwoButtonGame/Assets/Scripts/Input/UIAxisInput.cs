@@ -29,12 +29,12 @@ public class UIAxisInput
             if (m_waitTime <= 0)
             {
                 m_pressed = true;
-                m_waitTime = m_repeat ? CustomInputModule.REPEAT_DELAY : CustomInputModule.REPEAT_WAIT;
+                m_waitTime = m_repeat ? CustomInputModule.REPEAT_DELAY / 2 : CustomInputModule.REPEAT_WAIT;
                 m_repeat = true;
             }
             else
             {
-                m_waitTime -= Time.deltaTime;
+                m_waitTime -= Time.unscaledDeltaTime;
             }
         }
         else

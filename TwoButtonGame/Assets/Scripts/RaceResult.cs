@@ -4,6 +4,12 @@ using System.Linq;
 
 public class RaceResult
 {
+    private PlayerProfile m_profile;
+    public PlayerProfile Profile
+    {
+        get { return m_profile; }
+    }
+
     private int m_rank;
     public int Rank
     {
@@ -29,8 +35,9 @@ public class RaceResult
         Reset();
     }
 
-    public RaceResult(int rank, bool finished, List<float> lapTimes)
+    public RaceResult(PlayerProfile profile, int rank, bool finished, List<float> lapTimes)
     {
+        m_profile = profile;
         m_rank = rank;
         m_finished = finished;
         m_lapTimes = lapTimes;

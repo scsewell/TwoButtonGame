@@ -75,6 +75,5 @@ MonoBehaviour:
   m_goSound: {fileID: 8300000, guid: 3bd94b4b8ec8a334b84134d52b6cab9c, type: 3}
   m_replayStartWait: 7.5
   m_replayMusic: {fileID: 11400000, guid: f8d7da2c931e6c543a434649947695b0, type: 2}
-  m_skipIntro: 1
-  m_skipCoundown: 1
-  m_AICount: 0
+  m_skipIntro: 0
+  m_skipCoundown: 0

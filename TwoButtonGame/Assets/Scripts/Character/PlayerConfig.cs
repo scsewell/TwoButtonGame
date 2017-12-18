@@ -12,6 +12,18 @@ public class PlayerConfig : ScriptableObject
     private int m_sortOrder = 100;
     public int SortOrder { get { return m_sortOrder; } }
 
+    [SerializeField] [Range(1, 10)]
+    private int m_speedRating = 5;
+    public int SpeedRating { get { return m_speedRating; } }
+
+    [SerializeField] [Range(1, 10)]
+    private int m_agilityRating = 5;
+    public int AgilityRating { get { return m_agilityRating; } }
+
+    [SerializeField] [TextArea]
+    private string m_description = "";
+    public string Description { get { return m_description; } }
+
     [SerializeField]
     private string m_name;
     public string Name { get { return m_name; } }

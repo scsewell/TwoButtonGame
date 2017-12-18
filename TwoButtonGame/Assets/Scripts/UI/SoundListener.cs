@@ -52,6 +52,6 @@ public class SoundListener : MonoBehaviour,
 
     private void Submit()
     {
-        m_menu.PlaySubmitSound(m_submitOverrideClip);
+        m_menu.PlaySubmitSound(1f, m_submitOverrideClip);
     }
 }

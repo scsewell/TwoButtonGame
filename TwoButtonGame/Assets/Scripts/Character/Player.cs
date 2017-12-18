@@ -34,6 +34,9 @@ public class Player : MonoBehaviour
 
     private int m_playerNum = -1;
     public int PlayerNum { get { return m_playerNum; } }
+    
+    private PlayerProfile m_profile;
+    public PlayerProfile Profile { get { return m_profile; } }
 
     private PlayerConfig m_config;
     public PlayerConfig Config { get { return m_config; } }
@@ -99,7 +102,6 @@ public class Player : MonoBehaviour
     private Vector3 m_spawnPosition;
     private Quaternion m_spawnRotation;
 
-
     private void Awake()
     {
         m_interpolator = GetComponentInChildren<TransformInterpolator>();
@@ -108,23 +110,24 @@ public class Player : MonoBehaviour
         m_raceResult = new RaceResult();
     }
 
-    public Player InitHuman(int playerNum, PlayerConfig config, PlayerBaseInput input)
+    public Player InitHuman(int playerNum, PlayerProfile profile, PlayerConfig config, PlayerBaseInput input)
     {
         m_isHuman = true;
         m_inputProvider = new PlayerInputProvider(input);
-        return Init(playerNum, config);
+        return Init(playerNum, profile, config);
     }
 
-    public Player InitAI(int playerNum, PlayerConfig config)
+    public Player InitAI(int playerNum, PlayerProfile profile, PlayerConfig config)
     {
         m_isHuman = false;
         m_inputProvider = new PlayerAI(this);
-        return Init(playerNum, config);
+        return Init(playerNum, profile, config);
     }
 
-    private Player Init(int playerNum, PlayerConfig config)
+    private Player Init(int playerNum, PlayerProfile profile, PlayerConfig config)
     {
         m_playerNum = playerNum;
+        m_profile = profile;
         m_config = config;
 
         m_animation = GetComponentInChildren<PlayerAnimation>();

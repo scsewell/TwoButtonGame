@@ -12,6 +12,7 @@
         Replays,
         Settings,
         Credits,
+        Confirm,
         Loading,
     }
 }

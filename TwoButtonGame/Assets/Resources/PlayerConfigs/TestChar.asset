@@ -13,6 +13,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_id: 7047
   m_sortOrder: 999
+  m_speedRating: 2
+  m_agilityRating: 6
+  m_description: This character is lame...
   m_name: Test Character
   m_characterGraphics: {fileID: 1309904247820802, guid: 54bf9a0ec326a3a479a4e0cedef80d70,
     type: 2}

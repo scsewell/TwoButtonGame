@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-public class PlayerProfile
+﻿public class PlayerProfile
 {
     private long m_uniqueId;
     public long UniqueId { get { return m_uniqueId; } }
+    
+    private bool m_isGuest;
+    public bool IsGuest { get { return m_isGuest; } }
 
     private string m_name;
     public string Name
@@ -23,9 +21,10 @@ public class PlayerProfile
         }
     }
 
-    public PlayerProfile(long uniqueId, string name)
+    public PlayerProfile(long uniqueId, bool isGuest, string name)
     {
         m_uniqueId = uniqueId;
+        m_isGuest = isGuest;
         m_name = name;
     }
 }

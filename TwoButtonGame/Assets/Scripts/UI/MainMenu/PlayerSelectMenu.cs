@@ -25,9 +25,14 @@ namespace BoostBlasters.MainMenus
             get { return m_playerSelectPanels.Select(p => p.Input).Where(i => i != null).ToList(); }
         }
 
-        public List<PlayerConfig> SelectedConfigs
+        public List<PlayerProfile> PlayerProfiles
         {
-            get { return m_readyPlayers.Select(p => p.SelectedConfig).ToList(); }
+            get { return m_playerSelectPanels.Select(p => p.Profile).Where(p => p != null).ToList(); }
+        }
+
+        public List<PlayerConfig> CharacterConfigs
+        {
+            get { return m_readyPlayers.Select(p => p.CharacterConfig).ToList(); }
         }
 
         public List<int> PlayerIndices
@@ -53,7 +58,7 @@ namespace BoostBlasters.MainMenus
             
             for (int i = 0; i < 4; i++)
             {
-                m_playerSelectPanels[i].Init(i);
+                m_playerSelectPanels[i].Init(this, i);
             }
         }
 
@@ -65,7 +70,12 @@ namespace BoostBlasters.MainMenus
             {
                 for (int i = 0; i < lastRace.PlayerIndicies.Count; i++)
                 {
-                    m_playerSelectPanels[lastRace.PlayerIndicies[i]].FromConfig(lastRace.Inputs[i], lastRace.PlayerConfigs[i]);
+                    int index = lastRace.PlayerIndicies[i];
+                    PlayerProfile profile   = lastRace.Profiles[i];
+                    PlayerBaseInput input   = lastRace.Inputs[i];
+                    PlayerConfig config     = lastRace.PlayerConfigs[i];
+
+                    m_playerSelectPanels[index].FromConfig(profile, input, config);
                 }
             }
         }
@@ -82,12 +92,20 @@ namespace BoostBlasters.MainMenus
             m_continueTime = 0;
         }
 
+        protected override void OnBack()
+        {
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                base.OnBack();
+            }
+        }
+
         protected override void OnUpdate()
         {
             int playerNum = 0;
             for (int i = 0; i < 4; i++)
             {
-                m_playerSelectPanels[i].UpdatePanel(playerNum, MainMenu);
+                m_playerSelectPanels[i].UpdatePanel();
 
                 if (m_playerSelectPanels[i].IsJoined)
                 {

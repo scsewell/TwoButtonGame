@@ -61,8 +61,8 @@ public class ControlPanel : MonoBehaviour
 
                         layout = go.AddComponent<LayoutElement>();
 
-                        //LayoutElement spacer = CreateRT(transform).AddComponent<LayoutElement>();
-                        //spacer.minWidth = 5;
+                        LayoutElement spacer = CreateRT(transform).AddComponent<LayoutElement>();
+                        spacer.minWidth = 3f;
 
                         m_buttons.Add(image);
                     }
@@ -92,6 +92,8 @@ public class ControlPanel : MonoBehaviour
         GameObject go = new GameObject();
         RectTransform rt = go.AddComponent<RectTransform>();
         rt.SetParent(parent);
+        rt.localPosition = Vector3.one;
+        rt.localRotation = Quaternion.identity;
         rt.localScale = Vector3.one;
         rt.pivot = 0.5f * Vector3.one;
         return go;

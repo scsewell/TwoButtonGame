@@ -30,7 +30,7 @@ namespace BoostBlasters.MainMenus
             {
                 m_rank.text = result.Rank.ToString();
                 
-                UIUtils.FixText(m_name, "Player Name");
+                UIUtils.FitText(m_name, result.Profile.Name);
 
                 m_finishTime.text = UIUtils.FormatRaceTime(result.Finished ? result.FinishTime : -1);
                 m_bestLap.text = UIUtils.FormatRaceTime(result.LapTimes.Count > 0 ? result.LapTimes.Min() : -1);

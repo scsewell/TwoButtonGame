@@ -40,18 +40,7 @@ namespace BoostBlasters.MainMenus
                 }
             }
 
-            Navigation explicitNav = new Navigation();
-            explicitNav.mode = Navigation.Mode.Explicit;
-
-            Navigation bottomNav = explicitNav;
-            bottomNav.selectOnDown = m_settingsApplyButton;
-
-            Selectable lastSetting = UIHelper.SetNavigationVertical(m_settingsContent, explicitNav, explicitNav, bottomNav).LastOrDefault();
-            Navigation tempNav;
-
-            tempNav = m_settingsApplyButton.navigation;
-            tempNav.selectOnUp = lastSetting;
-            m_settingsApplyButton.navigation = tempNav;
+            UIHelper.SetNavigationVertical(m_settingsContent, null, m_settingsApplyButton, null, null);
         }
 
         protected override void OnResetMenu(bool fullReset)

@@ -13,5 +13,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_track: {fileID: 8300000, guid: 1c9c38a6c92eac145b017b3ce42f7163, type: 3}
   m_name: Exit the Premises
+  m_artist: Kevin Macleod
   m_minutes: 3
   m_seconds: 24.419144

@@ -10,10 +10,17 @@ namespace BoostBlasters.MainMenus
     {
         [SerializeField]
         private Menu m_backMenu = Menu.Root;
+
         [SerializeField]
         private Selectable m_defaultSelection = null;
+
         [SerializeField]
         private bool m_remeberLastSelection = false;
+        public bool RemeberLastSelection
+        {
+            get { return m_remeberLastSelection; }
+            set { m_remeberLastSelection = value; }
+        }
 
         private Canvas m_canvas;
         private Selectable m_lastSelected;
@@ -37,6 +44,12 @@ namespace BoostBlasters.MainMenus
 
         private void OnDisable()
         {
+            GameObject selected = EventSystem.current.currentSelectedGameObject;
+            if (selected != null && selected.transform.IsChildOf(transform))
+            {
+                m_lastSelected = selected.GetComponent<Selectable>();
+            }
+
             m_canvas.enabled = false;
             OnDisableMenu();
         }
@@ -56,7 +69,7 @@ namespace BoostBlasters.MainMenus
         {
             if (enabled)
             {
-                if (MainMenu.AvailableInputs.Any(i => i.UI_Cancel))
+                if (MainMenu.AvailableInputs.Any(i => i.UI_Cancel) || Input.GetKeyDown(KeyCode.Escape))
                 {
                     OnBack();
                 }
@@ -86,22 +99,18 @@ namespace BoostBlasters.MainMenus
         {
             GameObject selected = EventSystem.current.currentSelectedGameObject;
 
-            if (selected != null && selected.transform.IsChildOf(transform))
-            {
-                m_lastSelected = selected.GetComponent<Selectable>();
-            }
-
             if (selected == null || !selected.activeInHierarchy)
             {
-                if (m_remeberLastSelection && m_lastSelected != null)
+                if (m_remeberLastSelection && m_lastSelected != null && m_lastSelected.isActiveAndEnabled)
                 {
                     m_lastSelected.Select();
+                    m_lastSelected = null;
                 }
-                else if (DefaultSelectionOverride != null)
+                else if (DefaultSelectionOverride != null && DefaultSelectionOverride.isActiveAndEnabled)
                 {
                     DefaultSelectionOverride.Select();
                 }
-                else if (m_defaultSelection != null)
+                else if (m_defaultSelection != null && m_defaultSelection.isActiveAndEnabled)
                 {
                     m_defaultSelection.Select();
                 }

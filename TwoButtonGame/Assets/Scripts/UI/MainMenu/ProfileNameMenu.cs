@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.EventSystems;
-using Framework.UI;
 
 namespace BoostBlasters.MainMenus
 {
@@ -21,6 +17,7 @@ namespace BoostBlasters.MainMenus
         private PlayerProfile m_editProfile;
         private bool m_isNew;
         private Menu m_returnToMenu;
+        private Action<PlayerProfile> m_onComplete;
         private string m_currentName;
         private bool m_delete;
         private bool m_deleteRepeat;
@@ -74,32 +71,48 @@ namespace BoostBlasters.MainMenus
                     m_deleteRepeat = false;
                     m_deleteWait = 0;
                 }
+                
+                bool typeSound = false;
+                bool deleteSound = false;
+                bool invalidSound = false;
 
                 if (m_delete)
                 {
                     if (m_currentName.Length > 0)
                     {
                         m_currentName = m_currentName.Substring(0, m_currentName.Length - 1);
+                        deleteSound = true;
                     }
                     else
                     {
-                        MainMenu.PlayCancelSound();
+                        invalidSound = true;
                     }
                 }
 
                 foreach (char c in Input.inputString)
                 {
-                    if (UIUtils.IsAlphaNumeric(c))
+                    if (m_currentName.Length < MAX_NAME_LENGTH && UIUtils.IsAlphaNumeric(c))
                     {
-                        if (m_currentName.Length < MAX_NAME_LENGTH)
-                        {
-                            m_currentName += c;
-                        }
-                        else
-                        {
-                            MainMenu.PlayCancelSound();
-                        }
+                        m_currentName += c;
+                        typeSound = true;
                     }
+                    else
+                    {
+                        invalidSound = true;
+                    }
+                }
+
+                if (typeSound)
+                {
+                    MainMenu.PlaySubmitSound();
+                }
+                else if (deleteSound)
+                {
+                    MainMenu.PlayCancelSound();
+                }
+                else if (invalidSound)
+                {
+                    MainMenu.PlayCancelSound();
                 }
             }
         }
@@ -115,13 +128,16 @@ namespace BoostBlasters.MainMenus
             Cancel();
         }
 
-        public void EditProfile(PlayerProfile editProfile, bool isNew, Menu returnToMenu)
+        public void EditProfile(PlayerProfile editProfile, bool isNew, Menu returnToMenu, Action<PlayerProfile> onComplete)
         {
             m_editProfile = editProfile;
             m_isNew = isNew;
             m_returnToMenu = returnToMenu;
+            m_onComplete = onComplete;
 
             m_currentName = editProfile.Name;
+
+            MainMenu.SetMenu(Menu.ProfileName);
         }
         
         private void Accept()
@@ -137,6 +153,11 @@ namespace BoostBlasters.MainMenus
             {
                 MainMenu.PlayCancelSound();
             }
+
+            if (m_onComplete != null)
+            {
+                m_onComplete(m_editProfile);
+            }
         }
 
         private void Cancel()
@@ -146,6 +167,11 @@ namespace BoostBlasters.MainMenus
                 PlayerProfileManager.Instance.DeleteProfile(m_editProfile);
             }
             MainMenu.SetMenu(m_returnToMenu, true);
+
+            if (m_onComplete != null)
+            {
+                m_onComplete(null);
+            }
         }
     }
 }
