@@ -57,25 +57,9 @@ namespace Framework.UI
             {
                 Selectable current = selectables[i];
 
-                if (i == 0)
-                {
-                    explicitNav.selectOnUp = above;
+                explicitNav.selectOnUp = (i == 0) ? above : selectables[i - 1];
+                explicitNav.selectOnDown = (i == selectables.Length - 1) ? below : selectables[i + 1];
 
-                    if (selectables.Length > 1)
-                    {
-                        explicitNav.selectOnDown = selectables[i + 1];
-                    }
-                }
-                else if (i == selectables.Length - 1)
-                {
-                    explicitNav.selectOnUp = selectables[i - 1];
-                    explicitNav.selectOnDown = below;
-                }
-                else
-                {
-                    explicitNav.selectOnUp = selectables[i - 1];
-                    explicitNav.selectOnDown = selectables[i + 1];
-                }
                 current.navigation = explicitNav;
             }
 
