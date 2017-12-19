@@ -6,7 +6,7 @@ using UnityEngine.UI;
 using Framework.UI;
 using Framework.SettingManagement;
 
-namespace BoostBlasters.MainMenus
+namespace BoostBlasters.Menus
 {
     public class SettingsMenu : MenuScreen
     {
@@ -19,9 +19,11 @@ namespace BoostBlasters.MainMenus
 
         private List<SettingPanel> m_settingPanels;
 
-        public override void InitMenu(RaceParameters lastRace)
+        public override void InitMenu()
         {
-            m_settingsBackButton.onClick.AddListener(       () => MainMenu.SetMenu(Menu.Root, true));
+            MainMenu menu = (MainMenu)Menu;
+
+            m_settingsBackButton.onClick.AddListener(       () => Menu.SetMenu(menu.Root, MenuBase.TransitionSound.Back));
             m_settingsUseDefaultsButton.onClick.AddListener(() => UseDefaultSettings());
             m_settingsApplyButton.onClick.AddListener(      () => ApplySettings());
 

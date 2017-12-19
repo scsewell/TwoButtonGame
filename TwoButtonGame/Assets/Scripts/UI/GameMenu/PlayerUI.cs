@@ -103,6 +103,8 @@ public class PlayerUI : MonoBehaviour
     private Image m_energyBarBack;
     [SerializeField]
     private Image m_energyBarFill;
+    [SerializeField]
+    private Image m_energyButton;
     [SerializeField] [Range(0, 1)]
     private float m_energyBackAlpha = 0.2f;
     [SerializeField] [Range(0, 1)]
@@ -161,6 +163,8 @@ public class PlayerUI : MonoBehaviour
         m_playerText.text = player.Profile.Name;
         m_playerText.color = Color.Lerp(player.GetColor(), Color.white, 0.35f);
 
+        m_energyButton.sprite = input.SpriteBoost.First();
+
         m_player.EnergyGained += Player_EnergyGained;
         m_player.EnergyUseFailed += Player_EnergyUseFailed;
 
@@ -169,7 +173,7 @@ public class PlayerUI : MonoBehaviour
         return this;
     }
 
-    private void ResetPlayerUI()
+    public void ResetPlayerUI()
     {
         m_lastRank = 1;
 
@@ -335,7 +339,7 @@ public class PlayerUI : MonoBehaviour
         m_lapTimeText.text = lapTimes;
 
         // set lap text
-        m_lapText.text = "LAP " + lap + "/" + path.Laps;
+        m_lapText.text = "Lap " + lap + "/" + path.Laps;
 
         RectTransform newLapRT = m_newLapText.GetComponent<RectTransform>();
         if (lap != m_lastLap)
@@ -386,13 +390,16 @@ public class PlayerUI : MonoBehaviour
         SetAlpha(m_energyBarFill, barAlpha);
 
         float energyHighlight = 1 - Mathf.Clamp01((Time.time - m_energyGainTime) / m_energyHighlightDuration);
+        float energyButtonAlpha = 0;
         if (energyFill >= 1)
         {
             float energyFullFac = (0.5f * Mathf.Sin(Time.time * m_energyFullFrequency * 2 * Mathf.PI)) + 0.5f;
             energyHighlight = Mathf.Lerp(energyHighlight, m_energyFullIntensity, energyFullFac);
+            energyButtonAlpha = Mathf.Lerp(1f, 0.35f, energyFullFac);
         }
         SetAlpha(m_energyBarHighlight, energyHighlight);
-        
+        SetAlpha(m_energyButton, energyButtonAlpha);
+
         SetColorNoAlpha(m_energyBarBorder, Color.Lerp(m_player.GetColor(), Color.white * 0.65f, usingEnergy ? 0 : 0.75f));
     }
 

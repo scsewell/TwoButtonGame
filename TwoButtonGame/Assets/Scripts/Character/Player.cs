@@ -221,8 +221,6 @@ public class Player : MonoBehaviour
 
     public void UpdatePlayer()
     {
-        m_inputProvider.UpdateProvider();
-
         if (m_animation != null)
         {
             m_animation.UpdateAnimation(m_movement);
@@ -236,6 +234,8 @@ public class Player : MonoBehaviour
 
     public void LateUpdatePlayer()
     {
+        m_inputProvider.LateUpdateProvider();
+
         if (m_animation != null)
         {
             m_animation.LateUpdateAnimation(NextWaypoint);

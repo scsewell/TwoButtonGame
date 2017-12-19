@@ -6,7 +6,7 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using Framework.UI;
 
-namespace BoostBlasters.MainMenus
+namespace BoostBlasters.Menus
 {
     public class ProfilesMenu : MenuScreen
     {
@@ -34,9 +34,9 @@ namespace BoostBlasters.MainMenus
         private PlayerProfile m_selectedProfile;
         private PlayerProfilePanel m_selectedPanel;
 
-        public override void InitMenu(RaceParameters lastRace)
+        public override void InitMenu()
         {
-            m_backButton.onClick.AddListener(   () => MainMenu.SetMenu(Menu.Root, true));
+            m_backButton.onClick.AddListener(   () => Menu.SetMenu(((MainMenu)Menu).Root, MenuBase.TransitionSound.Back));
             m_closeButton.onClick.AddListener(  () => CloseSelectedProfile());
             m_editButton.onClick.AddListener(   () => EditSelectedProfile());
             m_deleteButton.onClick.AddListener( () => ConfirmProfileDelete());
@@ -115,7 +115,8 @@ namespace BoostBlasters.MainMenus
             
             if (mode == PlayerProfilePanel.Mode.AddNew)
             {
-                MainMenu.ProfileName.EditProfile(PlayerProfileManager.Instance.AddNewProfile(), true, Menu.Profiles, null);
+                MainMenu menu = (MainMenu)Menu;
+                menu.ProfileName.EditProfile(PlayerProfileManager.Instance.AddNewProfile(), true, menu.Profiles, null);
             }
         }
 
@@ -138,18 +139,21 @@ namespace BoostBlasters.MainMenus
             }
             m_selectedProfile = null;
 
-            MainMenu.PlayCancelSound();
+            Menu.PlayCancelSound();
         }
 
         private void EditSelectedProfile()
         {
-            MainMenu.SetMenu(Menu.ProfileName);
-            MainMenu.ProfileName.EditProfile(m_selectedProfile, false, Menu.Profiles, null);
+            MainMenu menu = (MainMenu)Menu;
+
+            menu.SetMenu(menu.ProfileName);
+            menu.ProfileName.EditProfile(m_selectedProfile, false, menu.Profiles, null);
         }
 
         private void ConfirmProfileDelete()
         {
-            MainMenu.ConfirmMenu.ConfirmAction("Delete Profile:   " + m_selectedProfile.Name, DeleteSelectedProfile, Menu.Profiles);
+            MainMenu menu = (MainMenu)Menu;
+            menu.Confirm.ConfirmAction("Delete Profile:   " + m_selectedProfile.Name, DeleteSelectedProfile, menu.Profiles);
         }
 
         private void DeleteSelectedProfile(bool confirmed)
@@ -179,7 +183,7 @@ namespace BoostBlasters.MainMenus
             if (m_page != oldPage)
             {
                 ViewPage(m_page);
-                MainMenu.PlaySelectSound();
+                Menu.PlaySelectSound();
             }
         }
 

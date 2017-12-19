@@ -6,7 +6,7 @@ using UnityEngine.UI;
 using UnityEngine.PostProcessing;
 using Framework.UI;
 
-namespace BoostBlasters.MainMenus
+namespace BoostBlasters.Menus
 {
     public class LevelSelectMenu : MenuScreen
     {
@@ -68,9 +68,9 @@ namespace BoostBlasters.MainMenus
         private PostProcessingProfile m_post;
         private Dictionary<LevelConfig, GameObject> m_configToPreview;
         
-        public override void InitMenu(RaceParameters lastRace)
+        public override void InitMenu()
         {
-            m_startRaceButton.onClick.AddListener(() => MainMenu.LaunchRace());
+            m_startRaceButton.onClick.AddListener(() => ((MainMenu)Menu).LaunchRace());
             m_backButton.onClick.AddListener(() => OnBack());
             
             m_options = new List<Navigable>();
@@ -78,6 +78,7 @@ namespace BoostBlasters.MainMenus
             m_lapSelect     = new Option<int>(m_options, m_optionPrefab, m_optionContent, "Laps", Enumerable.Range(1, m_maxLapCount).ToArray(), null);
             m_aiCountSelect = new Option<int>(m_options, m_optionPrefab, m_optionContent, "AI Racers", Enumerable.Range(0, Consts.MAX_PLAYERS + 1).ToArray(), null);
 
+            RaceParameters lastRace = Main.Instance.LastRaceParams;
             if (lastRace != null)
             {
                 m_trackSelect.SetValue(lastRace.LevelConfig);
@@ -133,7 +134,7 @@ namespace BoostBlasters.MainMenus
 
         protected override void OnResetMenu(bool fullReset)
         {
-            m_aiCountSelect.SetMaxIndex(Consts.MAX_PLAYERS - MainMenu.ReservedInputs.Count);
+            m_aiCountSelect.SetMaxIndex(Consts.MAX_PLAYERS - ((MainMenu)Menu).ReservedInputs.Count);
 
             if (fullReset)
             {

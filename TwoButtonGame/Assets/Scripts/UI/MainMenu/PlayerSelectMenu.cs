@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace BoostBlasters.MainMenus
+namespace BoostBlasters.Menus
 {
     public class PlayerSelectMenu : MenuScreen
     {
@@ -15,7 +15,6 @@ namespace BoostBlasters.MainMenus
         [SerializeField] private ControlPanel m_continueControls;
 
         private List<PlayerSelectPanel> m_playerSelectPanels;
-        private List<PlayerSelectPanel> m_readyPlayers;
         private bool m_canContine;
         private float m_continueTime;
         private Color m_bannerCol;
@@ -32,12 +31,17 @@ namespace BoostBlasters.MainMenus
 
         public List<PlayerConfig> CharacterConfigs
         {
-            get { return m_readyPlayers.Select(p => p.CharacterConfig).ToList(); }
+            get { return ReadyPlayers.Select(p => p.CharacterConfig).ToList(); }
         }
 
         public List<int> PlayerIndices
         {
-            get { return m_readyPlayers.Select((p, i) => i).ToList(); }
+            get { return ReadyPlayers.Select((p, i) => i).ToList(); }
+        }
+
+        public List<PlayerSelectPanel> ReadyPlayers
+        {
+            get { return m_playerSelectPanels.Where(p => p.IsReady).ToList(); }
         }
 
         protected override void Awake()
@@ -45,7 +49,6 @@ namespace BoostBlasters.MainMenus
             base.Awake();
 
             m_playerSelectPanels = new List<PlayerSelectPanel>();
-            m_readyPlayers = new List<PlayerSelectPanel>();
 
             PlayerSelectPanel panel = m_playerSelectContent.GetComponentInChildren<PlayerSelectPanel>();
             m_playerSelectPanels.Add(panel);
@@ -55,17 +58,18 @@ namespace BoostBlasters.MainMenus
                 PlayerSelectPanel p = Instantiate(panel, m_playerSelectContent);
                 m_playerSelectPanels.Add(p);
             }
-            
+
             for (int i = 0; i < 4; i++)
             {
                 m_playerSelectPanels[i].Init(this, i);
             }
         }
 
-        public override void InitMenu(RaceParameters lastRace)
+        public override void InitMenu()
         {
             m_bannerCol = m_continueBanner.color;
 
+            RaceParameters lastRace = Main.Instance.LastRaceParams;
             if (lastRace != null)
             {
                 for (int i = 0; i < lastRace.PlayerIndicies.Count; i++)
@@ -112,10 +116,8 @@ namespace BoostBlasters.MainMenus
                     playerNum++;
                 }
             }
-
-            m_readyPlayers = m_playerSelectPanels.Where(p => p.IsReady).ToList();
-
-            bool canContinue = m_playerSelectPanels.All(p => p.CanContinue) && m_readyPlayers.Count > 0;
+            
+            bool canContinue = m_playerSelectPanels.All(p => p.CanContinue) && ReadyPlayers.Count > 0;
             if (m_canContine != canContinue)
             {
                 m_canContine = canContinue;
@@ -123,11 +125,11 @@ namespace BoostBlasters.MainMenus
             }
             else if (m_canContine)
             {
-                m_continueControls.UpdateUI("Continue", MainMenu.ReservedInputs.SelectMany(i => i.SpriteAccept).ToList());
+                m_continueControls.UpdateUI("Continue", ((MainMenu)Menu).ReservedInputs.SelectMany(i => i.SpriteAccept).ToList());
 
                 if (m_playerSelectPanels.Any(p => p.Continue))
                 {
-                    MainMenu.SetMenu(Menu.LevelSelect);
+                    Menu.SetMenu(((MainMenu)Menu).LevelSelect);
                 }
             }
         }
@@ -137,7 +139,7 @@ namespace BoostBlasters.MainMenus
             m_continueBar.SetActive(m_canContine);
             m_continueBanner.color = Color.Lerp(Color.white, m_bannerCol, (Time.unscaledTime - m_continueTime) / 0.5f);
 
-            m_playerSelectPanels.ForEach(p => p.UpdateGraphics(MainMenu));
+            m_playerSelectPanels.ForEach(p => p.UpdateGraphics((MainMenu)Menu));
         }
     }
 }

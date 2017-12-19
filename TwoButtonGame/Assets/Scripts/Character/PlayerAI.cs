@@ -26,7 +26,7 @@ public class PlayerAI : IInputProvider
         m_lastBoostTime = float.MinValue;
     }
 
-    public void UpdateProvider()
+    public void LateUpdateProvider()
     {
     }
     

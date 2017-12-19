@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
-public class MenuBase : MonoBehaviour
+public abstract class MenuBase : MonoBehaviour
 {
     [Header("Audio")]
     [SerializeField] private AudioClip m_selectSound;
@@ -12,25 +14,105 @@ public class MenuBase : MonoBehaviour
     [SerializeField] private AudioClip m_openMenu;
     [SerializeField] private AudioClip m_nextMenu;
     [SerializeField] private AudioClip m_backMenu;
-    
-    private List<MenuSoundClip> m_clips = new List<MenuSoundClip>();
-    
-    public void PlaySound(AudioClip clip, float volume, int priority)
+
+    private List<MenuSoundClip> m_audioBuffer;
+    private List<MenuScreen> m_menuScreens;
+    private MenuScreen m_targetMenu;
+
+    private MenuScreen m_activeMenu;
+    protected MenuScreen ActiveMenu { get { return m_activeMenu; } }
+
+    private List<PlayerBaseInput> m_inputs;
+    public List<PlayerBaseInput> Inputs { get { return m_inputs; } }
+
+    public enum TransitionSound
     {
-        if (clip != null)
+        None,
+        Open,
+        Next,
+        Back,
+    }
+
+    protected void InitBase(List<PlayerBaseInput> inputs)
+    {
+        m_inputs = inputs;
+
+        m_audioBuffer = new List<MenuSoundClip>();
+        
+        CustomInputModule inputModule = gameObject.AddComponent<CustomInputModule>();
+        CustomInput customInput = gameObject.AddComponent<CustomInput>();
+        customInput.SetInputs(inputs);
+        inputModule.SetInputOverride(customInput);
+        
+        m_menuScreens = new List<MenuScreen>();
+        GetComponentsInChildren(m_menuScreens);
+
+        foreach (MenuScreen menu in m_menuScreens)
         {
-            m_clips.Add(new MenuSoundClip(clip, 1, priority));
+            menu.InitMenu();
+            menu.enabled = false;
         }
+    }
+
+    public void SetMenu(MenuScreen menu, TransitionSound sound = TransitionSound.Next)
+    {
+        MenuScreen previous = m_targetMenu;
+
+        if (previous != menu)
+        {
+            m_targetMenu = menu;
+            
+            switch (sound)
+            {
+                case TransitionSound.Open: PlayOpenMenuSound(); break;
+                case TransitionSound.Next: PlayNextMenuSound(); break;
+                case TransitionSound.Back: PlayBackMenuSound(); break;
+            }
+        }
+    }
+
+    protected void UpdateBase()
+    {
+        m_menuScreens.ForEach(m => m.UpdateMenu());
+    }
+
+    protected void LateUpdateBase(Func<MenuScreen, bool> fullReset)
+    {
+        if (m_activeMenu != m_targetMenu)
+        {
+            MenuScreen previous = m_activeMenu;
+            m_activeMenu = m_targetMenu;
+
+            foreach (MenuScreen menu in m_menuScreens)
+            {
+                if (menu != m_activeMenu)
+                {
+                    menu.enabled = false;
+                    menu.ResetMenu(fullReset(previous));
+                }
+            }
+
+            EventSystem.current.SetSelectedGameObject(null);
+
+            if (m_activeMenu != null)
+            {
+                m_activeMenu.enabled = true;
+                m_activeMenu.ResetMenu(fullReset(previous));
+            }
+        }
+        m_menuScreens.ForEach(m => m.UpdateGraphics());
+
+        FlushSoundQueue();
     }
     
     protected void FlushSoundQueue()
     {
-        if (m_clips.Count > 0)
+        if (m_audioBuffer.Count > 0)
         {
-            m_clips = m_clips.OrderByDescending(c => c.priority).ToList();
+            m_audioBuffer = m_audioBuffer.OrderByDescending(c => c.priority).ToList();
 
-            int prority = m_clips.First().priority;
-            foreach (MenuSoundClip clip in m_clips)
+            int prority = m_audioBuffer.First().priority;
+            foreach (MenuSoundClip clip in m_audioBuffer)
             {
                 if (clip.priority >= prority)
                 {
@@ -42,7 +124,15 @@ public class MenuBase : MonoBehaviour
                 }
             }
 
-            m_clips.Clear();
+            m_audioBuffer.Clear();
+        }
+    }
+
+    private void PlaySound(AudioClip clip, float volume, int priority)
+    {
+        if (clip != null)
+        {
+            m_audioBuffer.Add(new MenuSoundClip(clip, 1, priority));
         }
     }
 

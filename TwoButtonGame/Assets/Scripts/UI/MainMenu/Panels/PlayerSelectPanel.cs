@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.PostProcessing;
 
-namespace BoostBlasters.MainMenus
+namespace BoostBlasters.Menus
 {
     public class PlayerSelectPanel : MonoBehaviour
     {
@@ -64,6 +64,7 @@ namespace BoostBlasters.MainMenus
             Ready,
         }
 
+        private MainMenu m_menu;
         private PlayerSelectMenu m_selectMenu;
         private List<PlayerProfilePanel> m_profilePanels;
         private Camera m_previewCam;
@@ -128,6 +129,7 @@ namespace BoostBlasters.MainMenus
 
         public void Init(PlayerSelectMenu selectMenu, int index)
         {
+            m_menu = (MainMenu)selectMenu.Menu;
             m_selectMenu = selectMenu;
             m_playerNum = index;
 
@@ -212,18 +214,18 @@ namespace BoostBlasters.MainMenus
                 Profile = null;
                 SelectedProfile = 0;
 
-                foreach (PlayerBaseInput input in m_selectMenu.MainMenu.UnreservedInputs)
+                foreach (PlayerBaseInput input in m_menu.UnreservedInputs)
                 {
                     if (input.UI_Accept)
                     {
                         m_state = State.Profile;
                         m_input = input;
-                        m_selectMenu.MainMenu.PlaySubmitSound();
+                        m_menu.PlaySubmitSound();
                         break;
                     }
                     else if (input.UI_Cancel)
                     {
-                        m_selectMenu.MainMenu.SetMenu(Menu.Root, true);
+                        m_menu.SetMenu(m_menu.Root, MenuBase.TransitionSound.Back);
                     }
                 }
             }
@@ -238,11 +240,11 @@ namespace BoostBlasters.MainMenus
                         m_state = State.Select;
                         Profile = PlayerProfileManager.Instance.GetGuestProfile("Guest", true);
                         SelectCharacter(m_selectedCharacter);
-                        m_selectMenu.MainMenu.PlaySubmitSound();
+                        m_menu.PlaySubmitSound();
                     }
                     else if (SelectedProfile == 1)
                     {
-                        m_selectMenu.MainMenu.ProfileName.EditProfile(PlayerProfileManager.Instance.AddNewProfile(), true, Menu.PlayerSelect, OnProfileCreate);
+                        m_menu.ProfileName.EditProfile(PlayerProfileManager.Instance.AddNewProfile(), true, m_menu.PlayerSelect, OnProfileCreate);
                     }
                     else
                     {
@@ -253,11 +255,11 @@ namespace BoostBlasters.MainMenus
                             m_state = State.Select;
                             Profile = profile;
                             SelectCharacter(m_selectedCharacter);
-                            m_selectMenu.MainMenu.PlaySubmitSound();
+                            m_menu.PlaySubmitSound();
                         }
                         else
                         {
-                            m_selectMenu.MainMenu.PlayCancelSound();
+                            m_menu.PlayCancelSound();
                         }
                     }
                 }
@@ -270,13 +272,13 @@ namespace BoostBlasters.MainMenus
                     
                     if (previous != SelectedProfile)
                     {
-                        m_selectMenu.MainMenu.PlaySelectSound();
+                        m_menu.PlaySelectSound();
                     }
                 }
                 else if (m_input.UI_Cancel)
                 {
                     m_state = State.Join;
-                    m_selectMenu.MainMenu.PlayCancelSound();
+                    m_menu.PlayCancelSound();
                 }
             }
             else if (m_state == State.Select)
@@ -284,19 +286,19 @@ namespace BoostBlasters.MainMenus
                 if (m_input.UI_Accept)
                 {
                     m_state = State.Ready;
-                    m_selectMenu.MainMenu.PlaySubmitSound();
+                    m_menu.PlaySubmitSound();
                 }
                 else if (m_input.UI_Right || m_input.UI_Left)
                 {
                     SelectCharacter(m_selectedCharacter + (m_input.UI_Right ? 1 : -1));
                     m_characterHighlight.color = new Color(1, 1, 1, 0.35f);
-                    m_selectMenu.MainMenu.PlaySelectSound();
+                    m_menu.PlaySelectSound();
                 }
                 else if (m_input.UI_Cancel)
                 {
                     m_state = State.Profile;
                     Profile = null;
-                    m_selectMenu.MainMenu.PlayCancelSound();
+                    m_menu.PlayCancelSound();
                 }
             }
             else if (m_state == State.Ready)
@@ -308,7 +310,7 @@ namespace BoostBlasters.MainMenus
                 else if (m_input.UI_Cancel)
                 {
                     m_state = State.Select;
-                    m_selectMenu.MainMenu.PlayCancelSound();
+                    m_menu.PlayCancelSound();
                 }
             }
         }

@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace BoostBlasters.MainMenus
+namespace BoostBlasters.Menus
 {
     public class ProfileNameMenu : MenuScreen
     {
@@ -16,14 +16,14 @@ namespace BoostBlasters.MainMenus
 
         private PlayerProfile m_editProfile;
         private bool m_isNew;
-        private Menu m_returnToMenu;
+        private MenuScreen m_returnToMenu;
         private Action<PlayerProfile> m_onComplete;
         private string m_currentName;
         private bool m_delete;
         private bool m_deleteRepeat;
         private float m_deleteWait;
 
-        public override void InitMenu(RaceParameters lastRace)
+        public override void InitMenu()
         {
             m_acceptButton.onClick.AddListener(() => Accept());
             m_cancelButton.onClick.AddListener(() => Cancel());
@@ -104,15 +104,15 @@ namespace BoostBlasters.MainMenus
 
                 if (typeSound)
                 {
-                    MainMenu.PlaySubmitSound();
+                    Menu.PlaySubmitSound();
                 }
                 else if (deleteSound)
                 {
-                    MainMenu.PlayCancelSound();
+                    Menu.PlayCancelSound();
                 }
                 else if (invalidSound)
                 {
-                    MainMenu.PlayCancelSound();
+                    Menu.PlayCancelSound();
                 }
             }
         }
@@ -128,7 +128,7 @@ namespace BoostBlasters.MainMenus
             Cancel();
         }
 
-        public void EditProfile(PlayerProfile editProfile, bool isNew, Menu returnToMenu, Action<PlayerProfile> onComplete)
+        public void EditProfile(PlayerProfile editProfile, bool isNew, MenuScreen returnToMenu, Action<PlayerProfile> onComplete)
         {
             m_editProfile = editProfile;
             m_isNew = isNew;
@@ -137,7 +137,7 @@ namespace BoostBlasters.MainMenus
 
             m_currentName = editProfile.Name;
 
-            MainMenu.SetMenu(Menu.ProfileName);
+            Menu.SetMenu(((MainMenu)Menu).ProfileName);
         }
         
         private void Accept()
@@ -147,11 +147,11 @@ namespace BoostBlasters.MainMenus
             if (trimmed.Length > 0)
             {
                 m_editProfile.Name = trimmed;
-                MainMenu.SetMenu(m_returnToMenu);
+                Menu.SetMenu(m_returnToMenu);
             }
             else
             {
-                MainMenu.PlayCancelSound();
+                Menu.PlayCancelSound();
             }
 
             if (m_onComplete != null)
@@ -166,7 +166,7 @@ namespace BoostBlasters.MainMenus
             {
                 PlayerProfileManager.Instance.DeleteProfile(m_editProfile);
             }
-            MainMenu.SetMenu(m_returnToMenu, true);
+            Menu.SetMenu(m_returnToMenu, MenuBase.TransitionSound.Back);
 
             if (m_onComplete != null)
             {

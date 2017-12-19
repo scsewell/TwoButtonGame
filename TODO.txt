@@ -1,6 +1,5 @@
 ### To Do ###
 
-restart race menu option
 pauser controls pause menu
 list top scores (full and lap) for each track in track selection
 player profiles - best lap times, best finish times per course, race count, win percentage
@@ -20,6 +19,8 @@ Collision/sliding sound
 Player finish line sounds
 Energy gate sounds
 Waypoint engine sound
+Min energy sound
+Full energy sound
 
 Characters (fatty, airbrake flaps!!!!, floating boosters fancy tech, robot, other race?, really abstract?)
 Abilities (down plummet, downwards boost, teleport)

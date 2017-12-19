@@ -57,7 +57,13 @@ public class RaceManager : MonoBehaviour
     private InRaceMenu m_raceMenu;
     private CameraRig m_cameraRig;
     private ReplayCamera m_replayCamera;
+
     private AsyncOperation m_loading;
+    private float m_fadeFac = 1;
+
+    private RaceRecording m_raceRecording;
+    private int m_fixedFramesSoFar;
+
     private float m_raceLoadTime;
     private float m_introEndTime;
     private float m_introSkipTime;
@@ -68,13 +74,12 @@ public class RaceManager : MonoBehaviour
     private bool m_isInIntro;
     private bool m_introSkipped;
     private bool m_musicStarted;
-    private float m_fadeFac = 1;
-    private RaceRecording m_raceRecording;
-    private int m_fixedFramesSoFar;
 
-    public float TimeRaceLoad { get { return m_raceLoadTime; } }
-    public float TimeIntroEnd { get { return m_introEndTime; } }
-    public float TimeIntroSkip { get { return m_introSkipTime; } }
+    public float TimeRaceLoad       { get { return m_raceLoadTime; } }
+    public float TimeIntroDuration  { get { return m_cameraRig.GetIntroSequenceLength(); } }
+    public float TimeIntroEnd       { get { return m_introEndTime; } }
+    public float TimeIntroSkip      { get { return m_introSkipTime; } }
+    public float TimeRaceStart      { get { return m_raceStartTime; } }
 
     public float CountdownTime
     {
@@ -102,17 +107,15 @@ public class RaceManager : MonoBehaviour
 
         m_raceRecording = new RaceRecording(m_raceParams);
         m_replayStartTime = float.PositiveInfinity;
-        
-        m_musicStarted = false;
-
-        m_isInIntro = true;
-        m_introSkipped = false;
-        m_cameraRig.PlayIntroSequence();
 
         ResetRace(m_cameraRig.GetIntroSequenceLength());
+
+        m_isInIntro = true;
+        m_musicStarted = false;
+        m_cameraRig.PlayIntroSequence();
     }
 
-    public void StartRace(RaceRecording recording)
+    public void StartReplay(RaceRecording recording)
     {
         m_raceParams = recording.RaceParams;
         InitRace();
@@ -121,13 +124,36 @@ public class RaceManager : MonoBehaviour
 
         m_raceRecording = recording;
         m_replayStartTime = Time.time;
+        
+        ResetRace(0);
 
         AudioManager.Instance.PlayMusic(m_replayMusic);
         m_musicStarted = true;
-
         m_replayCamera.Activate();
-        
-        ResetRace(0);
+    }
+
+    public bool RestartRace()
+    {
+        if (m_loading == null)
+        {
+            AudioManager.Instance.StopAudio();
+            AudioManager.Instance.StopMusic();
+            m_cameraRig.StopIntroSequence();
+
+            m_state = State.Racing;
+
+            m_raceRecording = new RaceRecording(m_raceParams);
+            m_replayStartTime = float.PositiveInfinity;
+
+            ResetRace(m_cameraRig.GetIntroSequenceLength());
+
+            m_isInIntro = true;
+            m_musicStarted = false;
+            m_cameraRig.PlayIntroSequence();
+
+            return true;
+        }
+        return false;
     }
 
     public void InitRace()
@@ -176,8 +202,12 @@ public class RaceManager : MonoBehaviour
         }
     }
 
-    public void ResetRace(float introLength)
+    private void ResetRace(float introLength)
     {
+        m_countdownSecond = 0;
+        m_isInIntro = false;
+        m_introSkipped = false;
+
         m_raceLoadTime = Time.time;
         m_introEndTime = m_raceLoadTime + introLength;
         m_introSkipTime = float.MaxValue;
@@ -194,6 +224,8 @@ public class RaceManager : MonoBehaviour
         {
             cameraManager.ResetCam();
         }
+
+        m_raceMenu.ResetUI();
 
         m_raceRecording.ResetRecorder();
         m_fixedFramesSoFar = 0;
@@ -223,7 +255,6 @@ public class RaceManager : MonoBehaviour
         }
 
         m_cameras.ForEach(c => c.UpdateCamera());
-
         m_racePath.FixedUpdatePath();
 
         foreach (Player player in m_players)
@@ -322,62 +353,61 @@ public class RaceManager : MonoBehaviour
         m_countdownSecond = countdownSecond;
 
         SettingManager.Instance.SetShadowDistance();
-
+        
         AudioManager.Instance.MusicPausable = (Time.time - m_raceStartTime < 0);
-        AudioManager.Instance.Volume = Mathf.MoveTowards(AudioManager.Instance.Volume, 1 - GetFadeFactor(true), Time.unscaledDeltaTime / 0.5f);
-
-        m_fadeFac = GetFadeFactor(false);
-
-        if (m_loading != null && m_fadeFac == 1)
+        AudioManager.Instance.MusicVolume = Mathf.MoveTowards(AudioManager.Instance.MusicVolume, 1 - GetFadeFactor(true), Time.unscaledDeltaTime / 0.5f);
+        
+        if (m_loading != null && GetFadeFactor(false) >= 1)
         {
             m_loading.allowSceneActivation = true;
         }
+
+        bool showPlayerUI = !m_isInIntro && m_state != State.Replay;
+        bool allowQuit = m_state == State.Finished || m_state == State.Replay;
+
+        m_raceMenu.UpdateUI(showPlayerUI, m_state == State.Paused, allowQuit, m_loading != null);
     }
 
     public void LateUpdateRace()
     {
         bool showPlayerUI = !m_isInIntro && m_state != State.Replay;
-        bool allowQuit = m_state == State.Finished || m_state == State.Replay;
 
         m_players.ForEach(p => p.LateUpdatePlayer());
         m_cameras.ForEach(c => c.SetCameraEnabled(showPlayerUI));
 
-        m_raceMenu.UpdateUI(this, showPlayerUI, m_state == State.Paused, allowQuit, m_loading != null, m_fadeFac);
+        m_raceMenu.LateUpdateUI();
     }
 
-    public void SkipIntro()
+    public bool SkipIntro()
     {
         if (m_isInIntro && !m_introSkipped)
         {
             m_introSkipped = true;
             m_introSkipTime = Time.time;
             m_introEndTime = m_introSkipTime + m_introFadeTime;
+
+            return true;
         }
+        return false;
     }
 
     public void Pause()
     {
-        switch (m_state)
+        if (m_state == State.Racing)
         {
-            case State.Racing:
-                m_state = State.Paused;
-                AudioListener.pause = true;
-                Time.timeScale = 0;
-                m_raceMenu.OnPause();
-                break;
+            m_state = State.Paused;
+            AudioListener.pause = true;
+            Time.timeScale = 0;
         }
     }
 
     public void Resume()
     {
-        switch (m_state)
+        if (m_state == State.Paused)
         {
-            case State.Paused:
-                m_state = State.Racing;
-                AudioListener.pause = false;
-                Time.timeScale = 1;
-                m_raceMenu.OnResume();
-                break;
+            m_state = State.Racing;
+            AudioListener.pause = false;
+            Time.timeScale = 1;
         }
     }
 
@@ -385,7 +415,7 @@ public class RaceManager : MonoBehaviour
     {
         if (m_loading == null)
         {
-            if (m_state != State.Replay)
+            if (m_state != State.Replay && m_fixedFramesSoFar > 0)
             {
                 ReplayManager.Instance.SaveRecording(m_raceRecording, m_players);
             }
@@ -395,7 +425,7 @@ public class RaceManager : MonoBehaviour
         }
     }
 
-    private float GetFadeFactor(bool audio)
+    public float GetFadeFactor(bool audio)
     {
         float fadeFac = 0;
 

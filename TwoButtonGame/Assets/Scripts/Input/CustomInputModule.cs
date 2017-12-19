@@ -21,7 +21,10 @@ public class CustomInputModule : StandaloneInputModule
         cancelButton    = CANCEL_BUTTON;
         repeatDelay     = REPEAT_WAIT;
         inputActionsPerSecond = (1.0f / REPEAT_DELAY);
+    }
 
-        m_InputOverride = gameObject.AddComponent<CustomInput>();
+    public void SetInputOverride(CustomInput input)
+    {
+        m_InputOverride = input;
     }
 }

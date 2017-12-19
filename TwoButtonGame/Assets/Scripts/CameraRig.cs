@@ -31,11 +31,6 @@ public class CameraRig : MonoBehaviour
         SettingManager.Instance.ConfigureCamera(m_cam, false);
 
         m_shotsToPlay = new Queue<LevelConfig.CameraShot>();
-
-        m_graph = PlayableGraph.Create();
-        m_graph.SetTimeUpdateMode(DirectorUpdateMode.GameTime);
-
-        m_animOutput = AnimationPlayableOutput.Create(m_graph, "IntroAnimation", m_anim);
     }
 
     public CameraRig Init(LevelConfig config)
@@ -44,12 +39,9 @@ public class CameraRig : MonoBehaviour
         return this;
     }
 
-    public void PlayIntroSequence()
+    private void OnDestroy()
     {
-        foreach (LevelConfig.CameraShot shot in m_levelConfig.IntroSequence)
-        {
-            m_shotsToPlay.Enqueue(shot);
-        }
+        m_graph.Destroy();
     }
 
     public float GetIntroSequenceLength()
@@ -57,9 +49,27 @@ public class CameraRig : MonoBehaviour
         return m_levelConfig.IntroSequence.Sum(s => s.Clip.length / s.Speed);
     }
 
-    private void OnDestroy()
+    public void PlayIntroSequence()
     {
-        m_graph.Destroy();
+        if (m_graph.IsValid())
+        {
+            m_graph.Destroy();
+        }
+        
+        m_graph = PlayableGraph.Create();
+        m_graph.SetTimeUpdateMode(DirectorUpdateMode.GameTime);
+
+        m_animOutput = AnimationPlayableOutput.Create(m_graph, "IntroAnimation", m_anim);
+
+        foreach (LevelConfig.CameraShot shot in m_levelConfig.IntroSequence)
+        {
+            m_shotsToPlay.Enqueue(shot);
+        }
+    }
+
+    public void StopIntroSequence()
+    {
+        m_shotsToPlay.Clear();
     }
 
     public void UpdateCamera(bool enableCamera)

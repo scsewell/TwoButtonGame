@@ -29,7 +29,7 @@ public class PlayerJoystickInput : PlayerBaseInput
     }
     public override bool Boost
     {
-        get { return GetKey(m_boost); }
+        get { return GetKeyDown(m_boost); }
     }
 
     private KeyCode m_accept;

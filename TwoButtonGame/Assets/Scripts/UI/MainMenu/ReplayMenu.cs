@@ -6,7 +6,7 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using Framework.UI;
 
-namespace BoostBlasters.MainMenus
+namespace BoostBlasters.Menus
 {
     public class ReplayMenu : MenuScreen
     {
@@ -35,9 +35,11 @@ namespace BoostBlasters.MainMenus
         private List<PlayerResultPanel> m_playerResults;
         private int m_infoPage;
         
-        public override void InitMenu(RaceParameters lastRace)
+        public override void InitMenu()
         {
-            m_backButton.onClick.AddListener(() => MainMenu.SetMenu(Menu.Root, true));
+            MainMenu menu = (MainMenu)Menu;
+
+            m_backButton.onClick.AddListener(() => Menu.SetMenu(menu.Root, MenuBase.TransitionSound.Back));
 
             m_infos = new List<ReplayInfo>();
             m_replayPanels = new List<ReplayPanel>();
@@ -134,7 +136,7 @@ namespace BoostBlasters.MainMenus
             if (m_infoPage != oldPage)
             {
                 ViewPage(m_infoPage);
-                MainMenu.PlaySelectSound();
+                Menu.PlaySelectSound();
             }
         }
 

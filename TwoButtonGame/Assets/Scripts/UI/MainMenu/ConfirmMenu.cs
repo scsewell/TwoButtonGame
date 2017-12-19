@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-
-namespace BoostBlasters.MainMenus
+namespace BoostBlasters.Menus
 {
     public class ConfirmMenu : MenuScreen
     {
@@ -14,17 +12,17 @@ namespace BoostBlasters.MainMenus
         [SerializeField] private Button m_cancelButton;
 
         private Action<bool> m_onResponse;
-        private Menu m_returnToMenu;
+        private MenuScreen m_returnToMenu;
 
-        public override void InitMenu(RaceParameters lastRace)
+        public override void InitMenu()
         {
             m_acceptButton.onClick.AddListener(() => Accept());
             m_cancelButton.onClick.AddListener(() => Cancel());
         }
 
-        public void ConfirmAction(string text, Action<bool> onResponse, Menu returnToMenu)
+        public void ConfirmAction(string text, Action<bool> onResponse, MenuScreen returnToMenu)
         {
-            MainMenu.SetMenu(Menu.Confirm);
+            Menu.SetMenu(((MainMenu)Menu).Confirm);
 
             m_confirmText.text = text;
             m_onResponse = onResponse;
@@ -40,15 +38,15 @@ namespace BoostBlasters.MainMenus
         {
             m_onResponse(true);
 
-            MainMenu.PlaySubmitSound();
-            MainMenu.SetMenu(m_returnToMenu);
+            Menu.PlaySubmitSound();
+            Menu.SetMenu(m_returnToMenu);
         }
 
         private void Cancel()
         {
             m_onResponse(false);
 
-            MainMenu.SetMenu(m_returnToMenu, true);
+            Menu.SetMenu(m_returnToMenu, MenuBase.TransitionSound.Back);
         }
     }
 }

@@ -182,7 +182,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef5264157bb4c8142a57efb92f5309bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_submitOverrideClip: {fileID: 0}
 --- !u!114 &3699220
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -544,7 +543,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef5264157bb4c8142a57efb92f5309bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_submitOverrideClip: {fileID: 0}
 --- !u!114 &48496441
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -819,7 +817,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef5264157bb4c8142a57efb92f5309bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_submitOverrideClip: {fileID: 0}
 --- !u!114 &74907026
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -962,7 +959,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 57efb180f945f2d4ebf5141c9b4c7783, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_backMenu: 1
+  m_backMenu: {fileID: 2047810118}
+  m_closeOnBack: 0
   m_defaultSelection: {fileID: 48496441}
   m_remeberLastSelection: 0
   m_settingsApplyButton: {fileID: 928067385}
@@ -2431,7 +2429,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef5264157bb4c8142a57efb92f5309bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_submitOverrideClip: {fileID: 0}
 --- !u!114 &200953228
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2766,7 +2763,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef5264157bb4c8142a57efb92f5309bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_submitOverrideClip: {fileID: 0}
 --- !u!222 &237618307
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -3172,7 +3168,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef5264157bb4c8142a57efb92f5309bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_submitOverrideClip: {fileID: 0}
 --- !u!114 &304975838
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3316,7 +3311,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1102f529ab0372641814442637bdcd28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_backMenu: 1
+  m_backMenu: {fileID: 2047810118}
+  m_closeOnBack: 0
   m_defaultSelection: {fileID: 0}
   m_remeberLastSelection: 0
   m_playerSelectContent: {fileID: 725614926}
@@ -3615,7 +3611,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef5264157bb4c8142a57efb92f5309bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_submitOverrideClip: {fileID: 0}
 --- !u!114 &336653858
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4366,7 +4361,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 100, y: 3}
-  m_SizeDelta: {x: -150, y: -6}
+  m_SizeDelta: {x: -520, y: -6}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!114 &398040604
 MonoBehaviour:
@@ -4645,7 +4640,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef5264157bb4c8142a57efb92f5309bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_submitOverrideClip: {fileID: 0}
 --- !u!114 &449887303
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5948,7 +5942,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef5264157bb4c8142a57efb92f5309bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_submitOverrideClip: {fileID: 0}
 --- !u!1 &657129034
 GameObject:
   m_ObjectHideFlags: 0
@@ -6272,7 +6265,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef5264157bb4c8142a57efb92f5309bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_submitOverrideClip: {fileID: 0}
 --- !u!1 &672950363
 GameObject:
   m_ObjectHideFlags: 0
@@ -6415,7 +6407,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef5264157bb4c8142a57efb92f5309bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_submitOverrideClip: {fileID: 0}
 --- !u!114 &685759486
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7137,7 +7128,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef5264157bb4c8142a57efb92f5309bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_submitOverrideClip: {fileID: 0}
 --- !u!114 &767990546
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7580,7 +7570,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef5264157bb4c8142a57efb92f5309bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_submitOverrideClip: {fileID: 0}
 --- !u!222 &859629012
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -8030,7 +8019,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef5264157bb4c8142a57efb92f5309bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_submitOverrideClip: {fileID: 0}
 --- !u!222 &928067389
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -8254,7 +8242,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef5264157bb4c8142a57efb92f5309bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_submitOverrideClip: {fileID: 0}
 --- !u!114 &968075566
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8398,7 +8385,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef5264157bb4c8142a57efb92f5309bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_submitOverrideClip: {fileID: 0}
 --- !u!114 &981057111
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9211,7 +9197,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef5264157bb4c8142a57efb92f5309bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_submitOverrideClip: {fileID: 0}
 --- !u!114 &1065953512
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9704,7 +9689,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b381d6f1499970d4490968a2721c9779, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_backMenu: 1
+  m_backMenu: {fileID: 2047810118}
+  m_closeOnBack: 0
   m_defaultSelection: {fileID: 1339724717}
   m_remeberLastSelection: 0
   m_creditsBackButton: {fileID: 1339724717}
@@ -10235,7 +10221,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3e169297864c8f040b2376dfb76d343d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_backMenu: 1
+  m_backMenu: {fileID: 2047810118}
+  m_closeOnBack: 0
   m_defaultSelection: {fileID: 0}
   m_remeberLastSelection: 0
   m_selectPanelPrefab: {fileID: 1791089131849386, guid: cf7b43e8d7755494e846d4a1e41d7499,
@@ -10587,7 +10574,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef5264157bb4c8142a57efb92f5309bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_submitOverrideClip: {fileID: 0}
 --- !u!114 &1307046936
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10731,7 +10717,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef5264157bb4c8142a57efb92f5309bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_submitOverrideClip: {fileID: 0}
 --- !u!114 &1339724717
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11813,7 +11798,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 34c5ec63a06f2a940a58f29fca039909, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_backMenu: 2
+  m_backMenu: {fileID: 315188599}
+  m_closeOnBack: 0
   m_defaultSelection: {fileID: 0}
   m_remeberLastSelection: 1
   m_optionPrefab: {fileID: 114993208452375266, guid: cbefd7fc330157f479cad3373b11cf47,
@@ -12010,7 +11996,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef5264157bb4c8142a57efb92f5309bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_submitOverrideClip: {fileID: 0}
 --- !u!114 &1499839984
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12132,7 +12117,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb5fc865e3c5371459fb3133249610df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_backMenu: 0
+  m_backMenu: {fileID: 2047810118}
+  m_closeOnBack: 0
   m_defaultSelection: {fileID: 200953228}
   m_remeberLastSelection: 0
   m_confirmText: {fileID: 2073841047}
@@ -12802,7 +12788,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef5264157bb4c8142a57efb92f5309bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_submitOverrideClip: {fileID: 0}
 --- !u!222 &1653841024
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -13169,7 +13154,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2490cdd3129196647abbdd089a0aa6a4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_backMenu: 1
+  m_backMenu: {fileID: 0}
+  m_closeOnBack: 0
   m_defaultSelection: {fileID: 336653858}
   m_remeberLastSelection: 0
   m_titleText: {fileID: 273150671}
@@ -13265,7 +13251,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef5264157bb4c8142a57efb92f5309bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_submitOverrideClip: {fileID: 0}
 --- !u!114 &1734219598
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13643,7 +13628,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef5264157bb4c8142a57efb92f5309bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_submitOverrideClip: {fileID: 0}
 --- !u!114 &1828023736
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14110,7 +14094,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef5264157bb4c8142a57efb92f5309bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_submitOverrideClip: {fileID: 0}
 --- !u!114 &1847275978
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15556,7 +15539,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef5264157bb4c8142a57efb92f5309bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_submitOverrideClip: {fileID: 0}
 --- !u!114 &2016445080
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15793,7 +15775,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6217a5774128564cafacce91f2cb31b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_backMenu: 1
+  m_backMenu: {fileID: 0}
+  m_closeOnBack: 0
   m_defaultSelection: {fileID: 661427482}
   m_remeberLastSelection: 1
   m_playButton: {fileID: 661427482}
@@ -16545,7 +16528,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d99d516e474c9ce4c97cc8ca80ede4ad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_backMenu: 1
+  m_backMenu: {fileID: 2047810118}
+  m_closeOnBack: 0
   m_defaultSelection: {fileID: 0}
   m_remeberLastSelection: 0
   m_selectPanelPrefab: {fileID: 1791089131849386, guid: cf7b43e8d7755494e846d4a1e41d7499,

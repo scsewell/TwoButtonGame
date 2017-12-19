@@ -4,9 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.EventSystems;
 using Framework;
-using BoostBlasters.MainMenus;
+using BoostBlasters.Menus;
 
 public class MainMenu : MenuBase
 {
@@ -31,22 +30,32 @@ public class MainMenu : MenuBase
     private float m_fadePower = 3.0f;
 
     private RootMenu m_root;
+    public RootMenu Root { get { return m_root; } }
+
     private PlayerSelectMenu m_playerSelect;
+    public PlayerSelectMenu PlayerSelect { get { return m_playerSelect; } }
+
     private LevelSelectMenu m_levelSelect;
+    public LevelSelectMenu LevelSelect { get { return m_levelSelect; } }
+
     private ProfilesMenu m_profiles;
+    public ProfilesMenu Profiles { get { return m_profiles; } }
+
     private ReplayMenu m_replays;
+    public ReplayMenu Replays { get { return m_replays; } }
+
     private SettingsMenu m_settings;
+    public SettingsMenu Settings { get { return m_settings; } }
+
     private CreditsMenu m_credits;
+    public CreditsMenu Credits { get { return m_credits; } }
 
     private ProfileNameMenu m_profileName;
     public ProfileNameMenu ProfileName { get { return m_profileName; } }
 
-    private ConfirmMenu m_confirmMenu;
-    public ConfirmMenu ConfirmMenu { get { return m_confirmMenu; } }
+    private ConfirmMenu m_confirm;
+    public ConfirmMenu Confirm { get { return m_confirm; } }
     
-    private List<MenuScreen> m_menuScreens;
-    private Menu m_activeMenu = Menu.None;
-    private Menu m_targetMenu;
     private AsyncOperation m_loading;
     private float m_menuLoadTime;
     private float m_menuExitTime;
@@ -72,6 +81,8 @@ public class MainMenu : MenuBase
         // Ensure the GameController exists
         Debug.Log(Main.Instance.name);
 
+        InitBase(InputManager.Instance.PlayerInputs.ToList());
+
         m_root          = GetComponentInChildren<RootMenu>();
         m_playerSelect  = GetComponentInChildren<PlayerSelectMenu>();
         m_levelSelect   = GetComponentInChildren<LevelSelectMenu>();
@@ -80,22 +91,15 @@ public class MainMenu : MenuBase
         m_replays       = GetComponentInChildren<ReplayMenu>();
         m_settings      = GetComponentInChildren<SettingsMenu>();
         m_credits       = GetComponentInChildren<CreditsMenu>();
-        m_confirmMenu   = GetComponentInChildren<ConfirmMenu>();
-
-        gameObject.AddComponent<CustomInputModule>();
-        CustomInput customInput = gameObject.GetComponent<CustomInput>();
-        customInput.SetInputs(InputManager.Instance.PlayerInputs.ToList());
-
+        m_confirm   = GetComponentInChildren<ConfirmMenu>();
+        
         m_availableInputs = new List<PlayerBaseInput>(InputManager.Instance.PlayerInputs);
         
-        m_menuScreens = new List<MenuScreen>(GetComponentsInChildren<MenuScreen>());
-        m_menuScreens.ForEach(m => m.InitMenu(Main.Instance.LastRaceParams));
-
         switch (Main.Instance.LastRaceType)
         {
-            case Main.RaceType.Race:    SetMenu(Menu.LevelSelect); break;
-            case Main.RaceType.Replay:  SetMenu(Menu.Replays); break;
-            default: SetMenu(Menu.Root); break;
+            case Main.RaceType.Race:    SetMenu(m_levelSelect, TransitionSound.None); break;
+            case Main.RaceType.Replay:  SetMenu(m_replays, TransitionSound.None); break;
+            default:                    SetMenu(m_root, TransitionSound.None); break;
         }
 
         StartCoroutine(FinishAwake());
@@ -110,36 +114,10 @@ public class MainMenu : MenuBase
         m_background.SetActive(true);
         AudioManager.Instance.PlayMusic(m_music);
     }
-
-    public void SetMenu(Menu menu, bool back = false)
-    {
-        Menu previous = m_targetMenu;
-
-        if (previous != menu)
-        {
-            m_targetMenu = menu;
-            
-            if (previous != Menu.None)
-            {
-                if (back)
-                {
-                    PlayBackMenuSound();
-                }
-                else
-                {
-                    PlayNextMenuSound();
-                }
-            }
-        }
-    }
-
+    
     private void Update()
     {
-        bool useCursor = Input.GetKey(KeyCode.LeftControl);
-        Cursor.lockState = true ? CursorLockMode.None : CursorLockMode.Locked;
-        Cursor.visible = useCursor;
-
-        m_menuScreens.ForEach(m => m.UpdateMenu());
+        UpdateBase();
 
         float factor = GetFadeFactor();
         m_fade.color = new Color(0, 0, 0, factor);
@@ -156,41 +134,19 @@ public class MainMenu : MenuBase
 
     private void LateUpdate()
     {
-        if (m_activeMenu != m_targetMenu)
-        {
-            Menu previous = m_activeMenu;
-            m_activeMenu = m_targetMenu;
-
-            m_root.enabled          = (m_activeMenu == Menu.Root);
-            m_playerSelect.enabled  = (m_activeMenu == Menu.PlayerSelect);
-            m_levelSelect.enabled   = (m_activeMenu == Menu.LevelSelect);
-            m_profiles.enabled      = (m_activeMenu == Menu.Profiles);
-            m_profileName.enabled   = (m_activeMenu == Menu.ProfileName);
-            m_replays.enabled       = (m_activeMenu == Menu.Replays);
-            m_settings.enabled      = (m_activeMenu == Menu.Settings);
-            m_credits.enabled       = (m_activeMenu == Menu.Credits);
-            m_confirmMenu.enabled   = (m_activeMenu == Menu.Confirm);
-
-            EventSystem.current.SetSelectedGameObject(null);
-
-            m_menuScreens.ForEach(m => m.ResetMenu(previous == Menu.Root));
-        }
-        m_menuScreens.ForEach(m => m.UpdateGraphics());
-
-        FlushSoundQueue();
+        LateUpdateBase((previous) => previous == m_root);
         
-        switch (m_activeMenu)
+        if (ActiveMenu == m_root)
         {
-            case Menu.Root:
-                List<PlayerBaseInput> contolInputs = AvailableInputs.Where(i => !i.IsController).ToList();
-                m_controls.SetActive(true);
-                m_controls1.UpdateUI("Navigate", contolInputs.SelectMany(i => i.SpriteNavigate).ToList());
-                m_controls2.UpdateUI("Accept",   contolInputs.SelectMany(i => i.SpriteAccept).ToList());
-                m_controls3.UpdateUI("Cancel",   contolInputs.SelectMany(i => i.SpriteCancel).ToList());
-                break;
-            default:
-                m_controls.SetActive(false);
-                break;
+            List<PlayerBaseInput> contolInputs = AvailableInputs.Where(i => !i.IsController).ToList();
+            m_controls.SetActive(true);
+            m_controls1.UpdateUI("Navigate", contolInputs.SelectMany(i => i.SpriteNavigate).ToList());
+            m_controls2.UpdateUI("Accept", contolInputs.SelectMany(i => i.SpriteAccept).ToList());
+            m_controls3.UpdateUI("Cancel", contolInputs.SelectMany(i => i.SpriteCancel).ToList());
+        }
+        else
+        {
+            m_controls.SetActive(false);
         }
     }
 
@@ -208,7 +164,7 @@ public class MainMenu : MenuBase
     {
         m_loading = Main.Instance.LoadRace(ReplayManager.Instance.LoadReplay(info));
         m_menuExitTime = Time.unscaledTime;
-        SetMenu(Menu.Loading);
+        SetMenu(null);
     }
 
     public void LaunchRace()
@@ -239,6 +195,6 @@ public class MainMenu : MenuBase
 
         m_loading = Main.Instance.LoadRace(raceParams);
         m_menuExitTime = Time.unscaledTime;
-        SetMenu(Menu.Loading);
+        SetMenu(null);
     }
 }

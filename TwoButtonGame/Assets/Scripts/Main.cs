@@ -66,6 +66,10 @@ public class Main : ComponentSingleton<Main>
 
     private void Update()
     {
+        bool useCursor = Input.GetKey(KeyCode.LeftControl);
+        Cursor.lockState = true ? CursorLockMode.None : CursorLockMode.Locked;
+        Cursor.visible = useCursor;
+
         InputManager.Instance.Update();
         InterpolationController.Instance.VisualUpdate();
 
@@ -128,7 +132,7 @@ public class Main : ComponentSingleton<Main>
     private void StartRace(RaceRecording recording)
     {
         m_raceManager = Instantiate(m_raceManagerPrefab);
-        m_raceManager.StartRace(recording);
+        m_raceManager.StartReplay(recording);
     }
 
     private IEnumerator LoadLevel(AsyncOperation loading, Action onComplete)

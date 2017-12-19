@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-namespace BoostBlasters.MainMenus
+namespace BoostBlasters.Menus
 {
     public class Navigable : MonoBehaviour, IMoveHandler
     {

@@ -97,9 +97,9 @@ public class AudioManager : ComponentSingleton<AudioManager>
                 lastPlayTime = -1;
             }
 
-            if (lastPlayTime != Time.time)
+            if (lastPlayTime != Time.unscaledTime)
             {
-                m_lastPlayTimes[clip] = Time.time;
+                m_lastPlayTimes[clip] = Time.unscaledTime;
 
                 if (ignorePause)
                 {
@@ -132,5 +132,11 @@ public class AudioManager : ComponentSingleton<AudioManager>
     {
         m_musicSources[0].Stop();
         m_musicSources[1].Stop();
+    }
+
+    public void StopAudio()
+    {
+        m_audio.Stop();
+        m_noPauseAudio.Stop();
     }
 }

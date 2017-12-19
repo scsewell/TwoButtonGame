@@ -6,7 +6,7 @@ using System.Text;
 public interface IInputProvider
 {
     void ResetProvider();
-    void UpdateProvider();
+    void LateUpdateProvider();
     void FixedUpdateProvider();
     MovementInputs GetInput();
 }

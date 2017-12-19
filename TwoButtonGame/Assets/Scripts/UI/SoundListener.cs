@@ -7,8 +7,6 @@ public class SoundListener : MonoBehaviour,
     IPointerClickHandler, ISubmitHandler, 
     IDragHandler
 {
-    [SerializeField] private AudioClip m_submitOverrideClip;
-
     private MenuBase m_menu;
 
 	private void Awake()
@@ -38,20 +36,15 @@ public class SoundListener : MonoBehaviour,
 
     public void OnPointerClick(PointerEventData e)
     {
-        Submit();
+        m_menu.PlaySubmitSound();
     }
 
     public void OnSubmit(BaseEventData e)
     {
-        Submit();
+        m_menu.PlaySubmitSound();
     }
 
     public void OnDrag(PointerEventData e)
     {
-    }
-
-    private void Submit()
-    {
-        m_menu.PlaySubmitSound(1f, m_submitOverrideClip);
     }
 }
