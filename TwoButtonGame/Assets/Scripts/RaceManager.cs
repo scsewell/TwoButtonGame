@@ -300,8 +300,14 @@ public class RaceManager : MonoBehaviour
         if (m_state == State.Racing && m_players.All(p => p.RaceResult.Finished))
         {
             m_state = State.Finished;
-            m_replayStartTime = Time.time + m_replayStartWait;
+
+            foreach (Player player in m_players)
+            {
+                player.Profile.AddRaceResult(player.RaceResult);
+            }
+
             m_raceMenu.OnFinish();
+            m_replayStartTime = Time.time + m_replayStartWait;
         }
         
         if (!m_isInIntro)

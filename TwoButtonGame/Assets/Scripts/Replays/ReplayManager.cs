@@ -69,27 +69,24 @@ public class ReplayManager : Singleton<ReplayManager>
         
         foreach (FileInfo file in files)
         {
-            if (file.Extension == FILE_EXTENTION)
+            if (m_replays.Count < MAX_REPLAYS)
             {
-                if (m_replays.Count < MAX_REPLAYS)
+                byte[] content = FileIO.ReadFileBytes(file.FullName);
+
+                RaceParameters raceParams;
+                RaceResult[] raceResults;
+                RaceRecording.ParseHeader(new Framework.IO.BinaryReader(content), out raceParams, out raceResults);
+
+                ReplayInfo info = new ReplayInfo(file, raceParams, raceResults);
+
+                lock (m_replayLock)
                 {
-                    byte[] content = FileIO.ReadFileBytes(file.FullName);
-                    Framework.IO.BinaryReader reader = new Framework.IO.BinaryReader(content);
-
-                    RaceParameters raceParams = RaceRecording.ParseRaceParams(reader);
-                    RaceResult[] raceResults = RaceRecording.ParseRaceResults(reader, raceParams);
-
-                    ReplayInfo info = new ReplayInfo(file, raceParams, raceResults);
-
-                    lock (m_replayLock)
-                    {
-                        m_replays.Add(info);
-                    }
+                    m_replays.Add(info);
                 }
-                else
-                {
-                    File.Delete(file.FullName);
-                }
+            }
+            else
+            {
+                File.Delete(file.FullName);
             }
         }
     }

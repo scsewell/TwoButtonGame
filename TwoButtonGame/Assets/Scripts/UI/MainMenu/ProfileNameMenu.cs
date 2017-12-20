@@ -146,7 +146,7 @@ namespace BoostBlasters.Menus
 
             if (trimmed.Length > 0)
             {
-                m_editProfile.Name = trimmed;
+                PlayerProfileManager.Instance.RenameProfile(m_editProfile, trimmed);
                 Menu.SetMenu(m_returnToMenu);
             }
             else

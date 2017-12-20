@@ -47,8 +47,8 @@ public class RaceRecording
     {
         BinaryReader reader = new BinaryReader(bytes);
         
-        m_raceParams = ParseRaceParams(reader);
-        ParseRaceResults(reader, m_raceParams);
+        RaceResult[] results;
+        ParseHeader(reader, out m_raceParams, out results);
 
         CreateBuffers();
         
@@ -68,7 +68,7 @@ public class RaceRecording
         }
     }
 
-    public static RaceParameters ParseRaceParams(BinaryReader reader)
+    public static void ParseHeader(BinaryReader reader, out RaceParameters raceParams, out RaceResult[] results)
     {
         LevelConfig level   = Main.Instance.GetLevelConfig(reader.ReadInt());
         int laps            = reader.ReadInt();
@@ -87,18 +87,13 @@ public class RaceRecording
         List<PlayerBaseInput> inputs = InputManager.Instance.PlayerInputs.ToList();
         List<int> playerindicies = new List<int>();
 
-        return new RaceParameters(level, laps, humanCount, aiCount, playerConfigs, proflies, inputs, playerindicies);
-    }
-
-    public static RaceResult[] ParseRaceResults(BinaryReader reader, RaceParameters raceParams)
-    {
-        RaceResult[] results = new RaceResult[raceParams.PlayerCount];
-        
+        raceParams = new RaceParameters(level, laps, humanCount, aiCount, playerConfigs, proflies, inputs, playerindicies);
+       
+        results = new RaceResult[raceParams.PlayerCount];
         for (int i = 0; i < raceParams.PlayerCount; i++)
         {
-            results[i] = new RaceResult(raceParams.Profiles[i], reader.ReadInt(), reader.ReadBool(), reader.ReadArray<float>().ToList());
+            results[i] = new RaceResult(reader.ReadArray<byte>(), raceParams.Profiles[i]);
         }
-        return results;
     }
 
     public byte[] ToBytes(List<Player> players)
@@ -120,10 +115,7 @@ public class RaceRecording
 
         for (int i = 0; i < PlayerCount; i++)
         {
-            Player player = players[i];
-            headerWriter.WriteValue(player.RaceResult.Rank);
-            headerWriter.WriteValue(player.RaceResult.Finished);
-            headerWriter.WriteArray(player.RaceResult.LapTimes.ToArray());
+            headerWriter.WriteArray(players[i].RaceResult.GetBytes());
         }
 
         BinaryWriter bodyWriter = new BinaryWriter();

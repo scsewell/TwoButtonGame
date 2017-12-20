@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.IO;
 using Framework;
 using Framework.IO;
 
 public class PlayerProfileManager : Singleton<PlayerProfileManager>
 {
-    private static readonly string FILE_NAME = "profiles";
-    private static readonly string FILE_EXTENTION = ".dat";
+    private static readonly string FOLDER_NAME = "Profiles/";
+    private static readonly string FILE_EXTENTION = ".prf";
 
     private Random m_random;
 
@@ -40,7 +40,7 @@ public class PlayerProfileManager : Singleton<PlayerProfileManager>
     public PlayerProfile AddNewProfile()
     {
         PlayerProfile profile = CreateProfile(m_profiles, false, "DefaultName", true);
-        SaveProfiles();
+        SaveProfile(profile);
         return profile;
     }
 
@@ -49,7 +49,7 @@ public class PlayerProfileManager : Singleton<PlayerProfileManager>
         bool removedProfile = m_profiles.Remove(profile);
         if (removedProfile)
         {
-            SaveProfiles();
+            File.Delete(GetProfilePath(profile));
         }
         return removedProfile;
     }
@@ -62,7 +62,7 @@ public class PlayerProfileManager : Singleton<PlayerProfileManager>
     private PlayerProfile CreateProfile(List<PlayerProfile> profiles, bool isGuest, string baseName, bool uniqueName)
     {
         byte[] buffer = new byte[sizeof(long)];
-        BinaryReader reader = new BinaryReader(buffer);
+        Framework.IO.BinaryReader reader = new Framework.IO.BinaryReader(buffer);
 
         m_random.NextBytes(buffer);
         long id = reader.ReadLong();
@@ -98,45 +98,40 @@ public class PlayerProfileManager : Singleton<PlayerProfileManager>
 
     public void LoadProfiles()
     {
-        byte[] bytes = FileIO.ReadFileBytes(GetSavePath());
-        if (bytes != null)
-        {
-            FromBytes(bytes);
-        }
-    }
-
-    public void SaveProfiles()
-    {
-        FileIO.WriteFile(GetBytes(), GetSavePath());
-    }
-
-    private string GetSavePath()
-    {
-        return FileIO.GetInstallDirectory() + FILE_NAME + FILE_EXTENTION;
-    }
-    
-    private void FromBytes(byte[] bytes)
-    {
-        BinaryReader reader = new BinaryReader(bytes);
-
-        int count       = reader.ReadInt();
-        long[] ids      = reader.ReadArray<long>();
-        string[] names  = reader.ReadStringArray();
-
         m_profiles.Clear();
 
-        for (int i = 0; i < count; i++)
+        List<FileInfo> files = FileIO.GetFiles(GetProfileDir(), FILE_EXTENTION).ToList();
+        files.Sort((x, y) => x.CreationTime.CompareTo(y.CreationTime));
+
+        foreach (FileInfo file in files)
         {
-            m_profiles.Add(new PlayerProfile(ids[i], false, names[i]));
+            m_profiles.Add(new PlayerProfile(FileIO.ReadFileBytes(file.FullName)));
         }
     }
-    
-    private byte[] GetBytes()
+
+    public void RenameProfile(PlayerProfile profile, string newName)
     {
-        BinaryWriter writer = new BinaryWriter();
-        writer.WriteValue(m_profiles.Count);
-        writer.WriteArray(m_profiles.Select(p => p.UniqueId).ToArray());
-        writer.WriteArray(m_profiles.Select(p => p.Name).ToArray());
-        return writer.GetBytes();
+        string name = GetUniqueName(profile, newName);
+        if (profile.Name != name)
+        {
+            File.Delete(GetProfilePath(profile));
+            profile.Name = name;
+            SaveProfile(profile);
+        }
+    }
+
+    public void SaveProfile(PlayerProfile profile)
+    {
+        FileIO.WriteFile(profile.GetBytes(), GetProfilePath(profile));
+    }
+
+    private string GetProfilePath(PlayerProfile profile)
+    {
+        return GetProfileDir() + profile.Name + FILE_EXTENTION;
+    }
+
+    private string GetProfileDir()
+    {
+        return FileIO.GetInstallDirectory() + FOLDER_NAME;
     }
 }
