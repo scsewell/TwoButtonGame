@@ -51,7 +51,7 @@ public class RaceResult
         BinaryWriter writer = new BinaryWriter();
         writer.WriteValue(m_rank);
         writer.WriteValue(m_finished);
-        writer.WriteValue(m_lapTimes.ToArray());
+        writer.WriteArray(m_lapTimes.ToArray());
         return writer.GetBytes();
     }
 

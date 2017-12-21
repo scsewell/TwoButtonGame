@@ -9,18 +9,30 @@ public class PlayerInputProvider : IInputProvider
     public PlayerInputProvider(PlayerBaseInput input)
     {
         m_playerInput = input;
-        m_boost = false;
+        ResetProvider();
     }
 
     public void ResetProvider()
     {
+        m_boost = false;
     }
 
     public void LateUpdateProvider()
     {
-        if (Time.timeScale > 0 && m_playerInput.Boost)
+        if (Time.timeScale > 0)
         {
-            m_boost = true;
+            if (m_playerInput.BoostPress)
+            {
+                m_boost = true;
+            }
+            if (m_playerInput.BoostRelease)
+            {
+                m_boost = false;
+            }
+        }
+        else
+        {
+            m_boost = false;
         }
     }
 
@@ -30,8 +42,6 @@ public class PlayerInputProvider : IInputProvider
         m_movementInputs.h = m_playerInput.H;
         m_movementInputs.v = m_playerInput.V;
         m_movementInputs.boost = m_boost;
-
-        m_boost = false;
     }
     
     public MovementInputs GetInput()

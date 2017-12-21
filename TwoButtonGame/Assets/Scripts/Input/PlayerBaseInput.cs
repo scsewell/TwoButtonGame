@@ -3,9 +3,10 @@ using UnityEngine;
 
 public abstract class PlayerBaseInput
 {
-    abstract public float H     { get; }
-    abstract public float V     { get; }
-    abstract public bool Boost  { get; }
+    abstract public float H             { get; }
+    abstract public float V             { get; }
+    abstract public bool BoostPress     { get; }
+    abstract public bool BoostRelease   { get; }
 
     protected List<Sprite> m_spriteLeft;
     protected List<Sprite> m_spriteRight;
@@ -91,6 +92,11 @@ public abstract class PlayerBaseInput
     protected bool GetKeyDown(KeyCode key)
     {
         return CanPress(key) && Input.GetKeyDown(key);
+    }
+
+    protected bool GetKeyUp(KeyCode key)
+    {
+        return CanPress(key) && Input.GetKeyUp(key);
     }
 
     private bool CanPress(KeyCode key)

@@ -33,6 +33,7 @@ public abstract class MenuScreen : MonoBehaviour
     {
         m_baseMenu = GetComponentInParent<MenuBase>();
         m_canvas = GetComponent<Canvas>();
+        m_canvas.enabled = false;
     }
 
     private void OnEnable()

@@ -64,29 +64,32 @@ public class ReplayManager : Singleton<ReplayManager>
     
     private void GetReplays()
     {
-        List<FileInfo> files = FileIO.GetFiles(GetReplayDir(), FILE_EXTENTION).ToList();
-        files.Sort((x, y) => y.CreationTime.CompareTo(x.CreationTime));
-        
-        foreach (FileInfo file in files)
+        if (Directory.Exists(GetReplayDir()))
         {
-            if (m_replays.Count < MAX_REPLAYS)
+            List<FileInfo> files = FileIO.GetFiles(GetReplayDir(), FILE_EXTENTION).ToList();
+            files.Sort((x, y) => y.CreationTime.CompareTo(x.CreationTime));
+
+            foreach (FileInfo file in files)
             {
-                byte[] content = FileIO.ReadFileBytes(file.FullName);
-
-                RaceParameters raceParams;
-                RaceResult[] raceResults;
-                RaceRecording.ParseHeader(new Framework.IO.BinaryReader(content), out raceParams, out raceResults);
-
-                ReplayInfo info = new ReplayInfo(file, raceParams, raceResults);
-
-                lock (m_replayLock)
+                if (m_replays.Count < MAX_REPLAYS)
                 {
-                    m_replays.Add(info);
+                    byte[] content = FileIO.ReadFileBytes(file.FullName);
+
+                    RaceParameters raceParams;
+                    RaceResult[] raceResults;
+                    RaceRecording.ParseHeader(new Framework.IO.BinaryReader(content), out raceParams, out raceResults);
+
+                    ReplayInfo info = new ReplayInfo(file, raceParams, raceResults);
+
+                    lock (m_replayLock)
+                    {
+                        m_replays.Add(info);
+                    }
                 }
-            }
-            else
-            {
-                File.Delete(file.FullName);
+                else
+                {
+                    File.Delete(file.FullName);
+                }
             }
         }
     }

@@ -23,7 +23,9 @@ namespace BoostBlasters.Menus
         [SerializeField] private Button m_closeButton;
         [SerializeField] private Button m_editButton;
         [SerializeField] private Button m_deleteButton;
-        [SerializeField] private Text m_profleName;
+        [SerializeField] private Text m_profleNameText;
+        [SerializeField] private Text m_raceCountText;
+        [SerializeField] private Text m_winRateText;
 
         [Header("Options")]
         [SerializeField]
@@ -90,15 +92,29 @@ namespace BoostBlasters.Menus
                 }
                 panel.UpdateGraphics(selectedPanel == panel, false);
             }
-
-            m_mainContent.SetActive(m_selectedProfile != null);
-
+            
             m_arrowLeft.enabled = m_page > 0 && selectedPanel != null;
             m_arrowRight.enabled = m_page < maxPage && selectedPanel != null;
 
+            PlayerProfile menuProfile = m_selectedProfile ?? (selectedPanel != null ? selectedPanel.Profile : null);
+
+            m_mainContent.SetActive(menuProfile != null);
+
             if (m_mainContent.activeInHierarchy)
             {
-                m_profleName.text = m_selectedProfile.Name;
+                m_profleNameText.text = menuProfile.Name;
+
+                List<RaceResult> results = menuProfile.RaceResults;
+                m_raceCountText.text = results.Count.ToString();
+
+                float winRate = 0;
+
+                if (results.Count > 0)
+                {
+                    winRate = 100 * ((float)results.Count(r => r.Rank == 1) / results.Count);
+                }
+
+                m_winRateText.text = winRate.ToString("N2") + "%";
             }
         }
 

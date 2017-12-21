@@ -59,7 +59,6 @@ public class RaceManager : MonoBehaviour
     private ReplayCamera m_replayCamera;
 
     private AsyncOperation m_loading;
-    private float m_fadeFac = 1;
 
     private RaceRecording m_raceRecording;
     private int m_fixedFramesSoFar;

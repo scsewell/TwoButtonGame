@@ -27,9 +27,13 @@ public class PlayerJoystickInput : PlayerBaseInput
     {
         get { return -Input.GetAxis(m_LY); }
     }
-    public override bool Boost
+    public override bool BoostPress
     {
         get { return GetKeyDown(m_boost); }
+    }
+    public override bool BoostRelease
+    {
+        get { return GetKeyUp(m_boost); }
     }
 
     private KeyCode m_accept;

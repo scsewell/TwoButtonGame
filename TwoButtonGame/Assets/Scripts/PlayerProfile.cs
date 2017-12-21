@@ -66,6 +66,7 @@ public class PlayerProfile
         if (result != null && result.Finished)
         {
             m_raceResults.Add(result);
+            PlayerProfileManager.Instance.SaveProfile(this);
         }
     }
 }

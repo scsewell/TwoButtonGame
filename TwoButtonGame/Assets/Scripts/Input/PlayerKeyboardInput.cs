@@ -18,9 +18,13 @@ public class PlayerKeyboardInput : PlayerBaseInput
     {
         get { return (GetKey(m_hneg) && GetKey(m_hpos) ? 1 : 0) - KeyAsAxis(m_vneg); }
     }
-    public override bool Boost
+    public override bool BoostPress
     {
         get { return GetKeyDown(m_boost); }
+    }
+    public override bool BoostRelease
+    {
+        get { return GetKeyUp(m_boost); }
     }
 
     private KeyCode m_accept;

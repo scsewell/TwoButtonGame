@@ -100,12 +100,15 @@ public class PlayerProfileManager : Singleton<PlayerProfileManager>
     {
         m_profiles.Clear();
 
-        List<FileInfo> files = FileIO.GetFiles(GetProfileDir(), FILE_EXTENTION).ToList();
-        files.Sort((x, y) => x.CreationTime.CompareTo(y.CreationTime));
-
-        foreach (FileInfo file in files)
+        if (Directory.Exists(GetProfileDir()))
         {
-            m_profiles.Add(new PlayerProfile(FileIO.ReadFileBytes(file.FullName)));
+            List<FileInfo> files = FileIO.GetFiles(GetProfileDir(), FILE_EXTENTION).ToList();
+            files.Sort((x, y) => x.CreationTime.CompareTo(y.CreationTime));
+
+            foreach (FileInfo file in files)
+            {
+                m_profiles.Add(new PlayerProfile(FileIO.ReadFileBytes(file.FullName)));
+            }
         }
     }
 
@@ -122,7 +125,10 @@ public class PlayerProfileManager : Singleton<PlayerProfileManager>
 
     public void SaveProfile(PlayerProfile profile)
     {
-        FileIO.WriteFile(profile.GetBytes(), GetProfilePath(profile));
+        if (!profile.IsGuest)
+        {
+            FileIO.WriteFile(profile.GetBytes(), GetProfilePath(profile));
+        }
     }
 
     private string GetProfilePath(PlayerProfile profile)
