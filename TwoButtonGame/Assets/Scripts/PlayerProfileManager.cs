@@ -7,7 +7,7 @@ using Framework.IO;
 
 public class PlayerProfileManager : Singleton<PlayerProfileManager>
 {
-    private static readonly string FOLDER_NAME = "Profiles/";
+    private static readonly string FOLDER_NAME = "Profiles";
     private static readonly string FILE_EXTENTION = ".prf";
 
     private Random m_random;
@@ -133,11 +133,11 @@ public class PlayerProfileManager : Singleton<PlayerProfileManager>
 
     private string GetProfilePath(PlayerProfile profile)
     {
-        return GetProfileDir() + profile.Name + FILE_EXTENTION;
+        return Path.Combine(GetProfileDir(), profile.Name + FILE_EXTENTION);
     }
 
     private string GetProfileDir()
     {
-        return FileIO.GetInstallDirectory() + FOLDER_NAME;
+        return Path.Combine(FileIO.GetInstallDirectory(), FOLDER_NAME);
     }
 }

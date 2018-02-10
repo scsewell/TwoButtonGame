@@ -117,7 +117,7 @@ public class Main : ComponentSingleton<Main>
     private void StartRace(RaceParameters raceParams)
     {
         m_raceManager = Instantiate(m_raceManagerPrefab);
-        m_raceManager.StartRace(raceParams);
+        m_raceManager.LoadRace(raceParams);
     }
 
     public AsyncOperation LoadRace(RaceRecording recording)
@@ -132,7 +132,7 @@ public class Main : ComponentSingleton<Main>
     private void StartRace(RaceRecording recording)
     {
         m_raceManager = Instantiate(m_raceManagerPrefab);
-        m_raceManager.StartReplay(recording);
+        m_raceManager.LoadReplay(recording);
     }
 
     private IEnumerator LoadLevel(AsyncOperation loading, Action onComplete)

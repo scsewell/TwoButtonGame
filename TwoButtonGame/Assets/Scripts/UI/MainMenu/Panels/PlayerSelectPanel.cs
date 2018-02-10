@@ -465,7 +465,12 @@ namespace BoostBlasters.Menus
 
         private void SetRating(Text text, int rating)
         {
-            text.text = rating.ToString();
+            string str = "";
+            for (int i = 0; i < rating; i++)
+            {
+                str += '-';
+            }
+            text.text = str;
             text.color = m_ratingGradient.Evaluate(rating / 10.0f);
         }
 

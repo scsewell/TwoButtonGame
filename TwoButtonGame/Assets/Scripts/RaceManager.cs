@@ -44,7 +44,7 @@ public class RaceManager : MonoBehaviour
     private float m_replayStartWait = 5.0f;
     [SerializeField]
     private MusicParams m_replayMusic;
-    
+
     private RacePath m_racePath;
     public RacePath RacePath { get { return m_racePath; } }
 
@@ -63,6 +63,12 @@ public class RaceManager : MonoBehaviour
     private RaceRecording m_raceRecording;
     private int m_fixedFramesSoFar;
 
+    private bool m_isInIntro;
+    private bool m_introSkipped;
+    private bool m_musicStarted;
+    private bool m_savedResults;
+    private bool m_savedRecording;
+
     private float m_raceLoadTime;
     private float m_introEndTime;
     private float m_introSkipTime;
@@ -70,15 +76,12 @@ public class RaceManager : MonoBehaviour
     private float m_replayStartTime;
     private float m_quitStartTime;
     private int m_countdownSecond;
-    private bool m_isInIntro;
-    private bool m_introSkipped;
-    private bool m_musicStarted;
 
-    public float TimeRaceLoad       { get { return m_raceLoadTime; } }
-    public float TimeIntroDuration  { get { return m_cameraRig.GetIntroSequenceLength(); } }
-    public float TimeIntroEnd       { get { return m_introEndTime; } }
-    public float TimeIntroSkip      { get { return m_introSkipTime; } }
-    public float TimeRaceStart      { get { return m_raceStartTime; } }
+    public float TimeRaceLoad { get { return m_raceLoadTime; } }
+    public float TimeIntroDuration { get { return m_cameraRig.GetIntroSequenceLength(); } }
+    public float TimeIntroEnd { get { return m_introEndTime; } }
+    public float TimeIntroSkip { get { return m_introSkipTime; } }
+    public float TimeRaceStart { get { return m_raceStartTime; } }
 
     public float CountdownTime
     {
@@ -96,25 +99,15 @@ public class RaceManager : MonoBehaviour
     }
 
     private State m_state;
-    
-    public void StartRace(RaceParameters raceParams)
+
+    public void LoadRace(RaceParameters raceParams)
     {
         m_raceParams = raceParams;
         InitRace();
-
-        m_state = State.Racing;
-
-        m_raceRecording = new RaceRecording(m_raceParams);
-        m_replayStartTime = float.PositiveInfinity;
-
-        ResetRace(m_cameraRig.GetIntroSequenceLength());
-
-        m_isInIntro = true;
-        m_musicStarted = false;
-        m_cameraRig.PlayIntroSequence();
+        StartRace();
     }
 
-    public void StartReplay(RaceRecording recording)
+    public void LoadReplay(RaceRecording recording)
     {
         m_raceParams = recording.RaceParams;
         InitRace();
@@ -123,7 +116,7 @@ public class RaceManager : MonoBehaviour
 
         m_raceRecording = recording;
         m_replayStartTime = Time.time;
-        
+
         ResetRace(0);
 
         AudioManager.Instance.PlayMusic(m_replayMusic);
@@ -139,20 +132,56 @@ public class RaceManager : MonoBehaviour
             AudioManager.Instance.StopMusic();
             m_cameraRig.StopIntroSequence();
 
-            m_state = State.Racing;
-
-            m_raceRecording = new RaceRecording(m_raceParams);
-            m_replayStartTime = float.PositiveInfinity;
-
-            ResetRace(m_cameraRig.GetIntroSequenceLength());
-
-            m_isInIntro = true;
-            m_musicStarted = false;
-            m_cameraRig.PlayIntroSequence();
+            StartRace();
 
             return true;
         }
         return false;
+    }
+
+    private void StartRace()
+    {
+        m_state = State.Racing;
+
+        m_raceRecording = new RaceRecording(m_raceParams);
+        m_replayStartTime = float.PositiveInfinity;
+
+        ResetRace(m_cameraRig.GetIntroSequenceLength());
+
+        m_isInIntro = true;
+        m_musicStarted = false;
+        m_savedResults = false;
+        m_savedRecording = false;
+        m_cameraRig.PlayIntroSequence();
+    }
+
+    private void ResetRace(float introLength)
+    {
+        m_countdownSecond = 0;
+        m_isInIntro = false;
+        m_introSkipped = false;
+
+        m_raceLoadTime = Time.time;
+        m_introEndTime = m_raceLoadTime + introLength;
+        m_introSkipTime = float.MaxValue;
+        m_raceStartTime = m_introEndTime + GetCountdownLength();
+
+        m_racePath.ResetPath();
+
+        foreach (Player player in m_players)
+        {
+            player.ResetPlayer();
+        }
+
+        foreach (CameraManager cameraManager in m_cameras)
+        {
+            cameraManager.ResetCam();
+        }
+
+        m_raceMenu.ResetUI();
+
+        m_raceRecording.ResetRecorder();
+        m_fixedFramesSoFar = 0;
     }
 
     public void InitRace()
@@ -201,35 +230,6 @@ public class RaceManager : MonoBehaviour
         }
     }
 
-    private void ResetRace(float introLength)
-    {
-        m_countdownSecond = 0;
-        m_isInIntro = false;
-        m_introSkipped = false;
-
-        m_raceLoadTime = Time.time;
-        m_introEndTime = m_raceLoadTime + introLength;
-        m_introSkipTime = float.MaxValue;
-        m_raceStartTime = m_introEndTime + GetCountdownLength();
-
-        m_racePath.ResetPath();
-
-        foreach (Player player in m_players)
-        {
-            player.ResetPlayer();
-        }
-
-        foreach (CameraManager cameraManager in m_cameras)
-        {
-            cameraManager.ResetCam();
-        }
-
-        m_raceMenu.ResetUI();
-
-        m_raceRecording.ResetRecorder();
-        m_fixedFramesSoFar = 0;
-    }
-
     public void FixedUpdateRace()
     {
         if (m_isInIntro && Time.time >= m_introEndTime)
@@ -239,7 +239,7 @@ public class RaceManager : MonoBehaviour
         }
 
         bool isAfterStart = Time.time >= m_raceStartTime;
-        
+
         if (m_state == State.Replay)
         {
             m_raceRecording.MoveGhosts(m_fixedFramesSoFar, m_players, m_cameras, isAfterStart);
@@ -300,15 +300,12 @@ public class RaceManager : MonoBehaviour
         {
             m_state = State.Finished;
 
-            foreach (Player player in m_players)
-            {
-                player.Profile.AddRaceResult(player.RaceResult);
-            }
+            SaveResults();
 
             m_raceMenu.OnFinish();
             m_replayStartTime = Time.time + m_replayStartWait;
         }
-        
+
         if (!m_isInIntro)
         {
             m_fixedFramesSoFar++;
@@ -318,11 +315,11 @@ public class RaceManager : MonoBehaviour
         {
             if (m_state != State.Replay)
             {
-                ReplayManager.Instance.SaveRecording(m_raceRecording, m_players);
+                SaveRecording();
 
                 m_state = State.Replay;
                 m_replayCamera.Activate();
-                
+
                 AudioManager.Instance.StopMusic();
                 AudioManager.Instance.PlayMusic(m_replayMusic);
             }
@@ -358,10 +355,10 @@ public class RaceManager : MonoBehaviour
         m_countdownSecond = countdownSecond;
 
         SettingManager.Instance.SetShadowDistance();
-        
+
         AudioManager.Instance.MusicPausable = (Time.time - m_raceStartTime < 0);
         AudioManager.Instance.MusicVolume = Mathf.MoveTowards(AudioManager.Instance.MusicVolume, 1 - GetFadeFactor(true), Time.unscaledDeltaTime / 0.5f);
-        
+
         if (m_loading != null && GetFadeFactor(false) >= 1)
         {
             m_loading.allowSceneActivation = true;
@@ -420,13 +417,32 @@ public class RaceManager : MonoBehaviour
     {
         if (m_loading == null)
         {
-            if (m_state != State.Replay && m_fixedFramesSoFar > 0)
-            {
-                ReplayManager.Instance.SaveRecording(m_raceRecording, m_players);
-            }
-            
+            SaveResults();
+            SaveRecording();
+
             m_loading = Main.Instance.LoadMainMenu();
             m_quitStartTime = Time.unscaledTime;
+        }
+    }
+
+    private void SaveResults()
+    {
+        if (!m_savedResults)
+        {
+            foreach (Player player in m_players)
+            {
+                player.Profile.AddRaceResult(m_raceParams.LevelConfig, player.RaceResult);
+                m_savedResults = true;
+            }
+        }
+    }
+
+    private void SaveRecording()
+    {
+        if (!m_savedRecording && m_fixedFramesSoFar > 0)
+        {
+            ReplayManager.Instance.SaveRecording(m_raceRecording, m_players);
+            m_savedRecording = true;
         }
     }
 

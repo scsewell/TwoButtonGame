@@ -104,11 +104,10 @@ namespace BoostBlasters.Menus
             {
                 m_profleNameText.text = menuProfile.Name;
 
-                List<RaceResult> results = menuProfile.RaceResults;
+                IReadOnlyList<RaceResult> results = menuProfile.AllResults;
                 m_raceCountText.text = results.Count.ToString();
 
                 float winRate = 0;
-
                 if (results.Count > 0)
                 {
                     winRate = 100 * ((float)results.Count(r => r.Rank == 1) / results.Count);

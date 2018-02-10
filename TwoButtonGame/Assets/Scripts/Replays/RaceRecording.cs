@@ -6,6 +6,20 @@ using Framework.IO;
 
 public class RaceRecording
 {
+    private static readonly int FRAMES_PER_POSITION = 10;
+    private List<Vector3>[] m_positions;
+    private List<Vector3>[] m_velocities;
+    private List<float>[] m_rotations;
+    private List<float>[] m_angularVelocities;
+
+    private static readonly int FRAMES_PER_INPUT = 1;
+    private List<sbyte>[] m_h;
+    private List<sbyte>[] m_v;
+    private List<int>[] m_toggleFramesBoost;
+
+    private MovementInputs[] m_lastFrameInputs;
+    private int[][] m_nextInputIndices;
+
     private RaceParameters m_raceParams;
     public RaceParameters RaceParams
     {
@@ -21,21 +35,6 @@ public class RaceRecording
     {
         get { return m_positions.Max(player => player.Count) * FRAMES_PER_POSITION * Time.fixedDeltaTime; }
     }
-    
-    private static readonly int FRAMES_PER_POSITION = 10;
-    private List<Vector3>[] m_positions;
-    private List<Vector3>[] m_velocities;
-    private List<float>[] m_rotations;
-    private List<float>[] m_angularVelocities;
-
-    private static readonly int FRAMES_PER_INPUT = 1;
-    private List<sbyte>[] m_h;
-    private List<sbyte>[] m_v;
-    private List<int>[] m_toggleFramesBoost;
-
-    private MovementInputs[] m_lastFrameInputs;
-    private int[][] m_nextInputIndices;
-
 
     public RaceRecording(RaceParameters raceParams)
     {

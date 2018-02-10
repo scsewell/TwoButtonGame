@@ -57,9 +57,13 @@ public class InRaceMenu : MenuBase
         m_finish = GetComponentInChildren<GameMenuFinished>();
 
         m_playerUIs = new List<PlayerUI>();
+
         CanvasScaler scaler = m_playerUIParent.GetComponent<CanvasScaler>();
         Rect splitscreen = CameraManager.GetSplitscreen(0, raceParameters.HumanCount);
-        scaler.referenceResolution = new Vector2(scaler.referenceResolution.x / splitscreen.width, scaler.referenceResolution.y / splitscreen.height);
+        scaler.referenceResolution = new Vector2(
+            scaler.referenceResolution.x / splitscreen.width, 
+            scaler.referenceResolution.y / splitscreen.height
+            );
         
         LevelConfig config = raceParameters.LevelConfig;
         m_trackName.text = config.Name;

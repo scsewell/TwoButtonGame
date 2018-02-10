@@ -40,7 +40,7 @@ public class CustomInput : BaseInput
         {
             if (buttonName == CustomInputModule.ACCEPT_BUTTON)
             {
-                return m_inputs.Any(i => i.UI_Accept) || Input.GetKeyDown(KeyCode.Space);
+                return m_inputs.Any(i => i.UI_Accept);// || Input.GetKeyDown(KeyCode.Space);
             }
             if (buttonName == CustomInputModule.CANCEL_BUTTON)
             {

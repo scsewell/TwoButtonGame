@@ -8,7 +8,7 @@ using Framework.IO;
 
 public class ReplayManager : Singleton<ReplayManager>
 {
-    private static readonly string FOLDER_NAME = "Replays/";
+    private static readonly string FOLDER_NAME = "Replays";
     private static readonly string FILE_EXTENTION = ".rep";
 
     private static readonly int MAX_REPLAYS = 100;
@@ -103,11 +103,11 @@ public class ReplayManager : Singleton<ReplayManager>
     {
         string name = "Replay_" + DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss") + FILE_EXTENTION;
 
-        FileIO.WriteFile(recording.ToBytes(players), GetReplayDir() + name);
+        FileIO.WriteFile(recording.ToBytes(players), Path.Combine(GetReplayDir(), name));
     }
 
     private string GetReplayDir()
     {
-        return FileIO.GetInstallDirectory() + FOLDER_NAME;
+        return Path.Combine(FileIO.GetInstallDirectory(), FOLDER_NAME);
     }
 }

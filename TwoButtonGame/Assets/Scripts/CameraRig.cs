@@ -91,7 +91,7 @@ public class CameraRig : MonoBehaviour
             }
         }
 
-        m_cam.enabled = !m_graph.IsDone() && enableCamera;
+        m_cam.enabled = IsPlaying && enableCamera;
     }
 
     private void LateUpdate()

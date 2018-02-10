@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.IO;
 using UnityEngine;
 using UnityEngine.PostProcessing;
 using Framework;
@@ -8,6 +9,8 @@ using Framework.IO;
 
 public class SettingManager : Singleton<SettingManager>
 {
+    private const string FILE_NAME = "Settings.ini";
+
     private static readonly string[] BOOL_VALS = new string[] { "On", "Off" };
     private static readonly string[] AA_VALS = new string[] { "Off", "Low", "High", };
     private static readonly string[] SHADOW_VALS = new string[] { "Off", "Low", "Medium", "High", "Ultra", };
@@ -76,7 +79,7 @@ public class SettingManager : Singleton<SettingManager>
     public void Save()
     {
 #if (UNITY_EDITOR || UNITY_STANDALONE)
-        FileIO.WriteFile(JsonConverter.ToJson(m_settings.Serialize()), FileIO.GetInstallDirectory() + "Settings.ini");
+        FileIO.WriteFile(JsonConverter.ToJson(m_settings.Serialize()), Path.Combine(FileIO.GetInstallDirectory(), FILE_NAME));
 #elif (!UNITY_WEBGL)
         PlayerPrefs.SetString("Settings", JsonConverter.ToJson(m_settings.Serialize()));
 #endif
@@ -85,7 +88,7 @@ public class SettingManager : Singleton<SettingManager>
     public void Load()
     {
 #if (UNITY_EDITOR || UNITY_STANDALONE)
-        string str = FileIO.ReadFileText(FileIO.GetInstallDirectory() + "Settings.ini");
+        string str = FileIO.ReadFileText(Path.Combine(FileIO.GetInstallDirectory(), FILE_NAME));
 #else
         string str = PlayerPrefs.GetString("Settings", null);
 #endif

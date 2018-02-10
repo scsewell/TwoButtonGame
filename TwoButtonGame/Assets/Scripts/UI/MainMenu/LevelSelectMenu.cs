@@ -16,6 +16,7 @@ namespace BoostBlasters.Menus
         [SerializeField] private RectTransform m_optionContent;
         [SerializeField] private Button m_startRaceButton;
         [SerializeField] private Button m_backButton;
+        [SerializeField] private RectTransform m_resultsContent;
         [SerializeField] private Text m_levelDifficulty;
         [SerializeField] private Image m_levelPreview;
         [SerializeField] private Image m_levelHighlight;
@@ -28,6 +29,8 @@ namespace BoostBlasters.Menus
         private int m_defaultLapCount = 3;
         [SerializeField] [Range(0, Consts.MAX_PLAYERS)]
         private int m_defaultAICount = 0;
+        [SerializeField] [Range(0, 10)]
+        private int m_topScoreCount = 5;
 
         [Header("Track Preview")]
         [SerializeField]
@@ -62,12 +65,13 @@ namespace BoostBlasters.Menus
         public Option<int> AICountSelect { get { return m_aiCountSelect; } }
 
         private List<Navigable> m_options;
+        private List<PlayerResultPanel> m_playerResults;
         private Transform m_camPivot;
         private Camera m_previewCam;
-        private RenderTexture m_previewTex;
         private PostProcessingProfile m_post;
         private Dictionary<LevelConfig, GameObject> m_configToPreview;
-        
+        private Dictionary<LevelConfig, List<RaceResult>> m_levelToResults;
+
         public override void InitMenu()
         {
             m_startRaceButton.onClick.AddListener(() => ((MainMenu)Menu).LaunchRace());
@@ -90,6 +94,15 @@ namespace BoostBlasters.Menus
 
             DefaultSelectionOverride = m_trackSelect.Selectable;
 
+            m_playerResults = new List<PlayerResultPanel>();
+            PlayerResultPanel resultsTemplate = m_resultsContent.GetComponentInChildren<PlayerResultPanel>();
+            m_playerResults.Add(resultsTemplate);
+
+            for (int i = 0; i < m_topScoreCount - 1; i++)
+            {
+                m_playerResults.Add(Instantiate(resultsTemplate, m_resultsContent));
+            }
+
             m_camPivot = new GameObject("CameraPivot").transform;
             m_previewCam = new GameObject("PreviewCamera").AddComponent<Camera>();
             m_previewCam.transform.SetParent(m_camPivot, false);
@@ -103,6 +116,7 @@ namespace BoostBlasters.Menus
             m_previewCam.gameObject.AddComponent<PostProcessingBehaviour>().profile = m_post;
 
             m_configToPreview = new Dictionary<LevelConfig, GameObject>();
+            m_levelToResults = new Dictionary<LevelConfig, List<RaceResult>>();
 
             foreach (LevelConfig config in Main.Instance.LevelConfigs)
             {
@@ -113,6 +127,16 @@ namespace BoostBlasters.Menus
 
                     m_configToPreview.Add(config, pivot);
                 }
+
+                List<RaceResult> results = new List<RaceResult>();
+                foreach (PlayerProfile profile in PlayerProfileManager.Instance.Profiles)
+                {
+                    if (!profile.IsGuest)
+                    {
+                        results.AddRange(profile.GetRaceResults(config));
+                    }
+                }
+                m_levelToResults.Add(config, results.OrderBy(v => v.FinishTime).ToList());
             }
         }
 
@@ -142,6 +166,7 @@ namespace BoostBlasters.Menus
                 m_lapSelect.SetValue(m_defaultLapCount);
                 m_aiCountSelect.SetValue(m_defaultAICount);
             }
+
             m_levelHighlight.color = new Color(1, 1, 1, 0);
         }
 
@@ -159,6 +184,12 @@ namespace BoostBlasters.Menus
             m_levelPreview.sprite = config.Preview;
 
             m_levelHighlight.color = new Color(1, 1, 1, Mathf.Lerp(m_levelHighlight.color.a, 0, Time.unscaledDeltaTime / 0.035f));
+            
+            List<RaceResult> results = m_levelToResults[config].Where(r => r.LapTimes.Count == m_lapSelect.Value).ToList();
+            for (int i = 0; i < m_playerResults.Count; i++)
+            {
+                m_playerResults[i].SetResults((i < results.Count) ? results[i] : null, i + 1);
+            }
 
             if (m_previewCam.enabled)
             {

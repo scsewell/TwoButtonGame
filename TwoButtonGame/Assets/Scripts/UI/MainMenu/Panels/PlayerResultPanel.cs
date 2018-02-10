@@ -14,26 +14,43 @@ namespace BoostBlasters.Menus
         [SerializeField] private Text m_finishTime;
         [SerializeField] private Text m_bestLap;
         
-        private RaceResult m_result;
-
-        private void Awake()
-        {
-        }
-
         public void SetResults(RaceResult result)
         {
-            m_result = result;
+            SetResults(result, result != null ? result.Rank : 0);
+        }
 
-            gameObject.SetActive(m_result != null);
+        public void SetResults(RaceResult result, int rank)
+        {
+            gameObject.SetActive(result != null);
 
-            if (m_result != null)
+            /*
+            m_rank.enabled = active;
+            m_name.enabled = active;
+
+            if (m_finishTime != null)
             {
-                m_rank.text = result.Rank.ToString();
+                m_finishTime.enabled = active;
+            }
+            if (m_bestLap != null)
+            {
+                m_bestLap.enabled = active;
+            }
+            */
+
+            if (gameObject.activeInHierarchy)
+            {
+                m_rank.text = rank.ToString();
                 
                 UIUtils.FitText(m_name, result.Profile.Name);
 
-                m_finishTime.text = UIUtils.FormatRaceTime(result.Finished ? result.FinishTime : -1);
-                m_bestLap.text = UIUtils.FormatRaceTime(result.LapTimes.Count > 0 ? result.LapTimes.Min() : -1);
+                if (m_finishTime != null)
+                {
+                    m_finishTime.text = UIUtils.FormatRaceTime(result.Finished ? result.FinishTime : -1);
+                }
+                if (m_bestLap != null)
+                {
+                    m_bestLap.text = UIUtils.FormatRaceTime(result.LapTimes.Count > 0 ? result.LapTimes.Min() : -1);
+                }
             }
         }
     }

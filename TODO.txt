@@ -1,15 +1,15 @@
 ### To Do ###
 
-pauser controls pause menu
-list top scores (full and lap) for each track in track selection
-player profiles - best lap times, best finish times per course, race count, win percentage
+Fix race manager - too much wierdness potential right now
+expand replay state information
 
-Show player names above heads (fade in when close)
-
-victory music should differ from replay music
 replays - store player profile id and name so it can be portable
 replays - speed, cameras(cinemachine, players all at once, players single (cycle through), manual zoom/free camera)
 replays - vairable replay speed
+
+victory music should differ from replay music
+pauser controls pause menu
+Show player names above heads (fade in when close)
 
 look around
 Engines spark on boost fail
@@ -23,6 +23,7 @@ Min energy sound
 Full energy sound
 
 Characters (fatty, airbrake flaps!!!!, floating boosters fancy tech, robot, other race?, really abstract?)
+Make animations more extreme
 Abilities (down plummet, downwards boost, teleport)
 
 Alternate paths

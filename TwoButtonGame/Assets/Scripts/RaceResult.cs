@@ -30,8 +30,9 @@ public class RaceResult
 
     public float FinishTime { get { return LapTimes.Sum(); } }
 
-    public RaceResult()
+    public RaceResult(PlayerProfile profile)
     {
+        m_profile = profile;
         m_lapTimes = new List<float>();
         Reset();
     }

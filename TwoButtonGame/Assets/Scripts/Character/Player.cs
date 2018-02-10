@@ -106,8 +106,6 @@ public class Player : MonoBehaviour
     {
         m_interpolator = GetComponentInChildren<TransformInterpolator>();
         m_movement = GetComponentInChildren<MemeBoots>();
-
-        m_raceResult = new RaceResult();
     }
 
     public Player InitHuman(int playerNum, PlayerProfile profile, PlayerConfig config, PlayerBaseInput input)
@@ -129,6 +127,8 @@ public class Player : MonoBehaviour
         m_playerNum = playerNum;
         m_profile = profile;
         m_config = config;
+        
+        m_raceResult = new RaceResult(profile);
 
         m_animation = GetComponentInChildren<PlayerAnimation>();
         m_racePath = Main.Instance.RaceManager.RacePath;
@@ -217,8 +217,7 @@ public class Player : MonoBehaviour
         }
         m_lastPos = transform.position;
     }
-
-
+    
     public void UpdatePlayer()
     {
         if (m_animation != null)
