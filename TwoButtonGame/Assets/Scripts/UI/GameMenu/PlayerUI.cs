@@ -358,14 +358,15 @@ public class PlayerUI : MonoBehaviour
         }
         else
         {
-            float targetScale = 1 + (m_newLapSizeMagnitude * (0.5f * Mathf.Cos(Time.time * m_newLapSizeFrequency) + 0.5f));
-            newLapRT.localScale = Vector3.Lerp(newLapRT.localScale, targetScale * Vector3.one, Time.deltaTime * 4);
-
             bool activated = Time.time - m_lapChangeTime < m_newLapDuration;
-
             SetAlpha(m_newLapText, Mathf.Lerp(m_newLapText.color.a, activated ? 1 : 0, Time.deltaTime / m_newLapAlphaSmoothing));
-
             m_newLapText.enabled = (m_newLapText.color.a > 0);
+
+            if (m_newLapText.enabled)
+            {
+                float targetScale = 1 + (m_newLapSizeMagnitude * (0.5f * Mathf.Cos(Time.time * m_newLapSizeFrequency) + 0.5f));
+                newLapRT.localScale = Vector3.Lerp(newLapRT.localScale, targetScale * Vector3.one, Time.deltaTime * 4);
+            }
         }
 
         m_lastRank = rank;
