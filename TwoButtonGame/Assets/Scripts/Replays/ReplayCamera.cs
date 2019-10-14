@@ -36,8 +36,6 @@ public class ReplayCamera : MonoBehaviour
             virtualCam.gameObject.transform.SetParent(transform);
         }
 
-        GetComponent<CinemachineClearShot>().m_ChildCameras = m_virtualCams;
-
         m_brain.m_CameraCutEvent.AddListener((brain) => PickNewSettings());
 
         m_viewSizeStart = 2;

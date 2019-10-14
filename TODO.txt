@@ -2,6 +2,7 @@
 
 Fix race manager - too much wierdness potential right now
 expand replay state information
+Difiiculy setting for levels - gate size differs based on difficulty
 
 replays - store player profile id and name so it can be portable
 replays - speed, cameras(cinemachine, players all at once, players single (cycle through), manual zoom/free camera)
@@ -32,7 +33,7 @@ ML agents AI
 
 Alternate paths
 Moving gates - Add rotation
-Boost gates - improve graphics (animate the rings)
+Boost gates - improve graphics (animate the rings) - particles/screen effect to make it obvious boost was gained
 Wind (volumes) / wind turbines
 
 Levels (creative hazzards)
@@ -65,7 +66,7 @@ Eighties Action		2:39.558456
 Harmful or Fatal	5:19.921844
 Exit the Premises	3:24.419144
 
-### Jason Memes ###
+### Unknown Person Memes ###
     ### To Do ###
         New Character Physics
         New Levels
@@ -74,7 +75,7 @@ Exit the Premises	3:24.419144
         AI
         Replays
         Ghosting
-    ### Super Exclusive Jason Memes ###
+    ### Super Exclusive Unknown Person Memes ###
         Random Character Physics
         Pickups
         Trajectory Rendering
