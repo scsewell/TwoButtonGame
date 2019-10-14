@@ -178,7 +178,7 @@ public class MainMenu : MenuBase
         
         for (int i = 0; i < aiCount; i++)
         {
-            playerConfigs.Add(Utils.PickRandom(Main.Instance.PlayerConfigs));
+            playerConfigs.Add(Main.Instance.PlayerConfigs.PickRandom());
             playerProfiles.Add(PlayerProfileManager.Instance.GetGuestProfile("AI " + (i + 1), false));
         }
         

@@ -1,3 +1,6 @@
 [submodule "TwoButtonGame\\Assets\\Scripts\\UnityFramework"]
 	path = TwoButtonGame\\Assets\\Scripts\\UnityFramework
 	url = https://github.com/scsewell/UnityFramework.git
+[submodule "TwoButtonGame/Assets/Scripts/Dependencies/UnityFramework"]
+	path = TwoButtonGame/Assets/Scripts/Dependencies/UnityFramework
+	url = https://github.com/scsewell/UnityFramework.git

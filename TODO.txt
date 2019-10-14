@@ -3,6 +3,7 @@
 Fix race manager - too much wierdness potential right now
 expand replay state information
 Difiiculy setting for levels - gate size differs based on difficulty
+Gate engine - make child prefab of gate
 
 replays - store player profile id and name so it can be portable
 replays - speed, cameras(cinemachine, players all at once, players single (cycle through), manual zoom/free camera)

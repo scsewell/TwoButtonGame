@@ -3,12 +3,13 @@
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b9a8da4278049aa4c84ff9354a909fff, type: 3}
+  m_Script: {fileID: 11500000, guid: 321d47215ff1e1a429221aeb274cd62c, type: 3}
   m_Name: Corruption
   m_EditorClassIdentifier: 
   m_track: {fileID: 8300000, guid: ae4b2ce3511781442a26bb379b775ece, type: 3}
