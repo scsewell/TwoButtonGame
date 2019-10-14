@@ -13,6 +13,10 @@ ModelImporter:
     100014: Level2Outer
     100016: Level2Preview
     100018: Level2PreviewDetail
+    100020: Hemi
+    100022: Hemi.001
+    100024: Hemi.002
+    100026: Sun
     400000: //RootNode
     400002: Circle
     400004: Level2Main
@@ -23,6 +27,10 @@ ModelImporter:
     400014: Level2Outer
     400016: Level2Preview
     400018: Level2PreviewDetail
+    400020: Hemi
+    400022: Hemi.001
+    400024: Hemi.002
+    400026: Sun
     2100000: Material
     2300000: //RootNode
     2300002: Circle
@@ -55,6 +63,10 @@ ModelImporter:
     4300016: Level2PreviewDetail
     7400000: Default Take
     9500000: //RootNode
+    10800000: Hemi
+    10800002: Hemi.001
+    10800004: Hemi.002
+    10800006: Sun
     2186277476908879412: ImportLogs
   externalObjects: {}
   materials:
@@ -90,6 +102,7 @@ ModelImporter:
     globalScale: 1
     meshCompression: 0
     addColliders: 0
+    useSRGBMaterialColor: 1
     importVisibility: 1
     importBlendShapes: 1
     importCameras: 1
@@ -114,6 +127,9 @@ ModelImporter:
     normalImportMode: 0
     tangentImportMode: 3
     normalCalculationMode: 4
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
+    blendShapeNormalImportMode: 1
+    normalSmoothingSource: 0
   importAnimation: 0
   copyAvatar: 0
   humanDescription:
@@ -128,7 +144,6 @@ ModelImporter:
     legStretch: 0.05
     feetSpacing: 0
     rootMotionBoneName: 
-    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
     hasTranslationDoF: 0
     hasExtraRoot: 0
     skeletonHasParents: 1

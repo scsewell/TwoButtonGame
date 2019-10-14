@@ -7,11 +7,13 @@ replays - store player profile id and name so it can be portable
 replays - speed, cameras(cinemachine, players all at once, players single (cycle through), manual zoom/free camera)
 replays - vairable replay speed
 
+Multiple controller support
 victory music should differ from replay music
 pauser controls pause menu
 Show player names above heads (fade in when close)
 
-look around
+look around (right josystick, don't know about keyboard though...)
+better guide to next waypoint (make waypoint color glow more obvious, improve direction arrow (racing line?), look at next gate button)
 Engines spark on boost fail
 paritcle motion trail behind engine
 
@@ -26,24 +28,26 @@ Characters (fatty, airbrake flaps!!!!, floating boosters fancy tech, robot, othe
 Make animations more extreme
 Abilities (down plummet, downwards boost, teleport)
 
+ML agents AI
+
 Alternate paths
 Moving gates - Add rotation
-Boost gates - improve graphics
-Wind / wind turbines
+Boost gates - improve graphics (animate the rings)
+Wind (volumes) / wind turbines
 
-Levels
+Levels (creative hazzards)
 	City
 	Sky
 	Desert - sandstorms
 	Factory
-	Arctic - ice caves
-	Volano
+	Arctic - ice caves, falling ice
+	Volcano - falling rocks, magma
 
 Update level preview images
 Ensure music is credited
 
 ### Bugs and stuff ###
-Outline is very expensive on UI, especially the player time...
+Outline is very expensive on UI, especially the player time... (TMP to fix)
 Camera can clip with the gates, perhaps use a fading material when close...
 What to do if a joystick disconnects in menu or game?
 

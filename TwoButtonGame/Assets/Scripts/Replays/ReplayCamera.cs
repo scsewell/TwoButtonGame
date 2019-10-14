@@ -1,9 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.PostProcessing;
 using Cinemachine;
-using Cinemachine.PostFX;
 
 public class ReplayCamera : MonoBehaviour
 {
@@ -30,9 +28,6 @@ public class ReplayCamera : MonoBehaviour
     {
         m_camera = GetComponentInChildren<Camera>();
         m_brain = m_camera.GetComponent<CinemachineBrain>();
-        
-        SettingManager.Instance.ConfigureCamera(m_camera, true);
-        m_camera.GetComponent<CinemachinePostFX>().m_Profile = m_camera.GetComponent<PostProcessingBehaviour>().profile;
 
         m_virtualCams = FindObjectsOfType<CinemachineVirtualCamera>();
         foreach (CinemachineVirtualCamera virtualCam in m_virtualCams)
@@ -43,7 +38,7 @@ public class ReplayCamera : MonoBehaviour
 
         GetComponent<CinemachineClearShot>().m_ChildCameras = m_virtualCams;
 
-        m_brain.m_CameraCutEvent.AddListener(() => PickNewSettings());
+        m_brain.m_CameraCutEvent.AddListener((brain) => PickNewSettings());
 
         m_viewSizeStart = 2;
         m_viewSizeEnd = 2;
@@ -61,6 +56,11 @@ public class ReplayCamera : MonoBehaviour
     public void Deactivate()
     {
         m_camera.enabled = false;
+    }
+
+    private void Update()
+    {
+        SettingManager.Instance.ConfigureCamera(m_camera);
     }
 
     public void SetTarget(List<Player> players)
@@ -81,7 +81,8 @@ public class ReplayCamera : MonoBehaviour
 
             if (!CinemachineCore.Instance.IsLive(virtualCam))
             {
-                virtualCam.m_Lens.FieldOfView = ToFOV(Mathf.Lerp(m_viewSizeStart, m_viewSizeEnd, 1 - (0.5f * Mathf.Cos(Mathf.Clamp01((Time.time - m_viewSizeChangeTime) / m_viewSizeDuration) * Mathf.PI) + 0.5f)), distance);
+                float fac = 1 - (0.5f * Mathf.Cos(Mathf.Clamp01((Time.time - m_viewSizeChangeTime) / m_viewSizeDuration) * Mathf.PI) + 0.5f);
+                virtualCam.m_Lens.FieldOfView = ToFOV(Mathf.Lerp(m_viewSizeStart, m_viewSizeEnd, fac), distance);
             }
         }
     }

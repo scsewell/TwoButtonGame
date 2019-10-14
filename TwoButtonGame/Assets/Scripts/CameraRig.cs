@@ -28,8 +28,6 @@ public class CameraRig : MonoBehaviour
         m_anim = GetComponentInChildren<Animator>();
         m_cam = m_anim.GetComponentInChildren<Camera>();
 
-        SettingManager.Instance.ConfigureCamera(m_cam, false);
-
         m_shotsToPlay = new Queue<LevelConfig.CameraShot>();
     }
 
@@ -92,6 +90,7 @@ public class CameraRig : MonoBehaviour
         }
 
         m_cam.enabled = IsPlaying && enableCamera;
+        SettingManager.Instance.ConfigureCamera(m_cam);
     }
 
     private void LateUpdate()

@@ -83,8 +83,6 @@ public class CameraManager : MonoBehaviour
         m_mainCam.rect = splitscreen;
         m_uiCam.rect = splitscreen;
 
-        SettingManager.Instance.ConfigureCamera(m_mainCam, true);
-
         m_mainCam.cullingMask |= (1 << PlayerMainLayer);
         m_uiCam.cullingMask |= (1 << PlayerUILayer);
 
@@ -114,6 +112,8 @@ public class CameraManager : MonoBehaviour
 
     public void UpdateCamera()
     {
+        SettingManager.Instance.ConfigureCamera(m_mainCam);
+
         if (m_player != null)
         {
             float targetDustFade = Mathf.Pow(Mathf.Clamp01((m_player.Movement.Velocity.magnitude - m_dustMinVelocity) / m_dustMaxVelocity), m_dustVelocityPower);

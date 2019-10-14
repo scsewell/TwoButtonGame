@@ -1,24 +1,29 @@
 fileFormatVersion: 2
 guid: 964962f0b749a3c46822204ecf676584
-timeCreated: 1510364395
-licenseType: Free
 ModelImporter:
-  serializedVersion: 22
+  serializedVersion: 23
   fileIDToRecycleName:
     100000: Empty
     100002: //RootNode
     100004: WaypointOctH
     100006: WaypointOctH_Collider
     100008: WaypointOctH_Trigger
+    100010: Hemi
+    100012: Hemi.001
     400000: Empty
     400002: //RootNode
     400004: WaypointOctH
     400006: WaypointOctH_Collider
     400008: WaypointOctH_Trigger
+    400010: Hemi
+    400012: Hemi.001
     2100000: unnamed
     2100002: Material
     2100004: Material_001
     2100006: Material_002
+    2100008: No Name
+    2100010: Material.001
+    2100012: Material.002
     2300000: WaypointOctH
     2300002: WaypointOctH_Collider
     2300004: WaypointOctH_Trigger
@@ -30,6 +35,8 @@ ModelImporter:
     4300004: WaypointOctH
     7400000: Default Take
     9500000: //RootNode
+    10800000: Hemi
+    10800002: Hemi.001
   externalObjects: {}
   materials:
     importMaterials: 1
@@ -49,6 +56,7 @@ ModelImporter:
     animationRetargetingWarnings: 
     animationDoRetargetingWarnings: 0
     importAnimatedCustomProperties: 0
+    importConstraints: 0
     animationCompression: 1
     animationRotationError: 0.5
     animationPositionError: 0.5
@@ -63,6 +71,7 @@ ModelImporter:
     globalScale: 1
     meshCompression: 0
     addColliders: 0
+    useSRGBMaterialColor: 1
     importVisibility: 1
     importBlendShapes: 1
     importCameras: 1
@@ -80,11 +89,16 @@ ModelImporter:
     secondaryUVHardAngle: 88
     secondaryUVPackMargin: 4
     useFileScale: 1
+    previousCalculatedGlobalScale: 1
+    hasPreviousCalculatedGlobalScale: 1
   tangentSpace:
     normalSmoothAngle: 60
     normalImportMode: 0
     tangentImportMode: 3
     normalCalculationMode: 4
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 1
+    blendShapeNormalImportMode: 1
+    normalSmoothingSource: 0
   importAnimation: 1
   copyAvatar: 0
   humanDescription:
@@ -99,7 +113,6 @@ ModelImporter:
     legStretch: 0.05
     feetSpacing: 0
     rootMotionBoneName: 
-    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
     hasTranslationDoF: 0
     hasExtraRoot: 0
     skeletonHasParents: 1

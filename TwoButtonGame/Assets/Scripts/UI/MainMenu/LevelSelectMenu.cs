@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.PostProcessing;
+using UnityEngine.Rendering.PostProcessing;
 using Framework.UI;
 
 namespace BoostBlasters.Menus
@@ -33,8 +33,6 @@ namespace BoostBlasters.Menus
         private int m_topScoreCount = 5;
 
         [Header("Track Preview")]
-        [SerializeField]
-        public PostProcessingProfile m_cameraPost;
         [SerializeField]
         private Vector3 m_previewCamPos = new Vector3(0, 1.5f, 2.5f);
         [SerializeField]
@@ -68,7 +66,6 @@ namespace BoostBlasters.Menus
         private List<PlayerResultPanel> m_playerResults;
         private Transform m_camPivot;
         private Camera m_previewCam;
-        private PostProcessingProfile m_post;
         private Dictionary<LevelConfig, GameObject> m_configToPreview;
         private Dictionary<LevelConfig, List<RaceResult>> m_levelToResults;
 
@@ -111,9 +108,8 @@ namespace BoostBlasters.Menus
             m_previewCam.allowMSAA = true;
             m_previewCam.depth = 10;
             m_previewCam.cullingMask = 1;
-
-            m_post = Instantiate(m_cameraPost);
-            m_previewCam.gameObject.AddComponent<PostProcessingBehaviour>().profile = m_post;
+            
+            m_previewCam.gameObject.AddComponent<PostProcessLayer>();
 
             m_configToPreview = new Dictionary<LevelConfig, GameObject>();
             m_levelToResults = new Dictionary<LevelConfig, List<RaceResult>>();
@@ -173,6 +169,7 @@ namespace BoostBlasters.Menus
         protected override void OnUpdate()
         {
             m_camPivot.Rotate(Vector3.up, m_rotateSpeed * Time.deltaTime);
+            SettingManager.Instance.ConfigureCamera(m_previewCam);
         }
 
         protected override void OnUpdateGraphics()

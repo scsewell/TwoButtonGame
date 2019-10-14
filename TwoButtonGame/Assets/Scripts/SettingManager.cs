@@ -2,7 +2,7 @@
 using System.Linq;
 using System.IO;
 using UnityEngine;
-using UnityEngine.PostProcessing;
+using UnityEngine.Rendering.PostProcessing;
 using Framework;
 using Framework.SettingManagement;
 using Framework.IO;
@@ -102,27 +102,18 @@ public class SettingManager : Singleton<SettingManager>
         }
     }
 
-    public void ConfigureCamera(Camera cam, bool permitMotionBlur)
+    public void ConfigureCamera(Camera cam)
     {
-        PostProcessingBehaviour post = cam.GetComponent<PostProcessingBehaviour>();
-        PostProcessingProfile profile = Object.Instantiate(post.profile);
-
-        profile.motionBlur.enabled = m_useMotionBlur.Value && permitMotionBlur;
-
-        int aaVal = m_aa.Value;
-        if (aaVal > 0)
+        PostProcessLayer layer = cam.GetComponent<PostProcessLayer>();
+        if (layer)
         {
-            profile.antialiasing.enabled = true;
-            AntialiasingModel.Settings aa = profile.antialiasing.settings;
-            aa.method = (aaVal == 1) ? AntialiasingModel.Method.Fxaa : AntialiasingModel.Method.Taa;
-            profile.antialiasing.settings = aa;
+            switch (m_aa.Value)
+            {
+                case 0: layer.antialiasingMode = PostProcessLayer.Antialiasing.None; break;
+                case 1: layer.antialiasingMode = PostProcessLayer.Antialiasing.FastApproximateAntialiasing; break;
+                case 2: layer.antialiasingMode = PostProcessLayer.Antialiasing.TemporalAntialiasing; break;
+            }
         }
-        else
-        {
-            profile.antialiasing.enabled = false;
-        }
-
-        post.profile = profile;
     }
 
     public void SetShadowDistance()

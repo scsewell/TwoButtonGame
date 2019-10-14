@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.PostProcessing;
+using UnityEngine.Rendering.PostProcessing;
 
 namespace BoostBlasters.Menus
 {
@@ -36,8 +36,6 @@ namespace BoostBlasters.Menus
         [SerializeField]
         private int m_profilePanelCount = 12;
         [SerializeField]
-        public PostProcessingProfile m_cameraPost;
-        [SerializeField]
         private Vector3 m_previewCamPos = new Vector3(0, 1.5f, 2.5f);
         [SerializeField]
         private Vector3 m_previewCamRot = new Vector3(12, 180, 0);
@@ -69,7 +67,6 @@ namespace BoostBlasters.Menus
         private List<PlayerProfilePanel> m_profilePanels;
         private Camera m_previewCam;
         private RenderTexture m_previewTex;
-        private PostProcessingProfile m_post;
         private Dictionary<PlayerConfig, GameObject> m_configToPreview;
         private List<GameObject> m_previewObjects;
         private State m_state;
@@ -152,9 +149,9 @@ namespace BoostBlasters.Menus
             int previewLayer = (index + 8);
             m_previewCam.cullingMask = (1 << previewLayer);
 
-            m_post = Instantiate(m_cameraPost);
-            m_previewCam.gameObject.AddComponent<PostProcessingBehaviour>().profile = m_post;
-        
+            PostProcessLayer postLayer = m_previewCam.gameObject.AddComponent<PostProcessLayer>();
+            postLayer.volumeLayer = LayerMask.NameToLayer("PostEffectVolumes");
+
             m_configToPreview = new Dictionary<PlayerConfig, GameObject>();
             m_previewObjects = new List<GameObject>();
 
@@ -207,6 +204,8 @@ namespace BoostBlasters.Menus
     
         public void UpdatePanel()
         {
+            SettingManager.Instance.ConfigureCamera(m_previewCam);
+
             m_continue = false;
 
             if (m_state == State.Join)
@@ -421,11 +420,13 @@ namespace BoostBlasters.Menus
 
             if (m_previewCam.enabled)
             {
-                ColorGradingModel.Settings settings = m_post.colorGrading.settings;
-                ColorGradingModel.BasicSettings basic = settings.basic;
-                basic.saturation = IsReady ? 0.275f : 1f;
-                settings.basic = basic;
-                m_post.colorGrading.settings = settings;
+                //ColorGrading colorGrading = m_previewCam.GetComponent<PostProcessLayer>
+
+                //ColorGradingModel.Settings settings = m_post.colorGrading.settings;
+                //ColorGradingModel.BasicSettings basic = settings.basic;
+                //basic.saturation = IsReady ? 0.275f : 1f;
+                //settings.basic = basic;
+                //m_post.colorGrading.settings = settings;
 
                 GameObject previewObject = null;
                 if (m_configToPreview.TryGetValue(config, out previewObject))

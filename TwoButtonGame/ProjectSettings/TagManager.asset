@@ -35,7 +35,7 @@ TagManager:
   - Bounds
   - 
   - 
-  - 
+  - PostEffectVolumes
   - 
   m_SortingLayers:
   - name: Default

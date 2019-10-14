@@ -3,17 +3,16 @@
 #endif
 
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace Framework
 {
     public class ObjectPool
     {
-        private List<PooledObject> m_pooled = new List<PooledObject>();
-        private List<PooledObject> m_released = new List<PooledObject>();
-        private PooledObject m_prefab;
-        private int m_initialSize;
+        private readonly List<PooledObject> m_pooled = new List<PooledObject>();
+        private readonly List<PooledObject> m_released = new List<PooledObject>();
+        private readonly PooledObject m_prefab;
+        private readonly int m_initialSize;
 #if USE_PARENT
         private Transform m_poolRoot;
 #endif
@@ -52,13 +51,21 @@ namespace Framework
             }
         }
 
+        private PooledObject CreateInstance(Vector3 position, Quaternion rotation, Transform parent)
+        {
+            PooledObject obj = Object.Instantiate(m_prefab, position, rotation, parent);
+            obj.SetPool(this);
+            return obj;
+        }
+
         public PooledObject GetInstance(Vector3 position, Quaternion rotation, Transform parent)
         {
             PooledObject obj;
             if (m_pooled.Count > 0)
             {
-                obj = m_pooled.First();
-                m_pooled.RemoveAt(0);
+                int lastIndex = m_pooled.Count - 1;
+                obj = m_pooled[lastIndex];
+                m_pooled.RemoveAt(lastIndex);
 
                 obj.transform.SetParent(parent);
                 obj.transform.position = position;
@@ -71,13 +78,6 @@ namespace Framework
             obj.IsReleased = true;
             m_released.Add(obj);
             obj.gameObject.SetActive(true);
-            return obj;
-        }
-
-        private PooledObject CreateInstance(Vector3 position, Quaternion rotation, Transform parent)
-        {
-            PooledObject obj = Object.Instantiate(m_prefab, position, rotation, parent);
-            obj.SetPool(this);
             return obj;
         }
 
@@ -98,8 +98,9 @@ namespace Framework
         {
             while (m_pooled.Count > 0)
             {
-                PooledObject obj = m_pooled.First();
-                m_pooled.RemoveAt(0);
+                int lastIndex = m_pooled.Count - 1;
+                PooledObject obj = m_pooled[lastIndex];
+                m_pooled.RemoveAt(lastIndex);
                 Object.Destroy(obj.gameObject);
             }
             m_released.Clear();

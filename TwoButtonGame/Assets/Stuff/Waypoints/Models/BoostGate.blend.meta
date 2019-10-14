@@ -1,20 +1,22 @@
 fileFormatVersion: 2
 guid: b2489b66d258f974cb38ddab5d82a622
-timeCreated: 1509215911
-licenseType: Free
 ModelImporter:
-  serializedVersion: 22
+  serializedVersion: 23
   fileIDToRecycleName:
     100000: //RootNode
     100002: Empty
     100004: WaypointSquareS
     100006: WaypointSquareS_Collider
     100008: BoostGate
+    100010: Hemi
+    100012: Hemi.001
     400000: //RootNode
     400002: Empty
     400004: WaypointSquareS
     400006: WaypointSquareS_Collider
     400008: BoostGate
+    400010: Hemi
+    400012: Hemi.001
     2100000: unnamed
     2100002: Material__Untitled
     2100004: Material_001__Untitled
@@ -30,6 +32,8 @@ ModelImporter:
     4300004: BoostGate
     7400000: Default Take
     9500000: //RootNode
+    10800000: Hemi
+    10800002: Hemi.001
   externalObjects: {}
   materials:
     importMaterials: 0
@@ -49,6 +53,7 @@ ModelImporter:
     animationRetargetingWarnings: 
     animationDoRetargetingWarnings: 0
     importAnimatedCustomProperties: 0
+    importConstraints: 0
     animationCompression: 1
     animationRotationError: 0.5
     animationPositionError: 0.5
@@ -63,6 +68,7 @@ ModelImporter:
     globalScale: 1
     meshCompression: 0
     addColliders: 0
+    useSRGBMaterialColor: 1
     importVisibility: 1
     importBlendShapes: 1
     importCameras: 1
@@ -80,11 +86,16 @@ ModelImporter:
     secondaryUVHardAngle: 88
     secondaryUVPackMargin: 4
     useFileScale: 1
+    previousCalculatedGlobalScale: 1
+    hasPreviousCalculatedGlobalScale: 0
   tangentSpace:
     normalSmoothAngle: 60
     normalImportMode: 0
     tangentImportMode: 3
     normalCalculationMode: 4
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 1
+    blendShapeNormalImportMode: 1
+    normalSmoothingSource: 0
   importAnimation: 0
   copyAvatar: 0
   humanDescription:
@@ -99,7 +110,6 @@ ModelImporter:
     legStretch: 0.05
     feetSpacing: 0
     rootMotionBoneName: 
-    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
     hasTranslationDoF: 0
     hasExtraRoot: 1
     skeletonHasParents: 1
