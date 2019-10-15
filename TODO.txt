@@ -1,9 +1,9 @@
 ### To Do ###
 
 Fix race manager - too much wierdness potential right now
-expand replay state information
+Outline is very expensive on UI, especially the player time... (TMP to fix)
 Difiiculy setting for levels - gate size differs based on difficulty
-Gate engine - make child prefab of gate
+expand replay state information
 
 replays - store player profile id and name so it can be portable
 replays - speed, cameras(cinemachine, players all at once, players single (cycle through), manual zoom/free camera)
@@ -49,7 +49,6 @@ Update level preview images
 Ensure music is credited
 
 ### Bugs and stuff ###
-Outline is very expensive on UI, especially the player time... (TMP to fix)
 Camera can clip with the gates, perhaps use a fading material when close...
 What to do if a joystick disconnects in menu or game?
 
