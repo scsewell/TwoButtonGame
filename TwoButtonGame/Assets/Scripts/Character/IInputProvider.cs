@@ -1,13 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-public interface IInputProvider
+﻿namespace BoostBlasters.Character
 {
-    void ResetProvider();
-    void LateUpdateProvider();
-    void FixedUpdateProvider();
-    MovementInputs GetInput();
+    /// <summary>
+    /// A system which provides input for character movement when requested.
+    /// </summary>
+    public interface IInputProvider
+    {
+        void ResetProvider();
+        void LateUpdateProvider();
+        void FixedUpdateProvider();
+        MovementInputs GetInput();
+    }
 }
-

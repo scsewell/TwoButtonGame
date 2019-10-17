@@ -1,17 +1,37 @@
 ### To Do ###
 
-Fix race manager - too much wierdness potential right now
-Outline is very expensive on UI, especially the player time... (TMP to fix)
-Difiiculy setting for levels - gate size differs based on difficulty
-expand replay state information
+namespace
 
-replays - store player profile id and name so it can be portable
-replays - speed, cameras(cinemachine, players all at once, players single (cycle through), manual zoom/free camera)
-replays - vairable replay speed
+refactor
+- implement waypoint as a race concept, things should reference that instead
+- check for spaghetti (check singleton usage)
+- make settings ScriptableObjects configurable in editor, add events for changes to settings
+- separate character (graphics/config) from player (human) from profile from racer (instance in a race)
+- use more interfaces for level stuff
+- things should not know about level stuff, only interact with race classes
+- turn race manager into a state machine
+- use framework music palyer
 
+New Input sytstem (remove old system)
 Multiple controller support
-victory music should differ from replay music
-pauser controls pause menu
+
+Outline is very expensive on UI, especially the player time... (TMP to fix)
+Difiiculy setting for levels - gate size differs based on difficulty (remove LevelConfig difficulty)
+
+Update profiles/replays
+- add version information to serialized files
+- convert profile ID long to GUID
+- profiles should keep track of stats separately from replays
+- don't read an entire replay just to extract the header information
+- support replays during a match when paused
+- speed, cameras(cinemachine, players all at once, players single (cycle through), manual zoom/free camera)
+- vairable replay speed
+- store player profile id and name so it can be portable
+- improve framework binary serialzation
+
+Migrate to URP
+- gate color should be a global shader property, instead of hooking into OnWillRenderObject
+
 Show player names above heads (fade in when close)
 
 look around (right josystick, don't know about keyboard though...)
@@ -25,6 +45,7 @@ Energy gate sounds
 Waypoint engine sound
 Min energy sound
 Full energy sound
+victory music should differ from replay music
 
 Characters (fatty, airbrake flaps!!!!, floating boosters fancy tech, robot, other race?, really abstract?)
 Make animations more extreme
@@ -35,6 +56,7 @@ ML agents AI
 Alternate paths
 Moving gates - Add rotation
 Boost gates - improve graphics (animate the rings) - particles/screen effect to make it obvious boost was gained
+Gates - need fancy visual effect for passing through a gate
 Wind (volumes) / wind turbines
 
 Levels (creative hazzards)

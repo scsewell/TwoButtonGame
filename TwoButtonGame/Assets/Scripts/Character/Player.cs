@@ -1,287 +1,285 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
+
 using UnityEngine;
+
 using Framework.Interpolation;
 
-[RequireComponent(typeof(MemeBoots))]
-[RequireComponent(typeof(TransformInterpolator))]
-public class Player : MonoBehaviour
+using BoostBlasters.Players;
+using BoostBlasters.Races;
+using BoostBlasters.Levels;
+
+namespace BoostBlasters.Character
 {
-    [Header("Sound")]
-    [SerializeField]
-    private AudioClip m_gateCompleteSound;
-    [SerializeField] [Range(0, 1)]
-    private float m_gateCompleteVolume = 1.0f;
-
-    [SerializeField]
-    private AudioClip m_lapCompleteSound;
-    [SerializeField] [Range(0, 1)]
-    private float m_lapCompleteVolume = 1.0f;
-
-    [SerializeField]
-    private AudioClip m_finishSound;
-    [SerializeField] [Range(0, 1)]
-    private float m_finishVolume = 1.0f;
-
-    [SerializeField]
-    private AudioClip m_energyFailSound;
-    [SerializeField] [Range(0, 1)]
-    private float m_energyFailVolume = 1.0f;
-
-    // Configuration
-    private bool m_isHuman;
-    public bool IsHuman { get { return m_isHuman; } }
-
-    private int m_playerNum = -1;
-    public int PlayerNum { get { return m_playerNum; } }
-    
-    private PlayerProfile m_profile;
-    public PlayerProfile Profile { get { return m_profile; } }
-
-    private PlayerConfig m_config;
-    public PlayerConfig Config { get { return m_config; } }
-    
-    public Color GetColor()
+    /// <summary>
+    /// The main component used to manage a player character.
+    /// </summary>
+    [RequireComponent(typeof(MemeBoots))]
+    [RequireComponent(typeof(TransformInterpolator))]
+    public class Player : MonoBehaviour
     {
-        return Consts.PLAYER_COLORS[m_playerNum % Consts.PLAYER_COLORS.Length];
-    }
-    
-    // Level Progress
-    private int m_waypointsCompleted;
-    public int WaypointsCompleted { get { return m_waypointsCompleted; } }
-    
-    public Waypoint NextWaypoint
-    {
-        get { return m_racePath.GetWaypoint(m_waypointsCompleted); }
-    }
+        [Header("Sound")]
 
-    public Waypoint SecondNextWaypoint
-    {
-        get { return m_racePath.GetWaypoint(m_waypointsCompleted + 1); }
-    }
+        [SerializeField]
+        private AudioClip m_gateCompleteSound = null;
+        [SerializeField]
+        [Range(0f, 1f)]
+        private float m_gateCompleteVolume = 1.0f;
 
-    public int CurrentLap
-    {
-        get { return m_racePath.GetCurrentLap(m_waypointsCompleted); }
-    }
+        [SerializeField]
+        private AudioClip m_lapCompleteSound = null;
+        [SerializeField]
+        [Range(0f, 1f)]
+        private float m_lapCompleteVolume = 1.0f;
 
-    private RaceResult m_raceResult;
-    public RaceResult RaceResult { get { return m_raceResult; } }
-    
-    // Energy
-    public delegate void EnergyGainedHandler(float total, float delta);
-    public event EnergyGainedHandler EnergyGained;
+        [SerializeField]
+        private AudioClip m_finishSound = null;
+        [SerializeField]
+        [Range(0f, 1f)]
+        private float m_finishVolume = 1.0f;
 
-    public delegate void EnergyUseFailHandler();
-    public event EnergyUseFailHandler EnergyUseFailed;
+        [SerializeField]
+        private AudioClip m_energyFailSound = null;
+        [SerializeField]
+        [Range(0f, 1f)]
+        private float m_energyFailVolume = 1.0f;
 
-    public float MaxEnergy
-    {
-        get { return m_config.EnergyCap; }
-    }
+        // Configuration
+        private bool m_isHuman;
+        public bool IsHuman => m_isHuman;
 
-    private float m_energy;
-    public float Energy
-    {
-        get { return m_energy; }
-    }
+        private int m_playerNum = -1;
+        public int PlayerNum => m_playerNum;
 
-    // General
-    private TransformInterpolator m_interpolator;
-    public TransformInterpolator Interpolator { get { return m_interpolator; } }
+        private PlayerProfile m_profile;
+        public PlayerProfile Profile => m_profile;
 
-    private MemeBoots m_movement;
-    public MemeBoots Movement { get { return m_movement; } }
-    
-    public MovementInputs Inputs { get { return m_inputProvider.GetInput(); } }
-    
-    private IInputProvider m_inputProvider;
-    private PlayerAnimation m_animation;
-    private RacePath m_racePath;
-    private Vector3 m_lastPos;
-    private Vector3 m_spawnPosition;
-    private Quaternion m_spawnRotation;
+        private PlayerConfig m_config;
+        public PlayerConfig Config => m_config;
 
-    private void Awake()
-    {
-        m_interpolator = GetComponentInChildren<TransformInterpolator>();
-        m_movement = GetComponentInChildren<MemeBoots>();
-    }
+        public Color GetColor() => Consts.GetRacerColor(m_playerNum);
 
-    public Player InitHuman(int playerNum, PlayerProfile profile, PlayerConfig config, PlayerBaseInput input)
-    {
-        m_isHuman = true;
-        m_inputProvider = new PlayerInputProvider(input);
-        return Init(playerNum, profile, config);
-    }
+        // Level Progress
+        private int m_waypointsCompleted;
+        public int WaypointsCompleted => m_waypointsCompleted;
 
-    public Player InitAI(int playerNum, PlayerProfile profile, PlayerConfig config)
-    {
-        m_isHuman = false;
-        m_inputProvider = new PlayerAI(this);
-        return Init(playerNum, profile, config);
-    }
+        public Waypoint NextWaypoint => m_racePath.GetWaypoint(m_waypointsCompleted);
 
-    private Player Init(int playerNum, PlayerProfile profile, PlayerConfig config)
-    {
-        m_playerNum = playerNum;
-        m_profile = profile;
-        m_config = config;
-        
-        m_raceResult = new RaceResult(profile);
+        public Waypoint SecondNextWaypoint => m_racePath.GetWaypoint(m_waypointsCompleted + 1);
 
-        m_animation = GetComponentInChildren<PlayerAnimation>();
-        m_racePath = Main.Instance.RaceManager.RacePath;
+        public int CurrentLap => m_racePath.GetCurrentLap(m_waypointsCompleted);
 
-        m_lastPos = transform.position;
-        m_spawnPosition = transform.position;
-        m_spawnRotation = transform.rotation;
-        return this;
-    }
+        private RaceResult m_raceResult;
+        public RaceResult RaceResult => m_raceResult;
 
-    public void ResetPlayer()
-    {
-        transform.position = m_spawnPosition;
-        transform.rotation = m_spawnRotation;
-        m_lastPos = m_spawnPosition;
+        // Energy
+        public delegate void EnergyGainedHandler(float total, float delta);
+        public event EnergyGainedHandler EnergyGained;
 
-        m_movement.ResetMovement();
-        m_inputProvider.ResetProvider();
+        public delegate void EnergyUseFailHandler();
+        public event EnergyUseFailHandler EnergyUseFailed;
 
-        if (m_animation)
+        public float MaxEnergy => m_config.EnergyCap;
+
+        private float m_energy;
+        public float Energy => m_energy;
+
+        // General
+        private TransformInterpolator m_interpolator;
+        public TransformInterpolator Interpolator => m_interpolator;
+
+        private MemeBoots m_movement;
+        public MemeBoots Movement => m_movement;
+
+        public MovementInputs Inputs => m_inputProvider.GetInput();
+
+        private IInputProvider m_inputProvider;
+        private PlayerAnimation m_animation;
+        private RacePath m_racePath;
+        private Vector3 m_lastPos;
+        private Vector3 m_spawnPosition;
+        private Quaternion m_spawnRotation;
+
+        private void Awake()
         {
-            m_animation.ResetAnimation();
+            m_interpolator = GetComponentInChildren<TransformInterpolator>();
+            m_movement = GetComponentInChildren<MemeBoots>();
         }
 
-        m_interpolator.ForgetPreviousValues();
-
-        m_energy = 0;
-        m_waypointsCompleted = 0;
-
-        m_raceResult.Reset();
-    }
-
-    public void ProcessPlaying(bool isAfterIntro, bool isAfterStart)
-    {
-        m_inputProvider.FixedUpdateProvider();
-        ProcessReplaying(isAfterIntro, isAfterStart, m_inputProvider.GetInput());
-    }
-
-    public void ProcessReplaying(bool isAfterIntro, bool isAfterStart, MovementInputs inputs)
-    {
-        m_movement.FixedUpdateMovement(inputs, isAfterIntro && !m_raceResult.Finished, !isAfterStart);
-
-        if (isAfterStart && !m_raceResult.Finished && !m_movement.IsBoosting)
+        public Player InitHuman(int playerNum, PlayerProfile profile, PlayerConfig config, PlayerBaseInput input)
         {
-            m_energy = Mathf.Min(m_energy + (m_config.EnergyRechargeRate * Time.deltaTime), MaxEnergy);
+            m_isHuman = true;
+            m_inputProvider = new PlayerInputProvider(input);
+            return Init(playerNum, profile, config);
         }
 
-        int previousLap = CurrentLap;
-        Waypoint wp = NextWaypoint;
-        Vector3 disp = transform.position - m_lastPos;
-        RaycastHit hit;
-        if (wp != null && disp.magnitude > 0.0001f && wp.Trigger.Raycast(new Ray(m_lastPos, disp.normalized), out hit, disp.magnitude))
+        public Player InitAI(int playerNum, PlayerProfile profile, PlayerConfig config)
         {
-            m_waypointsCompleted++;
-            m_racePath.ResetEnergyGates(this);
+            m_isHuman = false;
+            m_inputProvider = new PlayerAI(this);
+            return Init(playerNum, profile, config);
+        }
 
-            bool finished = m_racePath.IsFinished(m_waypointsCompleted);
-            if (finished != m_raceResult.Finished)
+        private Player Init(int playerNum, PlayerProfile profile, PlayerConfig config)
+        {
+            m_playerNum = playerNum;
+            m_profile = profile;
+            m_config = config;
+
+            m_raceResult = new RaceResult(profile);
+
+            m_animation = GetComponentInChildren<PlayerAnimation>();
+            m_racePath = Main.Instance.RaceManager.RacePath;
+
+            m_lastPos = transform.position;
+            m_spawnPosition = transform.position;
+            m_spawnRotation = transform.rotation;
+            return this;
+        }
+
+        public void ResetPlayer()
+        {
+            transform.position = m_spawnPosition;
+            transform.rotation = m_spawnRotation;
+            m_lastPos = m_spawnPosition;
+
+            m_movement.ResetMovement();
+            m_inputProvider.ResetProvider();
+
+            if (m_animation)
             {
-                m_raceResult.Finished = true;
-                RecordLapTime();
+                m_animation.ResetAnimation();
             }
 
-            bool completedLap = previousLap != CurrentLap;
+            m_interpolator.ForgetPreviousValues();
 
-            if (completedLap)
+            m_energy = 0;
+            m_waypointsCompleted = 0;
+
+            m_raceResult.Reset();
+        }
+
+        public void ProcessPlaying(bool isAfterIntro, bool isAfterStart)
+        {
+            m_inputProvider.FixedUpdateProvider();
+            ProcessReplaying(isAfterIntro, isAfterStart, m_inputProvider.GetInput());
+        }
+
+        public void ProcessReplaying(bool isAfterIntro, bool isAfterStart, MovementInputs inputs)
+        {
+            m_movement.FixedUpdateMovement(inputs, isAfterIntro && !m_raceResult.Finished, !isAfterStart);
+
+            if (isAfterStart && !m_raceResult.Finished && !m_movement.IsBoosting)
             {
-                RecordLapTime();
+                m_energy = Mathf.Min(m_energy + (m_config.EnergyRechargeRate * Time.deltaTime), MaxEnergy);
             }
 
-            if (m_isHuman)
+            int previousLap = CurrentLap;
+            Waypoint wp = NextWaypoint;
+            Vector3 disp = transform.position - m_lastPos;
+            RaycastHit hit;
+            if (wp != null && disp.magnitude > 0.0001f && wp.Trigger.Raycast(new Ray(m_lastPos, disp.normalized), out hit, disp.magnitude))
             {
-                if (finished)
+                m_waypointsCompleted++;
+                m_racePath.ResetEnergyGates(this);
+
+                bool finished = m_racePath.IsFinished(m_waypointsCompleted);
+                if (finished != m_raceResult.Finished)
                 {
-                    AudioManager.Instance.PlaySound(m_finishSound, m_finishVolume);
+                    m_raceResult.Finished = true;
+                    RecordLapTime();
                 }
-                else if (completedLap)
+
+                bool completedLap = previousLap != CurrentLap;
+
+                if (completedLap)
                 {
-                    AudioManager.Instance.PlaySound(m_lapCompleteSound, m_lapCompleteVolume);
+                    RecordLapTime();
                 }
-                else
+
+                if (m_isHuman)
                 {
-                    AudioManager.Instance.PlaySound(m_gateCompleteSound, m_gateCompleteVolume);
+                    if (finished)
+                    {
+                        AudioManager.Instance.PlaySound(m_finishSound, m_finishVolume);
+                    }
+                    else if (completedLap)
+                    {
+                        AudioManager.Instance.PlaySound(m_lapCompleteSound, m_lapCompleteVolume);
+                    }
+                    else
+                    {
+                        AudioManager.Instance.PlaySound(m_gateCompleteSound, m_gateCompleteVolume);
+                    }
+                }
+            }
+            m_lastPos = transform.position;
+        }
+
+        public void UpdatePlayer()
+        {
+            if (m_animation != null)
+            {
+                m_animation.UpdateAnimation(m_movement);
+            }
+
+            if (NextWaypoint != null)
+            {
+                Debug.DrawLine(transform.position, NextWaypoint.Position, Color.magenta);
+            }
+        }
+
+        public void LateUpdatePlayer()
+        {
+            m_inputProvider.LateUpdateProvider();
+
+            if (m_animation != null)
+            {
+                m_animation.LateUpdateAnimation(NextWaypoint);
+            }
+        }
+
+        private void OnTriggerEnter(Collider other)
+        {
+            BoostGate boostGate = other.GetComponentInParent<BoostGate>();
+            if (boostGate != null && boostGate.UseGate(this))
+            {
+                OnEnergyGained(boostGate.Energy);
+            }
+        }
+
+        public void OnEnergyUseFail()
+        {
+            if (EnergyUseFailed != null)
+            {
+                AudioManager.Instance.PlaySound(m_energyFailSound, m_energyFailVolume);
+                EnergyUseFailed();
+            }
+        }
+
+        private void OnEnergyGained(float amountGained)
+        {
+            float delta = Mathf.Min(m_energy + amountGained, MaxEnergy) - m_energy;
+            if (delta > 0)
+            {
+                m_energy += delta;
+                if (EnergyGained != null)
+                {
+                    EnergyGained(m_energy, delta);
                 }
             }
         }
-        m_lastPos = transform.position;
-    }
-    
-    public void UpdatePlayer()
-    {
-        if (m_animation != null)
-        {
-            m_animation.UpdateAnimation(m_movement);
-        }
 
-        if (NextWaypoint != null)
+        public float ConsumeEnergy(float amountLost)
         {
-            Debug.DrawLine(transform.position, NextWaypoint.Position, Color.magenta);
-        }
-    }
-
-    public void LateUpdatePlayer()
-    {
-        m_inputProvider.LateUpdateProvider();
-
-        if (m_animation != null)
-        {
-            m_animation.LateUpdateAnimation(NextWaypoint);
-        }
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        BoostGate boostGate = other.GetComponentInParent<BoostGate>();
-        if (boostGate != null && boostGate.UseGate(this))
-        {
-            OnEnergyGained(boostGate.Energy);
-        }
-    }
-
-    public void OnEnergyUseFail()
-    {
-        if (EnergyUseFailed != null)
-        {
-            AudioManager.Instance.PlaySound(m_energyFailSound, m_energyFailVolume);
-            EnergyUseFailed();
-        }
-    }
-
-    private void OnEnergyGained(float amountGained)
-    {
-        float delta = Mathf.Min(m_energy + amountGained, MaxEnergy) - m_energy;
-        if (delta > 0)
-        {
+            float delta = Mathf.Max(m_energy - amountLost, 0) - m_energy;
             m_energy += delta;
-            if (EnergyGained != null)
-            {
-                EnergyGained(m_energy, delta);
-            }
+            return Mathf.Abs(delta);
         }
-    }
 
-    public float ConsumeEnergy(float amountLost)
-    {
-        float delta = Mathf.Max(m_energy - amountLost, 0) - m_energy;
-        m_energy += delta;
-        return Mathf.Abs(delta);
-    }
-
-    private void RecordLapTime()
-    {
-        float currentTime = Main.Instance.RaceManager.GetStartRelativeTime(Time.time);
-        m_raceResult.LapTimes.Add(currentTime - m_raceResult.LapTimes.Sum());
+        private void RecordLapTime()
+        {
+            float currentTime = Main.Instance.RaceManager.GetStartRelativeTime(Time.time);
+            m_raceResult.LapTimes.Add(currentTime - m_raceResult.LapTimes.Sum());
+        }
     }
 }

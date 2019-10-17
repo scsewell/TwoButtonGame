@@ -104,7 +104,8 @@ public abstract class PlayerBaseInput
         switch (m_muting)
         {
             case InputMuting.All:           return false;
-            case InputMuting.TypingKeys:    return !(UIUtils.IsAlphaNumeric(key) || key == KeyCode.Backspace || key == KeyCode.Delete);
+            //case InputMuting.TypingKeys:    return !(UIUtils.IsAlphaNumeric(key) || key == KeyCode.Backspace || key == KeyCode.Delete);
+            case InputMuting.TypingKeys: return !(key == KeyCode.Backspace || key == KeyCode.Delete);
             default: return true;
         }
     }
