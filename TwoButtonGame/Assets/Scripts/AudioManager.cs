@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+
 using UnityEngine;
+
 using Framework;
 using Framework.Audio;
 
@@ -10,6 +12,11 @@ namespace BoostBlasters
     /// </summary>
     public class AudioManager : ComponentSingleton<AudioManager>
     {
+        private AudioSource m_audio = null;
+        private AudioSource m_noPauseAudio = null;
+        private MusicPlayer m_music = null;
+        private readonly Dictionary<AudioClip, float> m_lastPlayTimes = new Dictionary<AudioClip, float>();
+
         private float m_volume = 1.0f;
 
         /// <summary>
@@ -39,22 +46,15 @@ namespace BoostBlasters
         /// </summary>
         public bool MusicPausable
         {
-            get => m_musicPausable;
-            set => m_musicPausable = value;
+            get => m_music.Pausable;
+            set => m_music.Pausable = value;
         }
-
-        private AudioSource m_audio = null;
-        private AudioSource m_noPauseAudio = null;
-        private readonly AudioSource[] m_musicSources = new AudioSource[2];
-        private int m_lastMusicSource = 0;
-        private MusicParams m_musicParams = null;
-        private double m_lastLoopTime = 0.0;
-
-        private readonly Dictionary<AudioClip, float> m_lastPlayTimes = new Dictionary<AudioClip, float>();
 
         protected override void Awake()
         {
             base.Awake();
+
+            gameObject.AddComponent<AudioListener>();
 
             AudioListener.volume = 0f;
 
@@ -65,35 +65,21 @@ namespace BoostBlasters
             m_noPauseAudio.ignoreListenerPause = true;
             m_noPauseAudio.playOnAwake = false;
 
-            for (int i = 0; i < m_musicSources.Length; i++)
-            {
-                m_musicSources[i] = gameObject.AddComponent<AudioSource>();
-                m_musicSources[i].playOnAwake = false;
-            }
+            m_music = new MusicPlayer(gameObject, false);
+        }
+
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+
+            m_music.Dispose();
         }
 
         private void Update()
         {
-            if (m_musicParams != null)
-            {
-                double nextLoopTime = m_lastLoopTime + m_musicParams.LoopDuration;
-                if (nextLoopTime - AudioSettings.dspTime < 1.0)
-                {
-                    PlayMusicScheduled(nextLoopTime);
-                }
-            }
-        
-            for (int i = 0; i < m_musicSources.Length; i++)
-            {
-                m_musicSources[i].ignoreListenerPause = !m_musicPausable;
-            }
-
-            for (int i = 0; i < m_musicSources.Length; i++)
-            {
-                m_musicSources[i].volume = m_musicVolume * Mathf.Pow((SettingManager.Instance.MusicVolume.Value / 100.0f), 2.0f);
-            }
-
-            AudioListener.volume = Volume * Mathf.Pow((SettingManager.Instance.MasterVolume.Value / 100.0f), 2.0f);
+            m_music.Update();
+            m_music.Volume = m_musicVolume * Mathf.Pow(SettingManager.Instance.MusicVolume.Value / 100.0f, 2.0f);
+            AudioListener.volume = Volume * Mathf.Pow(SettingManager.Instance.MasterVolume.Value / 100.0f, 2.0f);
         }
 
         /// <summary>
@@ -137,32 +123,20 @@ namespace BoostBlasters
         }
 
         /// <summary>
-        /// Plays the provided music track.
+        /// Plays a music track.
         /// </summary>
-        /// <param name="music"></param>
+        /// <param name="music">The music to play.</param>
         public void PlayMusic(MusicParams music)
         {
-            m_musicParams = music;
-            PlayMusicScheduled(AudioSettings.dspTime + 0.01);
-        }
-
-
-        private void PlayMusicScheduled(double time)
-        {
-            int source = (m_lastMusicSource + 1) % m_musicSources.Length;
-            m_musicSources[source].clip = m_musicParams.Track;
-            m_musicSources[source].PlayScheduled(time);
-            m_lastLoopTime = time;
-            m_lastMusicSource = source;
+            m_music.Play(music);
         }
 
         /// <summary>
-        /// Stops playing the current music track.
+        /// Stops playing music.
         /// </summary>
         public void StopMusic()
         {
-            m_musicSources[0].Stop();
-            m_musicSources[1].Stop();
+            m_music.Stop();
         }
     }
 }

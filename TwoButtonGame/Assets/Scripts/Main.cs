@@ -48,10 +48,17 @@ namespace BoostBlasters
             None,
         }
 
-        protected override void Awake()
+        /// <summary>
+        /// Ensure this class initializes before anything else.
+        /// </summary>
+        [RuntimeInitializeOnLoadMethod]
+        private static void Init()
         {
-            base.Awake();
+            Instance.Initialize();
+        }
 
+        private void Initialize()
+        {
             m_raceManagerPrefab = Resources.Load<RaceManager>("RaceManager");
             m_playerConfigs = Resources.LoadAll<PlayerConfig>("PlayerConfigs/").OrderBy(c => c.SortOrder).ToArray();
             m_levelConfigs = Resources.LoadAll<LevelConfig>("LevelConfigs/").OrderBy(c => c.SortOrder).ToArray();
@@ -62,8 +69,6 @@ namespace BoostBlasters
             SettingManager.Instance.Apply();
 
             m_lastRaceType = RaceType.None;
-
-            gameObject.AddComponent<AudioListener>();
         }
 
         private void FixedUpdate()
@@ -92,7 +97,7 @@ namespace BoostBlasters
 
             if (Input.GetKeyDown(KeyCode.F11))
             {
-                ScreenCapture.CaptureScreenshot("screenshot_" + DateTime.Now.ToString("MM-dd-yy_H-mm-ss") + ".png");
+                ScreenCapture.CaptureScreenshot($"screenshot_{DateTime.Now.ToString("MM-dd-yy_H-mm-ss")}.png");
             }
         }
 

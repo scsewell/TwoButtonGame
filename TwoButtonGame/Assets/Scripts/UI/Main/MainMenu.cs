@@ -85,9 +85,6 @@ namespace BoostBlasters.UI.MainMenus
 
         private void Awake()
         {
-            // Ensure the GameController exists
-            Debug.Log(Main.Instance.name);
-
             InitBase(InputManager.Instance.PlayerInputs.ToList());
 
             m_root = GetComponentInChildren<RootMenu>();
