@@ -1,7 +1,6 @@
 ### To Do ###
 
 Refactoring
-- use framework music palyer
 - implement waypoint as a race concept, things should reference that instead
 - check for spaghetti (check singleton usage)
 - separate character (graphics/config) from player (human) from profile from racer (instance in a race)
