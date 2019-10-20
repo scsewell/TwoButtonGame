@@ -1,13 +1,14 @@
 ### To Do ###
 
 Refactoring
+- make settings ScriptableObjects configurable in editor, add events for changes to settings
+- Race path editor should use reorderablie list
 - implement waypoint as a race concept, things should reference that instead
 - check for spaghetti (check singleton usage)
 - separate character (graphics/config) from player (human) from profile from racer (instance in a race)
 - use more interfaces for level stuff
 - things should not know about level stuff, only interact with race classes
 - turn race manager into a state machine
-- make settings ScriptableObjects configurable in editor, add events for changes to settings
 
 Text Mesh Pro
 New Input sytstem (remove old system)

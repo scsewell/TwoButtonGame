@@ -30,11 +30,11 @@ namespace BoostBlasters.Character
 
         [SerializeField]
         [TextArea]
-        private string m_description = "";
+        private string m_description = string.Empty;
         public string Description => m_description;
 
         [SerializeField]
-        private string m_name;
+        private string m_name = string.Empty;
         public string Name => m_name;
 
         [Header("Graphics")]

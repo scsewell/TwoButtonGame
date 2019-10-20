@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
+
+using UnityEngine;
+
 using Framework;
 using Framework.IO;
 
@@ -22,7 +25,7 @@ namespace BoostBlasters.Players
         /// </summary>
         private static readonly string FILE_EXTENTION = ".prf";
 
-        private readonly Random m_random = new Random();
+        private readonly System.Random m_random = new System.Random();
 
         private readonly List<PlayerProfile> m_guestProfiles = new List<PlayerProfile>();
         private readonly List<PlayerProfile> m_uniqueGuestProfiles = new List<PlayerProfile>();
@@ -114,7 +117,17 @@ namespace BoostBlasters.Players
 
                 foreach (FileInfo file in files)
                 {
-                    m_profiles.Add(new PlayerProfile(FileIO.ReadFileBytes(file.FullName)));
+                    if (FileIO.ReadFileBytes(file.FullName, out byte[] bytes))
+                    {
+                        PlayerProfile profile = new PlayerProfile(bytes);
+                        m_profiles.Add(profile);
+
+                        Debug.Log($"Loaded profile \"{profile.Name}\"");
+                    }
+                    else
+                    {
+                        Debug.LogError($"Failed to load profile from \"{file.Name}\"!");
+                    }
                 }
             }
         }
@@ -134,7 +147,14 @@ namespace BoostBlasters.Players
         {
             if (!profile.IsGuest)
             {
-                FileIO.WriteFile(profile.GetBytes(), GetProfilePath(profile));
+                if (FileIO.WriteFile(GetProfilePath(profile), profile.GetBytes()))
+                {
+                    Debug.Log($"Saved profile \"{profile.Name}\"");
+                }
+                else
+                {
+                    Debug.LogError($"Failed to save profile \"{profile.Name}\"!");
+                }
             }
         }
 
@@ -145,7 +165,7 @@ namespace BoostBlasters.Players
 
         private string GetProfileDir()
         {
-            return Path.Combine(FileIO.GetInstallDirectory(), FOLDER_NAME);
+            return Path.Combine(FileIO.GetConfigDirectory(), FOLDER_NAME);
         }
     }
 }

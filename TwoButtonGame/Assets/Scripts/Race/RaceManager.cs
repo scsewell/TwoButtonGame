@@ -48,8 +48,8 @@ namespace BoostBlasters.Races
         [Range(0.5f, 5f)]
         private float m_countdownScale = 1.65f;
 
-        [SerializeField] private AudioClip m_countdownSound;
-        [SerializeField] private AudioClip m_goSound;
+        [SerializeField] private AudioClip m_countdownSound = null;
+        [SerializeField] private AudioClip m_goSound = null;
 
         [Header("Replay")]
 
@@ -57,7 +57,7 @@ namespace BoostBlasters.Races
         [Range(0f, 30f)]
         private float m_replayStartWait = 5.0f;
         [SerializeField]
-        private MusicParams m_replayMusic;
+        private MusicParams m_replayMusic = null;
 
         private RacePath m_racePath;
         public RacePath RacePath => m_racePath;

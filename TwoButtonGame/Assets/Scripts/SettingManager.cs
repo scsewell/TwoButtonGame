@@ -25,8 +25,8 @@ namespace BoostBlasters
             public static readonly string Audio = "Audio";
         }
 
-        private Settings m_settings;
-        public Settings Settings => m_settings;
+        private SettingCollection m_settings;
+        public SettingCollection Settings => m_settings;
 
         private Setting<int> m_aa;
         public Setting<int> AA => m_aa;
@@ -42,7 +42,7 @@ namespace BoostBlasters
 
         public SettingManager()
         {
-            m_settings = new Settings();
+            m_settings = new SettingCollection();
 
             Resolution[] resolutions = Screen.resolutions;
             if (resolutions.Length > 0)
@@ -79,17 +79,18 @@ namespace BoostBlasters
 
         public void Save()
         {
-            FileIO.WriteFile(JsonConverter.ToJson(m_settings.Serialize()), Path.Combine(FileIO.GetInstallDirectory(), FILE_NAME));
+            FileIO.WriteFile(Path.Combine(FileIO.GetConfigDirectory(), FILE_NAME), JsonConverter.ToJson(m_settings.Serialize()));
         }
 
         public void Load()
         {
-            string str = FileIO.ReadFileText(Path.Combine(FileIO.GetInstallDirectory(), FILE_NAME));
-
-            if (str == null || !m_settings.Deserialize(JsonConverter.FromJson<SerializableSettings>(str)))
+            if (FileIO.ReadFileText(Path.Combine(FileIO.GetConfigDirectory(), FILE_NAME), out string str))
             {
-                m_settings.UseDefaults();
-                Save();
+                if (str == null || !m_settings.Deserialize(JsonConverter.FromJson<SerializableSettings>(str)))
+                {
+                    m_settings.UseDefaults();
+                    Save();
+                }
             }
         }
 

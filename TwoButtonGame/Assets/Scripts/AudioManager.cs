@@ -39,8 +39,6 @@ namespace BoostBlasters
             set => m_musicVolume = Mathf.Clamp01(value);
         }
 
-        private bool m_musicPausable = false;
-
         /// <summary>
         /// Determines if the music stops while the game is paused.
         /// </summary>

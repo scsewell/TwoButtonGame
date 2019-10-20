@@ -4,6 +4,8 @@ using System.Linq;
 using System.IO;
 using System.Threading.Tasks;
 
+using UnityEngine;
+
 using Framework;
 using Framework.IO;
 
@@ -90,7 +92,18 @@ namespace BoostBlasters.Replays
         /// <returns>The replay contents.</returns>
         public RaceRecording LoadReplay(ReplayInfo info)
         {
-            return new RaceRecording(FileIO.ReadFileBytes(info.File.FullName));
+            if (FileIO.ReadFileBytes(info.File.FullName, out byte[] bytes))
+            {
+                RaceRecording recording = new RaceRecording(bytes);
+
+                Debug.Log($"Loaded replay \"{info.File.Name}\"");
+                return recording;
+            }
+            else
+            {
+                Debug.LogError($"Failed to load replay \"{info.File.Name}\"!");
+                return null;
+            }
         }
 
         /// <summary>
@@ -100,42 +113,55 @@ namespace BoostBlasters.Replays
         public void SaveReplay(RaceRecording replay, List<Player> players)
         {
             string name = $"Replay_{DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss")}{FILE_EXTENTION}";
+            string path = Path.Combine(GetReplayDir(), name);
 
-            FileIO.WriteFile(replay.ToBytes(players), Path.Combine(GetReplayDir(), name));
-        }
-
-        private string GetReplayDir()
-        {
-            return Path.Combine(FileIO.GetInstallDirectory(), FOLDER_NAME);
+            if (FileIO.WriteFile(path, replay.ToBytes(players)))
+            {
+                Debug.Log($"Saved replay \"{name}\"");
+            }
+            else
+            {
+                Debug.LogError($"Failed to save replay!");
+            }
         }
 
         private void GetReplays()
         {
-            if (Directory.Exists(GetReplayDir()))
+            List<FileInfo> files = FileIO.GetFiles(GetReplayDir(), FILE_EXTENTION).ToList();
+            files.Sort((x, y) => y.CreationTime.CompareTo(x.CreationTime));
+
+            foreach (FileInfo file in files)
             {
-                List<FileInfo> files = FileIO.GetFiles(GetReplayDir(), FILE_EXTENTION).ToList();
-                files.Sort((x, y) => y.CreationTime.CompareTo(x.CreationTime));
-
-                foreach (FileInfo file in files)
+                // remove replays if there are too many
+                if (m_replays.Count >= MAX_REPLAYS)
                 {
-                    if (m_replays.Count < MAX_REPLAYS)
-                    {
-                        byte[] content = FileIO.ReadFileBytes(file.FullName);
+                    File.Delete(file.FullName);
+                    continue;
+                }
 
-                        RaceRecording.ParseHeader(new Framework.IO.BinaryReader(content), out RaceParameters raceParams, out RaceResult[] raceResults);
-                        ReplayInfo info = new ReplayInfo(file, raceParams, raceResults);
+                // try to load the head information
+                if (FileIO.ReadFileBytes(file.FullName, out byte[] bytes))
+                {
+                    RaceRecording.ParseHeader(new Framework.IO.BinaryReader(bytes), out RaceParameters raceParams, out RaceResult[] raceResults);
+                    ReplayInfo info = new ReplayInfo(file, raceParams, raceResults);
 
-                        lock (m_replayLock)
-                        {
-                            m_replays.Add(info);
-                        }
-                    }
-                    else
+                    lock (m_replayLock)
                     {
-                        File.Delete(file.FullName);
+                        m_replays.Add(info);
                     }
+
+                    Debug.Log($"Loaded replay info for \"{file.Name}\"");
+                }
+                else
+                {
+                    Debug.LogError($"Failed to load replay info for \"{file.Name}\"!");
                 }
             }
+        }
+
+        private string GetReplayDir()
+        {
+            return Path.Combine(FileIO.GetConfigDirectory(), FOLDER_NAME);
         }
     }
 }

@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+
 using UnityEngine;
+
 using Framework.Interpolation;
 
 namespace BoostBlasters.Character
@@ -14,17 +16,17 @@ namespace BoostBlasters.Character
         private const float TENSOR = 0.4f;
 
         [SerializeField]
-        private LayerMask m_groundLayers;
+        private LayerMask m_groundLayers = Physics.DefaultRaycastLayers;
         [SerializeField]
-        private LayerMask m_boundsLayers;
+        private LayerMask m_boundsLayers = Physics.DefaultRaycastLayers;
         [SerializeField]
-        [Range(0, 100)]
+        [Range(0f, 100f)]
         private float m_boundsCorrectionStrength = 10.0f;
         [SerializeField]
-        [Range(0, 20)]
+        [Range(0f, 20f)]
         private float m_collisionTorqueIntensity = 0.0f;
         [SerializeField]
-        [Range(0, 1)]
+        [Range(0f, 1f)]
         private float m_minBoostTime = 0.25f;
 
         [Header("Visualization")]

@@ -32,7 +32,7 @@ namespace BoostBlasters.UI.MainMenus
 
             m_settingPanels = new List<SettingPanel>();
 
-            Settings settings = SettingManager.Instance.Settings;
+            SettingCollection settings = SettingManager.Instance.Settings;
             foreach (string category in settings.Categories)
             {
                 foreach (ISetting setting in settings.CategoryToSettings[category])
