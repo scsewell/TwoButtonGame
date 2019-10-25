@@ -368,8 +368,6 @@ namespace BoostBlasters.Races
             }
             m_countdownSecond = countdownSecond;
 
-            SettingManager.Instance.SetShadowDistance();
-
             AudioManager.Instance.MusicPausable = (Time.time - m_raceStartTime < 0);
             AudioManager.Instance.MusicVolume = Mathf.MoveTowards(AudioManager.Instance.MusicVolume, 1 - GetFadeFactor(true), Time.unscaledDeltaTime / 0.5f);
 

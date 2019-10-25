@@ -130,8 +130,6 @@ namespace BoostBlasters.Races
 
         public void UpdateCamera()
         {
-            SettingManager.Instance.ConfigureCamera(m_mainCam);
-
             if (m_player != null)
             {
                 float targetDustFade = Mathf.Pow(Mathf.Clamp01((m_player.Movement.Velocity.magnitude - m_dustMinVelocity) / m_dustMaxVelocity), m_dustVelocityPower);

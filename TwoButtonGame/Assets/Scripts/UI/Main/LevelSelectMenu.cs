@@ -4,7 +4,6 @@ using System.Linq;
 
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.Rendering.PostProcessing;
 
 using Framework.UI;
 
@@ -16,7 +15,10 @@ namespace BoostBlasters.UI.MainMenus
 {
     public class LevelSelectMenu : MenuScreen
     {
+        [Header("Prefabs")]
+
         [SerializeField] private Navigable m_optionPrefab = null;
+        [SerializeField] private GameObject m_levelPreviewCameraPrefab = null;
 
         [Header("UI Elements")]
 
@@ -60,20 +62,15 @@ namespace BoostBlasters.UI.MainMenus
         [SerializeField]
         [Range(0f, 1f)]
         private float m_bobFrequency = 0.113f;
-        [SerializeField]
-        [Range(0f, 180f)]
-        private float m_previewCamFov = 50f;
-        [SerializeField]
-        private Color m_previewBgColor = new Color(0.05f, 0.05f, 0.05f);
 
         private Option<LevelConfig> m_trackSelect;
-        public Option<LevelConfig> TrackSelect { get { return m_trackSelect; } }
-        
+        public Option<LevelConfig> TrackSelect => m_trackSelect;
+
         private Option<int> m_lapSelect;
-        public Option<int> LapSelect { get { return m_lapSelect; } }
+        public Option<int> LapSelect => m_lapSelect;
 
         private Option<int> m_aiCountSelect;
-        public Option<int> AICountSelect { get { return m_aiCountSelect; } }
+        public Option<int> AICountSelect => m_aiCountSelect;
 
         private List<Navigable> m_options;
         private List<PlayerResultPanel> m_playerResults;
@@ -113,17 +110,12 @@ namespace BoostBlasters.UI.MainMenus
                 m_playerResults.Add(Instantiate(resultsTemplate, m_resultsContent));
             }
 
-            m_camPivot = new GameObject("CameraPivot").transform;
-            m_previewCam = new GameObject("PreviewCamera").AddComponent<Camera>();
-            m_previewCam.transform.SetParent(m_camPivot, false);
-            m_previewCam.clearFlags = CameraClearFlags.Nothing;
-            m_previewCam.renderingPath = RenderingPath.Forward;
-            m_previewCam.allowMSAA = true;
-            m_previewCam.depth = 10;
+            // create the camera used to preview the selected level
+            m_camPivot = Instantiate(m_levelPreviewCameraPrefab).transform;
+            m_previewCam = m_camPivot.GetComponentInChildren<Camera>();
             m_previewCam.cullingMask = 1;
             
-            m_previewCam.gameObject.AddComponent<PostProcessLayer>();
-
+            // load the level configurations
             m_configToPreview = new Dictionary<LevelConfig, GameObject>();
             m_levelToResults = new Dictionary<LevelConfig, List<RaceResult>>();
 
@@ -131,7 +123,7 @@ namespace BoostBlasters.UI.MainMenus
             {
                 if (config.Preview3d != null)
                 {
-                    GameObject pivot = new GameObject("Preview " + config.Name);
+                    GameObject pivot = new GameObject($"LevelPreview {config.Name}");
                     Instantiate(config.Preview3d, pivot.transform);
 
                     m_configToPreview.Add(config, pivot);
@@ -182,7 +174,6 @@ namespace BoostBlasters.UI.MainMenus
         protected override void OnUpdate()
         {
             m_camPivot.Rotate(Vector3.up, m_rotateSpeed * Time.deltaTime);
-            SettingManager.Instance.ConfigureCamera(m_previewCam);
         }
 
         protected override void OnUpdateGraphics()
@@ -203,10 +194,8 @@ namespace BoostBlasters.UI.MainMenus
 
             if (m_previewCam.enabled)
             {
-                m_previewCam.transform.localPosition = m_previewCamPos + (Vector3.up * m_bobHeight * Mathf.Sin(Time.unscaledTime * m_bobFrequency * (2 * Mathf.PI)));
+                m_previewCam.transform.localPosition = m_previewCamPos + (Vector3.up * m_bobHeight * Mathf.Sin(Time.unscaledTime * m_bobFrequency * (2f * Mathf.PI)));
                 m_previewCam.transform.rotation = Quaternion.LookRotation((Vector3.up * m_lookHeight) - m_previewCam.transform.position);
-                m_previewCam.fieldOfView = m_previewCamFov;
-                m_previewCam.backgroundColor = m_previewBgColor;
 
                 Vector3[] corners = new Vector3[4];
                 m_track3dPreview.GetWorldCorners(corners);
@@ -236,10 +225,10 @@ namespace BoostBlasters.UI.MainMenus
         public class Option<T>
         {
             private Navigable m_navigable;
-            public Selectable Selectable { get { return m_navigable.GetComponentInChildren<Selectable>(); } }
+            public Selectable Selectable => m_navigable.GetComponentInChildren<Selectable>();
 
             private T[] m_values;
-            public T Value { get { return m_values[m_navigable.Index]; } }
+            public T Value => m_values[m_navigable.Index];
 
             public Option(List<Navigable> options, Navigable prefab, Transform parent, string name, T[] values, Action onChange)
             {

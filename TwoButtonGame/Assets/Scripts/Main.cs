@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 using Framework;
+using Framework.Settings;
 using Framework.Interpolation;
 
 using BoostBlasters.Players;
@@ -48,27 +49,23 @@ namespace BoostBlasters
             None,
         }
 
-        /// <summary>
-        /// Ensure this class initializes before anything else.
-        /// </summary>
-        [RuntimeInitializeOnLoadMethod]
-        private static void Init()
+        protected override void Awake()
         {
-            Instance.Initialize();
-        }
+            base.Awake();
 
-        private void Initialize()
-        {
+            Debug.Log("Initializing main...");
+
             m_raceManagerPrefab = Resources.Load<RaceManager>("RaceManager");
             m_playerConfigs = Resources.LoadAll<PlayerConfig>("PlayerConfigs/").OrderBy(c => c.SortOrder).ToArray();
             m_levelConfigs = Resources.LoadAll<LevelConfig>("LevelConfigs/").OrderBy(c => c.SortOrder).ToArray();
 
             PlayerProfileManager.Instance.LoadProfiles();
 
-            SettingManager.Instance.Load();
-            SettingManager.Instance.Apply();
+            SettingManager.Instance.Initialize();
 
             m_lastRaceType = RaceType.None;
+
+            Debug.Log("Main initialization complete");
         }
 
         private void FixedUpdate()
@@ -157,25 +154,22 @@ namespace BoostBlasters
             m_hasLoadedScene = true;
             Application.backgroundLoadingPriority = ThreadPriority.BelowNormal;
             loading.allowSceneActivation = false;
+
             yield return new WaitWhile(() => !loading.allowSceneActivation);
+
             AudioManager.Instance.Volume = 0;
             AudioManager.Instance.StopMusic();
             AudioManager.Instance.StopSounds();
             AudioListener.volume = 0;
             AudioListener.pause = false;
             Time.timeScale = 1;
+
             yield return new WaitWhile(() => !loading.isDone);
+
             AudioManager.Instance.Volume = 1f;
             AudioManager.Instance.MusicVolume = 1f;
-            onComplete();
-        }
 
-        private void OnApplicationFocus(bool focus)
-        {
-            if (focus)
-            {
-                SettingManager.Instance.Apply();
-            }
+            onComplete();
         }
 
         public PlayerConfig GetPlayerConfig(int configID)

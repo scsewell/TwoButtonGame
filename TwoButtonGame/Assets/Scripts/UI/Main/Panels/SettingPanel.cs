@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-using Framework.SettingManagement;
+using Framework.Settings;
 
 namespace BoostBlasters.UI.MainMenus
 {
@@ -14,7 +14,7 @@ namespace BoostBlasters.UI.MainMenus
         [SerializeField] private Text m_valueText = null;
 
         private MenuBase m_menu = null;
-        private Func<ISetting> m_getSetting = null;
+        private Setting m_setting = null;
         private string[] m_options = null;
 
         private void Awake()
@@ -22,13 +22,12 @@ namespace BoostBlasters.UI.MainMenus
             m_menu = GetComponentInParent<MenuBase>();
         }
 
-        public SettingPanel Init(Func<ISetting> getSetting)
+        public SettingPanel Init(Setting setting)
         {
-            m_getSetting = getSetting;
-            ISetting setting = getSetting();
+            m_setting = setting;
 
-            m_label.text = setting.Name;
-            m_options = setting.DisplayOptions.Values;
+            m_label.text = setting.name;
+            m_options = setting.DisplayValues;
 
             GetValue();
 
@@ -37,12 +36,12 @@ namespace BoostBlasters.UI.MainMenus
 
         public void GetValue()
         {
-            m_valueText.text = m_getSetting().Serialize();
+            m_valueText.text = m_setting.SerializedValue;
         }
 
         public void Apply()
         {
-            m_getSetting().Deserialize(m_valueText.text);
+            m_setting.SetSerializedValue(m_valueText.text);
         }
 
         public void OnMove(AxisEventData eventData)

@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 using Framework.UI;
-using Framework.SettingManagement;
+using Framework.Settings;
 
 namespace BoostBlasters.UI.MainMenus
 {
@@ -20,6 +20,11 @@ namespace BoostBlasters.UI.MainMenus
         [SerializeField] private RectTransform m_settingsContent = null;
         [SerializeField] private SettingPanel m_settingPrefab = null;
 
+        [Header("Settings")]
+
+        [SerializeField]
+        private SettingPresetGroup m_defaultSettings = null;
+
         private List<SettingPanel> m_settingPanels = null;
 
         public override void InitMenu()
@@ -32,16 +37,11 @@ namespace BoostBlasters.UI.MainMenus
 
             m_settingPanels = new List<SettingPanel>();
 
-            SettingCollection settings = SettingManager.Instance.Settings;
-            foreach (string category in settings.Categories)
+            foreach (var category in SettingManager.Instance.Catergories)
             {
-                foreach (ISetting setting in settings.CategoryToSettings[category])
+                foreach (var setting in SettingManager.Instance.GetSettings(category))
                 {
-                    if (setting.DisplayOptions != null)
-                    {
-                        Func<ISetting> getSetting = () => SettingManager.Instance.Settings.GetSetting(setting.Name);
-                        m_settingPanels.Add(UIHelper.Create(m_settingPrefab, m_settingsContent).Init(getSetting));
-                    }
+                    m_settingPanels.Add(UIHelper.Create(m_settingPrefab, m_settingsContent).Init(setting));
                 }
             }
 
@@ -55,9 +55,8 @@ namespace BoostBlasters.UI.MainMenus
 
         private void UseDefaultSettings()
         {
-            SettingManager.Instance.UseDefaults();
+            m_defaultSettings.Apply();
             SettingManager.Instance.Save();
-            SettingManager.Instance.Apply();
             RefreshSettings();
         }
 
@@ -65,7 +64,6 @@ namespace BoostBlasters.UI.MainMenus
         {
             m_settingPanels.ForEach(p => p.Apply());
             SettingManager.Instance.Save();
-            SettingManager.Instance.Apply();
             RefreshSettings();
         }
 

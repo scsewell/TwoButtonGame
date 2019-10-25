@@ -4,7 +4,6 @@ using System.Linq;
 
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.Rendering.PostProcessing;
 
 using BoostBlasters.Character;
 using BoostBlasters.Players;
@@ -13,8 +12,10 @@ namespace BoostBlasters.UI.MainMenus
 {
     public class PlayerSelectPanel : MonoBehaviour
     {
-        [SerializeField]
-        private GameObject m_profileSelectPrefab = null;
+        [Header("Prefabs")]
+
+        [SerializeField] private GameObject m_profileSelectPrefab = null;
+        [SerializeField] private GameObject m_characterPreviewPrefab = null;
 
         [Header("UI Elements")]
 
@@ -40,14 +41,7 @@ namespace BoostBlasters.UI.MainMenus
         [Header("Options")]
 
         [SerializeField]
-        private int m_profilePanelCount = 12;
-        [SerializeField]
-        private Vector3 m_previewCamPos = new Vector3(0, 1.5f, 2.5f);
-        [SerializeField]
-        private Vector3 m_previewCamRot = new Vector3(12, 180, 0);
-        [SerializeField]
-        [Range(0f, 180f)]
-        private float m_previewCamFov = 50f;
+        private int m_profilePanelCount = 14;
         [SerializeField]
         [Range(0.25f, 1f)]
         private float m_resolutionScale = 1.0f;
@@ -65,7 +59,7 @@ namespace BoostBlasters.UI.MainMenus
         [SerializeField]
         private Gradient m_ratingGradient = null;
 
-        public enum State
+        private enum State
         {
             Join,
             Profile,
@@ -141,6 +135,7 @@ namespace BoostBlasters.UI.MainMenus
             m_selectMenu = selectMenu;
             m_playerNum = index;
 
+            // create panels used for selecting from available player profiles
             m_profilePanels = new List<PlayerProfilePanel>();
 
             for (int i = 0; i < m_profilePanelCount; i++)
@@ -148,21 +143,13 @@ namespace BoostBlasters.UI.MainMenus
                 m_profilePanels.Add(Instantiate(m_profileSelectPrefab, m_profileContent).AddComponent<PlayerProfilePanel>());
             }
 
-            m_previewCam = new GameObject("PreviewCamera").AddComponent<Camera>();
-            m_previewCam.transform.position = m_previewCamPos;
-            m_previewCam.transform.rotation = Quaternion.Euler(m_previewCamRot);
-            m_previewCam.fieldOfView = m_previewCamFov;
-            m_previewCam.clearFlags = CameraClearFlags.SolidColor;
-            m_previewCam.renderingPath = RenderingPath.Forward;
-            m_previewCam.allowMSAA = false;
-            m_previewCam.depth = -10;
-
+            // create a camera for rendering the character preview
             int previewLayer = (index + 8);
+
+            m_previewCam = Instantiate(m_characterPreviewPrefab).GetComponentInChildren<Camera>();
             m_previewCam.cullingMask = (1 << previewLayer);
 
-            PostProcessLayer postLayer = m_previewCam.gameObject.AddComponent<PostProcessLayer>();
-            postLayer.volumeLayer = LayerMask.NameToLayer("PostEffectVolumes");
-
+            // load all the character models
             m_configToPreview = new Dictionary<PlayerConfig, GameObject>();
             m_previewObjects = new List<GameObject>();
 
@@ -215,8 +202,6 @@ namespace BoostBlasters.UI.MainMenus
     
         public void UpdatePanel()
         {
-            SettingManager.Instance.ConfigureCamera(m_previewCam);
-
             m_continue = false;
 
             if (m_state == State.Join)

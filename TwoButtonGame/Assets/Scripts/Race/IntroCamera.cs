@@ -92,7 +92,6 @@ namespace BoostBlasters.Races
             }
 
             m_cam.enabled = IsPlaying && enableCamera;
-            SettingManager.Instance.ConfigureCamera(m_cam);
         }
 
         private void LateUpdate()

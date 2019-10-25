@@ -13,7 +13,6 @@ MonoBehaviour:
   m_Name: Anti Aliasing
   m_EditorClassIdentifier: 
   m_category: {fileID: 11400000, guid: ee6120dbec47e3e47b890ee586045878, type: 2}
-  m_requiresRestart: 0
   m_displayMode: 2
   m_defaultValue: High
   m_enumType: BoostBlasters.AntiAliasingQuality, Assembly-CSharp, Version=0.0.0.0,

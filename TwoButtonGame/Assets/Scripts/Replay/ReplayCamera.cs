@@ -67,11 +67,6 @@ namespace BoostBlasters.Replays
             m_camera.enabled = false;
         }
 
-        private void Update()
-        {
-            SettingManager.Instance.ConfigureCamera(m_camera);
-        }
-
         public void SetTarget(List<Player> players)
         {
             if (players.Any(p => !p.RaceResult.Finished))

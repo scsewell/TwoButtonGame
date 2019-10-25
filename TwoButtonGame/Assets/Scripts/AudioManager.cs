@@ -4,6 +4,7 @@ using UnityEngine;
 
 using Framework;
 using Framework.Audio;
+using Framework.Settings;
 
 namespace BoostBlasters
 {
@@ -12,6 +13,11 @@ namespace BoostBlasters
     /// </summary>
     public class AudioManager : ComponentSingleton<AudioManager>
     {
+        [SerializeField]
+        private IntSetting m_masterVolumeSetting = null;
+        [SerializeField]
+        private IntSetting m_musicVolumeSetting = null;
+
         private AudioSource m_audio = null;
         private AudioSource m_noPauseAudio = null;
         private MusicPlayer m_music = null;
@@ -76,8 +82,8 @@ namespace BoostBlasters
         private void Update()
         {
             m_music.Update();
-            m_music.Volume = m_musicVolume * Mathf.Pow(SettingManager.Instance.MusicVolume.Value / 100.0f, 2.0f);
-            AudioListener.volume = Volume * Mathf.Pow(SettingManager.Instance.MasterVolume.Value / 100.0f, 2.0f);
+            m_music.Volume = m_musicVolume * Mathf.Pow(m_musicVolumeSetting.Value / 100.0f, 2.0f);
+            AudioListener.volume = Volume * Mathf.Pow(m_masterVolumeSetting.Value / 100.0f, 2.0f);
         }
 
         /// <summary>

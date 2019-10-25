@@ -14,6 +14,7 @@ Text Mesh Pro
 New Input sytstem (remove old system)
 Multiple controller support
 
+
 Migrate to URP
 - gate color should be a global shader property, instead of hooking into OnWillRenderObject
 
@@ -34,6 +35,7 @@ General
 - Show player names above heads (fade in when close)
 - look around (right josystick, don't know about keyboard though...)
 - better guide to next waypoint (make waypoint color glow more obvious, improve direction arrow (racing line?), look at next gate button)
+- Custom logo intro (in framwork)
 
 Audio
 - Add 3D sound for splitscreen (virtual scene for audio, duplicate audio sorce for each listener)
