@@ -126,8 +126,6 @@ namespace BoostBlasters.UI.MainMenus
             float factor = GetFadeFactor();
             m_fade.color = new Color(0f, 0f, 0f, factor);
 
-            QualitySettings.shadowDistance = 20f;
-
             AudioManager.Instance.Volume = Mathf.MoveTowards(AudioManager.Instance.Volume, 1f - factor, Time.unscaledDeltaTime / 0.35f);
             
             if (m_loading != null && factor >= 1f)

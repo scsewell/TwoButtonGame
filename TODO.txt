@@ -1,19 +1,16 @@
 ### To Do ###
 
 Refactoring
-- make settings ScriptableObjects configurable in editor, add events for changes to settings
-- Race path editor should use reorderablie list
-- implement waypoint as a race concept, things should reference that instead
-- check for spaghetti (check singleton usage)
 - separate character (graphics/config) from player (human) from profile from racer (instance in a race)
-- use more interfaces for level stuff
+- check for spaghetti (check singleton usage)
 - things should not know about level stuff, only interact with race classes
+- implement waypoint as a race concept, things should reference that instead
 - turn race manager into a state machine
 
+Levels as asset bundles
 Text Mesh Pro
 New Input sytstem (remove old system)
 Multiple controller support
-
 
 Migrate to URP
 - gate color should be a global shader property, instead of hooking into OnWillRenderObject
@@ -35,7 +32,7 @@ General
 - Show player names above heads (fade in when close)
 - look around (right josystick, don't know about keyboard though...)
 - better guide to next waypoint (make waypoint color glow more obvious, improve direction arrow (racing line?), look at next gate button)
-- Custom logo intro (in framwork)
+- Custom logo intro (in framwork, add setting to skip in settings)
 
 Audio
 - Add 3D sound for splitscreen (virtual scene for audio, duplicate audio sorce for each listener)
@@ -78,10 +75,13 @@ Camera can clip with the gates, perhaps use a fading material when close...
 What to do if a joystick disconnects in menu or game?
 
 ### Long Term ###
+Multiplayer
+Steam API
 Leaderboard
-tutorial
+Tutorial
 Level preview camera shots in menu
 Ghosting
+
 Ensure music is credited
 Update level preview images
 

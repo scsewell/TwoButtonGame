@@ -212,12 +212,12 @@ namespace BoostBlasters.Character
             // Check if touching the ground
             Vector3 lowerSphereCenter = transform.TransformPoint(m_capsule.center + (((m_capsule.height / 2f) - m_capsule.radius) * Vector3.down));
 
-            int hitCount = Physics.SphereCastNonAlloc(lowerSphereCenter, m_capsule.radius * 0.8f, Vector3.down, m_hits, 0.1f, m_groundLayers);
+            int hitCount = Physics.SphereCastNonAlloc(lowerSphereCenter, m_capsule.radius * 0.8f, Vector3.down, m_hits, m_capsule.radius * 0.22f, m_groundLayers);
 
             m_isGrounded = false;
             for (int i = 0; i < hitCount; i++)
             {
-                if (Mathf.Acos(Vector3.Dot(m_hits[i].normal, Vector3.up)) * Mathf.Rad2Deg < 10.0f)
+                if (Vector3.Angle(m_hits[i].normal, Vector3.up) < 20.0f)
                 {
                     m_isGrounded = true;
                     break;
