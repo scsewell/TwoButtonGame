@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEditor;
 
-using Framework.EditorTools;
+using Framework.EditorTools.ReorderableList;
 
 using BoostBlasters.Levels;
 
@@ -25,8 +25,11 @@ namespace BoostBlasters.Races
         {
             serializedObject.Update();
 
-            EditorExtentions.DrawList(m_path);
-            EditorExtentions.DrawList(m_spawns);
+            ReorderableListGUI.Title(m_path.displayName);
+            ReorderableListGUI.ListField(m_path);
+
+            ReorderableListGUI.Title(m_spawns.displayName);
+            ReorderableListGUI.ListField(m_spawns);
 
             serializedObject.ApplyModifiedProperties();
         }
