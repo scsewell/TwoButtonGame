@@ -54,6 +54,10 @@ namespace BoostBlasters
             LastRaceType = RaceType.None;
 
             Debug.Log("Main initialization complete");
+
+            Debug.Log("Loading main menu...");
+
+            SceneManager.LoadScene(1);
         }
 
         private void FixedUpdate()
