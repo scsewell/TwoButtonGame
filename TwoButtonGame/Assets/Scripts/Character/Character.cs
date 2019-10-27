@@ -5,8 +5,8 @@ namespace BoostBlasters.Characters
     /// <summary>
     /// The properties that constitute a character.
     /// </summary>
-    [CreateAssetMenu(fileName = "PlayerConfig", menuName = "PlayerConfig", order = 1)]
-    public class CharacterConfig : ScriptableObject
+    [CreateAssetMenu(fileName = "New Character", menuName = "Character", order = 1)]
+    public class Character : ScriptableObject
     {
         [SerializeField]
         private int m_id = 1000;

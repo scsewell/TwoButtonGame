@@ -22,11 +22,6 @@ namespace BoostBlasters.Races
 
         private void Awake()
         {
-            if (!Main.Instance.HasLoadedScene)
-            {
-                Main.Instance.LoadMainMenu();
-            }
-
             m_energyGates = GetComponentsInChildren<BoostGate>();
         }
 

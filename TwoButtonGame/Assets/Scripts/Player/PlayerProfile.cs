@@ -89,7 +89,7 @@ namespace BoostBlasters.Players
             return writer.GetBytes();
         }
 
-        public void AddRaceResult(LevelConfig level, RaceResult result)
+        public void AddRaceResult(Level level, RaceResult result)
         {
             if (result != null && result.Finished)
             {
@@ -107,7 +107,7 @@ namespace BoostBlasters.Players
             }
         }
 
-        public List<RaceResult> GetRaceResults(LevelConfig level)
+        public List<RaceResult> GetRaceResults(Level level)
         {
             List<RaceResult> results;
             if (!m_levelToResults.TryGetValue(level.Id, out results))

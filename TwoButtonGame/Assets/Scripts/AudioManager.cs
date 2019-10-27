@@ -76,7 +76,11 @@ namespace BoostBlasters
         {
             base.OnDestroy();
 
-            m_music.Dispose();
+            if (m_music != null)
+            {
+                m_music.Dispose();
+                m_music = null;
+            }
         }
 
         private void Update()

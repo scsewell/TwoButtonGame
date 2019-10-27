@@ -79,7 +79,7 @@ namespace BoostBlasters.UI.RaceMenus
                 scaler.referenceResolution.y / splitscreen.height
             );
 
-            LevelConfig config = raceParameters.level;
+            Level config = raceParameters.level;
             m_trackName.text = config.Name;
             m_songName.text = $"\"{config.Music.Name}\" - {config.Music.Artist}";
 

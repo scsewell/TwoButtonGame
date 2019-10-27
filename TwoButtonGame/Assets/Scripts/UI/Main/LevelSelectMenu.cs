@@ -63,8 +63,8 @@ namespace BoostBlasters.UI.MainMenus
         [Range(0f, 1f)]
         private float m_bobFrequency = 0.113f;
 
-        private Option<LevelConfig> m_trackSelect;
-        public Option<LevelConfig> TrackSelect => m_trackSelect;
+        private Option<Level> m_trackSelect;
+        public Option<Level> TrackSelect => m_trackSelect;
 
         private Option<int> m_lapSelect;
         public Option<int> LapSelect => m_lapSelect;
@@ -76,8 +76,8 @@ namespace BoostBlasters.UI.MainMenus
         private List<PlayerResultPanel> m_playerResults;
         private Transform m_camPivot;
         private Camera m_previewCam;
-        private Dictionary<LevelConfig, GameObject> m_configToPreview;
-        private Dictionary<LevelConfig, List<RaceResult>> m_levelToResults;
+        private Dictionary<Level, GameObject> m_configToPreview;
+        private Dictionary<Level, List<RaceResult>> m_levelToResults;
 
         public override void InitMenu()
         {
@@ -85,7 +85,7 @@ namespace BoostBlasters.UI.MainMenus
             m_backButton.onClick.AddListener(() => OnBack());
             
             m_options = new List<Navigable>();
-            m_trackSelect   = new Option<LevelConfig>(m_options, m_optionPrefab, m_optionContent, "Track", Main.Instance.LevelConfigs, OnLevelChange);
+            m_trackSelect   = new Option<Level>(m_options, m_optionPrefab, m_optionContent, "Track", Main.Instance.Levels, OnLevelChange);
             m_lapSelect     = new Option<int>(m_options, m_optionPrefab, m_optionContent, "Laps", Enumerable.Range(1, m_maxLapCount).ToArray(), null);
             m_aiCountSelect = new Option<int>(m_options, m_optionPrefab, m_optionContent, "AI Racers", Enumerable.Range(0, Consts.MAX_RACERS + 1).ToArray(), null);
 
@@ -116,10 +116,10 @@ namespace BoostBlasters.UI.MainMenus
             m_previewCam.cullingMask = 1;
             
             // load the level configurations
-            m_configToPreview = new Dictionary<LevelConfig, GameObject>();
-            m_levelToResults = new Dictionary<LevelConfig, List<RaceResult>>();
+            m_configToPreview = new Dictionary<Level, GameObject>();
+            m_levelToResults = new Dictionary<Level, List<RaceResult>>();
 
-            foreach (LevelConfig config in Main.Instance.LevelConfigs)
+            foreach (Level config in Main.Instance.Levels)
             {
                 if (config.Preview3d != null)
                 {
@@ -163,7 +163,7 @@ namespace BoostBlasters.UI.MainMenus
 
             if (fullReset)
             {
-                m_trackSelect.SetValue(Main.Instance.LevelConfigs.First());
+                m_trackSelect.SetValue(Main.Instance.Levels.First());
                 m_lapSelect.SetValue(m_defaultLapCount);
                 m_aiCountSelect.SetValue(m_defaultAICount);
             }
@@ -180,7 +180,7 @@ namespace BoostBlasters.UI.MainMenus
         {
             m_options.ForEach(o => o.UpdateGraphics());
 
-            LevelConfig config = m_trackSelect.Value;
+            Level config = m_trackSelect.Value;
             m_levelDifficulty.text = config.LevelDifficulty.ToString();
             m_levelPreview.sprite = config.Preview;
 

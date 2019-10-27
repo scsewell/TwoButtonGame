@@ -24,23 +24,12 @@ namespace BoostBlasters
     {
         private RaceManager m_raceManagerPrefab;
 
-        private RaceManager m_raceManager;
-        public RaceManager RaceManager => m_raceManager;
+        public Character[] Characters { get; private set; }
+        public Level[] Levels { get; private set; }
 
-        private RaceParameters m_raceParams = null;
-        public RaceParameters LastRaceParams => m_raceParams;
-
-        private CharacterConfig[] m_playerConfigs;
-        public CharacterConfig[] PlayerConfigs => m_playerConfigs;
-
-        private LevelConfig[] m_levelConfigs;
-        public LevelConfig[] LevelConfigs => m_levelConfigs;
-
-        private bool m_hasLoadedScene = false;
-        public bool HasLoadedScene => m_hasLoadedScene;
-
-        private RaceType m_lastRaceType;
-        public RaceType LastRaceType => m_lastRaceType;
+        public RaceManager RaceManager { get; private set; }
+        public RaceParameters LastRaceParams { get; private set; }
+        public RaceType LastRaceType { get; private set; }
 
         public enum RaceType
         {
@@ -56,14 +45,13 @@ namespace BoostBlasters
             Debug.Log("Initializing main...");
 
             m_raceManagerPrefab = Resources.Load<RaceManager>("RaceManager");
-            m_playerConfigs = Resources.LoadAll<CharacterConfig>("PlayerConfigs/").OrderBy(c => c.SortOrder).ToArray();
-            m_levelConfigs = Resources.LoadAll<LevelConfig>("LevelConfigs/").OrderBy(c => c.SortOrder).ToArray();
+            Characters = Resources.LoadAll<Character>("PlayerConfigs/").OrderBy(c => c.SortOrder).ToArray();
+            Levels = Resources.LoadAll<Level>("LevelConfigs/").OrderBy(c => c.SortOrder).ToArray();
 
             PlayerProfileManager.Instance.LoadProfiles();
-
             SettingManager.Instance.Initialize();
 
-            m_lastRaceType = RaceType.None;
+            LastRaceType = RaceType.None;
 
             Debug.Log("Main initialization complete");
         }
@@ -72,26 +60,29 @@ namespace BoostBlasters
         {
             InterpolationController.Instance.EarlyFixedUpdate();
 
-            if (m_raceManager != null)
+            if (RaceManager != null)
             {
-                m_raceManager.FixedUpdateRace();
+                RaceManager.FixedUpdateRace();
             }
         }
 
         private void Update()
         {
+            // lock the cursor if required
             bool useCursor = Input.GetKey(KeyCode.LeftControl);
             Cursor.lockState = true ? CursorLockMode.None : CursorLockMode.Locked;
             Cursor.visible = useCursor;
 
+            // main update loop
             InputManager.Instance.Update();
             InterpolationController.Instance.VisualUpdate();
 
-            if (m_raceManager != null)
+            if (RaceManager != null)
             {
-                m_raceManager.UpdateRace();
+                RaceManager.UpdateRace();
             }
 
+            // save a screenshot if requested
             if (Input.GetKeyDown(KeyCode.F11))
             {
                 ScreenCapture.CaptureScreenshot($"screenshot_{DateTime.Now.ToString("MM-dd-yy_H-mm-ss")}.png");
@@ -100,9 +91,9 @@ namespace BoostBlasters
 
         private void LateUpdate()
         {
-            if (m_raceManager != null)
+            if (RaceManager != null)
             {
-                m_raceManager.LateUpdateRace();
+                RaceManager.LateUpdateRace();
             }
         }
 
@@ -116,81 +107,82 @@ namespace BoostBlasters
 
         private void StartMainMenu()
         {
-            m_raceManager = null;
+            RaceManager = null;
         }
 
         public AsyncOperation LoadRace(RaceParameters raceParams)
         {
-            m_lastRaceType = RaceType.Race;
-            m_raceParams = raceParams;
+            LastRaceType = RaceType.Race;
+            LastRaceParams = raceParams;
             AsyncOperation loading = SceneManager.LoadSceneAsync(raceParams.level.SceneName);
             StartCoroutine(LoadLevel(loading, () => StartRace(raceParams)));
             return loading;
         }
 
-        private void StartRace(RaceParameters raceParams)
-        {
-            m_raceManager = Instantiate(m_raceManagerPrefab);
-            m_raceManager.LoadRace(raceParams);
-        }
-
         public AsyncOperation LoadRace(RaceRecording recording)
         {
-            m_lastRaceType = RaceType.Replay;
-            m_raceParams = null;
+            LastRaceType = RaceType.Replay;
+            LastRaceParams = null;
             AsyncOperation loading = SceneManager.LoadSceneAsync(recording.RaceParams.level.SceneName);
             StartCoroutine(LoadLevel(loading, () => StartRace(recording)));
             return loading;
         }
 
+        private void StartRace(RaceParameters raceParams)
+        {
+            RaceManager = Instantiate(m_raceManagerPrefab);
+            RaceManager.LoadRace(raceParams);
+        }
+
         private void StartRace(RaceRecording recording)
         {
-            m_raceManager = Instantiate(m_raceManagerPrefab);
-            m_raceManager.LoadReplay(recording);
+            RaceManager = Instantiate(m_raceManagerPrefab);
+            RaceManager.LoadReplay(recording);
         }
 
         private IEnumerator LoadLevel(AsyncOperation loading, Action onComplete)
         {
-            m_hasLoadedScene = true;
             Application.backgroundLoadingPriority = ThreadPriority.BelowNormal;
             loading.allowSceneActivation = false;
 
             yield return new WaitWhile(() => !loading.allowSceneActivation);
 
-            AudioManager.Instance.Volume = 0;
+            AudioManager.Instance.Volume = 0f;
             AudioManager.Instance.StopMusic();
             AudioManager.Instance.StopSounds();
-            AudioListener.volume = 0;
+
+            AudioListener.volume = 0f;
             AudioListener.pause = false;
-            Time.timeScale = 1;
+
+            Time.timeScale = 1f;
 
             yield return new WaitWhile(() => !loading.isDone);
 
             AudioManager.Instance.Volume = 1f;
             AudioManager.Instance.MusicVolume = 1f;
 
-            onComplete();
+            onComplete?.Invoke();
         }
 
-        public CharacterConfig GetPlayerConfig(int configID)
+        public Character GetCharacter(int characterID)
         {
-            foreach (CharacterConfig config in m_playerConfigs)
+            foreach (Character character in Characters)
             {
-                if (config.Id == configID)
+                if (character.Id == characterID)
                 {
-                    return config;
+                    return character;
                 }
             }
             return null;
         }
 
-        public LevelConfig GetLevelConfig(int configID)
+        public Level GetLevel(int levelID)
         {
-            foreach (LevelConfig config in m_levelConfigs)
+            foreach (Level level in Levels)
             {
-                if (config.Id == configID)
+                if (level.Id == levelID)
                 {
-                    return config;
+                    return level;
                 }
             }
             return null;

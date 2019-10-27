@@ -101,9 +101,15 @@ namespace BoostBlasters.UI.MainMenus
 
             switch (Main.Instance.LastRaceType)
             {
-                case Main.RaceType.Race: SetMenu(m_levelSelect, TransitionSound.None); break;
-                case Main.RaceType.Replay: SetMenu(m_replays, TransitionSound.None); break;
-                default: SetMenu(m_root, TransitionSound.None); break;
+                case Main.RaceType.Race:
+                    SetMenu(m_levelSelect, TransitionSound.None);
+                    break;
+                case Main.RaceType.Replay:
+                    SetMenu(m_replays, TransitionSound.None);
+                    break;
+                default:
+                    SetMenu(m_root, TransitionSound.None);
+                    break;
             }
 
             StartCoroutine(FinishAwake());
@@ -154,12 +160,12 @@ namespace BoostBlasters.UI.MainMenus
 
         private float GetFadeFactor()
         {
-            float fac = 1 - Mathf.Clamp01((Time.time - m_menuLoadTime) / m_fadeInDuration);
+            float fac = 1f - Mathf.Clamp01((Time.time - m_menuLoadTime) / m_fadeInDuration);
             if (m_loading != null)
             {
-                fac = Mathf.Lerp(fac, 1, Mathf.Clamp01((Time.unscaledTime - m_menuExitTime) / m_fadeOutDuration));
+                fac = Mathf.Lerp(fac, 1f, Mathf.Clamp01((Time.unscaledTime - m_menuExitTime) / m_fadeOutDuration));
             }
-            return Mathf.Sin((Mathf.PI / 2) * Mathf.Pow(fac, m_fadePower));
+            return Mathf.Sin((Mathf.PI / 2f) * Mathf.Pow(fac, m_fadePower));
         }
 
         public void LaunchReplay(ReplayInfo info)
@@ -171,7 +177,7 @@ namespace BoostBlasters.UI.MainMenus
 
         public void LaunchRace()
         {
-            List<CharacterConfig> playerConfigs = new List<CharacterConfig>(m_playerSelect.CharacterConfigs);
+            List<Character> characters = new List<Character>(m_playerSelect.CharacterConfigs);
             List<PlayerProfile> playerProfiles = new List<PlayerProfile>(m_playerSelect.PlayerProfiles);
             List<PlayerBaseInput> inputs = m_playerSelect.ActiveInputs;
 
@@ -180,8 +186,8 @@ namespace BoostBlasters.UI.MainMenus
 
             for (int i = 0; i < aiCount; i++)
             {
-                playerConfigs.Add(Main.Instance.PlayerConfigs.PickRandom());
-                playerProfiles.Add(PlayerProfileManager.Instance.GetGuestProfile("AI " + (i + 1), false));
+                characters.Add(Main.Instance.Characters.PickRandom());
+                playerProfiles.Add(PlayerProfileManager.Instance.GetGuestProfile($"AI {i + 1}", false));
             }
 
             RaceParameters raceParams = new RaceParameters(
@@ -189,7 +195,7 @@ namespace BoostBlasters.UI.MainMenus
                 m_levelSelect.LapSelect.Value,
                 humanCount,
                 aiCount,
-                playerConfigs,
+                characters,
                 playerProfiles,
                 inputs,
                 m_playerSelect.PlayerIndices

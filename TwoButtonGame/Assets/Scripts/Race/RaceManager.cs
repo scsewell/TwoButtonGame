@@ -205,10 +205,12 @@ namespace BoostBlasters.Races
             m_replayCamera = Instantiate(m_replayCameraPrefab);
             m_cameraRig = Instantiate(m_cameraRigPrefab).Init(m_raceParams.level);
 
+            Debug.Log(m_raceParams.humanCount + " " + RacerCount);
             List<Transform> spawns = m_racePath.Spawns.Take(RacerCount).ToList();
 
             for (int racerNum = 0; racerNum < RacerCount; racerNum++)
             {
+                Debug.Log(racerNum);
                 int index = Random.Range(0, spawns.Count);
                 Transform spawn = spawns[index];
                 spawns.RemoveAt(index);
@@ -217,7 +219,7 @@ namespace BoostBlasters.Races
                 m_racers.Add(racer);
 
                 PlayerProfile profile = m_raceParams.profiles[racerNum];
-                CharacterConfig config = m_raceParams.characters[racerNum];
+                Character config = m_raceParams.characters[racerNum];
 
                 GameObject graphics = Instantiate(config.CharacterGraphics, spawn.position, spawn.rotation, racer.transform);
                 graphics.transform.localPosition = config.GraphicsOffset;

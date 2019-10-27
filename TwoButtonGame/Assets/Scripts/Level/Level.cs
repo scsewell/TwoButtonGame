@@ -9,8 +9,8 @@ namespace BoostBlasters.Levels
     /// <summary>
     /// Defines a level and its required properties.
     /// </summary>
-    [CreateAssetMenu(fileName = "LevelConfig", menuName = "LevelConfig", order = 2)]
-    public class LevelConfig : ScriptableObject
+    [CreateAssetMenu(fileName = "New Level", menuName = "Level", order = 2)]
+    public class Level : ScriptableObject
     {
         [SerializeField]
         private int m_id = 1000;
@@ -21,7 +21,7 @@ namespace BoostBlasters.Levels
         public int SortOrder => m_sortOrder;
 
         [SerializeField]
-        private string m_name = "";
+        private string m_name = string.Empty;
         public string Name => m_name;
 
         public enum Difficulty
@@ -45,7 +45,7 @@ namespace BoostBlasters.Levels
         public GameObject Preview3d => m_preview3d;
 
         [SerializeField]
-        private string m_sceneName = "";
+        private string m_sceneName = string.Empty;
         public string SceneName => m_sceneName;
 
         [SerializeField]

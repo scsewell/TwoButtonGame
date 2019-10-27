@@ -72,7 +72,7 @@ namespace BoostBlasters.UI.MainMenus
         private List<PlayerProfilePanel> m_profilePanels = null;
         private Camera m_previewCam = null;
         private RenderTexture m_previewTex = null;
-        private Dictionary<CharacterConfig, GameObject> m_configToPreview = null;
+        private Dictionary<Character, GameObject> m_configToPreview = null;
         private List<GameObject> m_previewObjects = null;
         private State m_state = State.Join;
         private int m_playerNum = 0;
@@ -115,7 +115,7 @@ namespace BoostBlasters.UI.MainMenus
         }
 
         private int m_selectedCharacter;
-        public CharacterConfig CharacterConfig => Main.Instance.PlayerConfigs[m_selectedCharacter];
+        public Character CharacterConfig => Main.Instance.Characters[m_selectedCharacter];
 
         public bool IsJoined => m_state != State.Join;
         public bool IsReady => m_state == State.Ready;
@@ -150,10 +150,10 @@ namespace BoostBlasters.UI.MainMenus
             m_previewCam.cullingMask = (1 << previewLayer);
 
             // load all the character models
-            m_configToPreview = new Dictionary<CharacterConfig, GameObject>();
+            m_configToPreview = new Dictionary<Character, GameObject>();
             m_previewObjects = new List<GameObject>();
 
-            foreach (CharacterConfig config in Main.Instance.PlayerConfigs)
+            foreach (Character config in Main.Instance.Characters)
             {
                 GameObject pivot = new GameObject("CharacterPivot");
 
@@ -184,12 +184,12 @@ namespace BoostBlasters.UI.MainMenus
             m_characterHighlight.color = new Color(1, 1, 1, 0);
         }
 
-        public void FromConfig(PlayerProfile profile, PlayerBaseInput input, CharacterConfig selectedConfig)
+        public void FromConfig(PlayerProfile profile, PlayerBaseInput input, Character selectedConfig)
         {
             m_state = State.Ready;
             Profile = profile;
             m_input = input;
-            SelectCharacter(Array.IndexOf(Main.Instance.PlayerConfigs, selectedConfig));
+            SelectCharacter(Array.IndexOf(Main.Instance.Characters, selectedConfig));
         }
 
         public void SetCameraActive(bool isActive)
@@ -410,7 +410,7 @@ namespace BoostBlasters.UI.MainMenus
                     break;
             }
 
-            CharacterConfig config = CharacterConfig;
+            Character config = CharacterConfig;
 
             SetCameraActive(m_characterSelectTab.activeInHierarchy);
 
@@ -502,7 +502,7 @@ namespace BoostBlasters.UI.MainMenus
 
         private void SelectCharacter(int index)
         {
-            int configs = Main.Instance.PlayerConfigs.Length;
+            int configs = Main.Instance.Characters.Length;
 
             m_selectedCharacter = (index + configs) % configs;
             m_selectTime = Time.unscaledTime;

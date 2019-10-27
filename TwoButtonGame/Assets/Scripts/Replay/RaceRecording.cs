@@ -70,11 +70,11 @@ namespace BoostBlasters.Replays
 
         public static void ParseHeader(BinaryReader reader, out RaceParameters raceParams, out RaceResult[] results)
         {
-            LevelConfig level   = Main.Instance.GetLevelConfig(reader.ReadInt());
+            Level level   = Main.Instance.GetLevel(reader.ReadInt());
             int laps            = reader.ReadInt();
             int humanCount      = reader.ReadInt();
             int aiCount         = reader.ReadInt();
-            List<CharacterConfig> playerConfigs = reader.ReadArray<int>().Select(id => Main.Instance.GetPlayerConfig(id)).ToList();
+            List<Character> playerConfigs = reader.ReadArray<int>().Select(id => Main.Instance.GetCharacter(id)).ToList();
 
             List<PlayerProfile> proflies = new List<PlayerProfile>();
             for (int i = 0; i < humanCount + aiCount; i++)

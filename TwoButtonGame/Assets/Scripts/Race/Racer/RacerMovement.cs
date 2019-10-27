@@ -118,7 +118,7 @@ namespace BoostBlasters.Races.Racers
 
         public void FixedUpdateMovement(Inputs input, bool acceptInput, bool inPreWarm)
         {
-            CharacterConfig config = m_player.Character;
+            Character config = m_player.Character;
             ConfigurePhysics(config);
 
             if (acceptInput && !inPreWarm)
@@ -258,7 +258,7 @@ namespace BoostBlasters.Races.Racers
             }
         }
 
-        private void ConfigurePhysics(CharacterConfig config)
+        private void ConfigurePhysics(Character config)
         {
             m_body.solverIterations = 12;
             m_body.solverVelocityIterations = 2;
@@ -270,7 +270,7 @@ namespace BoostBlasters.Races.Racers
 
         public void PredictStep(int steps, List<Vector3> pos, Vector3 velocity, List<float> rot, float angularVelocity, Inputs input, float deltaTime)
         {
-            CharacterConfig config = m_player.Character;
+            Character config = m_player.Character;
 
             GetEngines(input, true, out float left, out float right, out float brake);
 

@@ -16,12 +16,12 @@ namespace BoostBlasters.Races
 
         private Animator m_anim = null;
         private Camera m_cam = null;
-        private LevelConfig m_levelConfig = null;
+        private Level m_levelConfig = null;
 
         private PlayableGraph m_graph;
         private PlayableOutput m_animOutput;
         private AnimationClipPlayable m_currentClip;
-        private Queue<LevelConfig.CameraShot> m_shotsToPlay = null;
+        private Queue<Level.CameraShot> m_shotsToPlay = null;
 
         public bool IsPlaying => m_shotsToPlay.Count > 0 || !m_graph.IsDone();
 
@@ -30,10 +30,10 @@ namespace BoostBlasters.Races
             m_anim = GetComponentInChildren<Animator>();
             m_cam = m_anim.GetComponentInChildren<Camera>();
 
-            m_shotsToPlay = new Queue<LevelConfig.CameraShot>();
+            m_shotsToPlay = new Queue<Level.CameraShot>();
         }
 
-        public IntroCamera Init(LevelConfig config)
+        public IntroCamera Init(Level config)
         {
             m_levelConfig = config;
             return this;
@@ -61,7 +61,7 @@ namespace BoostBlasters.Races
 
             m_animOutput = AnimationPlayableOutput.Create(m_graph, "IntroAnimation", m_anim);
 
-            foreach (LevelConfig.CameraShot shot in m_levelConfig.IntroSequence)
+            foreach (Level.CameraShot shot in m_levelConfig.IntroSequence)
             {
                 m_shotsToPlay.Enqueue(shot);
             }
@@ -79,7 +79,7 @@ namespace BoostBlasters.Races
                 if (m_shotsToPlay.Count == 0 || m_graph.IsDone())
                 {
                     m_graph.Stop();
-                    LevelConfig.CameraShot shot = m_shotsToPlay.Dequeue();
+                    Level.CameraShot shot = m_shotsToPlay.Dequeue();
 
                     m_currentClip = AnimationClipPlayable.Create(m_graph, shot.Clip);
                     m_currentClip.SetDuration(shot.Clip.length);
