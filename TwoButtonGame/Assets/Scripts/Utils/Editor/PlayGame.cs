@@ -32,7 +32,7 @@ namespace BoostBlasters
         /// <summary>
         /// Starts playing the game in the editor.
         /// </summary>
-        [MenuItem("BoostBlasters/Play _F5")]
+        [MenuItem("BoostBlasters/Play _F1", priority = 10)]
         public static void Play()
         {
             // remember the currently open scene

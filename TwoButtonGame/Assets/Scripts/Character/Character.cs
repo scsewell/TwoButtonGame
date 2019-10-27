@@ -5,18 +5,27 @@ namespace BoostBlasters.Characters
     /// <summary>
     /// The properties that constitute a character.
     /// </summary>
-    [CreateAssetMenu(fileName = "New Character", menuName = "Character", order = 1)]
+    [CreateAssetMenu(fileName = "config", menuName = "Character", order = 1)]
     public class Character : ScriptableObject
     {
         [SerializeField]
         private int m_id = 1000;
         public int Id => m_id;
 
-        [Header("Description")]
-
         [SerializeField]
         private int m_sortOrder = 100;
         public int SortOrder => m_sortOrder;
+
+        [Header("Description")]
+
+        [SerializeField]
+        private string m_name = string.Empty;
+        public string Name => m_name;
+
+        [SerializeField]
+        [TextArea]
+        private string m_description = string.Empty;
+        public string Description => m_description;
 
         [SerializeField]
         [Range(1, 10)]
@@ -27,15 +36,6 @@ namespace BoostBlasters.Characters
         [Range(1, 10)]
         private int m_agilityRating = 5;
         public int AgilityRating => m_agilityRating;
-
-        [SerializeField]
-        [TextArea]
-        private string m_description = string.Empty;
-        public string Description => m_description;
-
-        [SerializeField]
-        private string m_name = string.Empty;
-        public string Name => m_name;
 
         [Header("Graphics")]
 
@@ -116,5 +116,7 @@ namespace BoostBlasters.Characters
         [Range(10f, 500f)]
         private float m_boostAcceleration = 200.0f;
         public float BoostAcceleration => m_boostAcceleration;
+
+        public override string ToString() => Name;
     }
 }

@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 
 using UnityEngine;
 
+using Framework;
 using Framework.Audio;
 
 namespace BoostBlasters.Levels
@@ -9,7 +11,7 @@ namespace BoostBlasters.Levels
     /// <summary>
     /// Defines a level and its required properties.
     /// </summary>
-    [CreateAssetMenu(fileName = "New Level", menuName = "Level", order = 2)]
+    [CreateAssetMenu(fileName = "config", menuName = "Level", order = 2)]
     public class Level : ScriptableObject
     {
         [SerializeField]
@@ -19,6 +21,8 @@ namespace BoostBlasters.Levels
         [SerializeField]
         private int m_sortOrder = 100;
         public int SortOrder => m_sortOrder;
+
+        [Header("Description")]
 
         [SerializeField]
         private string m_name = string.Empty;
@@ -70,9 +74,19 @@ namespace BoostBlasters.Levels
             public float Speed => m_speed;
         }
 
+        [Serializable]
+        public class CameraShotArray : ReorderableArray<CameraShot>
+        {
+        }
+
         [SerializeField]
-        private CameraShot[] m_introSequence = null;
-        public CameraShot[] IntroSequence => m_introSequence;
+        [Reorderable]
+        private CameraShotArray m_introSequence = null;
+
+        /// <summary>
+        /// The animations used for the intro camera.
+        /// </summary>
+        public IEnumerable<CameraShot> IntroSequence => m_introSequence;
 
         public override string ToString() => Name;
     }

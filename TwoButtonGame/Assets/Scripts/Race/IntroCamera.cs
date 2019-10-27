@@ -16,7 +16,7 @@ namespace BoostBlasters.Races
 
         private Animator m_anim = null;
         private Camera m_cam = null;
-        private Level m_levelConfig = null;
+        private Level m_level = null;
 
         private PlayableGraph m_graph;
         private PlayableOutput m_animOutput;
@@ -35,7 +35,7 @@ namespace BoostBlasters.Races
 
         public IntroCamera Init(Level config)
         {
-            m_levelConfig = config;
+            m_level = config;
             return this;
         }
 
@@ -46,7 +46,7 @@ namespace BoostBlasters.Races
 
         public float GetIntroSequenceLength()
         {
-            return m_levelConfig.IntroSequence.Sum(s => s.Clip.length / s.Speed);
+            return m_level.IntroSequence.Sum(s => s.Clip.length / s.Speed);
         }
 
         public void PlayIntroSequence()
@@ -61,7 +61,7 @@ namespace BoostBlasters.Races
 
             m_animOutput = AnimationPlayableOutput.Create(m_graph, "IntroAnimation", m_anim);
 
-            foreach (Level.CameraShot shot in m_levelConfig.IntroSequence)
+            foreach (Level.CameraShot shot in m_level.IntroSequence)
             {
                 m_shotsToPlay.Enqueue(shot);
             }

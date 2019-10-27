@@ -163,7 +163,7 @@ namespace BoostBlasters.UI.MainMenus
 
             if (fullReset)
             {
-                m_trackSelect.SetValue(Main.Instance.Levels.First());
+                m_trackSelect.SetValue(Main.Instance.Levels.FirstOrDefault());
                 m_lapSelect.SetValue(m_defaultLapCount);
                 m_aiCountSelect.SetValue(m_defaultAICount);
             }
@@ -233,7 +233,7 @@ namespace BoostBlasters.UI.MainMenus
             public Option(List<Navigable> options, Navigable prefab, Transform parent, string name, T[] values, Action onChange)
             {
                 m_values = values;
-                m_navigable = Instantiate(prefab, parent).Init(name, m_values.Length - 1, (i) => m_values[i].ToString(), onChange);
+                m_navigable = Instantiate(prefab, parent).Init(name, m_values.Length - 1, (i) => (0 <= i && i < m_values.Length) ? m_values[i].ToString() : string.Empty, onChange);
                 options.Add(m_navigable);
             }
 
