@@ -4,23 +4,23 @@ using UnityEngine;
 
 using BoostBlasters.Levels;
 
-namespace BoostBlasters.Character
+namespace BoostBlasters.Races.Racers
 {
     /// <summary>
     /// Generates movement input using AI.
     /// </summary>
-    public class PlayerAI : IInputProvider
+    public class AIInputProvider : IInputProvider
     {
         private const int PREDICTION_STEPS = 100;
         private const float PREDICTION_DELTA_TIME_SCALE = 2.0f;
 
-        private Player m_player;
-        private MovementInputs m_input;
+        private Racer m_player;
+        private Inputs m_input;
         private List<Vector3> m_positions = new List<Vector3>(PREDICTION_STEPS);
         private List<float> m_rotations = new List<float>(PREDICTION_STEPS);
         private float m_lastBoostTime;
 
-        public PlayerAI(Player player)
+        public AIInputProvider(Racer player)
         {
             m_player = player;
 
@@ -41,7 +41,7 @@ namespace BoostBlasters.Character
             bool goooo = false;
             if (goooo)
             {
-                m_input = new MovementInputs();
+                m_input = new Inputs();
 
                 Waypoint next = m_player.NextWaypoint;
                 if (next != null)
@@ -51,7 +51,7 @@ namespace BoostBlasters.Character
 
                     float deltaTime = PREDICTION_DELTA_TIME_SCALE * Time.fixedDeltaTime;
 
-                    MovementInputs bestInputs = m_input;
+                    Inputs bestInputs = m_input;
                     float bestValue = float.MinValue;
 
                     m_positions.Clear();
@@ -86,7 +86,7 @@ namespace BoostBlasters.Character
             }
             else
             {
-                m_input = new MovementInputs();
+                m_input = new Inputs();
 
                 Waypoint next = m_player.NextWaypoint;
                 if (next != null)
@@ -118,7 +118,7 @@ namespace BoostBlasters.Character
             }
         }
 
-        public MovementInputs GetInput()
+        public Inputs GetInput()
         {
             return m_input;
         }

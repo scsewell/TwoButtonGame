@@ -7,8 +7,9 @@ using UnityEngine;
 using Framework.IO;
 
 using BoostBlasters.Players;
-using BoostBlasters.Character;
+using BoostBlasters.Characters;
 using BoostBlasters.Races;
+using BoostBlasters.Races.Racers;
 using BoostBlasters.Levels;
 
 namespace BoostBlasters.Replays
@@ -26,13 +27,13 @@ namespace BoostBlasters.Replays
         private List<sbyte>[] m_v;
         private List<int>[] m_toggleFramesBoost;
 
-        private MovementInputs[] m_lastFrameInputs;
+        private Inputs[] m_lastFrameInputs;
         private int[][] m_nextInputIndices;
 
         private RaceParameters m_raceParams;
         public RaceParameters RaceParams => m_raceParams;
 
-        private int RacerCount => RaceParams.RacerCount;
+        private int RacerCount => RaceParams.racerCount;
 
         public float Duration => m_positions.Max(player => player.Count) * FRAMES_PER_POSITION * Time.fixedDeltaTime;
 
@@ -73,7 +74,7 @@ namespace BoostBlasters.Replays
             int laps            = reader.ReadInt();
             int humanCount      = reader.ReadInt();
             int aiCount         = reader.ReadInt();
-            List<PlayerConfig> playerConfigs = reader.ReadArray<int>().Select(id => Main.Instance.GetPlayerConfig(id)).ToList();
+            List<CharacterConfig> playerConfigs = reader.ReadArray<int>().Select(id => Main.Instance.GetPlayerConfig(id)).ToList();
 
             List<PlayerProfile> proflies = new List<PlayerProfile>();
             for (int i = 0; i < humanCount + aiCount; i++)
@@ -88,26 +89,26 @@ namespace BoostBlasters.Replays
 
             raceParams = new RaceParameters(level, laps, humanCount, aiCount, playerConfigs, proflies, inputs, playerindicies);
        
-            results = new RaceResult[raceParams.RacerCount];
-            for (int i = 0; i < raceParams.RacerCount; i++)
+            results = new RaceResult[raceParams.racerCount];
+            for (int i = 0; i < raceParams.racerCount; i++)
             {
-                results[i] = new RaceResult(reader.ReadArray<byte>(), raceParams.Profiles[i]);
+                results[i] = new RaceResult(reader.ReadArray<byte>(), raceParams.profiles[i]);
             }
         }
 
-        public byte[] ToBytes(List<Player> players)
+        public byte[] ToBytes(List<Racer> players)
         {
             BinaryWriter headerWriter = new BinaryWriter();
         
-            headerWriter.WriteValue(m_raceParams.LevelConfig.Id);
-            headerWriter.WriteValue(m_raceParams.Laps);
-            headerWriter.WriteValue(m_raceParams.HumanCount);
-            headerWriter.WriteValue(m_raceParams.AICount);
-            headerWriter.WriteArray(m_raceParams.PlayerConfigs.Select(c => c.Id).ToArray());
+            headerWriter.WriteValue(m_raceParams.level.Id);
+            headerWriter.WriteValue(m_raceParams.laps);
+            headerWriter.WriteValue(m_raceParams.humanCount);
+            headerWriter.WriteValue(m_raceParams.aiCount);
+            headerWriter.WriteArray(m_raceParams.characters.Select(c => c.Id).ToArray());
 
             for (int i = 0; i < RacerCount; i++)
             {
-                Player player = players[i];
+                Racer player = players[i];
                 headerWriter.WriteValue(player.Profile.UniqueId);
                 headerWriter.WriteValue(player.Profile.Name);
             }
@@ -151,7 +152,7 @@ namespace BoostBlasters.Replays
             m_v                     = new List<sbyte>[RacerCount];
             m_toggleFramesBoost     = new List<int>[RacerCount];
 
-            m_lastFrameInputs       = new MovementInputs[RacerCount];
+            m_lastFrameInputs       = new Inputs[RacerCount];
             m_nextInputIndices      = new int[RacerCount][];
 
             for (int i = 0; i < RacerCount; i++)
@@ -176,11 +177,11 @@ namespace BoostBlasters.Replays
             Array.Clear(m_lastFrameInputs, 0, m_lastFrameInputs.Length);
         }
 
-        public void Record(int fixedFramesSoFar, List<Player> players)
+        public void Record(int fixedFramesSoFar, List<Racer> players)
         {
             for (int i = 0; i < RacerCount; i++)
             {
-                Player player = players[i];
+                Racer player = players[i];
 
                 if (!player.RaceResult.Finished)
                 {
@@ -206,15 +207,15 @@ namespace BoostBlasters.Replays
             }
         }
 
-        public void MoveGhosts(int fixedFrameToDisplay, List<Player> players, List<RacerCamera> cameras, bool isAfterStart)
+        public void MoveGhosts(int fixedFrameToDisplay, List<Racer> players, List<RacerCamera> cameras, bool isAfterStart)
         {
             int fixIndex    = fixedFrameToDisplay / FRAMES_PER_POSITION;
             int inputIndex  = fixedFrameToDisplay / FRAMES_PER_INPUT;
 
             for (int i = 0; i < RacerCount; i++)
             {
-                Player player = players[i];
-                MovementInputs inputs;
+                Racer player = players[i];
+                Inputs inputs;
 
                 if (fixIndex < m_positions[i].Count)
                 {
@@ -254,7 +255,7 @@ namespace BoostBlasters.Replays
                 }
                 else
                 {
-                    inputs = new MovementInputs();
+                    inputs = new Inputs();
                 }
 
                 player.ProcessReplaying(true, isAfterStart, inputs);

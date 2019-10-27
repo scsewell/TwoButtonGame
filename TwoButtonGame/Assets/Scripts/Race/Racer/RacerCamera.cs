@@ -1,11 +1,14 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
-using Framework.Interpolation;
-using BoostBlasters.Character;
 
-namespace BoostBlasters.Races
+using UnityEngine;
+
+using Framework.Interpolation;
+
+namespace BoostBlasters.Races.Racers
 {
+    /// <summary>
+    /// Manages a camera which follows a racer.
+    /// </summary>
     [RequireComponent(typeof(TransformInterpolator))]
     public class RacerCamera : MonoBehaviour
     {
@@ -71,11 +74,11 @@ namespace BoostBlasters.Races
         public Camera MainCam => m_mainCam;
         public Camera UICam => m_uiCam;
 
-        private Player m_player = null;
-        public Player Owner => m_player;
+        private Racer m_racer = null;
+        public Racer Owner => m_racer;
 
-        public int PlayerMainLayer => m_player.PlayerNum + 8;
-        public int PlayerUILayer => m_player.PlayerNum + 16;
+        public int PlayerMainLayer => m_racer.RacerNum + 8;
+        public int PlayerUILayer => m_racer.RacerNum + 16;
 
         private TransformInterpolator m_tInterpolator = null;
         public TransformInterpolator Interpolator => m_tInterpolator;
@@ -93,11 +96,11 @@ namespace BoostBlasters.Races
             m_dustParticles = GetComponentInChildren<ParticleSystem>();
         }
 
-        public RacerCamera Init(Player player, int humanCount)
+        public RacerCamera Init(Racer racer, int humanCount)
         {
-            m_player = player;
+            m_racer = racer;
 
-            Rect splitscreen = GetSplitscreen(player.PlayerNum, humanCount);
+            Rect splitscreen = GetSplitscreen(racer.RacerNum, humanCount);
             m_mainCam.rect = splitscreen;
             m_uiCam.rect = splitscreen;
 
@@ -130,9 +133,9 @@ namespace BoostBlasters.Races
 
         public void UpdateCamera()
         {
-            if (m_player != null)
+            if (m_racer != null)
             {
-                float targetDustFade = Mathf.Pow(Mathf.Clamp01((m_player.Movement.Velocity.magnitude - m_dustMinVelocity) / m_dustMaxVelocity), m_dustVelocityPower);
+                float targetDustFade = Mathf.Pow(Mathf.Clamp01((m_racer.Movement.Velocity.magnitude - m_dustMinVelocity) / m_dustMaxVelocity), m_dustVelocityPower);
                 m_dustFade = Mathf.Lerp(m_dustFade, targetDustFade, Time.deltaTime / m_dustFadeSmoothing);
 
                 Color dustColor = m_dustBrightness * Color.white;
@@ -141,10 +144,10 @@ namespace BoostBlasters.Races
 
                 Vector3 targetPos = GetPosTarget();
 
-                Vector3 vel = m_player.Movement.Velocity;
+                Vector3 vel = m_racer.Movement.Velocity;
                 Vector3 hPos = Vector3.SmoothDamp(transform.position, targetPos, ref vel, m_hSmoothness * Time.deltaTime);
 
-                vel = m_player.Movement.Velocity;
+                vel = m_racer.Movement.Velocity;
                 Vector3 vPos = Vector3.SmoothDamp(transform.position, targetPos, ref vel, m_vSmoothness * Time.deltaTime);
 
                 Vector3 goalPos = new Vector3(hPos.x, vPos.y, hPos.z);
@@ -186,8 +189,8 @@ namespace BoostBlasters.Races
 
         private Vector3 GetPosTarget()
         {
-            Vector3 forwardLook = m_player.transform.forward;
-            return m_player.transform.position - m_positionOffset.x * forwardLook + m_positionOffset.y * Vector3.Cross(forwardLook, transform.right);
+            Vector3 forwardLook = m_racer.transform.forward;
+            return m_racer.transform.position - m_positionOffset.x * forwardLook + m_positionOffset.y * Vector3.Cross(forwardLook, transform.right);
         }
 
         private Quaternion GetRotTarget(Vector3 lookTarget)
@@ -197,8 +200,8 @@ namespace BoostBlasters.Races
 
         private Vector3 GetLookTarget()
         {
-            Vector3 origin = m_player.transform.position + (m_softLookOffset * Vector3.up);
-            Vector3 goal = m_player.transform.position + (m_lookOffset * Vector3.up);
+            Vector3 origin = m_racer.transform.position + (m_softLookOffset * Vector3.up);
+            Vector3 goal = m_racer.transform.position + (m_lookOffset * Vector3.up);
             Vector3 disp = goal - origin;
             float softDistance = disp.magnitude + m_softLookDistance;
             float radius = m_softLookRadius;

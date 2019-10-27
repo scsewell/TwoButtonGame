@@ -5,17 +5,17 @@ using UnityEngine;
 using Framework.Interpolation;
 
 using BoostBlasters.Players;
-using BoostBlasters.Races;
+using BoostBlasters.Characters;
 using BoostBlasters.Levels;
 
-namespace BoostBlasters.Character
+namespace BoostBlasters.Races.Racers
 {
     /// <summary>
-    /// The main component used to manage a player character.
+    /// The main component used to manage a racer.
     /// </summary>
-    [RequireComponent(typeof(MemeBoots))]
+    [RequireComponent(typeof(RacerMovement))]
     [RequireComponent(typeof(TransformInterpolator))]
-    public class Player : MonoBehaviour
+    public class Racer : MonoBehaviour
     {
         [Header("Sound")]
 
@@ -47,16 +47,16 @@ namespace BoostBlasters.Character
         private bool m_isHuman;
         public bool IsHuman => m_isHuman;
 
-        private int m_playerNum = -1;
-        public int PlayerNum => m_playerNum;
+        private int m_racerNum = -1;
+        public int RacerNum => m_racerNum;
 
         private PlayerProfile m_profile;
         public PlayerProfile Profile => m_profile;
 
-        private PlayerConfig m_config;
-        public PlayerConfig Config => m_config;
+        private CharacterConfig m_characer;
+        public CharacterConfig Character => m_characer;
 
-        public Color GetColor() => Consts.GetRacerColor(m_playerNum);
+        public Color GetColor() => Consts.GetRacerColor(m_racerNum);
 
         // Level Progress
         private int m_waypointsCompleted;
@@ -78,7 +78,7 @@ namespace BoostBlasters.Character
         public delegate void EnergyUseFailHandler();
         public event EnergyUseFailHandler EnergyUseFailed;
 
-        public float MaxEnergy => m_config.EnergyCap;
+        public float MaxEnergy => m_characer.EnergyCap;
 
         private float m_energy;
         public float Energy => m_energy;
@@ -87,13 +87,13 @@ namespace BoostBlasters.Character
         private TransformInterpolator m_interpolator;
         public TransformInterpolator Interpolator => m_interpolator;
 
-        private MemeBoots m_movement;
-        public MemeBoots Movement => m_movement;
+        private RacerMovement m_movement;
+        public RacerMovement Movement => m_movement;
 
-        public MovementInputs Inputs => m_inputProvider.GetInput();
+        public Inputs Inputs => m_inputProvider.GetInput();
 
         private IInputProvider m_inputProvider;
-        private PlayerAnimation m_animation;
+        private RacerAnimation m_animation;
         private RacePath m_racePath;
         private Vector3 m_lastPos;
         private Vector3 m_spawnPosition;
@@ -102,32 +102,32 @@ namespace BoostBlasters.Character
         private void Awake()
         {
             m_interpolator = GetComponentInChildren<TransformInterpolator>();
-            m_movement = GetComponentInChildren<MemeBoots>();
+            m_movement = GetComponentInChildren<RacerMovement>();
         }
 
-        public Player InitHuman(int playerNum, PlayerProfile profile, PlayerConfig config, PlayerBaseInput input)
+        public Racer InitHuman(int racerNum, PlayerProfile profile, CharacterConfig config, PlayerBaseInput input)
         {
             m_isHuman = true;
             m_inputProvider = new PlayerInputProvider(input);
-            return Init(playerNum, profile, config);
+            return Init(racerNum, profile, config);
         }
 
-        public Player InitAI(int playerNum, PlayerProfile profile, PlayerConfig config)
+        public Racer InitAI(int racerNum, PlayerProfile profile, CharacterConfig config)
         {
             m_isHuman = false;
-            m_inputProvider = new PlayerAI(this);
-            return Init(playerNum, profile, config);
+            m_inputProvider = new AIInputProvider(this);
+            return Init(racerNum, profile, config);
         }
 
-        private Player Init(int playerNum, PlayerProfile profile, PlayerConfig config)
+        private Racer Init(int racerNum, PlayerProfile profile, CharacterConfig config)
         {
-            m_playerNum = playerNum;
+            m_racerNum = racerNum;
             m_profile = profile;
-            m_config = config;
+            m_characer = config;
 
             m_raceResult = new RaceResult(profile);
 
-            m_animation = GetComponentInChildren<PlayerAnimation>();
+            m_animation = GetComponentInChildren<RacerAnimation>();
             m_racePath = Main.Instance.RaceManager.RacePath;
 
             m_lastPos = transform.position;
@@ -136,7 +136,7 @@ namespace BoostBlasters.Character
             return this;
         }
 
-        public void ResetPlayer()
+        public void ResetRacer()
         {
             transform.position = m_spawnPosition;
             transform.rotation = m_spawnRotation;
@@ -164,20 +164,19 @@ namespace BoostBlasters.Character
             ProcessReplaying(isAfterIntro, isAfterStart, m_inputProvider.GetInput());
         }
 
-        public void ProcessReplaying(bool isAfterIntro, bool isAfterStart, MovementInputs inputs)
+        public void ProcessReplaying(bool isAfterIntro, bool isAfterStart, Inputs inputs)
         {
             m_movement.FixedUpdateMovement(inputs, isAfterIntro && !m_raceResult.Finished, !isAfterStart);
 
             if (isAfterStart && !m_raceResult.Finished && !m_movement.IsBoosting)
             {
-                m_energy = Mathf.Min(m_energy + (m_config.EnergyRechargeRate * Time.deltaTime), MaxEnergy);
+                m_energy = Mathf.Min(m_energy + (m_characer.EnergyRechargeRate * Time.deltaTime), MaxEnergy);
             }
 
             int previousLap = CurrentLap;
             Waypoint wp = NextWaypoint;
             Vector3 disp = transform.position - m_lastPos;
-            RaycastHit hit;
-            if (wp != null && disp.magnitude > 0.0001f && wp.Trigger.Raycast(new Ray(m_lastPos, disp.normalized), out hit, disp.magnitude))
+            if (wp != null && disp.magnitude > 0.0001f && wp.Trigger.Raycast(new Ray(m_lastPos, disp.normalized), out RaycastHit hit, disp.magnitude))
             {
                 m_waypointsCompleted++;
                 m_racePath.ResetEnergyGates(this);
@@ -215,7 +214,7 @@ namespace BoostBlasters.Character
             m_lastPos = transform.position;
         }
 
-        public void UpdatePlayer()
+        public void UpdateRacer()
         {
             if (m_animation != null)
             {
@@ -228,7 +227,7 @@ namespace BoostBlasters.Character
             }
         }
 
-        public void LateUpdatePlayer()
+        public void LateUpdateRacer()
         {
             m_inputProvider.LateUpdateProvider();
 
@@ -259,13 +258,11 @@ namespace BoostBlasters.Character
         private void OnEnergyGained(float amountGained)
         {
             float delta = Mathf.Min(m_energy + amountGained, MaxEnergy) - m_energy;
+
             if (delta > 0)
             {
                 m_energy += delta;
-                if (EnergyGained != null)
-                {
-                    EnergyGained(m_energy, delta);
-                }
+                EnergyGained?.Invoke(m_energy, delta);
             }
         }
 

@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
-using BoostBlasters.Character;
 using BoostBlasters.Levels;
+using BoostBlasters.Races.Racers;
 
 namespace BoostBlasters.Races
 {
@@ -95,7 +95,7 @@ namespace BoostBlasters.Races
             }
         }
 
-        public void ResetEnergyGates(Player player)
+        public void ResetEnergyGates(Racer player)
         {
             foreach (BoostGate energyGate in m_energyGates)
             {

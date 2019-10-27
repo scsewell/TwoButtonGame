@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
+
 using UnityEngine;
+
 using Framework.Interpolation;
 
-namespace BoostBlasters.Character
+namespace BoostBlasters.Races.Racers
 {
     /// <summary>
     /// Debugging utility for visualizing how a player will move.
@@ -50,19 +52,7 @@ namespace BoostBlasters.Character
             m_lastVelocity = Vector3.zero;
         }
 
-        public GameObject MakeBox(Color color, bool interpolated, bool cubical)
-        {
-            GameObject box = GameObject.CreatePrimitive(m_cubical ? PrimitiveType.Cube : PrimitiveType.Cylinder);
-            Object.DestroyImmediate(box.GetComponent<Collider>());
-            box.GetComponent<MeshRenderer>().material.color = color;
-            if (interpolated)
-            {
-                box.AddComponent<TransformInterpolator>();
-            }
-            return box;
-        }
-
-        public void FixedMemeUpdateTrajectory(MemeBoots memeBoots, Vector3 position, Vector3 velocity, float rotation, float angularVelocity, MovementInputs inputs)
+        public void FixedMemeUpdateTrajectory(RacerMovement memeBoots, Vector3 position, Vector3 velocity, float rotation, float angularVelocity, Inputs inputs)
         {
             //Vector3 acceleration = velocity - m_lastVelocity;
             Vector3 endpoint = position + velocity;
@@ -89,7 +79,7 @@ namespace BoostBlasters.Character
                 m_rotations.Clear();
                 m_positions.Add(position);
                 m_rotations.Add(rotation);
-                memeBoots.PredictStep(SEGMENTS * FRAMES_PER_SEGMENT, m_positions, velocity, m_rotations, angularVelocity, new MovementInputs((2 * (input % 2)) - 1, (2 * (input / 2)) - 1, input > 3), Time.fixedDeltaTime);
+                memeBoots.PredictStep(SEGMENTS * FRAMES_PER_SEGMENT, m_positions, velocity, m_rotations, angularVelocity, new Inputs((2 * (input % 2)) - 1, (2 * (input / 2)) - 1, input > 3), Time.fixedDeltaTime);
 
                 for (int i = 0; i < SEGMENTS; i++)
                 {
@@ -128,21 +118,6 @@ namespace BoostBlasters.Character
             m_accelerationCrosshairBox[0].transform.position = newEstimatedPosition;
 
             m_lastVelocity = velocity;
-        }
-
-        public void PositionBox(GameObject box, Vector3 start, Vector3 end)
-        {
-            box.transform.position = (start + end) / 2;
-            if (m_cubical)
-            {
-                box.transform.localScale = new Vector3(0.5f, 0.5f, (end - start).magnitude);
-                box.transform.LookAt(end);
-            }
-            else
-            {
-                box.transform.localScale = new Vector3(0.3f, (end - start).magnitude / 2, 0.3f);
-                box.transform.rotation = Quaternion.LookRotation(end - start) * Quaternion.Euler(90, 0, 0);
-            }
         }
 
         public void EndVisualization()
@@ -191,6 +166,36 @@ namespace BoostBlasters.Character
             if (m_accelerationBoxes != null)
             {
                 m_accelerationBoxes = null;
+            }
+        }
+
+        private GameObject MakeBox(Color color, bool interpolated, bool cubical)
+        {
+            GameObject box = GameObject.CreatePrimitive(m_cubical ? PrimitiveType.Cube : PrimitiveType.Cylinder);
+            Object.DestroyImmediate(box.GetComponent<Collider>());
+
+            box.GetComponent<MeshRenderer>().material.color = color;
+
+            if (interpolated)
+            {
+                box.AddComponent<TransformInterpolator>();
+            }
+
+            return box;
+        }
+
+        private void PositionBox(GameObject box, Vector3 start, Vector3 end)
+        {
+            box.transform.position = (start + end) / 2;
+            if (m_cubical)
+            {
+                box.transform.localScale = new Vector3(0.5f, 0.5f, (end - start).magnitude);
+                box.transform.LookAt(end);
+            }
+            else
+            {
+                box.transform.localScale = new Vector3(0.3f, (end - start).magnitude / 2, 0.3f);
+                box.transform.rotation = Quaternion.LookRotation(end - start) * Quaternion.Euler(90, 0, 0);
             }
         }
     }

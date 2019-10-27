@@ -1,9 +1,10 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+
 using UnityEngine;
+
 using Framework.Interpolation;
-using BoostBlasters.Character;
-using BoostBlasters.Races;
+
+using BoostBlasters.Races.Racers;
 using BoostBlasters.Levels.Paths;
 
 namespace BoostBlasters.Levels
@@ -63,7 +64,7 @@ namespace BoostBlasters.Levels
         private float m_bobFreq;
         private GateEngine[] m_engines;
         private Material m_glowMat;
-        private Dictionary<Player, float> m_playerToGlow = new Dictionary<Player, float>();
+        private Dictionary<Racer, float> m_playerToGlow = new Dictionary<Racer, float>();
         private Vector3 m_lastPosition;
         private Vector3 m_lastVelocity;
         private Vector3 m_engineForce;
@@ -109,7 +110,7 @@ namespace BoostBlasters.Levels
                 m_interpolator.ForgetPreviousValues();
             }
 
-            foreach (Player player in Main.Instance.RaceManager.Players)
+            foreach (Racer player in Main.Instance.RaceManager.Racers)
             {
                 m_playerToGlow[player] = 0f;
             }
@@ -151,7 +152,7 @@ namespace BoostBlasters.Levels
 
         public void UpdateWaypoint()
         {
-            foreach (Player player in Main.Instance.RaceManager.Players)
+            foreach (Racer player in Main.Instance.RaceManager.Racers)
             {
                 float glowFac = m_playerToGlow[player];
 

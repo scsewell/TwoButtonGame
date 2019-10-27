@@ -2,12 +2,12 @@
 
 using BoostBlasters.Levels;
 
-namespace BoostBlasters.Character
+namespace BoostBlasters.Races.Racers
 {
     /// <summary>
-    /// Animates a character based on its current input and properties.
+    /// Animates a racer.
     /// </summary>
-    public class PlayerAnimation : MonoBehaviour
+    public class RacerAnimation : MonoBehaviour
     {
         [SerializeField] Transform m_head = null;
         [SerializeField] Renderer[] m_leftBoosters = null;
@@ -85,7 +85,7 @@ namespace BoostBlasters.Character
         [Range(0f, 1f)]
         private float m_audioSmoothing = 0.065f;
 
-        private Player m_player;
+        private Racer m_racer;
         private Animator m_anim;
         private AudioSource m_audio;
         private Material m_leftGlow;
@@ -98,7 +98,7 @@ namespace BoostBlasters.Character
 
         private void Awake()
         {
-            m_player = GetComponentInParent<Player>();
+            m_racer = GetComponentInParent<Racer>();
             m_anim = GetComponent<Animator>();
             m_audio = GetComponent<AudioSource>();
 
@@ -108,12 +108,12 @@ namespace BoostBlasters.Character
 
         public void ResetAnimation()
         {
+            m_headRotation = m_head.rotation;
+            m_velocity = Vector3.zero;
+
             m_leftVolume = 0f;
             m_rightVolume = 0f;
             m_pitch = m_enginePitch;
-
-            m_headRotation = m_head.rotation;
-            m_velocity = Vector3.zero;
 
             m_anim.SetFloat("VelocityX", 0f);
             m_anim.SetFloat("VelocityY", 0f);
@@ -126,7 +126,7 @@ namespace BoostBlasters.Character
             m_rightGlow.SetColor("_EmissionColor", m_glowCol * m_notBoostGlow);
         }
 
-        public void UpdateAnimation(MemeBoots movement)
+        public void UpdateAnimation(RacerMovement movement)
         {
             Vector3 localVel = movement.transform.InverseTransformVector(movement.Velocity);
             localVel = localVel.normalized * SmoothMin(m_velocityScale * Mathf.Log(localVel.magnitude + 1f), 0.95f, 0.1f);
@@ -154,7 +154,7 @@ namespace BoostBlasters.Character
             m_leftGlow.SetColor("_EmissionColor", glow * Mathf.LerpUnclamped(m_notBoostGlow, m_boostGlow, leftNoiseFac));
             m_rightGlow.SetColor("_EmissionColor", glow * Mathf.LerpUnclamped(m_notBoostGlow, m_boostGlow, rightNoiseFac));
 
-            m_audio.enabled = m_player.IsHuman;
+            m_audio.enabled = m_racer.IsHuman;
             float audioSmoothing = Time.deltaTime / m_audioSmoothing;
 
             float leftVolTarget = leftEngine * m_engineNormVol;
@@ -223,9 +223,9 @@ namespace BoostBlasters.Character
 
         private void SetFloatLerp(string key, float value, float smoothing)
         {
-            if (smoothing > 0)
+            if (smoothing > 0f)
             {
-                m_anim.SetFloat(key, Mathf.Lerp(m_anim.GetFloat(key), value, 3 * Time.deltaTime / smoothing));
+                m_anim.SetFloat(key, Mathf.Lerp(m_anim.GetFloat(key), value, 3f * Time.deltaTime / smoothing));
             }
             else
             {
@@ -235,7 +235,7 @@ namespace BoostBlasters.Character
 
         private void SetFloatMoveTowards(string key, float value, float smoothing)
         {
-            if (smoothing > 0)
+            if (smoothing > 0f)
             {
                 m_anim.SetFloat(key, Mathf.MoveTowards(m_anim.GetFloat(key), value, Time.deltaTime / smoothing));
             }

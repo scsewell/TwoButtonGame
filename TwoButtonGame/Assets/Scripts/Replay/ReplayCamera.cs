@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+
 using UnityEngine;
 using Cinemachine;
-using BoostBlasters.Character;
+
+using BoostBlasters.Races.Racers;
 
 namespace BoostBlasters.Replays
 {
@@ -67,7 +69,7 @@ namespace BoostBlasters.Replays
             m_camera.enabled = false;
         }
 
-        public void SetTarget(List<Player> players)
+        public void SetTarget(List<Racer> players)
         {
             if (players.Any(p => !p.RaceResult.Finished))
             {

@@ -6,7 +6,8 @@ using UnityEngine;
 using Framework.Audio;
 
 using BoostBlasters.Players;
-using BoostBlasters.Character;
+using BoostBlasters.Characters;
+using BoostBlasters.Races.Racers;
 using BoostBlasters.Replays;
 using BoostBlasters.UI.RaceMenus;
 
@@ -20,8 +21,8 @@ namespace BoostBlasters.Races
         [SerializeField] private ReplayCamera m_replayCameraPrefab = null;
         [SerializeField] private IntroCamera m_cameraRigPrefab = null;
         [SerializeField] private InRaceMenu m_raceMenuPrefab = null;
-        [SerializeField] private Player m_playerPrefab = null;
-        [SerializeField] private RacerCamera m_playerCameraPrefab = null;
+        [SerializeField] private Racer m_racerPrefab = null;
+        [SerializeField] private RacerCamera m_racerCameraPrefab = null;
         [SerializeField] private PlayerUI m_playerUIPrefab = null;
 
         [Header("Fade")]
@@ -62,8 +63,8 @@ namespace BoostBlasters.Races
         private RacePath m_racePath;
         public RacePath RacePath => m_racePath;
 
-        private List<Player> m_players = new List<Player>();
-        public List<Player> Players => m_players;
+        private List<Racer> m_racers = new List<Racer>();
+        public List<Racer> Racers => m_racers;
 
         private List<RacerCamera> m_cameras = new List<RacerCamera>();
 
@@ -97,12 +98,9 @@ namespace BoostBlasters.Races
         public float TimeIntroSkip { get { return m_introSkipTime; } }
         public float TimeRaceStart { get { return m_raceStartTime; } }
 
-        public float CountdownTime
-        {
-            get { return (m_raceStartTime - Time.time) / m_countdownScale; }
-        }
+        public float CountdownTime => (m_raceStartTime - Time.time) / m_countdownScale;
 
-        public int PlayerCount { get { return m_raceParams.RacerCount; } }
+        public int RacerCount => m_raceParams.racerCount;
 
         private enum State
         {
@@ -182,9 +180,9 @@ namespace BoostBlasters.Races
 
             m_racePath.ResetPath();
 
-            foreach (Player player in m_players)
+            foreach (Racer racer in m_racers)
             {
-                player.ResetPlayer();
+                racer.ResetRacer();
             }
 
             foreach (RacerCamera cam in m_cameras)
@@ -200,46 +198,46 @@ namespace BoostBlasters.Races
 
         public void InitRace()
         {
-            m_racePath = FindObjectOfType<RacePath>().Init(m_raceParams.Laps);
+            m_racePath = FindObjectOfType<RacePath>().Init(m_raceParams.laps);
             m_raceMenu = Instantiate(m_raceMenuPrefab).Init(m_raceParams);
 
             Instantiate(m_clearCameraPrefab);
             m_replayCamera = Instantiate(m_replayCameraPrefab);
-            m_cameraRig = Instantiate(m_cameraRigPrefab).Init(m_raceParams.LevelConfig);
+            m_cameraRig = Instantiate(m_cameraRigPrefab).Init(m_raceParams.level);
 
-            List<Transform> spawns = m_racePath.Spawns.Take(PlayerCount).ToList();
+            List<Transform> spawns = m_racePath.Spawns.Take(RacerCount).ToList();
 
-            for (int playerNum = 0; playerNum < PlayerCount; playerNum++)
+            for (int racerNum = 0; racerNum < RacerCount; racerNum++)
             {
                 int index = Random.Range(0, spawns.Count);
                 Transform spawn = spawns[index];
                 spawns.RemoveAt(index);
 
-                Player player = Instantiate(m_playerPrefab, spawn.position, spawn.rotation);
-                m_players.Add(player);
+                Racer racer = Instantiate(m_racerPrefab, spawn.position, spawn.rotation);
+                m_racers.Add(racer);
 
-                PlayerProfile profile = m_raceParams.Profiles[playerNum];
-                PlayerConfig config = m_raceParams.PlayerConfigs[playerNum];
+                PlayerProfile profile = m_raceParams.profiles[racerNum];
+                CharacterConfig config = m_raceParams.characters[racerNum];
 
-                GameObject graphics = Instantiate(config.CharacterGraphics, spawn.position, spawn.rotation, player.transform);
+                GameObject graphics = Instantiate(config.CharacterGraphics, spawn.position, spawn.rotation, racer.transform);
                 graphics.transform.localPosition = config.GraphicsOffset;
 
-                if (playerNum < m_raceParams.HumanCount)
+                if (racerNum < m_raceParams.humanCount)
                 {
-                    PlayerBaseInput input = m_raceParams.Inputs[playerNum];
-                    player.InitHuman(playerNum, profile, config, input);
+                    PlayerBaseInput input = m_raceParams.inputs[racerNum];
+                    racer.InitHuman(racerNum, profile, config, input);
 
-                    RacerCamera camera = Instantiate(m_playerCameraPrefab).Init(player, m_raceParams.HumanCount);
+                    RacerCamera camera = Instantiate(m_racerCameraPrefab).Init(racer, m_raceParams.humanCount);
                     camera.MainCam.enabled = false;
                     m_cameras.Add(camera);
 
                     PlayerUI ui = Instantiate(m_playerUIPrefab);
                     m_raceMenu.AddPlayerUI(ui);
-                    ui.Init(player, input, camera, m_raceParams.HumanCount);
+                    ui.Init(racer, input, camera, m_raceParams.humanCount);
                 }
                 else
                 {
-                    player.InitAI(playerNum, profile, config);
+                    racer.InitAI(racerNum, profile, config);
                 }
             }
         }
@@ -256,24 +254,24 @@ namespace BoostBlasters.Races
 
             if (m_state == State.Replay)
             {
-                m_raceRecording.MoveGhosts(m_fixedFramesSoFar, m_players, m_cameras, isAfterStart);
+                m_raceRecording.MoveGhosts(m_fixedFramesSoFar, m_racers, m_cameras, isAfterStart);
             }
             else
             {
                 if (!m_isInIntro)
                 {
-                    m_raceRecording.Record(m_fixedFramesSoFar, m_players);
+                    m_raceRecording.Record(m_fixedFramesSoFar, m_racers);
                 }
-                m_players.ForEach(p => p.ProcessPlaying(!m_isInIntro, isAfterStart));
+                m_racers.ForEach(p => p.ProcessPlaying(!m_isInIntro, isAfterStart));
             }
 
             m_cameras.ForEach(c => c.UpdateCamera());
             m_racePath.FixedUpdatePath();
 
-            foreach (Player player in m_players)
+            foreach (Racer player in m_racers)
             {
                 int rank = 1;
-                foreach (Player other in m_players)
+                foreach (Racer other in m_racers)
                 {
                     if (other != player)
                     {
@@ -310,7 +308,7 @@ namespace BoostBlasters.Races
                 player.RaceResult.Rank = rank;
             }
 
-            if (m_state == State.Racing && m_players.All(p => p.RaceResult.Finished))
+            if (m_state == State.Racing && m_racers.All(p => p.RaceResult.Finished))
             {
                 m_state = State.Finished;
 
@@ -346,14 +344,14 @@ namespace BoostBlasters.Races
         {
             m_cameraRig.UpdateCamera(m_isInIntro);
 
-            m_players.ForEach(p => p.UpdatePlayer());
+            m_racers.ForEach(p => p.UpdateRacer());
             m_racePath.UpdatePath();
 
-            m_replayCamera.SetTarget(m_players);
+            m_replayCamera.SetTarget(m_racers);
 
-            if (!m_musicStarted && Time.time - m_raceLoadTime > m_raceParams.LevelConfig.MusicDelay)
+            if (!m_musicStarted && Time.time - m_raceLoadTime > m_raceParams.level.MusicDelay)
             {
-                MusicParams music = m_raceParams.LevelConfig.Music;
+                MusicParams music = m_raceParams.level.Music;
                 if (music != null)
                 {
                     AudioManager.Instance.PlayMusic(music);
@@ -386,7 +384,7 @@ namespace BoostBlasters.Races
         {
             bool showPlayerUI = !m_isInIntro && m_state != State.Replay;
 
-            m_players.ForEach(p => p.LateUpdatePlayer());
+            m_racers.ForEach(p => p.LateUpdateRacer());
             m_cameras.ForEach(c => c.SetCameraEnabled(showPlayerUI));
 
             m_raceMenu.LateUpdateUI();
@@ -441,9 +439,9 @@ namespace BoostBlasters.Races
         {
             if (!m_savedResults)
             {
-                foreach (Player player in m_players)
+                foreach (Racer player in m_racers)
                 {
-                    player.Profile.AddRaceResult(m_raceParams.LevelConfig, player.RaceResult);
+                    player.Profile.AddRaceResult(m_raceParams.level, player.RaceResult);
                     m_savedResults = true;
                 }
             }
@@ -453,7 +451,7 @@ namespace BoostBlasters.Races
         {
             if (!m_savedRecording && m_fixedFramesSoFar > 0)
             {
-                ReplayManager.Instance.SaveReplay(m_raceRecording, m_players);
+                ReplayManager.Instance.SaveReplay(m_raceRecording, m_racers);
                 m_savedRecording = true;
             }
         }

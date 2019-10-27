@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 using BoostBlasters.Races;
+using BoostBlasters.Races.Racers;
 using BoostBlasters.Levels;
 
 namespace BoostBlasters.UI.RaceMenus
@@ -63,7 +64,7 @@ namespace BoostBlasters.UI.RaceMenus
 
         public InRaceMenu Init(RaceParameters raceParameters)
         {
-            m_activeInputs = raceParameters.Inputs;
+            m_activeInputs = raceParameters.inputs;
             InitBase(InputManager.Instance.PlayerInputs.ToList());
 
             m_root = GetComponentInChildren<GameMenuRoot>();
@@ -72,13 +73,13 @@ namespace BoostBlasters.UI.RaceMenus
             m_playerUIs = new List<PlayerUI>();
 
             CanvasScaler scaler = m_playerUIParent.GetComponent<CanvasScaler>();
-            Rect splitscreen = RacerCamera.GetSplitscreen(0, raceParameters.HumanCount);
+            Rect splitscreen = RacerCamera.GetSplitscreen(0, raceParameters.humanCount);
             scaler.referenceResolution = new Vector2(
                 scaler.referenceResolution.x / splitscreen.width,
                 scaler.referenceResolution.y / splitscreen.height
             );
 
-            LevelConfig config = raceParameters.LevelConfig;
+            LevelConfig config = raceParameters.level;
             m_trackName.text = config.Name;
             m_songName.text = $"\"{config.Music.Name}\" - {config.Music.Artist}";
 

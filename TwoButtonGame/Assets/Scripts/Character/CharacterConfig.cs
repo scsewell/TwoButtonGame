@@ -1,12 +1,12 @@
 ﻿using UnityEngine;
 
-namespace BoostBlasters.Character
+namespace BoostBlasters.Characters
 {
     /// <summary>
     /// The properties that constitute a character.
     /// </summary>
     [CreateAssetMenu(fileName = "PlayerConfig", menuName = "PlayerConfig", order = 1)]
-    public class PlayerConfig : ScriptableObject
+    public class CharacterConfig : ScriptableObject
     {
         [SerializeField]
         private int m_id = 1000;

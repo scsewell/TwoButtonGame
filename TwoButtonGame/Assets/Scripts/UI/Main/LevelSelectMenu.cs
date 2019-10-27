@@ -92,9 +92,9 @@ namespace BoostBlasters.UI.MainMenus
             RaceParameters lastRace = Main.Instance.LastRaceParams;
             if (lastRace != null)
             {
-                m_trackSelect.SetValue(lastRace.LevelConfig);
-                m_lapSelect.SetValue(lastRace.Laps);
-                m_aiCountSelect.SetValue(lastRace.AICount);
+                m_trackSelect.SetValue(lastRace.level);
+                m_lapSelect.SetValue(lastRace.laps);
+                m_aiCountSelect.SetValue(lastRace.aiCount);
             }
             
             UIHelper.SetNavigationVertical(m_optionContent, null, m_startRaceButton, null, null);

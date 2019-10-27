@@ -11,7 +11,7 @@ using Framework;
 using Framework.Audio;
 
 using BoostBlasters.Players;
-using BoostBlasters.Character;
+using BoostBlasters.Characters;
 using BoostBlasters.Races;
 using BoostBlasters.Replays;
 
@@ -171,7 +171,7 @@ namespace BoostBlasters.UI.MainMenus
 
         public void LaunchRace()
         {
-            List<PlayerConfig> playerConfigs = new List<PlayerConfig>(m_playerSelect.CharacterConfigs);
+            List<CharacterConfig> playerConfigs = new List<CharacterConfig>(m_playerSelect.CharacterConfigs);
             List<PlayerProfile> playerProfiles = new List<PlayerProfile>(m_playerSelect.PlayerProfiles);
             List<PlayerBaseInput> inputs = m_playerSelect.ActiveInputs;
 

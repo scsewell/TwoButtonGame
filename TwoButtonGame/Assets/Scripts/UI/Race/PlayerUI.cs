@@ -4,8 +4,8 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
-using BoostBlasters.Character;
 using BoostBlasters.Races;
+using BoostBlasters.Races.Racers;
 using BoostBlasters.Levels;
 
 namespace BoostBlasters.UI.RaceMenus
@@ -45,7 +45,7 @@ namespace BoostBlasters.UI.RaceMenus
         [Range(0f, 1f)]
         private float m_indicatorMaxAlpha = 1.0f;
 
-        private Dictionary<Player, RectTransform> m_playerToIndicators = null;
+        private Dictionary<Racer, RectTransform> m_playerToIndicators = null;
 
         [Header("Countdown")]
 
@@ -170,19 +170,19 @@ namespace BoostBlasters.UI.RaceMenus
         private float m_energyGainTime = 0f;
         private float m_energyFailTime = 0f;
 
-        private Player m_player = null;
+        private Racer m_player = null;
         private PlayerBaseInput m_input = null;
         private RacerCamera m_camera = null;
         private RaceManager m_raceManager = null;
 
         private void Awake()
         {
-            m_playerToIndicators = new Dictionary<Player, RectTransform>();
+            m_playerToIndicators = new Dictionary<Racer, RectTransform>();
 
             m_arrow = Instantiate(m_arrowPrefab);
         }
 
-        public PlayerUI Init(Player player, PlayerBaseInput input, RacerCamera cam, int humanCount)
+        public PlayerUI Init(Racer player, PlayerBaseInput input, RacerCamera cam, int humanCount)
         {
             m_player = player;
             m_input = input;
@@ -193,7 +193,7 @@ namespace BoostBlasters.UI.RaceMenus
             m_arrow.gameObject.layer = cam.PlayerUILayer;
 
             RectTransform rt = GetComponent<RectTransform>();
-            Rect splitscreen = RacerCamera.GetSplitscreen(player.PlayerNum, humanCount);
+            Rect splitscreen = RacerCamera.GetSplitscreen(player.RacerNum, humanCount);
 
             rt.localScale = Vector3.one;
             rt.anchorMin = new Vector2(splitscreen.x, splitscreen.y);
@@ -254,7 +254,7 @@ namespace BoostBlasters.UI.RaceMenus
             }
 
             int rank = m_player.RaceResult.Rank;
-            bool isSolo = m_raceManager.PlayerCount == 1;
+            bool isSolo = m_raceManager.RacerCount == 1;
 
             int lap = m_player.CurrentLap;
             RacePath path = m_raceManager.RacePath;
@@ -274,7 +274,7 @@ namespace BoostBlasters.UI.RaceMenus
                 SetArrow(m_arrowSmoothing);
             }
 
-            foreach (Player player in m_raceManager.Players.OrderBy(p => Vector3.Distance(m_camera.transform.position, p.transform.position)))
+            foreach (Racer player in m_raceManager.Racers.OrderBy(p => Vector3.Distance(m_camera.transform.position, p.transform.position)))
             {
                 if (player != m_player)
                 {

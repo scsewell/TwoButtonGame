@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
+
 using UnityEngine;
-using BoostBlasters.Character;
+
 using BoostBlasters.Races;
+using BoostBlasters.Races.Racers;
 
 namespace BoostBlasters.Levels
 {
@@ -24,34 +26,34 @@ namespace BoostBlasters.Levels
         private float m_glowSmoothing = 0.35f;
 
         private Material m_mat = null;
-        private Dictionary<Player, bool> m_playerUsed;
-        private Dictionary<Player, float> m_playerToGlow;
+        private Dictionary<Racer, bool> m_playerUsed;
+        private Dictionary<Racer, float> m_playerToGlow;
 
         private void Awake()
         {
-            m_playerUsed = new Dictionary<Player, bool>();
-            m_playerToGlow = new Dictionary<Player, float>();
+            m_playerUsed = new Dictionary<Racer, bool>();
+            m_playerToGlow = new Dictionary<Racer, float>();
 
             m_mat = GetComponentInChildren<MeshRenderer>().material;
         }
 
         public void ResetGate()
         {
-            foreach (Player player in Main.Instance.RaceManager.Players)
+            foreach (Racer player in Main.Instance.RaceManager.Racers)
             {
                 m_playerUsed[player] = false;
                 m_playerToGlow[player] = m_glowReady;
             }
         }
 
-        public void ResetGate(Player player)
+        public void ResetGate(Racer player)
         {
             m_playerUsed[player] = false;
         }
 
         public void UpdateGate()
         {
-            foreach (Player player in Main.Instance.RaceManager.Players)
+            foreach (Racer player in Main.Instance.RaceManager.Racers)
             {
                 float glow = m_playerToGlow[player];
 
@@ -62,7 +64,7 @@ namespace BoostBlasters.Levels
             }
         }
 
-        public bool UseGate(Player player)
+        public bool UseGate(Racer player)
         {
             bool used = m_playerUsed[player];
 

@@ -9,8 +9,8 @@ using UnityEngine;
 using Framework;
 using Framework.IO;
 
-using BoostBlasters.Character;
 using BoostBlasters.Races;
+using BoostBlasters.Races.Racers;
 
 namespace BoostBlasters.Replays
 {
@@ -110,7 +110,7 @@ namespace BoostBlasters.Replays
         /// Saves a replay file.
         /// </summary>
         /// <param name="replay">The replay to save.</param>
-        public void SaveReplay(RaceRecording replay, List<Player> players)
+        public void SaveReplay(RaceRecording replay, List<Racer> players)
         {
             string name = $"Replay_{DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss")}{FILE_EXTENTION}";
             string path = Path.Combine(GetReplayDir(), name);

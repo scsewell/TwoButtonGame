@@ -5,13 +5,15 @@ using UnityEngine;
 
 using Framework.Interpolation;
 
-namespace BoostBlasters.Character
+using BoostBlasters.Characters;
+
+namespace BoostBlasters.Races.Racers
 {
     /// <summary>
-    /// Responsible for executing character movement.
+    /// Responsible for executing racer movement.
     /// </summary>
     [RequireComponent(typeof(TransformInterpolator))]
-    public class MemeBoots : MonoBehaviour
+    public class RacerMovement : MonoBehaviour
     {
         private const float TENSOR = 0.4f;
 
@@ -34,7 +36,7 @@ namespace BoostBlasters.Character
         [SerializeField]
         private bool m_showPrediction = false;
 
-        private Player m_player = null;
+        private Racer m_player = null;
         private CapsuleCollider m_capsule = null;
         private Rigidbody m_body = null;
         private RaycastHit[] m_hits = new RaycastHit[20];
@@ -46,7 +48,7 @@ namespace BoostBlasters.Character
 
         private TrajectoryVisualization m_trajectoryVisualization;
 
-        public bool CanBoost => m_player.Energy >= m_player.Config.BoostEnergyUseRate * m_minBoostTime;
+        public bool CanBoost => m_player.Energy >= m_player.Character.BoostEnergyUseRate * m_minBoostTime;
 
         private bool m_isGrounded;
         public bool IsGrounded => m_isGrounded;
@@ -81,7 +83,7 @@ namespace BoostBlasters.Character
 
         private void Awake()
         {
-            m_player = GetComponentInParent<Player>();
+            m_player = GetComponentInParent<Racer>();
             m_body = GetComponent<Rigidbody>();
             m_capsule = GetComponent<CapsuleCollider>();
         }
@@ -114,9 +116,9 @@ namespace BoostBlasters.Character
             }
         }
 
-        public void FixedUpdateMovement(MovementInputs input, bool acceptInput, bool inPreWarm)
+        public void FixedUpdateMovement(Inputs input, bool acceptInput, bool inPreWarm)
         {
-            PlayerConfig config = m_player.Config;
+            CharacterConfig config = m_player.Character;
             ConfigurePhysics(config);
 
             if (acceptInput && !inPreWarm)
@@ -256,7 +258,7 @@ namespace BoostBlasters.Character
             }
         }
 
-        private void ConfigurePhysics(PlayerConfig config)
+        private void ConfigurePhysics(CharacterConfig config)
         {
             m_body.solverIterations = 12;
             m_body.solverVelocityIterations = 2;
@@ -266,9 +268,9 @@ namespace BoostBlasters.Character
             m_capsule.material = config.PhysicsMat;
         }
 
-        public void PredictStep(int steps, List<Vector3> pos, Vector3 velocity, List<float> rot, float angularVelocity, MovementInputs input, float deltaTime)
+        public void PredictStep(int steps, List<Vector3> pos, Vector3 velocity, List<float> rot, float angularVelocity, Inputs input, float deltaTime)
         {
-            PlayerConfig config = m_player.Config;
+            CharacterConfig config = m_player.Character;
 
             GetEngines(input, true, out float left, out float right, out float brake);
 
@@ -301,8 +303,8 @@ namespace BoostBlasters.Character
                     torque += right * Vector3.Dot(Vector3.Cross(forceOffset, engineForce), Vector3.up);
                 }
 
-                velocity = StepVelocity(velocity, force, m_body.mass, m_player.Config.LinearDrag + (brake * config.BrakeDrag), deltaTime);
-                angularVelocity = StepAngularVelocity(angularVelocity, torque, TENSOR, m_player.Config.AngularDrag, deltaTime);
+                velocity = StepVelocity(velocity, force, m_body.mass, m_player.Character.LinearDrag + (brake * config.BrakeDrag), deltaTime);
+                angularVelocity = StepAngularVelocity(angularVelocity, torque, TENSOR, m_player.Character.AngularDrag, deltaTime);
 
                 pos.Add(pos.Last() + (velocity * deltaTime));
                 rot.Add(rot.Last() + (180f * angularVelocity * deltaTime));
@@ -334,7 +336,7 @@ namespace BoostBlasters.Character
             return force;
         }
 
-        private void GetEngines(MovementInputs input, bool acceptInput, out float left, out float right, out float brake)
+        private void GetEngines(Inputs input, bool acceptInput, out float left, out float right, out float brake)
         {
             Vector2 v = Vector2.ClampMagnitude(new Vector2(input.h, input.v), 1);
             left = acceptInput ? Mathf.Clamp01(Mathf.Sqrt(Mathf.Clamp01(v.y) + Mathf.Clamp01(v.x))) : 0;

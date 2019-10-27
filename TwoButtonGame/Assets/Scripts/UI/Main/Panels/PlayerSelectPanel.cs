@@ -5,7 +5,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
-using BoostBlasters.Character;
+using BoostBlasters.Characters;
 using BoostBlasters.Players;
 
 namespace BoostBlasters.UI.MainMenus
@@ -72,7 +72,7 @@ namespace BoostBlasters.UI.MainMenus
         private List<PlayerProfilePanel> m_profilePanels = null;
         private Camera m_previewCam = null;
         private RenderTexture m_previewTex = null;
-        private Dictionary<PlayerConfig, GameObject> m_configToPreview = null;
+        private Dictionary<CharacterConfig, GameObject> m_configToPreview = null;
         private List<GameObject> m_previewObjects = null;
         private State m_state = State.Join;
         private int m_playerNum = 0;
@@ -115,7 +115,7 @@ namespace BoostBlasters.UI.MainMenus
         }
 
         private int m_selectedCharacter;
-        public PlayerConfig CharacterConfig => Main.Instance.PlayerConfigs[m_selectedCharacter];
+        public CharacterConfig CharacterConfig => Main.Instance.PlayerConfigs[m_selectedCharacter];
 
         public bool IsJoined => m_state != State.Join;
         public bool IsReady => m_state == State.Ready;
@@ -150,10 +150,10 @@ namespace BoostBlasters.UI.MainMenus
             m_previewCam.cullingMask = (1 << previewLayer);
 
             // load all the character models
-            m_configToPreview = new Dictionary<PlayerConfig, GameObject>();
+            m_configToPreview = new Dictionary<CharacterConfig, GameObject>();
             m_previewObjects = new List<GameObject>();
 
-            foreach (PlayerConfig config in Main.Instance.PlayerConfigs)
+            foreach (CharacterConfig config in Main.Instance.PlayerConfigs)
             {
                 GameObject pivot = new GameObject("CharacterPivot");
 
@@ -184,7 +184,7 @@ namespace BoostBlasters.UI.MainMenus
             m_characterHighlight.color = new Color(1, 1, 1, 0);
         }
 
-        public void FromConfig(PlayerProfile profile, PlayerBaseInput input, PlayerConfig selectedConfig)
+        public void FromConfig(PlayerProfile profile, PlayerBaseInput input, CharacterConfig selectedConfig)
         {
             m_state = State.Ready;
             Profile = profile;
@@ -410,7 +410,7 @@ namespace BoostBlasters.UI.MainMenus
                     break;
             }
 
-            PlayerConfig config = CharacterConfig;
+            CharacterConfig config = CharacterConfig;
 
             SetCameraActive(m_characterSelectTab.activeInHierarchy);
 

@@ -10,10 +10,10 @@ using Framework.Settings;
 using Framework.Interpolation;
 
 using BoostBlasters.Players;
+using BoostBlasters.Characters;
+using BoostBlasters.Levels;
 using BoostBlasters.Races;
 using BoostBlasters.Replays;
-using BoostBlasters.Character;
-using BoostBlasters.Levels;
 
 namespace BoostBlasters
 {
@@ -30,8 +30,8 @@ namespace BoostBlasters
         private RaceParameters m_raceParams = null;
         public RaceParameters LastRaceParams => m_raceParams;
 
-        private PlayerConfig[] m_playerConfigs;
-        public PlayerConfig[] PlayerConfigs => m_playerConfigs;
+        private CharacterConfig[] m_playerConfigs;
+        public CharacterConfig[] PlayerConfigs => m_playerConfigs;
 
         private LevelConfig[] m_levelConfigs;
         public LevelConfig[] LevelConfigs => m_levelConfigs;
@@ -56,7 +56,7 @@ namespace BoostBlasters
             Debug.Log("Initializing main...");
 
             m_raceManagerPrefab = Resources.Load<RaceManager>("RaceManager");
-            m_playerConfigs = Resources.LoadAll<PlayerConfig>("PlayerConfigs/").OrderBy(c => c.SortOrder).ToArray();
+            m_playerConfigs = Resources.LoadAll<CharacterConfig>("PlayerConfigs/").OrderBy(c => c.SortOrder).ToArray();
             m_levelConfigs = Resources.LoadAll<LevelConfig>("LevelConfigs/").OrderBy(c => c.SortOrder).ToArray();
 
             PlayerProfileManager.Instance.LoadProfiles();
@@ -123,7 +123,7 @@ namespace BoostBlasters
         {
             m_lastRaceType = RaceType.Race;
             m_raceParams = raceParams;
-            AsyncOperation loading = SceneManager.LoadSceneAsync(raceParams.LevelConfig.SceneName);
+            AsyncOperation loading = SceneManager.LoadSceneAsync(raceParams.level.SceneName);
             StartCoroutine(LoadLevel(loading, () => StartRace(raceParams)));
             return loading;
         }
@@ -138,7 +138,7 @@ namespace BoostBlasters
         {
             m_lastRaceType = RaceType.Replay;
             m_raceParams = null;
-            AsyncOperation loading = SceneManager.LoadSceneAsync(recording.RaceParams.LevelConfig.SceneName);
+            AsyncOperation loading = SceneManager.LoadSceneAsync(recording.RaceParams.level.SceneName);
             StartCoroutine(LoadLevel(loading, () => StartRace(recording)));
             return loading;
         }
@@ -172,9 +172,9 @@ namespace BoostBlasters
             onComplete();
         }
 
-        public PlayerConfig GetPlayerConfig(int configID)
+        public CharacterConfig GetPlayerConfig(int configID)
         {
-            foreach (PlayerConfig config in m_playerConfigs)
+            foreach (CharacterConfig config in m_playerConfigs)
             {
                 if (config.Id == configID)
                 {

@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 using BoostBlasters.Players;
-using BoostBlasters.Character;
+using BoostBlasters.Characters;
 using BoostBlasters.Races;
 
 namespace BoostBlasters.UI.MainMenus
@@ -29,7 +29,7 @@ namespace BoostBlasters.UI.MainMenus
 
         public List<PlayerProfile> PlayerProfiles => m_playerSelectPanels.Select(p => p.Profile).Where(p => p != null).ToList();
 
-        public List<PlayerConfig> CharacterConfigs => ReadyPlayers.Select(p => p.CharacterConfig).ToList();
+        public List<CharacterConfig> CharacterConfigs => ReadyPlayers.Select(p => p.CharacterConfig).ToList();
 
         public List<int> PlayerIndices => ReadyPlayers.Select((p, i) => i).ToList();
 
@@ -63,12 +63,12 @@ namespace BoostBlasters.UI.MainMenus
             RaceParameters lastRace = Main.Instance.LastRaceParams;
             if (lastRace != null)
             {
-                for (int i = 0; i < lastRace.PlayerIndicies.Count; i++)
+                for (int i = 0; i < lastRace.playerIndicies.Count; i++)
                 {
-                    int index = lastRace.PlayerIndicies[i];
-                    PlayerProfile profile   = lastRace.Profiles[i];
-                    PlayerBaseInput input   = lastRace.Inputs[i];
-                    PlayerConfig config     = lastRace.PlayerConfigs[i];
+                    int index = lastRace.playerIndicies[i];
+                    PlayerProfile profile = lastRace.profiles[i];
+                    PlayerBaseInput input = lastRace.inputs[i];
+                    CharacterConfig config = lastRace.characters[i];
 
                     m_playerSelectPanels[index].FromConfig(profile, input, config);
                 }

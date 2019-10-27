@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace BoostBlasters.Character
+namespace BoostBlasters.Races.Racers
 {
     /// <summary>
     /// Generates movement input from human input.
@@ -8,7 +8,7 @@ namespace BoostBlasters.Character
     public class PlayerInputProvider : IInputProvider
     {
         private PlayerBaseInput m_playerInput = null;
-        private MovementInputs m_movementInputs = default;
+        private Inputs m_movementInputs = default;
         private bool m_boost = false;
 
         public PlayerInputProvider(PlayerBaseInput input)
@@ -43,13 +43,13 @@ namespace BoostBlasters.Character
 
         public void FixedUpdateProvider()
         {
-            m_movementInputs = new MovementInputs();
+            m_movementInputs = new Inputs();
             m_movementInputs.h = m_playerInput.H;
             m_movementInputs.v = m_playerInput.V;
             m_movementInputs.boost = m_boost;
         }
 
-        public MovementInputs GetInput()
+        public Inputs GetInput()
         {
             return m_movementInputs;
         }

@@ -112,9 +112,9 @@ namespace BoostBlasters.UI.MainMenus
                 ReplayInfo info = selectedReplay.ReplayInfo;
                 RaceResult[] results = info.RaceResults.OrderBy(r => r.Rank).ToArray();
 
-                m_levelPreview.sprite = info.RaceParams.LevelConfig.Preview;
-                m_levelNameText.text = info.RaceParams.LevelConfig.Name;
-                m_lapsText.text = info.RaceParams.Laps.ToString();
+                m_levelPreview.sprite = info.RaceParams.level.Preview;
+                m_levelNameText.text = info.RaceParams.level.Name;
+                m_lapsText.text = info.RaceParams.laps.ToString();
                 m_finishedText.text = results.Any(r => r.Finished) ? "Yes" : "No";
 
                 for (int i = 0; i < m_playerResults.Count; i++)
