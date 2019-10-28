@@ -8,9 +8,9 @@ using Framework.IO;
 
 using BoostBlasters.Players;
 using BoostBlasters.Characters;
+using BoostBlasters.Levels;
 using BoostBlasters.Races;
 using BoostBlasters.Races.Racers;
-using BoostBlasters.Levels;
 
 namespace BoostBlasters.Replays
 {
@@ -70,11 +70,11 @@ namespace BoostBlasters.Replays
 
         public static void ParseHeader(BinaryReader reader, out RaceParameters raceParams, out RaceResult[] results)
         {
-            Level level   = Main.Instance.GetLevel(reader.ReadInt());
+            Level level   = LevelManager.GetByGUID(reader.ReadInt());
             int laps            = reader.ReadInt();
             int humanCount      = reader.ReadInt();
             int aiCount         = reader.ReadInt();
-            List<Character> playerConfigs = reader.ReadArray<int>().Select(id => Main.Instance.GetCharacter(id)).ToList();
+            List<Character> playerConfigs = reader.ReadArray<int>().Select(id => CharacterManager.GetByGUID(id)).ToList();
 
             List<PlayerProfile> proflies = new List<PlayerProfile>();
             for (int i = 0; i < humanCount + aiCount; i++)

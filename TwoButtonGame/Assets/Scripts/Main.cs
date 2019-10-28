@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections;
-using System.Linq;
 
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 using Framework;
-using Framework.Settings;
 using Framework.Interpolation;
 
 using BoostBlasters.Players;
@@ -24,9 +22,6 @@ namespace BoostBlasters
     {
         private RaceManager m_raceManagerPrefab;
 
-        public Character[] Characters => CharacterManager.Characters;
-        public Level[] Levels => LevelManager.Levels;
-
         public RaceManager RaceManager { get; private set; }
         public RaceParameters LastRaceParams { get; private set; }
         public RaceType LastRaceType { get; private set; }
@@ -38,26 +33,14 @@ namespace BoostBlasters
             None,
         }
 
-        protected override void Awake()
+        private async void Start()
         {
-            base.Awake();
-            StartCoroutine(Initialize());
-        }
-
-        private IEnumerator Initialize()
-        {
-            SettingManager.Instance.Initialize();
+            // do loading operations
             PlayerProfileManager.Instance.LoadProfiles();
 
-            // start loading operations
-            IEnumerator characterOperation = CharacterManager.LoadAsync();
-            IEnumerator levelOperation = LevelManager.LoadAsync();
-
-            m_raceManagerPrefab = Resources.Load<RaceManager>("RaceManager");
-
-            // wait for loading operations to complete
-            yield return characterOperation;
-            yield return levelOperation;
+            await CharacterManager.LoadCharactersAsync();
+            await LevelManager.LoadLevelsAsync();
+            m_raceManagerPrefab = await Resources.LoadAsync<RaceManager>("RaceManager") as RaceManager;
 
             // load the main menu
             LastRaceType = RaceType.None;
@@ -169,34 +152,12 @@ namespace BoostBlasters
 
             yield return new WaitWhile(() => !loading.isDone);
 
+            Resources.UnloadUnusedAssets();
+
             AudioManager.Instance.Volume = 1f;
             AudioManager.Instance.MusicVolume = 1f;
 
             onComplete?.Invoke();
-        }
-
-        public Character GetCharacter(int characterID)
-        {
-            foreach (Character character in Characters)
-            {
-                if (character.Id == characterID)
-                {
-                    return character;
-                }
-            }
-            return null;
-        }
-
-        public Level GetLevel(int levelID)
-        {
-            foreach (Level level in Levels)
-            {
-                if (level.Id == levelID)
-                {
-                    return level;
-                }
-            }
-            return null;
         }
     }
 }

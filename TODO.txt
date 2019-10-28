@@ -5,6 +5,7 @@ Refactoring
 - Characters as asset bundles
 - Music as asset bundles / raw files?
 - check for spaghetti (check singleton usage)
+- Levels/Characters use GUID
 - things should not know about level stuff, only interact with race classes
 - implement waypoint as a race concept, things should reference that instead
 - turn race manager into a state machine

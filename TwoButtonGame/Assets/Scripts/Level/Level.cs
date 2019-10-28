@@ -28,18 +28,6 @@ namespace BoostBlasters.Levels
         private string m_name = string.Empty;
         public string Name => m_name;
 
-        public enum Difficulty
-        {
-            Easy,
-            Moderate,
-            Hard,
-            Intense,
-        }
-
-        [SerializeField]
-        private Difficulty m_difficulty = Difficulty.Moderate;
-        public Difficulty LevelDifficulty => m_difficulty;
-
         [SerializeField]
         private Sprite m_preview = null;
         public Sprite Preview => m_preview;
@@ -47,6 +35,8 @@ namespace BoostBlasters.Levels
         [SerializeField]
         private GameObject m_preview3d = null;
         public GameObject Preview3d => m_preview3d;
+
+        [Header("Scene")]
 
         [SerializeField]
         private string m_sceneName = string.Empty;

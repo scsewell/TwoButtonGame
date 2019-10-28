@@ -186,7 +186,7 @@ namespace BoostBlasters.UI.MainMenus
 
             for (int i = 0; i < aiCount; i++)
             {
-                characters.Add(Main.Instance.Characters.PickRandom());
+                characters.Add(CharacterManager.Characters.PickRandom());
                 playerProfiles.Add(PlayerProfileManager.Instance.GetGuestProfile($"AI {i + 1}", false));
             }
 

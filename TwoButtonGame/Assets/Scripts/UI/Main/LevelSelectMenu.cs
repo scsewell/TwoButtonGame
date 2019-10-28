@@ -26,7 +26,6 @@ namespace BoostBlasters.UI.MainMenus
         [SerializeField] private Button m_startRaceButton = null;
         [SerializeField] private Button m_backButton = null;
         [SerializeField] private RectTransform m_resultsContent = null;
-        [SerializeField] private Text m_levelDifficulty = null;
         [SerializeField] private Image m_levelPreview = null;
         [SerializeField] private Image m_levelHighlight = null;
         [SerializeField] private RectTransform m_track3dPreview = null;
@@ -85,7 +84,7 @@ namespace BoostBlasters.UI.MainMenus
             m_backButton.onClick.AddListener(() => OnBack());
             
             m_options = new List<Navigable>();
-            m_trackSelect   = new Option<Level>(m_options, m_optionPrefab, m_optionContent, "Track", Main.Instance.Levels, OnLevelChange);
+            m_trackSelect   = new Option<Level>(m_options, m_optionPrefab, m_optionContent, "Track", LevelManager.Levels, OnLevelChange);
             m_lapSelect     = new Option<int>(m_options, m_optionPrefab, m_optionContent, "Laps", Enumerable.Range(1, m_maxLapCount).ToArray(), null);
             m_aiCountSelect = new Option<int>(m_options, m_optionPrefab, m_optionContent, "AI Racers", Enumerable.Range(0, Consts.MAX_RACERS + 1).ToArray(), null);
 
@@ -119,7 +118,7 @@ namespace BoostBlasters.UI.MainMenus
             m_configToPreview = new Dictionary<Level, GameObject>();
             m_levelToResults = new Dictionary<Level, List<RaceResult>>();
 
-            foreach (Level config in Main.Instance.Levels)
+            foreach (Level config in LevelManager.Levels)
             {
                 if (config.Preview3d != null)
                 {
@@ -163,7 +162,7 @@ namespace BoostBlasters.UI.MainMenus
 
             if (fullReset)
             {
-                m_trackSelect.SetValue(Main.Instance.Levels.FirstOrDefault());
+                m_trackSelect.SetValue(LevelManager.Levels.FirstOrDefault());
                 m_lapSelect.SetValue(m_defaultLapCount);
                 m_aiCountSelect.SetValue(m_defaultAICount);
             }
@@ -181,7 +180,6 @@ namespace BoostBlasters.UI.MainMenus
             m_options.ForEach(o => o.UpdateGraphics());
 
             Level config = m_trackSelect.Value;
-            m_levelDifficulty.text = config.LevelDifficulty.ToString();
             m_levelPreview.sprite = config.Preview;
 
             m_levelHighlight.color = new Color(1, 1, 1, Mathf.Lerp(m_levelHighlight.color.a, 0, Time.unscaledDeltaTime / 0.035f));
