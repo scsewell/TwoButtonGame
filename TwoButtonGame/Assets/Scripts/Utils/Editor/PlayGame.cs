@@ -29,11 +29,26 @@ namespace BoostBlasters
             }
         }
 
-        /// <summary>
-        /// Starts playing the game in the editor.
-        /// </summary>
         [MenuItem("BoostBlasters/Play _F1", priority = 10)]
-        public static void Play()
+        public static void DoPlay()
+        {
+            Play();
+        }
+
+        [MenuItem("BoostBlasters/Bundles _F2", priority = 11)]
+        public static void DoBundles()
+        {
+            Build.BuildBundles(true);
+        }
+
+        [MenuItem("BoostBlasters/Bundles + Play _F3", priority = 12)]
+        public static void DoPlayBundles()
+        {
+            Build.BuildBundles(true);
+            Play();
+        }
+
+        private static void Play()
         {
             // remember the currently open scene
             EditorPrefs.SetString(PrefKey, SceneManager.GetActiveScene().path);

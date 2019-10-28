@@ -24,8 +24,8 @@ namespace BoostBlasters
     {
         private RaceManager m_raceManagerPrefab;
 
-        public Character[] Characters { get; private set; }
-        public Level[] Levels { get; private set; }
+        public Character[] Characters => CharacterManager.Characters;
+        public Level[] Levels => LevelManager.Levels;
 
         public RaceManager RaceManager { get; private set; }
         public RaceParameters LastRaceParams { get; private set; }
@@ -41,23 +41,29 @@ namespace BoostBlasters
         protected override void Awake()
         {
             base.Awake();
+            StartCoroutine(Initialize());
+        }
 
-            Debug.Log("Initializing main...");
+        private IEnumerator Initialize()
+        {
+            SettingManager.Instance.Initialize();
+            PlayerProfileManager.Instance.LoadProfiles();
+
+            // start loading operations
+            IEnumerator characterOperation = CharacterManager.LoadAsync();
+            IEnumerator levelOperation = LevelManager.LoadAsync();
 
             m_raceManagerPrefab = Resources.Load<RaceManager>("RaceManager");
-            Characters = Resources.LoadAll<Character>("PlayerConfigs/").OrderBy(c => c.SortOrder).ToArray();
-            Levels = Resources.LoadAll<Level>("LevelConfigs/").OrderBy(c => c.SortOrder).ToArray();
 
-            PlayerProfileManager.Instance.LoadProfiles();
-            SettingManager.Instance.Initialize();
+            // wait for loading operations to complete
+            yield return characterOperation;
+            yield return levelOperation;
 
+            // load the main menu
             LastRaceType = RaceType.None;
 
-            Debug.Log("Main initialization complete");
-
-            Debug.Log("Loading main menu...");
-
-            SceneManager.LoadScene(1);
+            AsyncOperation loading = LoadMainMenu();
+            loading.allowSceneActivation = true;
         }
 
         private void FixedUpdate()
@@ -103,8 +109,7 @@ namespace BoostBlasters
 
         public AsyncOperation LoadMainMenu()
         {
-            AsyncOperation loading = SceneManager.LoadSceneAsync(0);
-
+            AsyncOperation loading = SceneManager.LoadSceneAsync(1);
             StartCoroutine(LoadLevel(loading, () => StartMainMenu()));
             return loading;
         }
@@ -118,6 +123,7 @@ namespace BoostBlasters
         {
             LastRaceType = RaceType.Race;
             LastRaceParams = raceParams;
+
             AsyncOperation loading = SceneManager.LoadSceneAsync(raceParams.level.SceneName);
             StartCoroutine(LoadLevel(loading, () => StartRace(raceParams)));
             return loading;
@@ -127,6 +133,7 @@ namespace BoostBlasters
         {
             LastRaceType = RaceType.Replay;
             LastRaceParams = null;
+
             AsyncOperation loading = SceneManager.LoadSceneAsync(recording.RaceParams.level.SceneName);
             StartCoroutine(LoadLevel(loading, () => StartRace(recording)));
             return loading;
@@ -144,7 +151,7 @@ namespace BoostBlasters
             RaceManager.LoadReplay(recording);
         }
 
-        private IEnumerator LoadLevel(AsyncOperation loading, Action onComplete)
+        private IEnumerator LoadLevel(AsyncOperation loading, Action onComplete = null)
         {
             Application.backgroundLoadingPriority = ThreadPriority.BelowNormal;
             loading.allowSceneActivation = false;

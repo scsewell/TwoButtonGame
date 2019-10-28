@@ -26,8 +26,8 @@ namespace BoostBlasters
             buildPlayerOptions.target = EditorUserBuildSettings.activeBuildTarget;
             buildPlayerOptions.options = BuildOptions.None;
 
+            BuildBundles(false);
             BuildProject(buildPlayerOptions);
-            BuildBundles(GetBundleDirectory());
         }
 
         [MenuItem("BoostBlasters/Build + Run _F6", priority = 105)]
@@ -38,17 +38,17 @@ namespace BoostBlasters
             buildPlayerOptions.target = EditorUserBuildSettings.activeBuildTarget;
             buildPlayerOptions.options = BuildOptions.None | BuildOptions.AutoRunPlayer;
 
+            BuildBundles(false);
             BuildProject(buildPlayerOptions);
-            BuildBundles(GetBundleDirectory());
         }
 
         [MenuItem("BoostBlasters/Build Bundles _F7", priority = 110)]
         public static void DoBuildBundles()
         {
-            BuildBundles(GetBundleDirectory());
+            BuildBundles(false);
         }
 
-        private static void BuildProject(BuildPlayerOptions options)
+        public static void BuildProject(BuildPlayerOptions options)
         {
             Debug.Log("Starting build...");
 
@@ -74,8 +74,20 @@ namespace BoostBlasters
             }
         }
 
-        private static void BuildBundles(string path)
+        public static void BuildBundles(bool isEditor)
         {
+            // get the build path
+            string path;
+
+            if (isEditor)
+            {
+                path = $"{Application.dataPath}/../Bundles/";
+            }
+            else
+            {
+                path = $"{BuildPath}/{ProductName}_Data/Bundles/";
+            }
+
             // create a clean folder for the asset bundles
             if (Directory.Exists(path))
             {
@@ -92,7 +104,6 @@ namespace BoostBlasters
             AssetBundleManifest manifest = BuildPipeline.BuildAssetBundles(
                 path,
                 BuildAssetBundleOptions.StrictMode |
-                BuildAssetBundleOptions.DisableLoadAssetByFileName |
                 BuildAssetBundleOptions.DisableLoadAssetByFileNameWithExtension,
                 EditorUserBuildSettings.activeBuildTarget
             );
@@ -113,11 +124,6 @@ namespace BoostBlasters
             }
 
             Debug.Log("Asset bundle build completed");
-        }
-
-        private static string GetBundleDirectory()
-        {
-            return $"{BuildPath}/{ProductName}_Data/Bundles/";
         }
     }
 }
