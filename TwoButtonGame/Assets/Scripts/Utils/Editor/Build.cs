@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.IO;
+﻿using System.IO;
 
 using UnityEngine;
 
@@ -18,7 +16,7 @@ namespace BoostBlasters
         private static string ProductName => Application.productName.Replace(" ", "");
         private static string ExecutableName => $"{ProductName}.exe";
 
-        [MenuItem("BoostBlasters/Build _F5", priority = 100)]
+        [MenuItem("BoostBlasters/Build All _F5", priority = 100)]
         public static void DoBuild()
         {
             BuildPlayerOptions buildPlayerOptions = new BuildPlayerOptions();
@@ -26,26 +24,29 @@ namespace BoostBlasters
             buildPlayerOptions.target = EditorUserBuildSettings.activeBuildTarget;
             buildPlayerOptions.options = BuildOptions.None;
 
-            BuildBundles(false);
             BuildProject(buildPlayerOptions);
+            BuildBundles(false);
         }
 
-        [MenuItem("BoostBlasters/Build + Run _F6", priority = 105)]
+        [MenuItem("BoostBlasters/Build Bundles _F6", priority = 105)]
+        public static void DoBuildBundles()
+        {
+            BuildBundles(false);
+        }
+
+        [MenuItem("BoostBlasters/Build All + Run _F7", priority = 110)]
         public static void DoBuildRun()
         {
             BuildPlayerOptions buildPlayerOptions = new BuildPlayerOptions();
             buildPlayerOptions.locationPathName = $"{BuildPath}/{ExecutableName}";
             buildPlayerOptions.target = EditorUserBuildSettings.activeBuildTarget;
-            buildPlayerOptions.options = BuildOptions.None | BuildOptions.AutoRunPlayer;
+            buildPlayerOptions.options = BuildOptions.None;
 
-            BuildBundles(false);
             BuildProject(buildPlayerOptions);
-        }
-
-        [MenuItem("BoostBlasters/Build Bundles _F7", priority = 110)]
-        public static void DoBuildBundles()
-        {
             BuildBundles(false);
+
+            Debug.Log("Launching build...");
+            System.Diagnostics.Process.Start(buildPlayerOptions.locationPathName);
         }
 
         public static void BuildProject(BuildPlayerOptions options)

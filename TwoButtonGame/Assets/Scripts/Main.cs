@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections;
+using System.Threading.Tasks;
 
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -16,7 +16,7 @@ using BoostBlasters.Replays;
 namespace BoostBlasters
 {
     /// <summary>
-    /// Manages global information.
+    /// Manages the update loop and core game state.
     /// </summary>
     public class Main : ComponentSingleton<Main>
     {
@@ -35,6 +35,9 @@ namespace BoostBlasters
 
         private async void Start()
         {
+            // we want nice and smooth loading
+            Application.backgroundLoadingPriority = ThreadPriority.Normal;
+
             // do loading operations
             PlayerProfileManager.Instance.LoadProfiles();
 
@@ -45,8 +48,7 @@ namespace BoostBlasters
             // load the main menu
             LastRaceType = RaceType.None;
 
-            AsyncOperation loading = LoadMainMenu();
-            loading.allowSceneActivation = true;
+            LoadMainMenu();
         }
 
         private void FixedUpdate()
@@ -62,9 +64,9 @@ namespace BoostBlasters
         private void Update()
         {
             // lock the cursor if required
-            bool useCursor = Input.GetKey(KeyCode.LeftControl);
+            bool freeCursor = Input.GetKey(KeyCode.LeftControl);
             Cursor.lockState = true ? CursorLockMode.None : CursorLockMode.Locked;
-            Cursor.visible = useCursor;
+            Cursor.visible = freeCursor;
 
             // main update loop
             InputManager.Instance.Update();
@@ -90,74 +92,87 @@ namespace BoostBlasters
             }
         }
 
-        public AsyncOperation LoadMainMenu()
+        /// <summary>
+        /// Loads the main menu scene.
+        /// </summary>
+        /// <param name="doLoad">A function which is true when the actual scene transition
+        /// should be allowed to occur.</param>
+        public async void LoadMainMenu(Func<bool> doLoad = null)
         {
-            AsyncOperation loading = SceneManager.LoadSceneAsync(1);
-            StartCoroutine(LoadLevel(loading, () => StartMainMenu()));
-            return loading;
-        }
+            AsyncOperation op = SceneManager.LoadSceneAsync(1);
+            await LoadScene(op, doLoad);
 
-        private void StartMainMenu()
-        {
+            LevelManager.UnloadAllLevels();
+
             RaceManager = null;
         }
 
-        public AsyncOperation LoadRace(RaceParameters raceParams)
+        /// <summary>
+        /// Starts a race.
+        /// </summary>
+        /// <param name="raceParams">The race configuration.</param>
+        /// <param name="doLoad">A function which is true when the actual scene transition
+        /// should be allowed to occur.</param>
+        public async void LoadRace(RaceParameters raceParams, Func<bool> doLoad = null)
         {
             LastRaceType = RaceType.Race;
             LastRaceParams = raceParams;
 
-            AsyncOperation loading = SceneManager.LoadSceneAsync(raceParams.level.SceneName);
-            StartCoroutine(LoadLevel(loading, () => StartRace(raceParams)));
-            return loading;
-        }
+            string scene = await LevelManager.LoadLevelAsync(raceParams.level);
+            AsyncOperation op = SceneManager.LoadSceneAsync(scene);
+            await LoadScene(op, doLoad);
 
-        public AsyncOperation LoadRace(RaceRecording recording)
-        {
-            LastRaceType = RaceType.Replay;
-            LastRaceParams = null;
-
-            AsyncOperation loading = SceneManager.LoadSceneAsync(recording.RaceParams.level.SceneName);
-            StartCoroutine(LoadLevel(loading, () => StartRace(recording)));
-            return loading;
-        }
-
-        private void StartRace(RaceParameters raceParams)
-        {
             RaceManager = Instantiate(m_raceManagerPrefab);
             RaceManager.LoadRace(raceParams);
         }
 
-        private void StartRace(RaceRecording recording)
+        /// <summary>
+        /// Starts a replay.
+        /// </summary>
+        /// <param name="recording">The replay to view.</param>
+        /// <param name="doLoad">A function which is true when the actual scene transition
+        /// should be allowed to occur.</param>
+        public async void LoadRace(RaceRecording recording, Func<bool> doLoad = null)
         {
+            LastRaceType = RaceType.Replay;
+            LastRaceParams = null;
+
+            string scene = await LevelManager.LoadLevelAsync(recording.RaceParams.level);
+            AsyncOperation op = SceneManager.LoadSceneAsync(scene);
+            await LoadScene(op, doLoad);
+
             RaceManager = Instantiate(m_raceManagerPrefab);
             RaceManager.LoadReplay(recording);
         }
 
-        private IEnumerator LoadLevel(AsyncOperation loading, Action onComplete = null)
+        private async Task LoadScene(AsyncOperation op, Func<bool> doLoad)
         {
-            Application.backgroundLoadingPriority = ThreadPriority.BelowNormal;
-            loading.allowSceneActivation = false;
+            // wait until the caller wants the scene transition to occur
+            if (doLoad != null)
+            {
+                op.allowSceneActivation = false;
 
-            yield return new WaitWhile(() => !loading.allowSceneActivation);
+                await new WaitWhile(() => !doLoad());
+            }
 
-            AudioManager.Instance.Volume = 0f;
+            // clear unwanted persistent state
             AudioManager.Instance.StopMusic();
             AudioManager.Instance.StopSounds();
 
-            AudioListener.volume = 0f;
+            // wait for scene transition to complete
+            op.allowSceneActivation = true;
+            await op;
+
+            // cleanup unused objects
+            GC.Collect();
+
+            // restore default state
+            AudioManager.Instance.MusicVolume = 1f; 
+            AudioManager.Instance.Volume = 1f;
+
             AudioListener.pause = false;
 
             Time.timeScale = 1f;
-
-            yield return new WaitWhile(() => !loading.isDone);
-
-            Resources.UnloadUnusedAssets();
-
-            AudioManager.Instance.Volume = 1f;
-            AudioManager.Instance.MusicVolume = 1f;
-
-            onComplete?.Invoke();
         }
     }
 }

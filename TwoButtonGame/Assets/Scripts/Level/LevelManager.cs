@@ -56,7 +56,7 @@ namespace BoostBlasters.Levels
         /// </summary>
         /// <param name="level">The level to load.</param>
         /// <returns>The scene path that can be loaded upon completion.</returns>
-        public static async Task<string> LoadLevel(Level level)
+        public static async Task<string> LoadLevelAsync(Level level)
         {
             AssetBundle bundle;
 
@@ -76,6 +76,19 @@ namespace BoostBlasters.Levels
         }
 
         /// <summary>
+        /// Unloads all levels that are currently loaded.
+        /// </summary>
+        public static void UnloadAllLevels()
+        {
+            foreach (var levelBundlePair in m_loadedBundles)
+            {
+                levelBundlePair.Value.Unload(true);
+            }
+
+            m_loadedBundles.Clear();
+        }
+
+        /// <summary>
         /// Unloads a level and all of its assets.
         /// </summary>
         /// <param name="level">The level to load.</param>
@@ -84,6 +97,7 @@ namespace BoostBlasters.Levels
             if (m_loadedBundles.TryGetValue(level, out AssetBundle bundle))
             {
                 bundle.Unload(true);
+
                 m_loadedBundles.Remove(level);
             }
             else

@@ -4,6 +4,7 @@ Refactoring
 - Levels as asset bundles
 - Characters as asset bundles
 - Music as asset bundles / raw files?
+- Profiles load async
 - check for spaghetti (check singleton usage)
 - Levels/Characters use GUID
 - things should not know about level stuff, only interact with race classes
@@ -38,6 +39,7 @@ General
 
 Audio
 - Add 3D sound for splitscreen (virtual scene for audio, duplicate audio sorce for each listener)
+- Add support for sound mixing in audio manager
 - Collision/sliding sound
 - Player finish line sounds
 - Energy gate sounds

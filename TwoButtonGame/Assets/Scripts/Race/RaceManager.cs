@@ -73,7 +73,7 @@ namespace BoostBlasters.Races
         private IntroCamera m_cameraRig;
         private ReplayCamera m_replayCamera;
 
-        private AsyncOperation m_loading;
+        private bool m_isQuiting;
 
         private RaceRecording m_raceRecording;
         private int m_fixedFramesSoFar;
@@ -138,7 +138,7 @@ namespace BoostBlasters.Races
 
         public bool RestartRace()
         {
-            if (m_loading == null)
+            if (!m_isQuiting)
             {
                 AudioManager.Instance.StopSounds();
                 AudioManager.Instance.StopMusic();
@@ -366,18 +366,13 @@ namespace BoostBlasters.Races
             }
             m_countdownSecond = countdownSecond;
 
-            AudioManager.Instance.MusicPausable = (Time.time - m_raceStartTime < 0);
-            AudioManager.Instance.MusicVolume = Mathf.MoveTowards(AudioManager.Instance.MusicVolume, 1 - GetFadeFactor(true), Time.unscaledDeltaTime / 0.5f);
-
-            if (m_loading != null && GetFadeFactor(false) >= 1)
-            {
-                m_loading.allowSceneActivation = true;
-            }
+            AudioManager.Instance.MusicPausable = Time.time - m_raceStartTime < 0f;
+            AudioManager.Instance.MusicVolume = Mathf.MoveTowards(AudioManager.Instance.MusicVolume, 1f - GetFadeFactor(true), Time.unscaledDeltaTime / 0.5f);
 
             bool showPlayerUI = !m_isInIntro && m_state != State.Replay;
             bool allowQuit = m_state == State.Finished || m_state == State.Replay;
 
-            m_raceMenu.UpdateUI(showPlayerUI, m_state == State.Paused, allowQuit, m_loading != null);
+            m_raceMenu.UpdateUI(showPlayerUI, m_state == State.Paused, allowQuit, m_isQuiting);
         }
 
         public void LateUpdateRace()
@@ -419,19 +414,24 @@ namespace BoostBlasters.Races
             {
                 m_state = State.Racing;
                 AudioListener.pause = false;
-                Time.timeScale = 1;
+                Time.timeScale = 1f;
             }
         }
 
         public void Quit()
         {
-            if (m_loading == null)
+            if (!m_isQuiting)
             {
+                m_isQuiting = true;
+                m_quitStartTime = Time.unscaledTime;
+
                 SaveResults();
                 SaveRecording();
 
-                m_loading = Main.Instance.LoadMainMenu();
-                m_quitStartTime = Time.unscaledTime;
+                Main.Instance.LoadMainMenu(() =>
+                {
+                    return GetFadeFactor(false) >= 0.99f;
+                });
             }
         }
 
@@ -458,30 +458,31 @@ namespace BoostBlasters.Races
 
         public float GetFadeFactor(bool audio)
         {
-            float fadeFac = 0;
+            float fac = 1f;
 
+            // fade screen when the scene is loaded or replay restarts
             if (!audio || m_state != State.Replay)
             {
-                fadeFac = Mathf.Lerp(fadeFac, 1, 1 - Mathf.Clamp01(Mathf.Abs(Time.time - m_raceLoadTime) / m_fadeInTime));
-                fadeFac = Mathf.Lerp(fadeFac, 1, 1 - Mathf.Clamp01(Mathf.Abs(Time.time - m_replayStartTime) / m_replayFadeTime));
+                fac *= Mathf.Clamp01(Mathf.Abs(Time.time - m_raceLoadTime) / m_fadeInTime);
+                fac *= Mathf.Clamp01(Mathf.Abs(Time.time - m_replayStartTime) / m_replayFadeTime);
             }
-
+            // fade screen from intro animation end to race
             if (!audio)
             {
-                fadeFac = Mathf.Lerp(fadeFac, 1, 1 - Mathf.Clamp01(Mathf.Abs(Time.time - m_introEndTime) / m_introFadeTime));
+                fac *= Mathf.Clamp01(Mathf.Abs(Time.time - m_introEndTime) / m_introFadeTime);
             }
-
-            if (m_loading != null)
+            // fade out when exiting scene
+            if (m_isQuiting)
             {
-                fadeFac = Mathf.Lerp(fadeFac, 1, Mathf.Clamp01((Time.unscaledTime - m_quitStartTime) / m_fadeOutTime));
+                fac *= 1f - Mathf.Clamp01((Time.unscaledTime - m_quitStartTime) / m_fadeOutTime);
             }
-
+            // fade view when paused
             if (m_state == State.Paused)
             {
-                fadeFac = Mathf.Lerp(fadeFac, 1, 0.65f);
+                fac *= 1f - 0.65f;
             }
 
-            return 1 - (0.5f * Mathf.Cos(Mathf.PI * Mathf.Clamp01(fadeFac)) + 0.5f);
+            return Mathf.SmoothStep(1f, 0f, fac);
         }
 
         public float GetStartRelativeTime()

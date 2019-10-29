@@ -72,7 +72,7 @@ namespace BoostBlasters.UI.MainMenus
         private ConfirmMenu m_confirm;
         public ConfirmMenu Confirm => m_confirm;
 
-        private AsyncOperation m_loading;
+        private bool m_isQuitting;
         private float m_menuLoadTime;
         private float m_menuExitTime;
 
@@ -133,11 +133,6 @@ namespace BoostBlasters.UI.MainMenus
             m_fade.color = new Color(0f, 0f, 0f, factor);
 
             AudioManager.Instance.Volume = Mathf.MoveTowards(AudioManager.Instance.Volume, 1f - factor, Time.unscaledDeltaTime / 0.35f);
-            
-            if (m_loading != null && factor >= 1f)
-            {
-                m_loading.allowSceneActivation = true;
-            }
         }
 
         private void LateUpdate()
@@ -161,17 +156,25 @@ namespace BoostBlasters.UI.MainMenus
         private float GetFadeFactor()
         {
             float fac = 1f - Mathf.Clamp01((Time.time - m_menuLoadTime) / m_fadeInDuration);
-            if (m_loading != null)
+
+            if (m_isQuitting)
             {
                 fac = Mathf.Lerp(fac, 1f, Mathf.Clamp01((Time.unscaledTime - m_menuExitTime) / m_fadeOutDuration));
             }
+
             return Mathf.Sin((Mathf.PI / 2f) * Mathf.Pow(fac, m_fadePower));
         }
 
         public void LaunchReplay(ReplayInfo info)
         {
-            m_loading = Main.Instance.LoadRace(ReplayManager.Instance.LoadReplay(info));
+            m_isQuitting = true;
             m_menuExitTime = Time.unscaledTime;
+
+            Main.Instance.LoadRace(ReplayManager.Instance.LoadReplay(info), () =>
+            {
+                return GetFadeFactor() >= 0.99f;
+            });
+
             SetMenu(null);
         }
 
@@ -201,8 +204,14 @@ namespace BoostBlasters.UI.MainMenus
                 m_playerSelect.PlayerIndices
             );
 
-            m_loading = Main.Instance.LoadRace(raceParams);
+            m_isQuitting = true;
             m_menuExitTime = Time.unscaledTime;
+
+            Main.Instance.LoadRace(raceParams, () =>
+            {
+                return GetFadeFactor() >= 0.99f;
+            });
+
             SetMenu(null);
         }
     }
