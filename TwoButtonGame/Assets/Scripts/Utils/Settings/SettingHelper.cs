@@ -73,7 +73,7 @@ namespace BoostBlasters
                     QualitySettings.shadows = UnityEngine.ShadowQuality.All;
                     QualitySettings.shadowResolution = ShadowResolution.Low;
                     QualitySettings.shadowCascades = 0;
-                    QualitySettings.shadowDistance = 100f;
+                    QualitySettings.shadowDistance = 150f;
                     break;
                 }
                 case ShadowQuality.Medium:
@@ -89,7 +89,7 @@ namespace BoostBlasters
                     QualitySettings.shadows = UnityEngine.ShadowQuality.All;
                     QualitySettings.shadowResolution = ShadowResolution.High;
                     QualitySettings.shadowCascades = 4;
-                    QualitySettings.shadowDistance = 450f;
+                    QualitySettings.shadowDistance = 600f;
                     break;
                 }
                 case ShadowQuality.Ultra:
@@ -97,7 +97,7 @@ namespace BoostBlasters
                     QualitySettings.shadows = UnityEngine.ShadowQuality.All;
                     QualitySettings.shadowResolution = ShadowResolution.VeryHigh;
                     QualitySettings.shadowCascades = 4;
-                    QualitySettings.shadowDistance = 500f;
+                    QualitySettings.shadowDistance = 1000f;
                     break;
                 }
             }

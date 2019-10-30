@@ -48,8 +48,8 @@ LightmapSettings:
   m_GISettings:
     serializedVersion: 2
     m_BounceScale: 1
-    m_IndirectOutputScale: 1
-    m_AlbedoBoost: 1
+    m_IndirectOutputScale: 2
+    m_AlbedoBoost: 2
     m_EnvironmentLightingMode: 0
     m_EnableBakedLightmaps: 1
     m_EnableRealtimeLightmaps: 0
@@ -57,9 +57,9 @@ LightmapSettings:
     serializedVersion: 12
     m_Resolution: 0.25
     m_BakeResolution: 3
-    m_AtlasSize: 4096
+    m_AtlasSize: 2048
     m_AO: 0
-    m_AOMaxDistance: 1
+    m_AOMaxDistance: 50
     m_CompAOExponent: 1
     m_CompAOExponentDirect: 0
     m_ExtractAmbientOcclusion: 0
@@ -67,29 +67,29 @@ LightmapSettings:
     m_LightmapParameters: {fileID: 111300000, guid: 9a69323a6be000641a31e14f9172d026,
       type: 2}
     m_LightmapsBakeMode: 1
-    m_TextureCompression: 1
+    m_TextureCompression: 0
     m_FinalGather: 0
     m_FinalGatherFiltering: 1
     m_FinalGatherRayCount: 256
     m_ReflectionCompression: 2
     m_MixedBakeMode: 2
-    m_BakeBackend: 0
+    m_BakeBackend: 2
     m_PVRSampling: 1
-    m_PVRDirectSampleCount: 32
-    m_PVRSampleCount: 500
+    m_PVRDirectSampleCount: 8
+    m_PVRSampleCount: 50
     m_PVRBounces: 2
-    m_PVREnvironmentSampleCount: 500
+    m_PVREnvironmentSampleCount: 50
     m_PVREnvironmentReferencePointCount: 2048
     m_PVRFilteringMode: 2
-    m_PVRDenoiserTypeDirect: 0
-    m_PVRDenoiserTypeIndirect: 0
+    m_PVRDenoiserTypeDirect: 1
+    m_PVRDenoiserTypeIndirect: 1
     m_PVRDenoiserTypeAO: 0
     m_PVRFilterTypeDirect: 0
     m_PVRFilterTypeIndirect: 0
     m_PVRFilterTypeAO: 0
     m_PVREnvironmentMIS: 0
     m_PVRCulling: 1
-    m_PVRFilteringGaussRadiusDirect: 1
+    m_PVRFilteringGaussRadiusDirect: 2
     m_PVRFilteringGaussRadiusIndirect: 5
     m_PVRFilteringGaussRadiusAO: 2
     m_PVRFilteringAtrousPositionSigmaDirect: 0.5
@@ -98,7 +98,7 @@ LightmapSettings:
     m_ExportTrainingData: 0
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
-  m_LightingDataAsset: {fileID: 112000002, guid: be1f0499d1e312a4f865d04111342d93,
+  m_LightingDataAsset: {fileID: 112000000, guid: be1f0499d1e312a4f865d04111342d93,
     type: 2}
   m_UseShadowmask: 1
 --- !u!196 &4
@@ -1351,10 +1351,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1114873394}
     m_Modifications:
-    - target: {fileID: 1186103854390208, guid: 066b2aa24727d6740baa8a88eb577ed6, type: 3}
-      propertyPath: m_Name
-      value: BoostGate (4)
-      objectReference: {fileID: 0}
     - target: {fileID: 4730652081376820, guid: 066b2aa24727d6740baa8a88eb577ed6, type: 3}
       propertyPath: m_LocalPosition.x
       value: -56.5
@@ -1410,6 +1406,10 @@ PrefabInstance:
     - target: {fileID: 4730652081376820, guid: 066b2aa24727d6740baa8a88eb577ed6, type: 3}
       propertyPath: m_LocalScale.z
       value: 5.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1186103854390208, guid: 066b2aa24727d6740baa8a88eb577ed6, type: 3}
+      propertyPath: m_Name
+      value: BoostGate (4)
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 066b2aa24727d6740baa8a88eb577ed6, type: 3}
@@ -2243,10 +2243,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1114873394}
     m_Modifications:
-    - target: {fileID: 1186103854390208, guid: 066b2aa24727d6740baa8a88eb577ed6, type: 3}
-      propertyPath: m_Name
-      value: BoostGate (1)
-      objectReference: {fileID: 0}
     - target: {fileID: 4730652081376820, guid: 066b2aa24727d6740baa8a88eb577ed6, type: 3}
       propertyPath: m_LocalPosition.x
       value: 329.3
@@ -2303,6 +2299,10 @@ PrefabInstance:
       propertyPath: m_LocalScale.z
       value: 5.5
       objectReference: {fileID: 0}
+    - target: {fileID: 1186103854390208, guid: 066b2aa24727d6740baa8a88eb577ed6, type: 3}
+      propertyPath: m_Name
+      value: BoostGate (1)
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 066b2aa24727d6740baa8a88eb577ed6, type: 3}
 --- !u!4 &834952960 stripped
@@ -2348,10 +2348,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1114873394}
     m_Modifications:
-    - target: {fileID: 1186103854390208, guid: 066b2aa24727d6740baa8a88eb577ed6, type: 3}
-      propertyPath: m_Name
-      value: BoostGate (3)
-      objectReference: {fileID: 0}
     - target: {fileID: 4730652081376820, guid: 066b2aa24727d6740baa8a88eb577ed6, type: 3}
       propertyPath: m_LocalPosition.x
       value: 116.8
@@ -2407,6 +2403,10 @@ PrefabInstance:
     - target: {fileID: 4730652081376820, guid: 066b2aa24727d6740baa8a88eb577ed6, type: 3}
       propertyPath: m_LocalScale.z
       value: 5.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1186103854390208, guid: 066b2aa24727d6740baa8a88eb577ed6, type: 3}
+      propertyPath: m_Name
+      value: BoostGate (3)
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 066b2aa24727d6740baa8a88eb577ed6, type: 3}
@@ -2928,10 +2928,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1625693653}
     m_Modifications:
-    - target: {fileID: 1262273915824616, guid: b54c3ecf4347e8d49900609f78202781, type: 3}
-      propertyPath: m_Name
-      value: WaypointCircleH (1)
-      objectReference: {fileID: 0}
     - target: {fileID: 4677724897989702, guid: b54c3ecf4347e8d49900609f78202781, type: 3}
       propertyPath: m_LocalPosition.x
       value: -711.2
@@ -2975,6 +2971,10 @@ PrefabInstance:
     - target: {fileID: 4677724897989702, guid: b54c3ecf4347e8d49900609f78202781, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 4.618
+      objectReference: {fileID: 0}
+    - target: {fileID: 1262273915824616, guid: b54c3ecf4347e8d49900609f78202781, type: 3}
+      propertyPath: m_Name
+      value: WaypointCircleH (1)
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b54c3ecf4347e8d49900609f78202781, type: 3}
@@ -3545,10 +3545,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1114873394}
     m_Modifications:
-    - target: {fileID: 1186103854390208, guid: 066b2aa24727d6740baa8a88eb577ed6, type: 3}
-      propertyPath: m_Name
-      value: BoostGate (5)
-      objectReference: {fileID: 0}
     - target: {fileID: 4730652081376820, guid: 066b2aa24727d6740baa8a88eb577ed6, type: 3}
       propertyPath: m_LocalPosition.x
       value: -709.7
@@ -3604,6 +3600,10 @@ PrefabInstance:
     - target: {fileID: 4730652081376820, guid: 066b2aa24727d6740baa8a88eb577ed6, type: 3}
       propertyPath: m_LocalScale.z
       value: 5.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1186103854390208, guid: 066b2aa24727d6740baa8a88eb577ed6, type: 3}
+      propertyPath: m_Name
+      value: BoostGate (5)
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 066b2aa24727d6740baa8a88eb577ed6, type: 3}
@@ -4259,10 +4259,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1625693653}
     m_Modifications:
-    - target: {fileID: 1262273915824616, guid: b54c3ecf4347e8d49900609f78202781, type: 3}
-      propertyPath: m_Name
-      value: WaypointCircleH (3)
-      objectReference: {fileID: 0}
     - target: {fileID: 4677724897989702, guid: b54c3ecf4347e8d49900609f78202781, type: 3}
       propertyPath: m_LocalPosition.x
       value: -266.8
@@ -4318,6 +4314,10 @@ PrefabInstance:
         type: 3}
       propertyPath: m_duration
       value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 1262273915824616, guid: b54c3ecf4347e8d49900609f78202781, type: 3}
+      propertyPath: m_Name
+      value: WaypointCircleH (3)
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b54c3ecf4347e8d49900609f78202781, type: 3}
@@ -4550,10 +4550,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1625693653}
     m_Modifications:
-    - target: {fileID: 1912756997685758, guid: 1fa560ef6dc50ab469138bd9bd22e20f, type: 3}
-      propertyPath: m_Name
-      value: WaypointCircleM (7)
-      objectReference: {fileID: 0}
     - target: {fileID: 4081012867579822, guid: 1fa560ef6dc50ab469138bd9bd22e20f, type: 3}
       propertyPath: m_LocalPosition.x
       value: -540.3
@@ -4658,6 +4654,10 @@ PrefabInstance:
         type: 3}
       propertyPath: m_startOffset
       value: 0.35
+      objectReference: {fileID: 0}
+    - target: {fileID: 1912756997685758, guid: 1fa560ef6dc50ab469138bd9bd22e20f, type: 3}
+      propertyPath: m_Name
+      value: WaypointCircleM (7)
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1fa560ef6dc50ab469138bd9bd22e20f, type: 3}
@@ -5283,7 +5283,7 @@ MeshRenderer:
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
-  m_StitchLightmapSeams: 0
+  m_StitchLightmapSeams: 1
   m_SelectedEditorRenderState: 3
   m_MinimumChartSize: 4
   m_AutoUVMaxDistance: 0.5
@@ -5557,10 +5557,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1625693653}
     m_Modifications:
-    - target: {fileID: 1912756997685758, guid: 1fa560ef6dc50ab469138bd9bd22e20f, type: 3}
-      propertyPath: m_Name
-      value: WaypointCircleM (2)
-      objectReference: {fileID: 0}
     - target: {fileID: 4081012867579822, guid: 1fa560ef6dc50ab469138bd9bd22e20f, type: 3}
       propertyPath: m_LocalPosition.x
       value: 689.6
@@ -5641,6 +5637,10 @@ PrefabInstance:
       propertyPath: m_LocalRotation.w
       value: 0.65328145
       objectReference: {fileID: 0}
+    - target: {fileID: 1912756997685758, guid: 1fa560ef6dc50ab469138bd9bd22e20f, type: 3}
+      propertyPath: m_Name
+      value: WaypointCircleM (2)
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1fa560ef6dc50ab469138bd9bd22e20f, type: 3}
 --- !u!4 &2041074467 stripped
@@ -5698,10 +5698,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1625693653}
     m_Modifications:
-    - target: {fileID: 1262273915824616, guid: b54c3ecf4347e8d49900609f78202781, type: 3}
-      propertyPath: m_Name
-      value: WaypointCircleH (2)
-      objectReference: {fileID: 0}
     - target: {fileID: 4677724897989702, guid: b54c3ecf4347e8d49900609f78202781, type: 3}
       propertyPath: m_LocalPosition.x
       value: 89.5
@@ -5745,6 +5741,10 @@ PrefabInstance:
     - target: {fileID: 4677724897989702, guid: b54c3ecf4347e8d49900609f78202781, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: -0.367
+      objectReference: {fileID: 0}
+    - target: {fileID: 1262273915824616, guid: b54c3ecf4347e8d49900609f78202781, type: 3}
+      propertyPath: m_Name
+      value: WaypointCircleH (2)
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b54c3ecf4347e8d49900609f78202781, type: 3}
@@ -6002,10 +6002,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1114873394}
     m_Modifications:
-    - target: {fileID: 1186103854390208, guid: 066b2aa24727d6740baa8a88eb577ed6, type: 3}
-      propertyPath: m_Name
-      value: BoostGate (6)
-      objectReference: {fileID: 0}
     - target: {fileID: 4730652081376820, guid: 066b2aa24727d6740baa8a88eb577ed6, type: 3}
       propertyPath: m_LocalPosition.x
       value: -293.4
@@ -6061,6 +6057,10 @@ PrefabInstance:
     - target: {fileID: 4730652081376820, guid: 066b2aa24727d6740baa8a88eb577ed6, type: 3}
       propertyPath: m_LocalScale.z
       value: 5.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1186103854390208, guid: 066b2aa24727d6740baa8a88eb577ed6, type: 3}
+      propertyPath: m_Name
+      value: BoostGate (6)
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 066b2aa24727d6740baa8a88eb577ed6, type: 3}

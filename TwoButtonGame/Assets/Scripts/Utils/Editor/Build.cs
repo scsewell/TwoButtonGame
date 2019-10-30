@@ -75,7 +75,7 @@ namespace BoostBlasters
             }
         }
 
-        public static void BuildBundles(bool isEditor)
+        public static void BuildBundles(bool isEditor, bool cleanBuild = true)
         {
             // get the build path
             string path;
@@ -102,10 +102,18 @@ namespace BoostBlasters
             // build the asset bundles
             Debug.Log("Building asset bundles...");
 
+            BuildAssetBundleOptions options =
+                BuildAssetBundleOptions.StrictMode |
+                BuildAssetBundleOptions.DisableLoadAssetByFileNameWithExtension;
+
+            if (cleanBuild)
+            {
+                options |= BuildAssetBundleOptions.ForceRebuildAssetBundle;
+            }
+
             AssetBundleManifest manifest = BuildPipeline.BuildAssetBundles(
                 path,
-                BuildAssetBundleOptions.StrictMode |
-                BuildAssetBundleOptions.DisableLoadAssetByFileNameWithExtension,
+                options,
                 EditorUserBuildSettings.activeBuildTarget
             );
 
