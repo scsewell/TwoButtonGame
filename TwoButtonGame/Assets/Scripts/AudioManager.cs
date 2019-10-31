@@ -134,7 +134,7 @@ namespace BoostBlasters
         /// Plays a music track.
         /// </summary>
         /// <param name="music">The music to play.</param>
-        public void PlayMusic(MusicParams music)
+        public void PlayMusic(Music music)
         {
             m_music.Play(music);
         }

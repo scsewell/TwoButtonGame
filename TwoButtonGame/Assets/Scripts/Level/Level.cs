@@ -43,8 +43,8 @@ namespace BoostBlasters.Levels
         public string SceneName => m_sceneName;
 
         [SerializeField]
-        private MusicParams m_music = null;
-        public MusicParams Music => m_music;
+        private Music m_music = null;
+        public Music Music => m_music;
 
         [SerializeField]
         [Range(0f, 5f)]

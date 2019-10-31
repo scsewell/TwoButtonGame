@@ -58,7 +58,7 @@ namespace BoostBlasters.Races
         [Range(0f, 30f)]
         private float m_replayStartWait = 5.0f;
         [SerializeField]
-        private MusicParams m_replayMusic = null;
+        private Music m_replayMusic = null;
 
         private RacePath m_racePath;
         public RacePath RacePath => m_racePath;
@@ -351,7 +351,7 @@ namespace BoostBlasters.Races
 
             if (!m_musicStarted && Time.time - m_raceLoadTime > m_raceParams.level.MusicDelay)
             {
-                MusicParams music = m_raceParams.level.Music;
+                Music music = m_raceParams.level.Music;
                 if (music != null)
                 {
                     AudioManager.Instance.PlayMusic(music);

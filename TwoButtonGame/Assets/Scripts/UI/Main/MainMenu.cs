@@ -28,7 +28,7 @@ namespace BoostBlasters.UI.MainMenus
 
         [Header("Options")]
 
-        [SerializeField] private MusicParams m_music = null;
+        [SerializeField] private Music m_music = null;
         [SerializeField] private GameObject m_background = null;
 
         [Header("Loading")]
