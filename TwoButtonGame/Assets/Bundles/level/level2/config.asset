@@ -19,7 +19,11 @@ MonoBehaviour:
   m_preview3d: {fileID: 1660429005145410, guid: ae7e09ab7a8cf6248a27fa57f840e36f,
     type: 3}
   m_sceneName: level2
-  m_music: {fileID: 11400000, guid: 7f43817e36da9894fb8f1096cd25e767, type: 2}
+  m_music:
+    m_bundleName: music/thelift
+    m_assetName: The Lift
+    m_assetGuid: 7f43817e36da9894fb8f1096cd25e767
+    m_asset: {fileID: 0}
   m_musicDelay: 0.5
   m_introSequence:
     array:

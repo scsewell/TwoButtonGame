@@ -66,4 +66,8 @@ MonoBehaviour:
   m_countdownSound: {fileID: 8300000, guid: 249b1823055eec542b9a26b915bdefce, type: 3}
   m_goSound: {fileID: 8300000, guid: 3bd94b4b8ec8a334b84134d52b6cab9c, type: 3}
   m_replayStartWait: 7.5
-  m_replayMusic: {fileID: 11400000, guid: f8d7da2c931e6c543a434649947695b0, type: 2}
+  m_replayMusic:
+    m_bundleName: music/corruption
+    m_assetName: Corruption
+    m_assetGuid: f8d7da2c931e6c543a434649947695b0
+    m_asset: {fileID: 0}

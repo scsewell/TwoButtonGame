@@ -1,7 +1,10 @@
 ### To Do ###
 
 Refactoring
-- Music as asset bundles / raw files?
+- Speed play mode for asset bundles
+- Validate asset bundle references on build
+- investigate freeze on load level (profile)
+
 - Profiles load async
 - check for spaghetti (check singleton usage)
 - Levels/Characters use GUID
@@ -34,7 +37,7 @@ General
 - Change down input from drag to hover? (might be much easier)
 - look around (right josystick, don't know about keyboard though...)
 - better guide to next waypoint (make waypoint color glow more obvious, improve direction arrow (racing line?), look at next gate button)
-- Custom logo intro (in framwork, add setting to skip in settings)
+- Custom logo intro (add setting / command line option to skip in settings)
 
 Audio
 - Add 3D sound for splitscreen (virtual scene for audio, duplicate audio sorce for each listener)
@@ -74,7 +77,6 @@ Level Ideas (try to think of creative hazzards)
 - Volcano (falling rocks, magma)
 
 ### Bugs and stuff ###
-Icon breaks build????????? (2019.3.0b7)
 Track preview appears on top of black fade quad
 Camera can clip with the gates, perhaps use a fading material when close...
 What to do if a joystick disconnects in menu or game?

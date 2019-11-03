@@ -17809,7 +17809,11 @@ MonoBehaviour:
   m_controls1: {fileID: 1777614954}
   m_controls2: {fileID: 151585795}
   m_controls3: {fileID: 705998920}
-  m_music: {fileID: 11400000, guid: 5239cfe6696550e459e781113015c0d0, type: 2}
+  m_music:
+    m_bundleName: music/deephaze
+    m_assetName: Deep Haze
+    m_assetGuid: 5239cfe6696550e459e781113015c0d0
+    m_asset: {fileID: 0}
   m_background: {fileID: 987540941}
   m_fade: {fileID: 869442102}
   m_fadeInDuration: 0.35

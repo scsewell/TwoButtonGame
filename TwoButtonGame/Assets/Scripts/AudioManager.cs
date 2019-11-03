@@ -3,6 +3,7 @@
 using UnityEngine;
 
 using Framework;
+using Framework.AssetBundles;
 using Framework.Audio;
 using Framework.Settings;
 
@@ -137,6 +138,15 @@ namespace BoostBlasters
         public void PlayMusic(Music music)
         {
             m_music.Play(music);
+        }
+
+        /// <summary>
+        /// Loads then plays a music track.
+        /// </summary>
+        /// <param name="music">The music to play.</param>
+        public async void PlayMusic(AssetBundleMusicReference music)
+        {
+            PlayMusic(await music.GetAsync());
         }
 
         /// <summary>

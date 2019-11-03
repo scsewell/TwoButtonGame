@@ -3,6 +3,8 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
+using Framework.AssetBundles;
+
 namespace BoostBlasters.Characters
 {
     /// <summary>
@@ -37,15 +39,10 @@ namespace BoostBlasters.Characters
         /// </summary>
         public static async Task LoadCharactersAsync()
         {
-            Character[] characters = await AssetBundleUtils.LoadAssetsAsync<Character>("character", "config");
+            Character[] characters = await AssetBundleManager.LoadAssetsAsync<Character>("character", "config");
 
             // sort and assign the results
             Characters = characters.OrderBy(c => c.SortOrder).ToArray();
-
-            foreach (Character character in Characters)
-            {
-                Debug.Log($"Loaded character \"{character.Name}\"");
-            }
         }
     }
 }

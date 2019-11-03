@@ -4,6 +4,8 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
+using Framework.Audio;
+
 using BoostBlasters.Races;
 using BoostBlasters.Races.Racers;
 using BoostBlasters.Levels;
@@ -79,14 +81,22 @@ namespace BoostBlasters.UI.RaceMenus
                 scaler.referenceResolution.y / splitscreen.height
             );
 
-            Level config = raceParameters.level;
-            m_trackName.text = config.Name;
-            m_songName.text = $"\"{config.Music.Name}\" - {config.Music.Artist}";
+            m_trackName.text = raceParameters.level.Name;
+            SetMusicTitle(raceParameters.level);
 
             m_fade.enabled = true;
-            m_fade.color = new Color(0, 0, 0, 1);
+            m_fade.color = new Color(0f, 0f, 0f, 1f);
 
             return this;
+        }
+
+        private async void SetMusicTitle(Level level)
+        {
+            m_songName.text = string.Empty;
+
+            Music music = await level.Music.GetAsync();
+
+            m_songName.text = $"\"{music.Name}\" - {music.Artist}";
         }
 
         public void ResetUI()

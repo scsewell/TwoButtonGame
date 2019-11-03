@@ -15,5 +15,6 @@ MonoBehaviour:
   m_track: {fileID: 8300000, guid: 3677196c75becb7449416e5a29604cf4, type: 3}
   m_name: Eighties Action
   m_artist: Kevin Macleod
+  m_loop: 2
   m_minutes: 2
   m_seconds: 39.558456

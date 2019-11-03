@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using Framework;
-using Framework.Audio;
+using Framework.AssetBundles;
 
 namespace BoostBlasters.Levels
 {
@@ -43,8 +43,8 @@ namespace BoostBlasters.Levels
         public string SceneName => m_sceneName;
 
         [SerializeField]
-        private Music m_music = null;
-        public Music Music => m_music;
+        private AssetBundleMusicReference m_music = null;
+        public AssetBundleMusicReference Music => m_music;
 
         [SerializeField]
         [Range(0f, 5f)]

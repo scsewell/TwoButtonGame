@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 using System.Linq;
 
@@ -9,6 +10,7 @@ using UnityEngine.UI;
 
 using Framework;
 using Framework.Audio;
+using Framework.AssetBundles;
 
 using BoostBlasters.Players;
 using BoostBlasters.Characters;
@@ -28,7 +30,7 @@ namespace BoostBlasters.UI.MainMenus
 
         [Header("Options")]
 
-        [SerializeField] private Music m_music = null;
+        [SerializeField] private AssetBundleMusicReference m_music = null;
         [SerializeField] private GameObject m_background = null;
 
         [Header("Loading")]
@@ -112,16 +114,10 @@ namespace BoostBlasters.UI.MainMenus
                     break;
             }
 
-            StartCoroutine(FinishAwake());
-        }
-
-        private IEnumerator FinishAwake()
-        {
             m_fade.color = Color.black;
-            m_menuLoadTime = float.MaxValue;
-            yield return null;
             m_menuLoadTime = Time.time;
             m_background.SetActive(true);
+
             AudioManager.Instance.PlayMusic(m_music);
         }
 

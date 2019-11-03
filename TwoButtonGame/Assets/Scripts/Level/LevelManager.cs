@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
+using Framework.AssetBundles;
+
 namespace BoostBlasters.Levels
 {
     /// <summary>
@@ -40,15 +42,10 @@ namespace BoostBlasters.Levels
         /// </summary>
         public static async Task LoadLevelsAsync()
         {
-            Level[] levels = await AssetBundleUtils.LoadAssetsAsync<Level>("level", "config");
+            Level[] levels = await AssetBundleManager.LoadAssetsAsync<Level>("level", "config");
 
             // sort and assign the results
             Levels = levels.OrderBy(c => c.SortOrder).ToArray();
-
-            foreach (Level level in Levels)
-            {
-                Debug.Log($"Loaded level \"{level.Name}\"");
-            }
         }
 
         /// <summary>
@@ -67,8 +64,9 @@ namespace BoostBlasters.Levels
             }
             else
             {
-                bundle = await AssetBundleUtils.LoadBundleAsync("levelscene", level.SceneName);
-                m_loadedBundles.Add(level, bundle);
+                bundle = null;
+                //bundle = await AssetBundleManager.LoadBundleAsync("levelscene", level.SceneName);
+                //m_loadedBundles.Add(level, bundle);
             }
 
             // return the first scene path
