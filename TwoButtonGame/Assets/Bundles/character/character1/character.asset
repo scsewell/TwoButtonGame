@@ -10,27 +10,27 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a524bd016ecbe644d87d885661f97870, type: 3}
-  m_Name: config
+  m_Name: character
   m_EditorClassIdentifier: 
-  m_id: 7047
-  m_sortOrder: 999
-  m_speedRating: 2
-  m_agilityRating: 6
-  m_description: This character is lame...
-  m_name: Test Character
-  m_characterGraphics: {fileID: 1309904247820802, guid: 54bf9a0ec326a3a479a4e0cedef80d70,
+  m_id: 794
+  m_sortOrder: 100
+  m_name: Zephyr
+  m_description: The real shazbot
+  m_speedRating: 7
+  m_agilityRating: 3
+  m_characterGraphics: {fileID: 1223342234031220, guid: f39de2b587b4f074196a7d30af5bcafa,
     type: 3}
-  m_graphicsOffset: {x: 0, y: -1, z: 0}
+  m_graphicsOffset: {x: 0, y: -1, z: 0.2}
   m_physicsMat: {fileID: 13400000, guid: a98a30527bb05cb4e9413f0318de73d6, type: 2}
-  m_linearDrag: 0.35
-  m_brakeDrag: 1
+  m_linearDrag: 0.515
+  m_brakeDrag: 0.7
   m_angularDrag: 4
-  m_gravityFac: 2.5
-  m_forwardAccel: 18
-  m_verticalAccel: 9
-  m_turnRatio: 0.0625
+  m_gravityFac: 3
+  m_forwardAccel: 46
+  m_verticalAccel: 12
+  m_turnRatio: 0.03
   m_energyCap: 200
-  m_energyRechargeRate: 10
+  m_energyRechargeRate: 3.55
   m_boostEnergyUseRate: 100
-  m_boostSoftCap: 80
-  m_boostAcceleration: 200
+  m_boostSoftCap: 130
+  m_boostAcceleration: 265

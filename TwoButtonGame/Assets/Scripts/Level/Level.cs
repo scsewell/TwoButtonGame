@@ -11,7 +11,7 @@ namespace BoostBlasters.Levels
     /// <summary>
     /// Defines a level and its required properties.
     /// </summary>
-    [CreateAssetMenu(fileName = "config", menuName = "Level", order = 2)]
+    [CreateAssetMenu(fileName = "level", menuName = "Level", order = 2)]
     public class Level : ScriptableObject
     {
         [SerializeField]
@@ -39,8 +39,8 @@ namespace BoostBlasters.Levels
         [Header("Scene")]
 
         [SerializeField]
-        private string m_sceneName = string.Empty;
-        public string SceneName => m_sceneName;
+        private AssetBundleSceneReference m_scene = null;
+        public AssetBundleSceneReference Scene => m_scene;
 
         [SerializeField]
         private AssetBundleMusicReference m_music = null;

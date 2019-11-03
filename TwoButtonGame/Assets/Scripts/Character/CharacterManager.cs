@@ -39,7 +39,7 @@ namespace BoostBlasters.Characters
         /// </summary>
         public static async Task LoadCharactersAsync()
         {
-            Character[] characters = await AssetBundleManager.LoadAssetsAsync<Character>("character", "config");
+            Character[] characters = await AssetBundleManager.LoadAssetsAsync<Character>("character", "character");
 
             // sort and assign the results
             Characters = characters.OrderBy(c => c.SortOrder).ToArray();

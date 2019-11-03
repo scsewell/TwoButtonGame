@@ -107,8 +107,6 @@ namespace BoostBlasters
             AsyncOperation op = SceneManager.LoadSceneAsync(1);
             await LoadScene(op, doLoad);
 
-            LevelManager.UnloadAllLevels();
-
             RaceManager = null;
         }
 
@@ -123,7 +121,7 @@ namespace BoostBlasters
             LastRaceType = RaceType.Race;
             LastRaceParams = raceParams;
 
-            string scene = await LevelManager.LoadLevelAsync(raceParams.level);
+            string scene = await raceParams.level.Scene.GetAsync();
             AsyncOperation op = SceneManager.LoadSceneAsync(scene);
             await LoadScene(op, doLoad);
 
@@ -142,7 +140,7 @@ namespace BoostBlasters
             LastRaceType = RaceType.Replay;
             LastRaceParams = null;
 
-            string scene = await LevelManager.LoadLevelAsync(recording.RaceParams.level);
+            string scene = await recording.RaceParams.level.Scene.GetAsync();
             AsyncOperation op = SceneManager.LoadSceneAsync(scene);
             await LoadScene(op, doLoad);
 
