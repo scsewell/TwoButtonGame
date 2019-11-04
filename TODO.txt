@@ -77,6 +77,7 @@ Level Ideas (try to think of creative hazzards)
 - Volcano (falling rocks, magma)
 
 ### Bugs and stuff ###
+black fade quad artifacts like crazy when app opens or alt-tabbing back to game window
 Track preview appears on top of black fade quad
 Camera can clip with the gates, perhaps use a fading material when close...
 What to do if a joystick disconnects in menu or game?
