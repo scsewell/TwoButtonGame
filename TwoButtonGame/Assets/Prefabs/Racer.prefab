@@ -121,5 +121,6 @@ MonoBehaviour:
     m_Bits: 134217728
   m_boundsCorrectionStrength: 32.5
   m_collisionTorqueIntensity: 4
+  m_collisionTorqueLimit: 10
   m_minBoostTime: 0.25
   m_showPrediction: 0

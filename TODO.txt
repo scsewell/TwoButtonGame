@@ -16,6 +16,17 @@ Text Mesh Pro
 New Input sytstem (remove old system)
 Multiple controller support
 
+Optimization
+- Add profiling markers at useful locations
+- Racer movement probably can be optimized
+- Gate engine is very expensive for many objects
+- UI code creates quite a bit of garbage
+- There are quite a few Linq calls which can be removed
+- Cinemachine/Replay cameras should be disabled when not used
+- Investigate loading scenes as async with every object disabled and manually activating just a few objects per frame
+- Add pre-awake to def. Create array of objects to call pre-awake on at build time per scene
+- Unload scenes by disabling all objects in them and destroying just a few of the objects per frame
+
 Migrate to URP
 - gate color should be a global shader property, instead of hooking into OnWillRenderObject
 

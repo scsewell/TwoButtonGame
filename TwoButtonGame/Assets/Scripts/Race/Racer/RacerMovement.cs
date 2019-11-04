@@ -28,6 +28,9 @@ namespace BoostBlasters.Races.Racers
         [Range(0f, 20f)]
         private float m_collisionTorqueIntensity = 0.0f;
         [SerializeField]
+        [Range(0f, 20f)]
+        private float m_collisionTorqueLimit = 10f;
+        [SerializeField]
         [Range(0f, 1f)]
         private float m_minBoostTime = 0.25f;
 
@@ -244,17 +247,22 @@ namespace BoostBlasters.Races.Racers
 
         private void OnCollisionStay(Collision collision)
         {
+            // apply torque from collisions if desired, since we disable the lock phsyics engine rotation
             if (m_collisionTorqueIntensity > 0f)
             {
-                ContactPoint[] contacts = collision.contacts;
+                float torque = 0f;
 
-                float torque = 0;
-                foreach (ContactPoint c in contacts)
+                Vector3 impulse = collision.impulse / collision.contactCount;
+
+                for (int i = 0; i < collision.contactCount; i++)
                 {
-                    torque += Vector3.Dot(Vector3.Cross(c.point - m_body.position, collision.impulse / contacts.Length), Vector3.up);
+                    ContactPoint contact = collision.GetContact(i);
+                    Vector3 disp = contact.point - m_body.position;
+
+                    torque += Vector3.Cross(disp, impulse).y;
                 }
 
-                m_angVelocity += m_collisionTorqueIntensity * Mathf.Sign(torque) * Mathf.Min(Mathf.Abs(torque), 25f) * Time.deltaTime;
+                m_angVelocity += Mathf.Clamp(m_collisionTorqueIntensity * torque, -m_collisionTorqueLimit, m_collisionTorqueLimit) * Time.deltaTime;
             }
         }
 
