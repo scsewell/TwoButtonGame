@@ -12332,7 +12332,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b9a305e18de0c04dbd257a21cd47087, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sharedProfile: {fileID: 11400000, guid: 79bd59eef48cd7641a3ab7536852f45a, type: 2}
+  sharedProfile: {fileID: 11400000, guid: de0925104e1f5d046a84f9dd9520abb9, type: 2}
   isGlobal: 1
   blendDistance: 0
   weight: 1
@@ -17811,8 +17811,8 @@ MonoBehaviour:
   m_controls3: {fileID: 705998920}
   m_music:
     m_bundleName: music/deephaze
-    m_assetName: Deep Haze
     m_assetGuid: 5239cfe6696550e459e781113015c0d0
+    m_assetName: Deep Haze
     m_asset: {fileID: 0}
   m_background: {fileID: 987540941}
   m_fade: {fileID: 869442102}
