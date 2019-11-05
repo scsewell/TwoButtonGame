@@ -81,7 +81,7 @@ namespace BoostBlasters.Replays
             {
                 long id = reader.ReadLong();
                 string name = reader.ReadString();
-                proflies.Add(PlayerProfileManager.Instance.GetGuestProfile(name, false));
+                proflies.Add(PlayerProfileManager.GetGuestProfile(name, false));
             }
 
             List<PlayerBaseInput> inputs = InputManager.Instance.PlayerInputs.ToList();

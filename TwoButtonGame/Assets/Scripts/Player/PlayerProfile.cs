@@ -103,7 +103,7 @@ namespace BoostBlasters.Players
                 }
                 levelResults.Add(result);
 
-                PlayerProfileManager.Instance.SaveProfile(this);
+                PlayerProfileManager.SaveProfile(this);
             }
         }
 

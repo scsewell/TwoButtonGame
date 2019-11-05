@@ -39,8 +39,7 @@ namespace BoostBlasters
             Application.backgroundLoadingPriority = ThreadPriority.Normal;
 
             // start loading operations
-            PlayerProfileManager.Instance.LoadProfiles();
-
+            var loadProfiles = PlayerProfileManager.LoadProfilesAsync();
             var loadCharacters = CharacterManager.LoadCharactersAsync();
             var loadlevels = LevelManager.LoadLevelsAsync();
             var loadRaceManager = Resources.LoadAsync<RaceManager>("RaceManager");
@@ -48,7 +47,7 @@ namespace BoostBlasters
             // wait for loading operations to complete and get the results if needed
             m_raceManagerPrefab = await loadRaceManager as RaceManager;
 
-            await Task.WhenAll(loadCharacters, loadlevels);
+            await Task.WhenAll(loadProfiles, loadCharacters, loadlevels);
 
             // load the main menu
             LastRaceType = RaceType.None;

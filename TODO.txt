@@ -1,13 +1,9 @@
 ### To Do ###
 
 Refactoring
-- Speed play mode for asset bundles
-- Validate asset bundle references on build
-- investigate freeze on load level (profile)
-
 - Profiles load async
-- check for spaghetti (check singleton usage)
 - Levels/Characters use GUID
+- check for spaghetti (check singleton usage)
 - things should not know about level stuff, only interact with race classes
 - implement waypoint as a race concept, things should reference that instead
 - turn race manager into a state machine

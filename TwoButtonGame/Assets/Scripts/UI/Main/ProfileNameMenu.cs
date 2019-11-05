@@ -150,7 +150,7 @@ namespace BoostBlasters.UI.MainMenus
 
             if (trimmed.Length > 0)
             {
-                PlayerProfileManager.Instance.RenameProfile(m_editProfile, trimmed);
+                PlayerProfileManager.RenameProfile(m_editProfile, trimmed);
                 Menu.SetMenu(m_returnToMenu);
             }
             else
@@ -168,7 +168,7 @@ namespace BoostBlasters.UI.MainMenus
         {
             if (m_isNew)
             {
-                PlayerProfileManager.Instance.DeleteProfile(m_editProfile);
+                PlayerProfileManager.DeleteProfile(m_editProfile);
             }
             Menu.SetMenu(m_returnToMenu, MenuBase.TransitionSound.Back);
 

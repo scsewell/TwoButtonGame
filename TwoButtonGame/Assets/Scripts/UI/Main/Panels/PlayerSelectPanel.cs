@@ -95,7 +95,7 @@ namespace BoostBlasters.UI.MainMenus
                     m_selectedProfile = value;
 
                     int centeringWindow = m_selectedProfile - ((m_profilePanelCount - 1) / 2);
-                    int maxIndex = PlayerProfileManager.Instance.Profiles.Count + 2;
+                    int maxIndex = PlayerProfileManager.Profiles.Count + 2;
                     m_profileWindow = Mathf.Clamp(centeringWindow, 0, maxIndex - m_profilePanelCount);
                 }
             }
@@ -108,7 +108,7 @@ namespace BoostBlasters.UI.MainMenus
             {
                 if (m_profile != null && m_profile.IsGuest)
                 {
-                    PlayerProfileManager.Instance.ReleaseGuestProfile(m_profile);
+                    PlayerProfileManager.ReleaseGuestProfile(m_profile);
                 }
                 m_profile = value;
             }
@@ -233,17 +233,17 @@ namespace BoostBlasters.UI.MainMenus
                     if (SelectedProfile == 0)
                     {
                         m_state = State.Select;
-                        Profile = PlayerProfileManager.Instance.GetGuestProfile("Guest", true);
+                        Profile = PlayerProfileManager.GetGuestProfile("Guest", true);
                         SelectCharacter(m_selectedCharacter);
                         m_menu.PlaySubmitSound();
                     }
                     else if (SelectedProfile == 1)
                     {
-                        m_menu.ProfileName.EditProfile(PlayerProfileManager.Instance.AddNewProfile(), true, m_menu.PlayerSelect, OnProfileCreate);
+                        m_menu.ProfileName.EditProfile(PlayerProfileManager.AddNewProfile(), true, m_menu.PlayerSelect, OnProfileCreate);
                     }
                     else
                     {
-                        PlayerProfile profile = PlayerProfileManager.Instance.Profiles[SelectedProfile - 2];
+                        PlayerProfile profile = PlayerProfileManager.Profiles[SelectedProfile - 2];
 
                         if (!m_selectMenu.PlayerProfiles.Contains(profile))
                         {
@@ -261,7 +261,7 @@ namespace BoostBlasters.UI.MainMenus
                 else if (m_input.UI_Down || m_input.UI_Up)
                 {
                     int previous = SelectedProfile;
-                    int maxIndex = PlayerProfileManager.Instance.Profiles.Count + 1;
+                    int maxIndex = PlayerProfileManager.Profiles.Count + 1;
 
                     SelectedProfile = Mathf.Clamp(SelectedProfile + (m_input.UI_Down ? 1 : -1), 0, maxIndex);
                     
@@ -314,7 +314,7 @@ namespace BoostBlasters.UI.MainMenus
         {
             if (profile != null)
             {
-                IReadOnlyList<PlayerProfile> profiles = PlayerProfileManager.Instance.Profiles;
+                IReadOnlyList<PlayerProfile> profiles = PlayerProfileManager.Profiles;
                 for (int i = 0; i < profiles.Count; i++)
                 {
                     if (profiles[i] == profile)
@@ -332,7 +332,7 @@ namespace BoostBlasters.UI.MainMenus
 
         private void SetProfiles()
         {
-            IReadOnlyList<PlayerProfile> profiles = PlayerProfileManager.Instance.Profiles;
+            IReadOnlyList<PlayerProfile> profiles = PlayerProfileManager.Profiles;
 
             for (int i = 0; i < m_profilePanels.Count; i++)
             {

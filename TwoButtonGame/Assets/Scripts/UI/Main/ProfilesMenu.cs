@@ -85,7 +85,7 @@ namespace BoostBlasters.UI.MainMenus
         
         protected override void OnUpdateGraphics()
         {
-            IReadOnlyList<PlayerProfile> profiles = PlayerProfileManager.Instance.Profiles;
+            IReadOnlyList<PlayerProfile> profiles = PlayerProfileManager.Profiles;
 
             int maxPage = (profiles.Count / m_selectPanelCount);
             m_pageText.text = (m_page + 1) + "/" + (maxPage + 1);
@@ -138,7 +138,7 @@ namespace BoostBlasters.UI.MainMenus
             if (mode == PlayerProfilePanel.Mode.AddNew)
             {
                 MainMenu menu = (MainMenu)Menu;
-                menu.ProfileName.EditProfile(PlayerProfileManager.Instance.AddNewProfile(), true, menu.Profiles, null);
+                menu.ProfileName.EditProfile(PlayerProfileManager.AddNewProfile(), true, menu.Profiles, null);
             }
         }
 
@@ -182,7 +182,7 @@ namespace BoostBlasters.UI.MainMenus
         {
             if (confirmed)
             {
-                PlayerProfileManager.Instance.DeleteProfile(m_selectedProfile);
+                PlayerProfileManager.DeleteProfile(m_selectedProfile);
                 CloseSelectedProfile();
                 ViewPage(m_page);
             }
@@ -200,7 +200,7 @@ namespace BoostBlasters.UI.MainMenus
         private void ChangePage(int offset)
         {
             int oldPage = m_page;
-            m_page = Mathf.Clamp(m_page + offset, 0, PlayerProfileManager.Instance.Profiles.Count / m_selectPanelCount);
+            m_page = Mathf.Clamp(m_page + offset, 0, PlayerProfileManager.Profiles.Count / m_selectPanelCount);
 
             if (m_page != oldPage)
             {
@@ -211,14 +211,14 @@ namespace BoostBlasters.UI.MainMenus
 
         private void ViewPage(int page)
         {
-            m_page = Mathf.Clamp(page, 0, PlayerProfileManager.Instance.Profiles.Count / m_selectPanelCount);
+            m_page = Mathf.Clamp(page, 0, PlayerProfileManager.Profiles.Count / m_selectPanelCount);
 
             for (int i = 0; i < m_selectPanels.Count; i++)
             {
                 bool isAddNew = (i == 0 && m_page == 0);
                 int index = Mathf.Max((m_page * m_selectPanelCount) + i - 1, 0);
 
-                IReadOnlyList<PlayerProfile> profiles = PlayerProfileManager.Instance.Profiles;
+                IReadOnlyList<PlayerProfile> profiles = PlayerProfileManager.Profiles;
                 PlayerProfilePanel.Mode mode = isAddNew ? PlayerProfilePanel.Mode.AddNew : PlayerProfilePanel.Mode.Profile;
 
                 m_selectPanels[i].SetProfile((!isAddNew && index < profiles.Count) ? profiles[index] : null, mode, OnSelect, OnMove);
