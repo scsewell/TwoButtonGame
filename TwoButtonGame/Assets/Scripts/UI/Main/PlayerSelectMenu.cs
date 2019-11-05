@@ -27,7 +27,7 @@ namespace BoostBlasters.UI.MainMenus
 
         public List<PlayerBaseInput> ActiveInputs => m_playerSelectPanels.Select(p => p.Input).Where(i => i != null).ToList();
 
-        public List<PlayerProfile> PlayerProfiles => m_playerSelectPanels.Select(p => p.Profile).Where(p => p != null).ToList();
+        public List<Profile> PlayerProfiles => m_playerSelectPanels.Select(p => p.Profile).Where(p => p != null).ToList();
 
         public List<Character> CharacterConfigs => ReadyPlayers.Select(p => p.CharacterConfig).ToList();
 
@@ -66,7 +66,7 @@ namespace BoostBlasters.UI.MainMenus
                 for (int i = 0; i < lastRace.playerIndicies.Count; i++)
                 {
                     int index = lastRace.playerIndicies[i];
-                    PlayerProfile profile = lastRace.profiles[i];
+                    Profile profile = lastRace.profiles[i];
                     PlayerBaseInput input = lastRace.inputs[i];
                     Character config = lastRace.characters[i];
 

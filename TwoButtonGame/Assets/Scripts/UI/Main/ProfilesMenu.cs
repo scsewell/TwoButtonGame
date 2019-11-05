@@ -40,7 +40,7 @@ namespace BoostBlasters.UI.MainMenus
 
         private List<PlayerProfilePanel> m_selectPanels = null;
         private int m_page = 0;
-        private PlayerProfile m_selectedProfile = null;
+        private Profile m_selectedProfile = null;
         private PlayerProfilePanel m_selectedPanel = null;
 
         public override void InitMenu()
@@ -85,7 +85,7 @@ namespace BoostBlasters.UI.MainMenus
         
         protected override void OnUpdateGraphics()
         {
-            IReadOnlyList<PlayerProfile> profiles = PlayerProfileManager.Profiles;
+            IReadOnlyList<Profile> profiles = ProfileManager.Profiles;
 
             int maxPage = (profiles.Count / m_selectPanelCount);
             m_pageText.text = (m_page + 1) + "/" + (maxPage + 1);
@@ -103,7 +103,7 @@ namespace BoostBlasters.UI.MainMenus
             m_arrowLeft.enabled = m_page > 0 && selectedPanel != null;
             m_arrowRight.enabled = m_page < maxPage && selectedPanel != null;
 
-            PlayerProfile menuProfile = m_selectedProfile ?? (selectedPanel != null ? selectedPanel.Profile : null);
+            Profile menuProfile = m_selectedProfile ?? (selectedPanel != null ? selectedPanel.Profile : null);
 
             m_mainContent.SetActive(menuProfile != null);
 
@@ -124,7 +124,7 @@ namespace BoostBlasters.UI.MainMenus
             }
         }
 
-        private void OnSelect(PlayerProfilePanel panel, PlayerProfile profile, PlayerProfilePanel.Mode mode)
+        private void OnSelect(PlayerProfilePanel panel, Profile profile, PlayerProfilePanel.Mode mode)
         {
             m_selectedPanel = panel;
             m_selectedProfile = profile;
@@ -138,7 +138,7 @@ namespace BoostBlasters.UI.MainMenus
             if (mode == PlayerProfilePanel.Mode.AddNew)
             {
                 MainMenu menu = (MainMenu)Menu;
-                menu.ProfileName.EditProfile(PlayerProfileManager.AddNewProfile(), true, menu.Profiles, null);
+                menu.ProfileName.EditProfile(ProfileManager.AddNewProfile(), true, menu.Profiles, null);
             }
         }
 
@@ -182,7 +182,7 @@ namespace BoostBlasters.UI.MainMenus
         {
             if (confirmed)
             {
-                PlayerProfileManager.DeleteProfile(m_selectedProfile);
+                ProfileManager.DeleteProfile(m_selectedProfile);
                 CloseSelectedProfile();
                 ViewPage(m_page);
             }
@@ -200,7 +200,7 @@ namespace BoostBlasters.UI.MainMenus
         private void ChangePage(int offset)
         {
             int oldPage = m_page;
-            m_page = Mathf.Clamp(m_page + offset, 0, PlayerProfileManager.Profiles.Count / m_selectPanelCount);
+            m_page = Mathf.Clamp(m_page + offset, 0, ProfileManager.Profiles.Count / m_selectPanelCount);
 
             if (m_page != oldPage)
             {
@@ -211,14 +211,14 @@ namespace BoostBlasters.UI.MainMenus
 
         private void ViewPage(int page)
         {
-            m_page = Mathf.Clamp(page, 0, PlayerProfileManager.Profiles.Count / m_selectPanelCount);
+            m_page = Mathf.Clamp(page, 0, ProfileManager.Profiles.Count / m_selectPanelCount);
 
             for (int i = 0; i < m_selectPanels.Count; i++)
             {
                 bool isAddNew = (i == 0 && m_page == 0);
                 int index = Mathf.Max((m_page * m_selectPanelCount) + i - 1, 0);
 
-                IReadOnlyList<PlayerProfile> profiles = PlayerProfileManager.Profiles;
+                IReadOnlyList<Profile> profiles = ProfileManager.Profiles;
                 PlayerProfilePanel.Mode mode = isAddNew ? PlayerProfilePanel.Mode.AddNew : PlayerProfilePanel.Mode.Profile;
 
                 m_selectPanels[i].SetProfile((!isAddNew && index < profiles.Count) ? profiles[index] : null, mode, OnSelect, OnMove);

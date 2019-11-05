@@ -18,7 +18,7 @@ namespace BoostBlasters.Races
         public readonly int aiCount;
         public readonly int racerCount;
         public readonly List<Character> characters;
-        public readonly List<PlayerProfile> profiles;
+        public readonly List<Profile> profiles;
         public readonly List<PlayerBaseInput> inputs;
         public readonly List<int> playerIndicies;
 
@@ -28,7 +28,7 @@ namespace BoostBlasters.Races
             int humanCount,
             int aiCount,
             List<Character> characters,
-            List<PlayerProfile> profiles,
+            List<Profile> profiles,
             List<PlayerBaseInput> inputs,
             List<int> playerIndicies
         )

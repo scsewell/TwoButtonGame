@@ -14,7 +14,7 @@ namespace BoostBlasters.Players
     /// <summary>
     /// Manages access to player profiles.
     /// </summary>
-    public static class PlayerProfileManager
+    public static class ProfileManager
     {
         /// <summary>
         /// The name of the folder to store profiles under.
@@ -28,14 +28,14 @@ namespace BoostBlasters.Players
 
         private static readonly System.Random m_random = new System.Random();
 
-        private static readonly List<PlayerProfile> m_guestProfiles = new List<PlayerProfile>();
-        private static readonly List<PlayerProfile> m_uniqueGuestProfiles = new List<PlayerProfile>();
-        private static readonly List<PlayerProfile> m_profiles = new List<PlayerProfile>();
+        private static readonly List<Profile> m_guestProfiles = new List<Profile>();
+        private static readonly List<Profile> m_uniqueGuestProfiles = new List<Profile>();
+        private static readonly List<Profile> m_profiles = new List<Profile>();
 
         /// <summary>
         /// Gets all loaded player profiles.
         /// </summary>
-        public static IReadOnlyList<PlayerProfile> Profiles => m_profiles;
+        public static IReadOnlyList<Profile> Profiles => m_profiles;
 
         /// <summary>
         /// Loads all the available player profiles.
@@ -62,7 +62,7 @@ namespace BoostBlasters.Players
                 {
                     try
                     {
-                        PlayerProfile profile = new PlayerProfile(bytes);
+                        Profile profile = new Profile(bytes);
                         m_profiles.Add(profile);
 
                         Debug.Log($"Loaded profile \"{profile.Name}\"");
@@ -79,25 +79,25 @@ namespace BoostBlasters.Players
             }
         }
 
-        public static PlayerProfile GetGuestProfile(string name, bool enforceUnique)
+        public static Profile GetGuestProfile(string name, bool enforceUnique)
         {
             return CreateProfile(enforceUnique ? m_uniqueGuestProfiles : m_guestProfiles, true, name, enforceUnique);
         }
 
-        public static void ReleaseGuestProfile(PlayerProfile profile)
+        public static void ReleaseGuestProfile(Profile profile)
         {
             m_guestProfiles.Remove(profile);
             m_uniqueGuestProfiles.Remove(profile);
         }
 
-        public static PlayerProfile AddNewProfile()
+        public static Profile AddNewProfile()
         {
-            PlayerProfile profile = CreateProfile(m_profiles, false, "DefaultName", true);
+            Profile profile = CreateProfile(m_profiles, false, "DefaultName", true);
             SaveProfile(profile);
             return profile;
         }
 
-        public static bool DeleteProfile(PlayerProfile profile)
+        public static bool DeleteProfile(Profile profile)
         {
             bool removedProfile = m_profiles.Remove(profile);
             if (removedProfile)
@@ -107,12 +107,12 @@ namespace BoostBlasters.Players
             return removedProfile;
         }
 
-        public static string GetUniqueName(PlayerProfile profile, string baseName)
+        public static string GetUniqueName(Profile profile, string baseName)
         {
             return GetUniqueName(profile, baseName, false, m_profiles);
         }
 
-        private static PlayerProfile CreateProfile(List<PlayerProfile> profiles, bool isGuest, string baseName, bool uniqueName)
+        private static Profile CreateProfile(List<Profile> profiles, bool isGuest, string baseName, bool uniqueName)
         {
             byte[] buffer = new byte[sizeof(long)];
             Framework.IO.BinaryReader reader = new Framework.IO.BinaryReader(buffer);
@@ -129,14 +129,14 @@ namespace BoostBlasters.Players
 
             string name = uniqueName ? GetUniqueName(null, baseName, true, profiles) : baseName;
 
-            PlayerProfile profile = new PlayerProfile(id, isGuest, name);
+            Profile profile = new Profile(id, isGuest, name);
             profiles.Add(profile);
             return profile;
         }
 
-        private static string GetUniqueName(PlayerProfile profile, string baseName, bool startWithCount, List<PlayerProfile> profiles)
+        private static string GetUniqueName(Profile profile, string baseName, bool startWithCount, List<Profile> profiles)
         {
-            List<PlayerProfile> others = profiles.Where(p => p != profile).ToList();
+            List<Profile> others = profiles.Where(p => p != profile).ToList();
 
             int count = 0;
             string name = startWithCount ? baseName + (++count) : baseName;
@@ -149,7 +149,7 @@ namespace BoostBlasters.Players
             return name;
         }
 
-        public static void RenameProfile(PlayerProfile profile, string newName)
+        public static void RenameProfile(Profile profile, string newName)
         {
             string name = GetUniqueName(profile, newName);
             if (profile.Name != name)
@@ -160,7 +160,7 @@ namespace BoostBlasters.Players
             }
         }
 
-        public static void SaveProfile(PlayerProfile profile)
+        public static void SaveProfile(Profile profile)
         {
             if (!profile.IsGuest)
             {
@@ -175,7 +175,7 @@ namespace BoostBlasters.Players
             }
         }
 
-        private static string GetProfileFilePath(PlayerProfile profile)
+        private static string GetProfileFilePath(Profile profile)
         {
             return Path.Combine(GetProfileDirectory(), profile.Name + FILE_EXTENTION);
         }

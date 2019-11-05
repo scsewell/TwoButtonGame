@@ -1,12 +1,22 @@
 ### To Do ###
 
 Refactoring
-- Profiles load async
 - Levels/Characters use GUID
 - check for spaghetti (check singleton usage)
 - things should not know about level stuff, only interact with race classes
 - implement waypoint as a race concept, things should reference that instead
 - turn race manager into a state machine
+
+Update profiles/replays
+- add version information to serialized files
+- convert profile ID long to GUID
+- profiles should keep track of stats separately from replays
+- don't read an entire replay just to extract the header information
+- support replays during a match when paused
+- speed, cameras(cinemachine, players all at once, players single (cycle through), manual zoom/free camera)
+- vairable replay speed
+- store player profile id and name so it can be portable
+- improve framework binary serialzation
 
 Text Mesh Pro
 New Input sytstem (remove old system)
@@ -25,17 +35,6 @@ Optimization
 
 Migrate to URP
 - gate color should be a global shader property, instead of hooking into OnWillRenderObject
-
-Update profiles/replays
-- add version information to serialized files
-- convert profile ID long to GUID
-- profiles should keep track of stats separately from replays
-- don't read an entire replay just to extract the header information
-- support replays during a match when paused
-- speed, cameras(cinemachine, players all at once, players single (cycle through), manual zoom/free camera)
-- vairable replay speed
-- store player profile id and name so it can be portable
-- improve framework binary serialzation
 
 General
 - Outline is very expensive on UI, especially the player time...

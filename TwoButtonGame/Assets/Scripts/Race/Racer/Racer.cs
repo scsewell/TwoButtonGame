@@ -50,8 +50,8 @@ namespace BoostBlasters.Races.Racers
         private int m_racerNum = -1;
         public int RacerNum => m_racerNum;
 
-        private PlayerProfile m_profile;
-        public PlayerProfile Profile => m_profile;
+        private Profile m_profile;
+        public Profile Profile => m_profile;
 
         private Character m_characer;
         public Character Character => m_characer;
@@ -105,21 +105,21 @@ namespace BoostBlasters.Races.Racers
             m_movement = GetComponentInChildren<RacerMovement>();
         }
 
-        public Racer InitHuman(int racerNum, PlayerProfile profile, Character config, PlayerBaseInput input)
+        public Racer InitHuman(int racerNum, Profile profile, Character config, PlayerBaseInput input)
         {
             m_isHuman = true;
             m_inputProvider = new PlayerInputProvider(input);
             return Init(racerNum, profile, config);
         }
 
-        public Racer InitAI(int racerNum, PlayerProfile profile, Character config)
+        public Racer InitAI(int racerNum, Profile profile, Character config)
         {
             m_isHuman = false;
             m_inputProvider = new AIInputProvider(this);
             return Init(racerNum, profile, config);
         }
 
-        private Racer Init(int racerNum, PlayerProfile profile, Character config)
+        private Racer Init(int racerNum, Profile profile, Character config)
         {
             m_racerNum = racerNum;
             m_profile = profile;

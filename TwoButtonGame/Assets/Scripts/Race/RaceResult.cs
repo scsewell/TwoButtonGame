@@ -8,8 +8,8 @@ namespace BoostBlasters.Races
 {
     public class RaceResult
     {
-        private PlayerProfile m_profile;
-        public PlayerProfile Profile => m_profile;
+        private Profile m_profile;
+        public Profile Profile => m_profile;
 
         private int m_rank;
         public int Rank
@@ -30,14 +30,14 @@ namespace BoostBlasters.Races
 
         public float FinishTime => LapTimes.Sum();
 
-        public RaceResult(PlayerProfile profile)
+        public RaceResult(Profile profile)
         {
             m_profile = profile;
             m_lapTimes = new List<float>();
             Reset();
         }
 
-        public RaceResult(byte[] bytes, PlayerProfile profile)
+        public RaceResult(byte[] bytes, Profile profile)
         {
             BinaryReader reader = new BinaryReader(bytes);
             m_rank = reader.ReadInt();

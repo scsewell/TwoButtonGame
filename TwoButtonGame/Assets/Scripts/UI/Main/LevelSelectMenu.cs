@@ -129,7 +129,7 @@ namespace BoostBlasters.UI.MainMenus
                 }
 
                 List<RaceResult> results = new List<RaceResult>();
-                foreach (PlayerProfile profile in PlayerProfileManager.Profiles)
+                foreach (Profile profile in ProfileManager.Profiles)
                 {
                     if (!profile.IsGuest)
                     {

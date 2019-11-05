@@ -11,7 +11,7 @@ namespace BoostBlasters.Players
     /// <summary>
     /// Stores information about a player.
     /// </summary>
-    public class PlayerProfile
+    public class Profile
     {
         private long m_uniqueId;
         public long UniqueId => m_uniqueId;
@@ -31,7 +31,7 @@ namespace BoostBlasters.Players
 
         private Dictionary<int, List<RaceResult>> m_levelToResults;
 
-        public PlayerProfile(long uniqueId, bool isGuest, string name)
+        public Profile(long uniqueId, bool isGuest, string name)
         {
             m_uniqueId = uniqueId;
             m_isGuest = isGuest;
@@ -41,7 +41,7 @@ namespace BoostBlasters.Players
             m_levelToResults = new Dictionary<int, List<RaceResult>>();
         }
 
-        public PlayerProfile(byte[] bytes)
+        public Profile(byte[] bytes)
         {
             BinaryReader reader = new BinaryReader(bytes);
 
@@ -103,7 +103,7 @@ namespace BoostBlasters.Players
                 }
                 levelResults.Add(result);
 
-                PlayerProfileManager.SaveProfile(this);
+                ProfileManager.SaveProfile(this);
             }
         }
 

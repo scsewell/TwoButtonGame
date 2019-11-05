@@ -18,10 +18,10 @@ namespace BoostBlasters.UI.MainMenus
         [SerializeField] private Button m_acceptButton = null;
         [SerializeField] private Button m_cancelButton = null;
 
-        private PlayerProfile m_editProfile = null;
+        private Profile m_editProfile = null;
         private bool m_isNew = false;
         private MenuScreen m_returnToMenu = null;
-        private Action<PlayerProfile> m_onComplete = null;
+        private Action<Profile> m_onComplete = null;
         private string m_currentName = null;
         private bool m_delete = false;
         private bool m_deleteRepeat = false;
@@ -132,7 +132,7 @@ namespace BoostBlasters.UI.MainMenus
             Cancel();
         }
 
-        public void EditProfile(PlayerProfile editProfile, bool isNew, MenuScreen returnToMenu, Action<PlayerProfile> onComplete)
+        public void EditProfile(Profile editProfile, bool isNew, MenuScreen returnToMenu, Action<Profile> onComplete)
         {
             m_editProfile = editProfile;
             m_isNew = isNew;
@@ -150,7 +150,7 @@ namespace BoostBlasters.UI.MainMenus
 
             if (trimmed.Length > 0)
             {
-                PlayerProfileManager.RenameProfile(m_editProfile, trimmed);
+                ProfileManager.RenameProfile(m_editProfile, trimmed);
                 Menu.SetMenu(m_returnToMenu);
             }
             else
@@ -168,7 +168,7 @@ namespace BoostBlasters.UI.MainMenus
         {
             if (m_isNew)
             {
-                PlayerProfileManager.DeleteProfile(m_editProfile);
+                ProfileManager.DeleteProfile(m_editProfile);
             }
             Menu.SetMenu(m_returnToMenu, MenuBase.TransitionSound.Back);
 

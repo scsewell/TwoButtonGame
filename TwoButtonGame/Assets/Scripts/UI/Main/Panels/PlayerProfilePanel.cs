@@ -18,11 +18,11 @@ namespace BoostBlasters.UI.MainMenus
         private Color m_normalColor;
         private Color m_highlightedColor;
         private Mode m_mode;
-        private Action<PlayerProfilePanel, PlayerProfile, Mode> m_onClick = null;
+        private Action<PlayerProfilePanel, Profile, Mode> m_onClick = null;
         private Action<AxisEventData> m_onMove = null;
 
-        private PlayerProfile m_profile = null;
-        public PlayerProfile Profile => m_profile;
+        private Profile m_profile = null;
+        public Profile Profile => m_profile;
 
         public enum Mode
         {
@@ -49,8 +49,8 @@ namespace BoostBlasters.UI.MainMenus
         }
 
         public void SetProfile(
-            PlayerProfile profile, Mode mode, 
-            Action<PlayerProfilePanel, PlayerProfile, Mode> onClick,
+            Profile profile, Mode mode, 
+            Action<PlayerProfilePanel, Profile, Mode> onClick,
             Action<AxisEventData> onMove
         )
         {

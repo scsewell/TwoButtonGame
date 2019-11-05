@@ -217,7 +217,7 @@ namespace BoostBlasters.Races
                 Racer racer = Instantiate(m_racerPrefab, spawn.position, spawn.rotation);
                 m_racers.Add(racer);
 
-                PlayerProfile profile = m_raceParams.profiles[racerNum];
+                Profile profile = m_raceParams.profiles[racerNum];
                 Character config = m_raceParams.characters[racerNum];
 
                 GameObject graphics = Instantiate(config.CharacterGraphics, spawn.position, spawn.rotation, racer.transform);

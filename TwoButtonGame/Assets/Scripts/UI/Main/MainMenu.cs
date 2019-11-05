@@ -177,7 +177,7 @@ namespace BoostBlasters.UI.MainMenus
         public void LaunchRace()
         {
             List<Character> characters = new List<Character>(m_playerSelect.CharacterConfigs);
-            List<PlayerProfile> playerProfiles = new List<PlayerProfile>(m_playerSelect.PlayerProfiles);
+            List<Profile> playerProfiles = new List<Profile>(m_playerSelect.PlayerProfiles);
             List<PlayerBaseInput> inputs = m_playerSelect.ActiveInputs;
 
             int humanCount = inputs.Count;
@@ -186,7 +186,7 @@ namespace BoostBlasters.UI.MainMenus
             for (int i = 0; i < aiCount; i++)
             {
                 characters.Add(CharacterManager.Characters.PickRandom());
-                playerProfiles.Add(PlayerProfileManager.GetGuestProfile($"AI {i + 1}", false));
+                playerProfiles.Add(ProfileManager.GetGuestProfile($"AI {i + 1}", false));
             }
 
             RaceParameters raceParams = new RaceParameters(

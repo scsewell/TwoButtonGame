@@ -76,12 +76,12 @@ namespace BoostBlasters.Replays
             int aiCount         = reader.ReadInt();
             List<Character> playerConfigs = reader.ReadArray<int>().Select(id => CharacterManager.GetByGUID(id)).ToList();
 
-            List<PlayerProfile> proflies = new List<PlayerProfile>();
+            List<Profile> proflies = new List<Profile>();
             for (int i = 0; i < humanCount + aiCount; i++)
             {
                 long id = reader.ReadLong();
                 string name = reader.ReadString();
-                proflies.Add(PlayerProfileManager.GetGuestProfile(name, false));
+                proflies.Add(ProfileManager.GetGuestProfile(name, false));
             }
 
             List<PlayerBaseInput> inputs = InputManager.Instance.PlayerInputs.ToList();
