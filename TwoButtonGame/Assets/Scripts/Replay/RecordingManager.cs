@@ -10,19 +10,23 @@ using Framework;
 using Framework.IO;
 
 using BoostBlasters.Races;
-using BoostBlasters.Races.Racers;
 
 namespace BoostBlasters.Replays
 {
     /// <summary>
-    /// Manages loading and saving replays.
+    /// Manages the loading and saving of race recordings.
     /// </summary>
-    public class ReplayManager : Singleton<ReplayManager>
+    public class RecordingManager : Singleton<RecordingManager>
     {
         /// <summary>
         /// The name of the folder to store replays under.
         /// </summary>
         private static readonly string FOLDER_NAME = "Replays";
+
+        /// <summary>
+        /// The format of the date used in the file name.
+        /// </summary>
+        private static readonly string FILE_DATE_FORMAT = "yyyy-MM-dd_HH-mm-ss";
 
         /// <summary>
         /// The file extention used for replays.
@@ -34,20 +38,21 @@ namespace BoostBlasters.Replays
         /// </summary>
         private static readonly int MAX_REPLAYS = 100;
 
+
         private readonly object m_replayLock = new object();
-        private readonly List<ReplayInfo> m_replays = new List<ReplayInfo>();
+        private readonly List<RecordingInfo> m_replays = new List<RecordingInfo>();
         private bool m_isRefreshing = false;
 
         /// <summary>
-        /// Gets all new list with all loaded replay information.
+        /// Gets all new list with all currently loaded replay information.
         /// </summary>
-        public List<ReplayInfo> Replays
+        public List<RecordingInfo> Replays
         {
             get
             {
                 lock (m_replayLock)
                 {
-                    return new List<ReplayInfo>(m_replays);
+                    return new List<RecordingInfo>(m_replays);
                 }
             }
         }
@@ -66,10 +71,11 @@ namespace BoostBlasters.Replays
             }
         }
 
+
         /// <summary>
         /// Loads all exising replay file information.
         /// </summary>
-        public async void RefreshReplays()
+        public async void RefreshRecordings()
         {
             lock (m_replayLock)
             {
@@ -88,13 +94,13 @@ namespace BoostBlasters.Replays
         /// <summary>
         /// Loads a replay file.
         /// </summary>
-        /// <param name="info">The replay to load.</param>
-        /// <returns>The replay contents.</returns>
-        public RaceRecording LoadReplay(ReplayInfo info)
+        /// <param name="info">The info of the recording to load.</param>
+        /// <returns>The race recording.</returns>
+        public Recording LoadReplay(RecordingInfo info)
         {
             if (FileIO.ReadFileBytes(info.File.FullName, out byte[] bytes))
             {
-                RaceRecording recording = new RaceRecording(bytes);
+                Recording recording = new Recording(bytes);
 
                 Debug.Log($"Loaded replay \"{info.File.Name}\"");
                 return recording;
@@ -110,12 +116,12 @@ namespace BoostBlasters.Replays
         /// Saves a replay file.
         /// </summary>
         /// <param name="replay">The replay to save.</param>
-        public void SaveReplay(RaceRecording replay, List<Racer> players)
+        public void SaveReplay(Recording replay)
         {
-            string name = $"Replay_{DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss")}{FILE_EXTENTION}";
+            string name = $"Replay_{DateTime.Now.ToString(FILE_DATE_FORMAT)}{FILE_EXTENTION}";
             string path = Path.Combine(GetReplayDir(), name);
 
-            if (FileIO.WriteFile(path, replay.ToBytes(players)))
+            if (FileIO.WriteFile(path, replay.ToBytes()))
             {
                 Debug.Log($"Saved replay \"{name}\"");
             }
@@ -133,21 +139,31 @@ namespace BoostBlasters.Replays
             foreach (FileInfo file in files)
             {
                 // remove replays if there are too many
-                if (m_replays.Count >= MAX_REPLAYS)
+                int replayCount;
+
+                lock (m_replayLock)
+                {
+                    replayCount = m_replays.Count;
+                }
+
+                if (replayCount >= MAX_REPLAYS)
                 {
                     File.Delete(file.FullName);
                     continue;
                 }
 
-                // try to load the head information
+                // try to load the recording information
                 if (FileIO.ReadFileBytes(file.FullName, out byte[] bytes))
                 {
-                    RaceRecording.ParseHeader(new Framework.IO.BinaryReader(bytes), out RaceParameters raceParams, out RaceResult[] raceResults);
-                    ReplayInfo info = new ReplayInfo(file, raceParams, raceResults);
-
-                    lock (m_replayLock)
+                    using (DataReader reader = new DataReader(bytes))
                     {
-                        m_replays.Add(info);
+                        Recording.ParseHeader(reader, out RaceParameters raceParams, out RaceResult[] raceResults);
+                        RecordingInfo info = new RecordingInfo(file, raceParams, raceResults);
+
+                        lock (m_replayLock)
+                        {
+                            m_replays.Add(info);
+                        }
                     }
 
                     Debug.Log($"Loaded replay info for \"{file.Name}\"");

@@ -76,7 +76,7 @@ namespace BoostBlasters.Races
 
         private bool m_isQuiting;
 
-        private RaceRecording m_raceRecording;
+        private Recording m_raceRecording;
         private int m_fixedFramesSoFar;
 
         private bool m_isInIntro;
@@ -120,7 +120,7 @@ namespace BoostBlasters.Races
             StartRace();
         }
 
-        public void LoadReplay(RaceRecording recording)
+        public void LoadReplay(Recording recording)
         {
             m_raceParams = recording.RaceParams;
             InitRace();
@@ -156,7 +156,7 @@ namespace BoostBlasters.Races
         {
             m_state = State.Racing;
 
-            m_raceRecording = new RaceRecording(m_raceParams);
+            m_raceRecording = new Recording(m_raceParams);
             m_replayStartTime = float.PositiveInfinity;
 
             ResetRace(m_cameraRig.GetIntroSequenceLength());
@@ -448,7 +448,7 @@ namespace BoostBlasters.Races
         {
             if (!m_savedRecording && m_fixedFramesSoFar > 0)
             {
-                ReplayManager.Instance.SaveReplay(m_raceRecording, m_racers);
+                RecordingManager.Instance.SaveReplay(m_raceRecording);
                 m_savedRecording = true;
             }
         }

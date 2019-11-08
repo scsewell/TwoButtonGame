@@ -17,8 +17,8 @@ namespace BoostBlasters.UI.MainMenus
 
         private ReplayMenu m_menu = null;
 
-        private ReplayInfo m_info = null;
-        public ReplayInfo ReplayInfo => m_info;
+        private RecordingInfo m_info = null;
+        public RecordingInfo ReplayInfo => m_info;
 
         private void Awake()
         {
@@ -31,7 +31,7 @@ namespace BoostBlasters.UI.MainMenus
             m_name.alignment = TextAnchor.MiddleLeft;
         }
 
-        public void SetRecording(ReplayInfo info)
+        public void SetRecording(RecordingInfo info)
         {
             m_info = info;
 

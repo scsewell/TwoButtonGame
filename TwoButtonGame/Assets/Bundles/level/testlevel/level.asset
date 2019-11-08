@@ -13,6 +13,9 @@ MonoBehaviour:
   m_Name: level
   m_EditorClassIdentifier: 
   m_id: 886
+  m_guid:
+    m_part0: 5599176612578381998
+    m_part1: -7824845138927860825
   m_sortOrder: 999
   m_name: Test Level
   m_preview: {fileID: 21300000, guid: 9867f477b256dfa46b931b7e5499eab7, type: 3}

@@ -14,8 +14,22 @@ using BoostBlasters.Races.Racers;
 
 namespace BoostBlasters.Replays
 {
-    public class RaceRecording
+    /// <summary>
+    /// Holds replay data generated during a race.
+    /// </summary>
+    public class Recording
     {
+        /// <summary>
+        /// The header used to identify serialized recording contents.
+        /// </summary>
+        private static readonly char[] SERIALIZER_TYPE = new char[] { 'B', 'B', 'R', 'C' };
+
+        /// <summary>
+        /// The current version number of the recording serializer.
+        /// </summary>
+        private static readonly ushort SERIALIZER_VERSION = 1;
+
+
         private static readonly int FRAMES_PER_POSITION = 10;
         private List<Vector3>[] m_positions;
         private List<Vector3>[] m_velocities;
@@ -35,20 +49,28 @@ namespace BoostBlasters.Replays
 
         private int RacerCount => RaceParams.racerCount;
 
-        public float Duration => m_positions.Max(player => player.Count) * FRAMES_PER_POSITION * Time.fixedDeltaTime;
+        public float Duration => -1f;// m_positions.Max(player => player.Count) * FRAMES_PER_POSITION * Time.fixedDeltaTime;
 
-        public RaceRecording(RaceParameters raceParams)
+
+        /// <summary>
+        /// Creates a new recording.
+        /// </summary>
+        /// <param name="raceParams"></param>
+        public Recording(RaceParameters raceParams)
         {
             m_raceParams = raceParams;
             CreateBuffers();
         }
      
-        public RaceRecording(byte[] bytes)
+        /// <summary>
+        /// Deserializes a race recording.
+        /// </summary>
+        /// <param name="bytes">The recording to deserialize.</param>
+        public Recording(byte[] bytes)
         {
-            BinaryReader reader = new BinaryReader(bytes);
-        
-            RaceResult[] results;
-            ParseHeader(reader, out m_raceParams, out results);
+            DataReader reader = new DataReader(bytes);
+
+            ParseHeader(reader, out m_raceParams, out RaceResult[] results);
 
             CreateBuffers();
         
@@ -68,13 +90,16 @@ namespace BoostBlasters.Replays
             }
         }
 
-        public static void ParseHeader(BinaryReader reader, out RaceParameters raceParams, out RaceResult[] results)
+        public static void ParseHeader(DataReader reader, out RaceParameters raceParams, out RaceResult[] results)
         {
-            Level level   = LevelManager.GetByGUID(reader.ReadInt());
-            int laps            = reader.ReadInt();
-            int humanCount      = reader.ReadInt();
-            int aiCount         = reader.ReadInt();
-            List<Character> playerConfigs = reader.ReadArray<int>().Select(id => CharacterManager.GetByGUID(id)).ToList();
+            // load level info
+            Level level     = LevelManager.GetByGUID(reader.Read<Guid>());
+            int laps        = reader.Read<int>();
+
+            // load racer info
+            int humanCount  = reader.Read<int>();
+            int aiCount     = reader.Read<int>();
+            List<Character> characters = reader.Read<Guid>(humanCount + aiCount).Select(id => CharacterManager.GetByGUID(id)).ToList();
 
             List<Profile> proflies = new List<Profile>();
             for (int i = 0; i < humanCount + aiCount; i++)
@@ -87,7 +112,7 @@ namespace BoostBlasters.Replays
             List<PlayerBaseInput> inputs = InputManager.Instance.PlayerInputs.ToList();
             List<int> playerindicies = new List<int>();
 
-            raceParams = new RaceParameters(level, laps, humanCount, aiCount, playerConfigs, proflies, inputs, playerindicies);
+            raceParams = new RaceParameters(level, laps, humanCount, aiCount, characters, proflies, inputs, playerindicies);
        
             results = new RaceResult[raceParams.racerCount];
             for (int i = 0; i < raceParams.racerCount; i++)
@@ -96,29 +121,37 @@ namespace BoostBlasters.Replays
             }
         }
 
-        public byte[] ToBytes(List<Racer> players)
+        public byte[] ToBytes()
         {
-            BinaryWriter headerWriter = new BinaryWriter();
-        
-            headerWriter.WriteValue(m_raceParams.level.Id);
-            headerWriter.WriteValue(m_raceParams.laps);
-            headerWriter.WriteValue(m_raceParams.humanCount);
-            headerWriter.WriteValue(m_raceParams.aiCount);
-            headerWriter.WriteArray(m_raceParams.characters.Select(c => c.Id).ToArray());
+            DataWriter headerWriter = new DataWriter();
+
+            // write profile serializer version
+            headerWriter.Write(SERIALIZER_TYPE);
+            headerWriter.Write(SERIALIZER_VERSION);
+
+            // write recording header
+            headerWriter.Write(m_raceParams.level.Guid);
+            headerWriter.Write(m_raceParams.laps);
+
+            headerWriter.Write(m_raceParams.humanCount);
+            headerWriter.Write(m_raceParams.aiCount);
+            headerWriter.Write(m_raceParams.characters.Count);
+            headerWriter.Write(m_raceParams.characters.Select(c => c.Guid).ToArray());
 
             for (int i = 0; i < RacerCount; i++)
             {
-                Racer player = players[i];
-                headerWriter.WriteValue(player.Profile.UniqueId);
-                headerWriter.WriteValue(player.Profile.Name);
+                Racer racer = racers[i];
+                headerWriter.Write(racer.Profile.UniqueId);
+                headerWriter.Write(racer.Profile.Name);
             }
 
             for (int i = 0; i < RacerCount; i++)
             {
-                headerWriter.WriteArray(players[i].RaceResult.GetBytes());
+                headerWriter.WriteArray(racers[i].RaceResult.GetBytes());
             }
 
-            BinaryWriter bodyWriter = new BinaryWriter();
+            // write recording contents
+            DataWriter bodyWriter = new DataWriter();
 
             for (int i = 0; i < RacerCount; i++)
             {

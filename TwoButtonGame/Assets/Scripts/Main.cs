@@ -134,7 +134,7 @@ namespace BoostBlasters
         /// <param name="recording">The replay to view.</param>
         /// <param name="doLoad">A function which is true when the actual scene transition
         /// should be allowed to occur.</param>
-        public async void LoadRace(RaceRecording recording, Func<bool> doLoad = null)
+        public async void LoadRace(Recording recording, Func<bool> doLoad = null)
         {
             LastRaceType = RaceType.Replay;
             LastRaceParams = null;

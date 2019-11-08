@@ -15,8 +15,8 @@ namespace BoostBlasters.Levels
     public class Level : ScriptableObject
     {
         [SerializeField]
-        private int m_id = 1000;
-        public int Id => m_id;
+        private UnityGuid m_guid;
+        public Guid Guid => m_guid;
 
         [SerializeField]
         private int m_sortOrder = 100;

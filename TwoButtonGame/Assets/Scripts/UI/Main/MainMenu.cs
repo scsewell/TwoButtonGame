@@ -161,12 +161,12 @@ namespace BoostBlasters.UI.MainMenus
             return Mathf.Sin((Mathf.PI / 2f) * Mathf.Pow(fac, m_fadePower));
         }
 
-        public void LaunchReplay(ReplayInfo info)
+        public void LaunchReplay(RecordingInfo info)
         {
             m_isQuitting = true;
             m_menuExitTime = Time.unscaledTime;
 
-            Main.Instance.LoadRace(ReplayManager.Instance.LoadReplay(info), () =>
+            Main.Instance.LoadRace(RecordingManager.Instance.LoadReplay(info), () =>
             {
                 return GetFadeFactor() >= 0.99f;
             });

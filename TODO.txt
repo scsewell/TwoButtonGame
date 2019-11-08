@@ -14,8 +14,8 @@ Text Mesh Pro
 New Input sytstem (remove old system)
 Multiple controller support
 
-Unity physics? (Deterministic!!!!!)
-ECS?
+Unity Physics
+- Make sure to gut Physx as much as possible
 
 Optimization
 - Add profiling markers at useful locations

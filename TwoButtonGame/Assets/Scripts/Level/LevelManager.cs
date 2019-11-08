@@ -1,7 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
-
-using UnityEngine;
 
 using Framework.AssetBundles;
 
@@ -20,13 +19,13 @@ namespace BoostBlasters.Levels
         /// <summary>
         /// Gets a level by GUID.
         /// </summary>
-        /// <param name="guid">The id of the level.</param>
+        /// <param name="guid">The guid of the level.</param>
         /// <returns>The level, or null if not found.</returns>
-        public static Level GetByGUID(int guid)
+        public static Level GetByGUID(Guid guid)
         {
             foreach (Level level in Levels)
             {
-                if (level.Id == guid)
+                if (level.Guid == guid)
                 {
                     return level;
                 }

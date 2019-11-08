@@ -37,7 +37,7 @@ namespace BoostBlasters.UI.MainMenus
         [SerializeField]
         private int m_panelCount = 15;
 
-        private List<ReplayInfo> m_infos = null;
+        private List<RecordingInfo> m_infos = null;
         private List<ReplayPanel> m_replayPanels = null;
         private List<PlayerResultPanel> m_playerResults = null;
         private int m_infoPage = 0;
@@ -48,7 +48,7 @@ namespace BoostBlasters.UI.MainMenus
 
             m_backButton.onClick.AddListener(() => Menu.SetMenu(menu.Root, MenuBase.TransitionSound.Back));
 
-            m_infos = new List<ReplayInfo>();
+            m_infos = new List<RecordingInfo>();
             m_replayPanels = new List<ReplayPanel>();
 
             for (int i = 0; i < m_panelCount; i++)
@@ -71,8 +71,8 @@ namespace BoostBlasters.UI.MainMenus
         {
             if (enabled)
             {
-                ReplayManager.Instance.RefreshReplays();
-                m_infos = ReplayManager.Instance.Replays;
+                RecordingManager.Instance.RefreshRecordings();
+                m_infos = RecordingManager.Instance.Replays;
             }
             m_infoPage = 0;
             ViewPage(0);
@@ -80,7 +80,7 @@ namespace BoostBlasters.UI.MainMenus
 
         protected override void OnUpdate()
         {
-            m_infos = ReplayManager.Instance.Replays;
+            m_infos = RecordingManager.Instance.Replays;
         }
 
         protected override void OnUpdateGraphics()
@@ -109,7 +109,7 @@ namespace BoostBlasters.UI.MainMenus
 
             if (m_mainPanel.activeInHierarchy)
             {
-                ReplayInfo info = selectedReplay.ReplayInfo;
+                RecordingInfo info = selectedReplay.ReplayInfo;
                 RaceResult[] results = info.RaceResults.OrderBy(r => r.Rank).ToArray();
 
                 m_levelPreview.sprite = info.RaceParams.level.Preview;

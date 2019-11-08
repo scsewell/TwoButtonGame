@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System;
+using System.Collections.Generic;
 
 using Framework.IO;
 
@@ -11,110 +11,136 @@ namespace BoostBlasters.Players
     /// <summary>
     /// Stores information about a player.
     /// </summary>
-    public class Profile
+    public class Profile : SerializableData
     {
-        private long m_uniqueId;
-        public long UniqueId => m_uniqueId;
+        private readonly char[] SERIALIZER_TYPE = new char[] { 'B', 'B', 'P', 'F' };
 
-        private bool m_isGuest;
-        public bool IsGuest => m_isGuest;
+        protected override char[] SerializerType => SERIALIZER_TYPE;
+        protected override ushort SerializerVersion => 1;
 
-        private string m_name;
-        public string Name
+
+        /// <summary>
+        /// The ID of this profile.
+        /// </summary>
+        public Guid Guid { get; private set; }
+
+        /// <summary>
+        /// The name of the player.
+        /// </summary>
+        public string Name { get; set; }
+
+        /// <summary>
+        /// Is this a temporary profile.
+        /// </summary>
+        public bool IsGuest { get; }
+
+        private readonly List<RaceResult> m_results = new List<RaceResult>();
+        private readonly Dictionary<Guid, List<RaceResult>> m_levelToResults = new Dictionary<Guid, List<RaceResult>>();
+
+        /// <summary>
+        /// The races that this player has completed.
+        /// </summary>
+        public IReadOnlyList<RaceResult> RaceResults => m_results;
+
+
+        /// <summary>
+        /// Creates a new profile.
+        /// </summary>
+        /// <param name="name">The name of the player.</param>
+        /// <param name="isGuest">Is this a temporary profile.</param>
+        public Profile(string name, bool isGuest)
         {
-            get => m_name;
-            set => m_name = value;
+            Guid = Guid.NewGuid();
+            Name = name;
+            IsGuest = isGuest;
         }
 
-        private List<RaceResult> m_allResults;
-        public IReadOnlyList<RaceResult> AllResults => m_allResults;
-
-        private Dictionary<int, List<RaceResult>> m_levelToResults;
-
-        public Profile(long uniqueId, bool isGuest, string name)
+        /// <summary>
+        /// Loads a serialized profile.
+        /// </summary>
+        /// <param name="reader">A data reader at a serialized profile.</param>
+        public Profile(DataReader reader)
         {
-            m_uniqueId = uniqueId;
-            m_isGuest = isGuest;
-            m_name = name;
+            Deserialize(reader);
 
-            m_allResults = new List<RaceResult>();
-            m_levelToResults = new Dictionary<int, List<RaceResult>>();
+            // serialized profiles are not temporary
+            IsGuest = false;
         }
 
-        public Profile(byte[] bytes)
-        {
-            BinaryReader reader = new BinaryReader(bytes);
-
-            m_uniqueId = reader.ReadLong();
-            m_isGuest = false;
-            m_name = reader.ReadString();
-
-            m_allResults = new List<RaceResult>();
-            m_levelToResults = new Dictionary<int, List<RaceResult>>();
-
-            int levelCount = reader.ReadInt();
-            for (int i = 0; i < levelCount; i++)
-            {
-                int levelId = reader.ReadInt();
-                List<RaceResult> results = new List<RaceResult>();
-                int resultCount = reader.ReadInt();
-
-                for (int j = 0; j < resultCount; j++)
-                {
-                    results.Add(new RaceResult(reader.ReadArray<byte>(), this));
-                }
-
-                m_allResults.AddRange(results);
-                m_levelToResults.Add(levelId, results);
-            }
-        }
-
-        public byte[] GetBytes()
-        {
-            BinaryWriter writer = new BinaryWriter();
-            writer.WriteValue(m_uniqueId);
-            writer.WriteValue(m_name);
-
-            writer.WriteValue(m_levelToResults.Keys.Count);
-            foreach (KeyValuePair<int, List<RaceResult>> results in m_levelToResults)
-            {
-                writer.WriteValue(results.Key);
-                writer.WriteValue(results.Value.Count);
-                foreach (RaceResult result in results.Value)
-                {
-                    writer.WriteArray(result.GetBytes());
-                }
-            }
-
-            return writer.GetBytes();
-        }
-
+        /// <summary>
+        /// Adds a race result to the profile and saves it.
+        /// </summary>
+        /// <param name="level">The level the result was achieved on.</param>
+        /// <param name="result">The result.</param>
         public void AddRaceResult(Level level, RaceResult result)
         {
-            if (result != null && result.Finished)
+            // profiles should only include completed races
+            if (level == null || result == null || !result.Finished)
             {
-                m_allResults.Add(result);
+                return;
+            }
 
-                List<RaceResult> levelResults;
-                if (!m_levelToResults.TryGetValue(level.Id, out levelResults))
+            m_results.Add(result);
+            GetRaceResults(level).Add(result);
+
+            // save the updated profile
+            ProfileManager.SaveProfile(this);
+        }
+
+        /// <summary>
+        /// Gets the results of races this player has completed on a level.
+        /// </summary>
+        /// <param name="level">The level to get the results for.</param>
+        /// <returns>The list of results for this player.</returns>
+        public List<RaceResult> GetRaceResults(Level level)
+        {
+            if (!m_levelToResults.TryGetValue(level.Guid, out List<RaceResult> results))
+            {
+                results = new List<RaceResult>();
+                m_levelToResults.Add(level.Guid, results);
+            }
+            return results;
+        }
+
+        protected override void OnSerialize(DataWriter writer)
+        {
+            writer.Write(Guid);
+            writer.Write(Name);
+
+            writer.Write(m_levelToResults.Keys.Count);
+            foreach (KeyValuePair<Guid, List<RaceResult>> results in m_levelToResults)
+            {
+                writer.Write(results.Key);
+                writer.Write(results.Value.Count);
+                foreach (RaceResult result in results.Value)
                 {
-                    levelResults = new List<RaceResult>();
-                    m_levelToResults.Add(level.Id, levelResults);
+                    result.Serialize(writer);
                 }
-                levelResults.Add(result);
-
-                ProfileManager.SaveProfile(this);
             }
         }
 
-        public List<RaceResult> GetRaceResults(Level level)
+        protected override void OnDeserialize(DataReader reader, ushort version)
         {
-            List<RaceResult> results;
-            if (!m_levelToResults.TryGetValue(level.Id, out results))
+            Guid = reader.Read<Guid>();
+            Name = reader.ReadString();
+
+            int levelCount = reader.Read<int>();
+            for (int i = 0; i < levelCount; i++)
             {
-                results = new List<RaceResult>();
+                Guid levelGuid = reader.Read<Guid>();
+
+                int resultCount = reader.Read<int>();
+                List<RaceResult> results = new List<RaceResult>(resultCount);
+                for (int j = 0; j < resultCount; j++)
+                {
+                    RaceResult result = new RaceResult(reader);
+
+                    m_results.Add(result);
+                    results.Add(result);
+                }
+
+                m_levelToResults.Add(levelGuid, results);
             }
-            return results;
         }
     }
 }

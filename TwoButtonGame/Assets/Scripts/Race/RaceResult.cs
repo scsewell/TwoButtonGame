@@ -1,66 +1,105 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
+
 using Framework.IO;
-using BoostBlasters.Players;
 
 namespace BoostBlasters.Races
 {
-    public class RaceResult
+    /// <summary>
+    /// Stores the details of how a player placed on a race.
+    /// </summary>
+    public class RaceResult : SerializableData
     {
-        private Profile m_profile;
-        public Profile Profile => m_profile;
+        private readonly char[] SERIALIZER_TYPE = new char[] { 'B', 'B', 'R', 'E' };
 
-        private int m_rank;
-        public int Rank
+        protected override char[] SerializerType => SERIALIZER_TYPE;
+        protected override ushort SerializerVersion => 1;
+
+
+        /// <summary>
+        /// The placement rank.
+        /// </summary>
+        public int Rank { get; set; }
+
+        /// <summary>
+        /// Is this result from a completed race.
+        /// </summary>
+        public bool Finished { get; set; }
+
+        /// <summary>
+        /// The time achieved for each lap in seconds.
+        /// </summary>
+        public List<float> LapTimes { get; private set; }
+
+        /// <summary>
+        /// The total time taken to complete the current laps.
+        /// </summary>
+        public float FinishTime
         {
-            get => m_rank;
-            set => m_rank = value;
+            get
+            {
+                float time = 0f;
+
+                for (int i = 0; i < LapTimes.Count; i++)
+                {
+                    time += LapTimes[i];
+                }
+
+                return time;
+            }
         }
 
-        private bool m_finished;
-        public bool Finished
+
+        /// <summary>
+        /// Creates a new race result.
+        /// </summary>
+        public RaceResult()
         {
-            get => m_finished;
-            set => m_finished = value;
-        }
-
-        private List<float> m_lapTimes;
-        public List<float> LapTimes => m_lapTimes;
-
-        public float FinishTime => LapTimes.Sum();
-
-        public RaceResult(Profile profile)
-        {
-            m_profile = profile;
-            m_lapTimes = new List<float>();
+            LapTimes = new List<float>();
             Reset();
         }
 
-        public RaceResult(byte[] bytes, Profile profile)
+        /// <summary>
+        /// Deserializes a race result.
+        /// </summary>
+        /// <param name="reader">A data reader at a serialized race result.</param>
+        public RaceResult(DataReader reader)
         {
-            BinaryReader reader = new BinaryReader(bytes);
-            m_rank = reader.ReadInt();
-            m_finished = reader.ReadBool();
-            m_lapTimes = reader.ReadArray<float>().ToList();
-
-            m_profile = profile;
+            Deserialize(reader);
         }
 
-        public byte[] GetBytes()
-        {
-            BinaryWriter writer = new BinaryWriter();
-            writer.WriteValue(m_rank);
-            writer.WriteValue(m_finished);
-            writer.WriteArray(m_lapTimes.ToArray());
-            return writer.GetBytes();
-        }
-
+        /// <summary>
+        /// Clears the result to the default value.
+        /// </summary>
         public void Reset()
         {
-            m_rank = 1;
-            m_finished = false;
-            m_lapTimes.Clear();
+            Rank = 1;
+            Finished = false;
+            LapTimes.Clear();
+        }
+
+        protected override void OnSerialize(DataWriter writer)
+        {
+            writer.Write(Rank);
+            writer.Write(Finished);
+
+            writer.Write(LapTimes.Count);
+            for (int i = 0; i < LapTimes.Count; i++)
+            {
+                writer.Write(LapTimes[i]);
+            }
+        }
+
+        protected override void OnDeserialize(DataReader reader, ushort version)
+        {
+            Rank = reader.Read<int>();
+            Finished = reader.Read<bool>();
+
+            int lapTimesCount = reader.Read<int>();
+            LapTimes = new List<float>(lapTimesCount);
+            for (int i = 0; i < lapTimesCount; i++)
+            {
+                LapTimes.Add(reader.Read<float>());
+            }
         }
     }
 }

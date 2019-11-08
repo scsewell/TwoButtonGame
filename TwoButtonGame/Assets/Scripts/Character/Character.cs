@@ -1,4 +1,8 @@
-﻿using UnityEngine;
+﻿using System;
+
+using UnityEngine;
+
+using Framework;
 
 namespace BoostBlasters.Characters
 {
@@ -9,8 +13,8 @@ namespace BoostBlasters.Characters
     public class Character : ScriptableObject
     {
         [SerializeField]
-        private int m_id = 1000;
-        public int Id => m_id;
+        private UnityGuid m_guid;
+        public Guid Guid => m_guid;
 
         [SerializeField]
         private int m_sortOrder = 100;

@@ -111,7 +111,7 @@ namespace BoostBlasters.UI.MainMenus
             {
                 m_profleNameText.text = menuProfile.Name;
 
-                IReadOnlyList<RaceResult> results = menuProfile.AllResults;
+                IReadOnlyList<RaceResult> results = menuProfile.RaceResults;
                 m_raceCountText.text = results.Count.ToString();
 
                 float winRate = 0;

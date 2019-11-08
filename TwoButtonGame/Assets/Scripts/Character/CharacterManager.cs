@@ -1,7 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
-
-using UnityEngine;
 
 using Framework.AssetBundles;
 
@@ -20,13 +19,13 @@ namespace BoostBlasters.Characters
         /// <summary>
         /// Gets a character by GUID.
         /// </summary>
-        /// <param name="guid">The id of the character.</param>
+        /// <param name="guid">The guid of the character.</param>
         /// <returns>The character, or null if not found.</returns>
-        public static Character GetByGUID(int guid)
+        public static Character GetByGUID(Guid guid)
         {
             foreach (Character character in Characters)
             {
-                if (character.Id == guid)
+                if (character.Guid == guid)
                 {
                     return character;
                 }
