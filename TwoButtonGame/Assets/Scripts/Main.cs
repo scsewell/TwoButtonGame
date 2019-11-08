@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Scripting;
 
 using Framework;
 using Framework.Interpolation;
@@ -20,6 +21,12 @@ namespace BoostBlasters
     /// </summary>
     public class Main : ComponentSingleton<Main>
     {
+        /// <summary>
+        /// How many nanoseconds per frame the GC is allowed to use.
+        /// </summary>
+        private static readonly ulong GC_SLICE_DURATION = 2 * 1000 * 1000;
+
+
         private RaceManager m_raceManagerPrefab;
 
         public RaceManager RaceManager { get; private set; }
@@ -33,8 +40,12 @@ namespace BoostBlasters
             None,
         }
 
+
         private async void Start()
         {
+            // configure how much time the gc can use
+            GarbageCollector.incrementalTimeSliceNanoseconds = GC_SLICE_DURATION;
+
             // we want nice and smooth loading
             Application.backgroundLoadingPriority = ThreadPriority.Normal;
 
@@ -166,7 +177,7 @@ namespace BoostBlasters
             await op;
 
             // cleanup unused objects
-            GC.Collect();
+            GarbageCollector.CollectIncremental(GC_SLICE_DURATION);
 
             // restore default state
             AudioManager.Instance.MusicVolume = 1f; 
