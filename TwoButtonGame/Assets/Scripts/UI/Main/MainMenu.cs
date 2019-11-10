@@ -186,7 +186,7 @@ namespace BoostBlasters.UI.MainMenus
             for (int i = 0; i < aiCount; i++)
             {
                 characters.Add(CharacterManager.Characters.PickRandom());
-                playerProfiles.Add(ProfileManager.GetGuestProfile($"AI {i + 1}", false));
+                playerProfiles.Add(ProfileManager.GetTemporaryProfile($"AI {i + 1}", false));
             }
 
             RaceParameters raceParams = new RaceParameters(

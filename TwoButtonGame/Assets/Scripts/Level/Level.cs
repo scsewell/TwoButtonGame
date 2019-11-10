@@ -15,7 +15,7 @@ namespace BoostBlasters.Levels
     public class Level : ScriptableObject
     {
         [SerializeField]
-        private UnityGuid m_guid;
+        private UnityGuid m_guid = default;
         public Guid Guid => m_guid;
 
         [SerializeField]

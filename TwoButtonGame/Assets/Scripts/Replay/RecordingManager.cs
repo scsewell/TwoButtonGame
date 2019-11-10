@@ -9,8 +9,6 @@ using UnityEngine;
 using Framework;
 using Framework.IO;
 
-using BoostBlasters.Races;
-
 namespace BoostBlasters.Replays
 {
     /// <summary>
@@ -75,7 +73,7 @@ namespace BoostBlasters.Replays
         /// <summary>
         /// Loads all exising replay file information.
         /// </summary>
-        public async void RefreshRecordings()
+        public async void RefreshRecordingsAsync()
         {
             lock (m_replayLock)
             {
@@ -92,24 +90,46 @@ namespace BoostBlasters.Replays
         }
 
         /// <summary>
+        /// Loads a replay file asynchronously.
+        /// </summary>
+        /// <param name="info">The info of the recording to load.</param>
+        /// <returns>The race recording.</returns>
+        public async Task<Recording> LoadReplayAsync(RecordingInfo info)
+        {
+            return await Task.Run(() => LoadReplay(info));
+        }
+
+        /// <summary>
         /// Loads a replay file.
         /// </summary>
         /// <param name="info">The info of the recording to load.</param>
         /// <returns>The race recording.</returns>
         public Recording LoadReplay(RecordingInfo info)
         {
-            if (FileIO.ReadFileBytes(info.File.FullName, out byte[] bytes))
+            if (FileIO.OpenFileStream(info.File.FullName, out FileStream stream))
             {
-                Recording recording = new Recording(bytes);
+                using (DataReader reader = new DataReader(stream))
+                {
+                    Recording recording = new Recording(reader);
 
-                Debug.Log($"Loaded replay \"{info.File.Name}\"");
-                return recording;
+                    Debug.Log($"Loaded replay \"{info.File.Name}\"");
+                    return recording;
+                }
             }
             else
             {
                 Debug.LogError($"Failed to load replay \"{info.File.Name}\"!");
                 return null;
             }
+        }
+
+        /// <summary>
+        /// Saves a replay file asynchronously.
+        /// </summary>
+        /// <param name="replay">The replay to save.</param>
+        public async void SaveReplayAsync(Recording replay)
+        {
+            await Task.Run(() => SaveReplay(replay));
         }
 
         /// <summary>
@@ -121,13 +141,16 @@ namespace BoostBlasters.Replays
             string name = $"Replay_{DateTime.Now.ToString(FILE_DATE_FORMAT)}{FILE_EXTENTION}";
             string path = Path.Combine(GetReplayDir(), name);
 
-            if (FileIO.WriteFile(path, replay.ToBytes()))
+            using (DataWriter writer = new DataWriter())
             {
-                Debug.Log($"Saved replay \"{name}\"");
-            }
-            else
-            {
-                Debug.LogError($"Failed to save replay!");
+                if (replay.Serialize(writer) && FileIO.WriteFile(path, writer.GetBytes()))
+                {
+                    Debug.Log($"Saved replay \"{name}\"");
+                }
+                else
+                {
+                    Debug.LogError($"Failed to save replay!");
+                }
             }
         }
 
@@ -153,20 +176,24 @@ namespace BoostBlasters.Replays
                 }
 
                 // try to load the recording information
-                if (FileIO.ReadFileBytes(file.FullName, out byte[] bytes))
+                if (FileIO.OpenFileStream(file.FullName, out FileStream stream))
                 {
-                    using (DataReader reader = new DataReader(bytes))
+                    using (DataReader reader = new DataReader(stream))
                     {
-                        Recording.ParseHeader(reader, out RaceParameters raceParams, out RaceResult[] raceResults);
-                        RecordingInfo info = new RecordingInfo(file, raceParams, raceResults);
+                        Recording recording = new Recording(reader, true);
 
-                        lock (m_replayLock)
+                        if (recording.IsValid)
                         {
-                            m_replays.Add(info);
+                            RecordingInfo info = new RecordingInfo(file, recording.Params, recording.Results);
+
+                            lock (m_replayLock)
+                            {
+                                m_replays.Add(info);
+                            }
+
+                            Debug.Log($"Loaded replay info for \"{file.Name}\"");
                         }
                     }
-
-                    Debug.Log($"Loaded replay info for \"{file.Name}\"");
                 }
                 else
                 {

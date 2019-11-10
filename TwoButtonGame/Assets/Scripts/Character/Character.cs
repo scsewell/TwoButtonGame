@@ -13,7 +13,7 @@ namespace BoostBlasters.Characters
     public class Character : ScriptableObject
     {
         [SerializeField]
-        private UnityGuid m_guid;
+        private UnityGuid m_guid = default;
         public Guid Guid => m_guid;
 
         [SerializeField]

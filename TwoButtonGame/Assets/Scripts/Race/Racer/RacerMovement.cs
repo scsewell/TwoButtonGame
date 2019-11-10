@@ -126,7 +126,7 @@ namespace BoostBlasters.Races.Racers
 
             if (acceptInput && !inPreWarm)
             {
-                if (input.boost)
+                if (input.Boost)
                 {
                     if (!m_isBoosting)
                     {
@@ -289,7 +289,7 @@ namespace BoostBlasters.Races.Racers
                 Vector3 force = Vector3.zero;
                 float torque = 0f;
 
-                if (input.boost)
+                if (input.Boost)
                 {
                     float boostStrength = Mathf.Clamp01(Mathf.Exp(-Vector3.Dot(velocity, forward) / config.BoostSoftCap));
                     force += config.BoostAcceleration * boostStrength * forward;
@@ -346,10 +346,10 @@ namespace BoostBlasters.Races.Racers
 
         private void GetEngines(Inputs input, bool acceptInput, out float left, out float right, out float brake)
         {
-            Vector2 v = Vector2.ClampMagnitude(new Vector2(input.h, input.v), 1);
+            Vector2 v = Vector2.ClampMagnitude(new Vector2(input.H, input.V), 1);
             left = acceptInput ? Mathf.Clamp01(Mathf.Sqrt(Mathf.Clamp01(v.y) + Mathf.Clamp01(v.x))) : 0;
             right = acceptInput ? Mathf.Clamp01(Mathf.Sqrt(Mathf.Clamp01(v.y) + Mathf.Clamp01(-v.x))) : 0;
-            brake = acceptInput && !input.boost ? Mathf.Clamp01(-v.y) : 0;
+            brake = acceptInput && !input.Boost ? Mathf.Clamp01(-v.y) : 0;
         }
     }
 }

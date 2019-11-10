@@ -5,6 +5,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
+using BoostBlasters.Players;
 using BoostBlasters.Races;
 
 namespace BoostBlasters.UI.MainMenus
@@ -18,12 +19,12 @@ namespace BoostBlasters.UI.MainMenus
         [SerializeField] private Text m_finishTime = null;
         [SerializeField] private Text m_bestLap = null;
 
-        public void SetResults(RaceResult result)
+        public void SetResults(Profile profile, RaceResult result)
         {
-            SetResults(result, result != null ? result.Rank : 0);
+            SetResults(profile, result, result?.Rank ?? 0);
         }
 
-        public void SetResults(RaceResult result, int rank)
+        public void SetResults(Profile profile, RaceResult result, int rank)
         {
             gameObject.SetActive(result != null);
 
@@ -45,7 +46,7 @@ namespace BoostBlasters.UI.MainMenus
             {
                 m_rank.text = rank.ToString();
                 
-                UIUtils.FitText(m_name, result.Profile.Name);
+                UIUtils.FitText(m_name, profile.Name);
 
                 if (m_finishTime != null)
                 {

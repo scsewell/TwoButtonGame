@@ -93,11 +93,11 @@ namespace BoostBlasters.Races
         private float m_quitStartTime;
         private int m_countdownSecond;
 
-        public float TimeRaceLoad { get { return m_raceLoadTime; } }
-        public float TimeIntroDuration { get { return m_cameraRig.GetIntroSequenceLength(); } }
-        public float TimeIntroEnd { get { return m_introEndTime; } }
-        public float TimeIntroSkip { get { return m_introSkipTime; } }
-        public float TimeRaceStart { get { return m_raceStartTime; } }
+        public float TimeRaceLoad => m_raceLoadTime;
+        public float TimeIntroDuration => m_cameraRig.GetIntroSequenceLength();
+        public float TimeIntroEnd => m_introEndTime;
+        public float TimeIntroSkip => m_introSkipTime;
+        public float TimeRaceStart => m_raceStartTime;
 
         public float CountdownTime => (m_raceStartTime - Time.time) / m_countdownScale;
 
@@ -122,7 +122,7 @@ namespace BoostBlasters.Races
 
         public void LoadReplay(Recording recording)
         {
-            m_raceParams = recording.RaceParams;
+            m_raceParams = recording.Params;
             InitRace();
 
             m_state = State.Replay;
@@ -130,7 +130,7 @@ namespace BoostBlasters.Races
             m_raceRecording = recording;
             m_replayStartTime = Time.time;
 
-            ResetRace(0);
+            ResetRace(0f);
 
             AudioManager.Instance.PlayMusic(m_replayMusic);
             m_musicStarted = true;
@@ -156,7 +156,7 @@ namespace BoostBlasters.Races
         {
             m_state = State.Racing;
 
-            m_raceRecording = new Recording(m_raceParams);
+            m_raceRecording = new Recording(m_raceParams, m_racers.Select(r => r.RaceResult).ToArray());
             m_replayStartTime = float.PositiveInfinity;
 
             ResetRace(m_cameraRig.GetIntroSequenceLength());
@@ -193,11 +193,11 @@ namespace BoostBlasters.Races
 
             m_raceMenu.ResetUI();
 
-            m_raceRecording.ResetRecorder();
+            m_raceRecording.ResetRecording();
             m_fixedFramesSoFar = 0;
         }
 
-        public void InitRace()
+        private void InitRace()
         {
             m_racePath = FindObjectOfType<RacePath>().Init(m_raceParams.laps);
             m_raceMenu = Instantiate(m_raceMenuPrefab).Init(m_raceParams);
@@ -255,7 +255,7 @@ namespace BoostBlasters.Races
 
             if (m_state == State.Replay)
             {
-                m_raceRecording.MoveGhosts(m_fixedFramesSoFar, m_racers, m_cameras, isAfterStart);
+                m_raceRecording.ApplyRecordedFrame(m_fixedFramesSoFar, m_racers, m_cameras, isAfterStart);
             }
             else
             {
@@ -448,7 +448,7 @@ namespace BoostBlasters.Races
         {
             if (!m_savedRecording && m_fixedFramesSoFar > 0)
             {
-                RecordingManager.Instance.SaveReplay(m_raceRecording);
+                RecordingManager.Instance.SaveReplayAsync(m_raceRecording);
                 m_savedRecording = true;
             }
         }

@@ -1,10 +1,9 @@
 ### To Do ###
 
 Refactoring
-- add version information to files
-- add serializers to handle different file versions
 - don't read an entire replay just to extract the header information
-
+- race params should have a list of racers, which can be human, ai, network etc, rather then the current format
+- recordings should not care about human vs ai vs network etc
 - check for spaghetti (check singleton usage)
 - things should not know about level stuff, only interact with race classes
 - implement waypoint as a race concept, things should reference that instead
@@ -14,8 +13,10 @@ Text Mesh Pro
 New Input sytstem (remove old system)
 Multiple controller support
 
-Unity Physics
+ECS/Unity Physics
 - Make sure to gut Physx as much as possible
+- Any math transformation of inputs must be done in burst compiled code... otherwise determinism will not work
+- Ensure physics update order is deterministic
 
 Optimization
 - Add profiling markers at useful locations
@@ -40,12 +41,11 @@ General
 - better guide to next waypoint (make waypoint color glow more obvious, improve direction arrow (racing line?), look at next gate button)
 - Custom logo intro (add setting / command line option to skip in settings)
 
-Update profiles/replays
-- store player profile id and name so it can be portable
-- support replays during a match when paused
-- profiles should keep track of stats separately from replays
-- speed, cameras(cinemachine, players all at once, players single (cycle through), manual zoom/free camera)
-- vairable replay speed
+Replays
+- View replays up to current time in race when paused
+- Variable replay speed
+- Allow changine cameras (cinemachine, players all at once, players single (cycle through), manual zoom/free camera)
+- Toggle menu display for nice screenshots/video
 
 Audio
 - Add 3D sound for splitscreen (virtual scene for audio, duplicate audio sorce for each listener)

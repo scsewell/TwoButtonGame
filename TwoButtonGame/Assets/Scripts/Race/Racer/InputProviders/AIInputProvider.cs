@@ -14,11 +14,13 @@ namespace BoostBlasters.Races.Racers
         private const int PREDICTION_STEPS = 100;
         private const float PREDICTION_DELTA_TIME_SCALE = 2.0f;
 
+
         private Racer m_player;
         private Inputs m_input;
         private List<Vector3> m_positions = new List<Vector3>(PREDICTION_STEPS);
         private List<float> m_rotations = new List<float>(PREDICTION_STEPS);
         private float m_lastBoostTime;
+
 
         public AIInputProvider(Racer player)
         {
@@ -32,8 +34,9 @@ namespace BoostBlasters.Races.Racers
             m_lastBoostTime = float.MinValue;
         }
 
-        public void LateUpdateProvider()
+        public Inputs GetInput()
         {
+            return m_input;
         }
 
         public void FixedUpdateProvider()
@@ -97,30 +100,29 @@ namespace BoostBlasters.Races.Racers
                     Vector3 foreCross = Vector3.Cross(disp, fore);
                     float facing = Mathf.Acos(Vector3.Dot(Vector3.ProjectOnPlane(disp, Vector3.up).normalized, fore)) * Mathf.Rad2Deg;
 
-                    if (facing > Mathf.Lerp(10.0f, 0.5f, (disp.magnitude + 1.0f) / 150))
+                    if (facing > Mathf.Lerp(10.0f, 0.5f, (disp.magnitude + 1.0f) / 150f))
                     {
-                        m_input.h = -foreCross.y;
+                        m_input.H = -foreCross.y;
                     }
                     else
                     {
                         if (disp.magnitude > 65 && Mathf.Abs(disp.normalized.y) < 0.1f && Time.time - m_lastBoostTime > 0.5f)
                         {
-                            m_input.boost = true;
+                            m_input.Boost = true;
                             m_lastBoostTime = Time.time;
                         }
 
                         if (disp.y > -4)
                         {
-                            m_input.v = 1;
+                            m_input.V = 1;
                         }
                     }
                 }
             }
         }
 
-        public Inputs GetInput()
+        public void LateUpdateProvider()
         {
-            return m_input;
         }
     }
 }

@@ -79,7 +79,7 @@ namespace BoostBlasters.Races.Racers
                 m_rotations.Clear();
                 m_positions.Add(position);
                 m_rotations.Add(rotation);
-                memeBoots.PredictStep(SEGMENTS * FRAMES_PER_SEGMENT, m_positions, velocity, m_rotations, angularVelocity, new Inputs((2 * (input % 2)) - 1, (2 * (input / 2)) - 1, input > 3), Time.fixedDeltaTime);
+                //memeBoots.PredictStep(SEGMENTS * FRAMES_PER_SEGMENT, m_positions, velocity, m_rotations, angularVelocity, new Inputs((2 * (input % 2)) - 1, (2 * (input / 2)) - 1, input > 3), Time.fixedDeltaTime);
 
                 for (int i = 0; i < SEGMENTS; i++)
                 {

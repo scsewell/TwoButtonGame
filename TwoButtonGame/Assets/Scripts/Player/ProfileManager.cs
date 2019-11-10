@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 using System.Threading.Tasks;
 
 using UnityEngine;
 
-using Framework;
 using Framework.IO;
 
 namespace BoostBlasters.Players
@@ -26,14 +24,16 @@ namespace BoostBlasters.Players
         /// </summary>
         private static readonly string FILE_EXTENTION = ".prf";
 
-        private static readonly List<Profile> m_guestProfiles = new List<Profile>();
-        private static readonly List<Profile> m_uniqueGuestProfiles = new List<Profile>();
+
+        private static readonly List<Profile> m_tempProfiles = new List<Profile>();
+        private static readonly List<Profile> m_uniqueTempProfiles = new List<Profile>();
         private static readonly List<Profile> m_profiles = new List<Profile>();
 
         /// <summary>
-        /// Gets all loaded player profiles.
+        /// Gets all loaded persistent player profiles.
         /// </summary>
         public static IReadOnlyList<Profile> Profiles => m_profiles;
+
 
         /// <summary>
         /// Loads all the available player profiles.
@@ -58,19 +58,16 @@ namespace BoostBlasters.Players
             {
                 if (FileIO.ReadFileBytes(file.FullName, out byte[] bytes))
                 {
-                    try
+                    using (DataReader reader = new DataReader(bytes))
                     {
-                        using (DataReader reader = new DataReader(bytes))
+                        Profile profile = new Profile(reader);
+
+                        if (profile.IsValid)
                         {
-                            Profile profile = new Profile(reader);
                             m_profiles.Add(profile);
 
                             Debug.Log($"Loaded profile \"{profile.Name}\"");
                         }
-                    }
-                    catch (Exception e)
-                    {
-                        Debug.LogError($"Failed to parse player profile from \"{file.Name}\"! {e.ToString()}");
                     }
                 }
             }
@@ -84,33 +81,23 @@ namespace BoostBlasters.Players
         public static bool SaveProfile(Profile profile)
         {
             // don't write temporary profiles
-            if (profile.IsGuest)
+            if (profile.IsTemporary)
             {
                 return true;
             }
 
-            try
+            using (DataWriter writer = new DataWriter())
             {
-                using (DataWriter writer = new DataWriter())
+                if (profile.Serialize(writer) && FileIO.WriteFile(GetProfileFilePath(profile), writer.GetBytes()))
                 {
-                    profile.Serialize(writer);
-
-                    if (FileIO.WriteFile(GetProfileFilePath(profile), writer.GetBytes()))
-                    {
-                        Debug.Log($"Saved profile \"{profile.Name}\"");
-                        return true;
-                    }
-                    else
-                    {
-                        Debug.LogError($"Failed to save profile \"{profile.Name}\"!");
-                        return false;
-                    }
+                    Debug.Log($"Saved profile \"{profile.Name}\"");
+                    return true;
                 }
-            }
-            catch
-            {
-                Debug.LogError($"Failed to save profile \"{profile.Name}\"!");
-                return false;
+                else
+                {
+                    Debug.LogError($"Failed to save profile \"{profile.Name}\"!");
+                    return false;
+                }
             }
         }
 
@@ -120,24 +107,24 @@ namespace BoostBlasters.Players
         /// <param name="name">The desired name for the profile.</param>
         /// <param name="enforceUnique">Make sure the name does not match any other profile names.</param>
         /// <returns>The new profile.</returns>
-        public static Profile GetGuestProfile(string name, bool enforceUnique)
+        public static Profile GetTemporaryProfile(string name, bool enforceUnique)
         {
-            return CreateProfile(enforceUnique ? m_uniqueGuestProfiles : m_guestProfiles, true, name, enforceUnique);
+            return CreateProfile(enforceUnique ? m_uniqueTempProfiles : m_tempProfiles, true, name, enforceUnique);
         }
 
         /// <summary>
         /// Rmoves a temporary profile.
         /// </summary>
         /// <param name="profile">The profile to remove.</param>
-        public static void ReleaseGuestProfile(Profile profile)
+        public static void ReleaseTemporaryProfile(Profile profile)
         {
-            if (profile == null || !profile.IsGuest)
+            if (profile == null || !profile.IsTemporary)
             {
                 return;
             }
 
-            m_guestProfiles.Remove(profile);
-            m_uniqueGuestProfiles.Remove(profile);
+            m_tempProfiles.Remove(profile);
+            m_uniqueTempProfiles.Remove(profile);
         }
 
         /// <summary>
@@ -175,7 +162,7 @@ namespace BoostBlasters.Players
         /// <returns>True if the profile was deleted.</returns>
         public static bool DeleteProfile(Profile profile)
         {
-            if (profile == null || profile.IsGuest)
+            if (profile == null || profile.IsTemporary)
             {
                 return false;
             }
@@ -188,11 +175,11 @@ namespace BoostBlasters.Players
             return removedProfile;
         }
 
-        private static Profile CreateProfile(List<Profile> profiles, bool isGuest, string baseName, bool uniqueName)
+        private static Profile CreateProfile(List<Profile> profiles, bool isTemporary, string baseName, bool uniqueName)
         {
             string name = uniqueName ? GetUniqueName(null, baseName, true, profiles) : baseName;
 
-            Profile profile = new Profile(name, isGuest);
+            Profile profile = new Profile(name, isTemporary);
             profiles.Add(profile);
             return profile;
         }

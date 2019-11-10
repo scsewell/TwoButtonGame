@@ -106,9 +106,9 @@ namespace BoostBlasters.UI.MainMenus
             get => m_profile;
             private set
             {
-                if (m_profile != null && m_profile.IsGuest)
+                if (m_profile != null && m_profile.IsTemporary)
                 {
-                    ProfileManager.ReleaseGuestProfile(m_profile);
+                    ProfileManager.ReleaseTemporaryProfile(m_profile);
                 }
                 m_profile = value;
             }
@@ -233,7 +233,7 @@ namespace BoostBlasters.UI.MainMenus
                     if (SelectedProfile == 0)
                     {
                         m_state = State.Select;
-                        Profile = ProfileManager.GetGuestProfile("Guest", true);
+                        Profile = ProfileManager.GetTemporaryProfile("Guest", true);
                         SelectCharacter(m_selectedCharacter);
                         m_menu.PlaySubmitSound();
                     }

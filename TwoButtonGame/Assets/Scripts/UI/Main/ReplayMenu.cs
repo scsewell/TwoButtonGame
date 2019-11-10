@@ -71,7 +71,7 @@ namespace BoostBlasters.UI.MainMenus
         {
             if (enabled)
             {
-                RecordingManager.Instance.RefreshRecordings();
+                RecordingManager.Instance.RefreshRecordingsAsync();
                 m_infos = RecordingManager.Instance.Replays;
             }
             m_infoPage = 0;
@@ -119,7 +119,14 @@ namespace BoostBlasters.UI.MainMenus
 
                 for (int i = 0; i < m_playerResults.Count; i++)
                 {
-                    m_playerResults[i].SetResults((i < results.Length) ? results[i] : null);
+                    if (i < results.Length)
+                    {
+                        m_playerResults[i].SetResults(info.RaceParams.profiles[i], results[i]);
+                    }
+                    else
+                    {
+                        m_playerResults[i].SetResults(null, null);
+                    }
                 }
             }
         }

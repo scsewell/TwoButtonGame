@@ -11,6 +11,7 @@ namespace BoostBlasters.Races.Racers
         private Inputs m_movementInputs = default;
         private bool m_boost = false;
 
+
         public PlayerInputProvider(PlayerBaseInput input)
         {
             m_playerInput = input;
@@ -20,6 +21,19 @@ namespace BoostBlasters.Races.Racers
         public void ResetProvider()
         {
             m_boost = false;
+        }
+
+        public Inputs GetInput()
+        {
+            return m_movementInputs;
+        }
+
+        public void FixedUpdateProvider()
+        {
+            m_movementInputs = new Inputs();
+            m_movementInputs.H = m_playerInput.H;
+            m_movementInputs.V = m_playerInput.V;
+            m_movementInputs.Boost = m_boost;
         }
 
         public void LateUpdateProvider()
@@ -39,19 +53,6 @@ namespace BoostBlasters.Races.Racers
             {
                 m_boost = false;
             }
-        }
-
-        public void FixedUpdateProvider()
-        {
-            m_movementInputs = new Inputs();
-            m_movementInputs.h = m_playerInput.H;
-            m_movementInputs.v = m_playerInput.V;
-            m_movementInputs.boost = m_boost;
-        }
-
-        public Inputs GetInput()
-        {
-            return m_movementInputs;
         }
     }
 }

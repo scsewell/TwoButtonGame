@@ -20,12 +20,12 @@ namespace BoostBlasters.Replays
         public FileInfo File { get; }
 
         /// <summary>
-        /// The configuration of the race in the recording.
+        /// The configuration of the recorded race.
         /// </summary>
         public RaceParameters RaceParams { get; }
 
         /// <summary>
-        /// The outcomes of the race in the recording.
+        /// The outcomes of the recorded race.
         /// </summary>
         public RaceResult[] RaceResults { get; }
 

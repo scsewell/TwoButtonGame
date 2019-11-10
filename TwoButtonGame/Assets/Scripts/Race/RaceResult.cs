@@ -9,7 +9,7 @@ namespace BoostBlasters.Races
     /// </summary>
     public class RaceResult : SerializableData
     {
-        private readonly char[] SERIALIZER_TYPE = new char[] { 'B', 'B', 'R', 'E' };
+        private static readonly char[] SERIALIZER_TYPE = new char[] { 'B', 'B', 'R', 'E' };
 
         protected override char[] SerializerType => SERIALIZER_TYPE;
         protected override ushort SerializerVersion => 1;

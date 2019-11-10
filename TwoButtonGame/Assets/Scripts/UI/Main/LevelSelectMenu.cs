@@ -75,8 +75,21 @@ namespace BoostBlasters.UI.MainMenus
         private List<PlayerResultPanel> m_playerResults;
         private Transform m_camPivot;
         private Camera m_previewCam;
-        private Dictionary<Level, GameObject> m_configToPreview;
-        private Dictionary<Level, List<RaceResult>> m_levelToResults;
+
+        public class LevelInfo
+        {
+            public GameObject preview3d;
+            public List<Results> results;
+
+            public class Results
+            {
+                public Profile profile;
+                public RaceResult result;
+            }
+        }
+
+        private readonly Dictionary<Level, LevelInfo> m_levelInfo = new Dictionary<Level, LevelInfo>();
+
 
         public override void InitMenu()
         {
@@ -113,30 +126,37 @@ namespace BoostBlasters.UI.MainMenus
             m_camPivot = Instantiate(m_levelPreviewCameraPrefab).transform;
             m_previewCam = m_camPivot.GetComponentInChildren<Camera>();
             m_previewCam.cullingMask = 1;
-            
+
             // load the level configurations
-            m_configToPreview = new Dictionary<Level, GameObject>();
-            m_levelToResults = new Dictionary<Level, List<RaceResult>>();
+            m_levelInfo.Clear();
 
-            foreach (Level config in LevelManager.Levels)
+            foreach (Level level in LevelManager.Levels)
             {
-                if (config.Preview3d != null)
+                GameObject preview3d = new GameObject($"LevelPreview {level.Name}");
+                if (level.Preview3d != null)
                 {
-                    GameObject pivot = new GameObject($"LevelPreview {config.Name}");
-                    Instantiate(config.Preview3d, pivot.transform);
-
-                    m_configToPreview.Add(config, pivot);
+                    Instantiate(level.Preview3d, preview3d.transform);
                 }
 
-                List<RaceResult> results = new List<RaceResult>();
+                List<LevelInfo.Results> results = new List<LevelInfo.Results>();
                 foreach (Profile profile in ProfileManager.Profiles)
                 {
-                    if (!profile.IsGuest)
+                    foreach (RaceResult result in profile.GetRaceResults(level))
                     {
-                        results.AddRange(profile.GetRaceResults(config));
+                        results.Add(new LevelInfo.Results()
+                        {
+                            profile = profile,
+                            result = result,
+                        });
                     }
                 }
-                m_levelToResults.Add(config, results.OrderBy(v => v.FinishTime).ToList());
+                results = results.OrderBy(r => r.result.FinishTime).ToList();
+
+                m_levelInfo.Add(level, new LevelInfo()
+                {
+                    preview3d = preview3d,
+                    results = results,
+                });
             }
         }
 
@@ -179,15 +199,24 @@ namespace BoostBlasters.UI.MainMenus
         {
             m_options.ForEach(o => o.UpdateGraphics());
 
-            Level config = m_trackSelect.Value;
-            m_levelPreview.sprite = config.Preview;
+            Level level = m_trackSelect.Value;
+            m_levelPreview.sprite = level.Preview;
 
-            m_levelHighlight.color = new Color(1, 1, 1, Mathf.Lerp(m_levelHighlight.color.a, 0, Time.unscaledDeltaTime / 0.035f));
-            
-            List<RaceResult> results = m_levelToResults[config].Where(r => r.LapTimes.Count == m_lapSelect.Value).ToList();
+            m_levelHighlight.color = new Color(1f, 1f, 1f, Mathf.Lerp(m_levelHighlight.color.a, 0f, Time.unscaledDeltaTime / 0.035f));
+
+            LevelInfo info = m_levelInfo[level];
+
+            List<LevelInfo.Results> results = info.results.Where(r => r.result.LapTimes.Count == m_lapSelect.Value).ToList();
             for (int i = 0; i < m_playerResults.Count; i++)
             {
-                m_playerResults[i].SetResults((i < results.Count) ? results[i] : null, i + 1);
+                if (i < results.Count)
+                {
+                    m_playerResults[i].SetResults(results[i].profile, results[i].result, i + 1);
+                }
+                else
+                {
+                    m_playerResults[i].SetResults(null, null, i + 1);
+                }
             }
 
             if (m_previewCam.enabled)
@@ -205,18 +234,16 @@ namespace BoostBlasters.UI.MainMenus
                 Vector3 size = corners[2] - corners[0];
                 m_previewCam.rect = new Rect(corners[0].x, corners[0].y, size.x, size.y);
 
-                GameObject previewObject;
-                m_configToPreview.TryGetValue(TrackSelect.Value, out previewObject);
-                foreach (GameObject go in m_configToPreview.Values)
+                foreach (var i in m_levelInfo.Values)
                 {
-                    go.SetActive(go == previewObject);
+                    i.preview3d.SetActive(i.preview3d == info.preview3d);
                 }
             }
         }
 
         private void OnLevelChange()
         {
-            m_levelHighlight.color = new Color(1, 1, 1, 0.35f);
+            m_levelHighlight.color = new Color(1f, 1f, 1f, 0.35f);
             m_camPivot.rotation = Quaternion.identity;
         }
 

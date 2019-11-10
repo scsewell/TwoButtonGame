@@ -17,292 +17,269 @@ namespace BoostBlasters.Replays
     /// <summary>
     /// Holds replay data generated during a race.
     /// </summary>
-    public class Recording
+    public class Recording : SerializableData
     {
-        /// <summary>
-        /// The header used to identify serialized recording contents.
-        /// </summary>
         private static readonly char[] SERIALIZER_TYPE = new char[] { 'B', 'B', 'R', 'C' };
 
+        protected override char[] SerializerType => SERIALIZER_TYPE;
+        protected override ushort SerializerVersion => 1;
+
+        private const int FRAMES_PER_KEYFRAME = 10;
+
+
         /// <summary>
-        /// The current version number of the recording serializer.
+        /// A keyframe used in a recording.
         /// </summary>
-        private static readonly ushort SERIALIZER_VERSION = 1;
+        private struct Keyframe
+        {
+            private Vector3 m_position;
+            private float m_rotation;
+            private Vector3 m_velocity;
+            private float m_angularVelocity;
 
+            public Keyframe(Racer racer)
+            {
+                m_position = racer.transform.position;
+                m_rotation = racer.transform.rotation.eulerAngles.y;
+                m_velocity = racer.Movement.Velocity;
+                m_angularVelocity = racer.Movement.AngularVelocity;
+            }
 
-        private static readonly int FRAMES_PER_POSITION = 10;
-        private List<Vector3>[] m_positions;
-        private List<Vector3>[] m_velocities;
-        private List<float>[] m_rotations;
-        private List<float>[] m_angularVelocities;
+            public void Apply(Racer racer)
+            {
+                racer.transform.SetPositionAndRotation(m_position, Quaternion.Euler(0f, m_rotation, 0f));
+                racer.Movement.Velocity = m_velocity;
+                racer.Movement.AngularVelocity = m_angularVelocity;
+                racer.Interpolator.ForgetPreviousValues();
+            }
+        }
 
-        private static readonly int FRAMES_PER_INPUT = 1;
-        private List<sbyte>[] m_h;
-        private List<sbyte>[] m_v;
-        private List<int>[] m_toggleFramesBoost;
+        private List<Keyframe>[] m_keyframes;
+        private List<Inputs>[] m_inputs;
+        private bool m_hasReplayContents;
 
-        private Inputs[] m_lastFrameInputs;
-        private int[][] m_nextInputIndices;
+        /// <summary>
+        /// The configuration of the recorded race.
+        /// </summary>
+        public RaceParameters Params { get; private set; }
 
-        private RaceParameters m_raceParams;
-        public RaceParameters RaceParams => m_raceParams;
+        /// <summary>
+        /// The outcomes of the recorded race.
+        /// </summary>
+        public RaceResult[] Results { get; private set; }
 
-        private int RacerCount => RaceParams.racerCount;
+        /// <summary>
+        /// The number of recorded frames. 
+        /// </summary>
+        public float FrameCount
+        {
+            get
+            {
+                int frameCount = 0;
+                for (int i = 0; i < m_inputs.Length; i++)
+                {
+                    frameCount = Mathf.Max(frameCount, m_inputs[i].Count);
+                }
+                return frameCount;
+            }
+        }
 
-        public float Duration => -1f;// m_positions.Max(player => player.Count) * FRAMES_PER_POSITION * Time.fixedDeltaTime;
+        /// <summary>
+        /// The game time duration of the recorded race. 
+        /// </summary>
+        public float Duration => FrameCount * Time.fixedDeltaTime;
 
 
         /// <summary>
         /// Creates a new recording.
         /// </summary>
-        /// <param name="raceParams"></param>
-        public Recording(RaceParameters raceParams)
+        /// <param name="raceParams">The configuration of the race.</param>
+        /// <param name="results">The outcomes of the race for all the racers.</param>
+        public Recording(RaceParameters raceParams, RaceResult[] results)
         {
-            m_raceParams = raceParams;
-            CreateBuffers();
-        }
-     
-        /// <summary>
-        /// Deserializes a race recording.
-        /// </summary>
-        /// <param name="bytes">The recording to deserialize.</param>
-        public Recording(byte[] bytes)
-        {
-            DataReader reader = new DataReader(bytes);
+            m_hasReplayContents = true;
 
-            ParseHeader(reader, out m_raceParams, out RaceResult[] results);
+            Params = raceParams;
+            Results = results;
 
-            CreateBuffers();
-        
-            byte[] compressed = new byte[bytes.Length - reader.GetReadPointer()];
-            Array.Copy(bytes, reader.GetReadPointer(), compressed, 0, compressed.Length);
-            reader = new BinaryReader(Compression.Decompress(compressed));
-        
-            for (int i = 0; i < RacerCount; i++)
+            m_keyframes = new List<Keyframe>[raceParams.racerCount];
+            m_inputs = new List<Inputs>[raceParams.racerCount];
+
+            for (int i = 0; i < raceParams.racerCount; i++)
             {
-                m_positions[i]          = reader.ReadArray<Vector3>().ToList();
-                m_velocities[i]         = reader.ReadArray<Vector3>().ToList();
-                m_rotations[i]          = reader.ReadArray<float>().ToList();
-                m_angularVelocities[i]  = reader.ReadArray<float>().ToList();
-                m_h[i]                  = reader.ReadArray<sbyte>().ToList();
-                m_v[i]                  = reader.ReadArray<sbyte>().ToList();
-                m_toggleFramesBoost[i]  = reader.ReadArray<int>().ToList();
+                m_keyframes[i] = new List<Keyframe>();
+                m_inputs[i] = new List<Inputs>();
             }
         }
 
-        public static void ParseHeader(DataReader reader, out RaceParameters raceParams, out RaceResult[] results)
+        /// <summary>
+        /// Deserializes a race recording.
+        /// </summary>
+        /// <param name="reader">A data reader at a serialized recording.</param>
+        /// <param name="headerOnly">Will the body or the recording be read.</param>
+        public Recording(DataReader reader, bool headerOnly = false)
         {
-            // load level info
-            Level level     = LevelManager.GetByGUID(reader.Read<Guid>());
-            int laps        = reader.Read<int>();
+            m_hasReplayContents = !headerOnly;
 
-            // load racer info
-            int humanCount  = reader.Read<int>();
-            int aiCount     = reader.Read<int>();
-            List<Character> characters = reader.Read<Guid>(humanCount + aiCount).Select(id => CharacterManager.GetByGUID(id)).ToList();
+            Deserialize(reader);
+        }
 
-            List<Profile> proflies = new List<Profile>();
-            for (int i = 0; i < humanCount + aiCount; i++)
+        protected override void OnSerialize(DataWriter writer)
+        {
+            // write recording header
+            writer.Write(Params.level.Guid);
+            writer.Write(Params.laps);
+
+            writer.Write(Params.racerCount);
+            for (int i = 0; i < Params.racerCount; i++)
             {
-                long id = reader.ReadLong();
+                writer.Write(Params.characters[i].Guid);
+
+                Profile profile = Params.profiles[i];
+                writer.Write(profile.Guid);
+                writer.Write(profile.Name);
+
+                Results[i].Serialize(writer);
+            }
+
+            // write recording contents
+            using (DataWriter bodyWriter = new DataWriter())
+            {
+                for (int i = 0; i < Params.racerCount; i++)
+                {
+                    var keyframes = m_keyframes[i].ToArray();
+                    bodyWriter.Write(keyframes.Length);
+                    bodyWriter.Write(keyframes);
+
+                    var inputs = m_inputs[i].ToArray();
+                    bodyWriter.Write(inputs.Length);
+                    bodyWriter.Write(inputs);
+                }
+
+                byte[] body = Compression.Compress(bodyWriter.GetBytes());
+                writer.Write(body.Length);
+                writer.Write(body);
+            }
+        }
+
+        protected override void OnDeserialize(DataReader reader, ushort version)
+        {
+            // load the header data
+            Level level = LevelManager.GetByGUID(reader.Read<Guid>());
+            int laps = reader.Read<int>();
+
+            int racerCount = reader.Read<int>();
+
+            List<Character> characters = new List<Character>(racerCount);
+            List<Profile> proflies = new List<Profile>(racerCount);
+            Results = new RaceResult[racerCount];
+
+            for (int i = 0; i < racerCount; i++)
+            {
+                characters.Add(CharacterManager.GetByGUID(reader.Read<Guid>()));
+
+                Guid guid = reader.Read<Guid>();
                 string name = reader.ReadString();
-                proflies.Add(ProfileManager.GetGuestProfile(name, false));
+                proflies.Add(ProfileManager.GetTemporaryProfile(name, false));
+
+                Results[i] = new RaceResult(reader);
             }
 
             List<PlayerBaseInput> inputs = InputManager.Instance.PlayerInputs.ToList();
             List<int> playerindicies = new List<int>();
 
-            raceParams = new RaceParameters(level, laps, humanCount, aiCount, characters, proflies, inputs, playerindicies);
-       
-            results = new RaceResult[raceParams.racerCount];
-            for (int i = 0; i < raceParams.racerCount; i++)
+            Params = new RaceParameters(level, laps, racerCount, 0, characters, proflies, inputs, playerindicies);
+
+            // only load the replay data if needed
+            if (!m_hasReplayContents)
             {
-                results[i] = new RaceResult(reader.ReadArray<byte>(), raceParams.profiles[i]);
+                return;
+            }
+
+            int bodySize = reader.Read<int>();
+            byte[] body = Compression.Decompress(reader.Read<byte>(bodySize));
+
+            using (DataReader bodyReader = new DataReader(body))
+            {
+                m_keyframes = new List<Keyframe>[Params.racerCount];
+                m_inputs = new List<Inputs>[Params.racerCount];
+
+                for (int i = 0; i < Params.racerCount; i++)
+                {
+                    m_keyframes[i] = bodyReader.Read<Keyframe>(bodyReader.Read<int>()).ToList();
+                    m_inputs[i] = bodyReader.Read<Inputs>(bodyReader.Read<int>()).ToList();
+                }
             }
         }
 
-        public byte[] ToBytes()
+        /// <summary>
+        /// Clears the recording's frames.
+        /// </summary>
+        public void ResetRecording()
         {
-            DataWriter headerWriter = new DataWriter();
+            for (int i = 0; i < Params.racerCount; i++)
+            {
+                m_keyframes[i].Clear();
+                m_inputs[i].Clear();
+            }
+        }
 
-            // write profile serializer version
-            headerWriter.Write(SERIALIZER_TYPE);
-            headerWriter.Write(SERIALIZER_VERSION);
-
-            // write recording header
-            headerWriter.Write(m_raceParams.level.Guid);
-            headerWriter.Write(m_raceParams.laps);
-
-            headerWriter.Write(m_raceParams.humanCount);
-            headerWriter.Write(m_raceParams.aiCount);
-            headerWriter.Write(m_raceParams.characters.Count);
-            headerWriter.Write(m_raceParams.characters.Select(c => c.Guid).ToArray());
-
-            for (int i = 0; i < RacerCount; i++)
+        /// <summary>
+        /// Records the current race state.
+        /// </summary>
+        /// <param name="fixedFrame">The game frame number to record.</param>
+        /// <param name="racers">The racers to record the state of.</param>
+        public void Record(int fixedFrame, List<Racer> racers)
+        {
+            for (int i = 0; i < Params.racerCount; i++)
             {
                 Racer racer = racers[i];
-                headerWriter.Write(racer.Profile.UniqueId);
-                headerWriter.Write(racer.Profile.Name);
-            }
 
-            for (int i = 0; i < RacerCount; i++)
-            {
-                headerWriter.WriteArray(racers[i].RaceResult.GetBytes());
-            }
-
-            // write recording contents
-            DataWriter bodyWriter = new DataWriter();
-
-            for (int i = 0; i < RacerCount; i++)
-            {
-                bodyWriter.WriteArray(m_positions[i].ToArray());
-                bodyWriter.WriteArray(m_velocities[i].ToArray());
-                bodyWriter.WriteArray(m_rotations[i].ToArray());
-                bodyWriter.WriteArray(m_angularVelocities[i].ToArray());
-                bodyWriter.WriteArray(m_h[i].ToArray());
-                bodyWriter.WriteArray(m_v[i].ToArray());
-                bodyWriter.WriteArray(m_toggleFramesBoost[i].ToArray());
-            }
-
-            byte[] header = headerWriter.GetBytes();
-            byte[] body = bodyWriter.GetBytes();
-            byte[] compressed = Compression.Compress(body);
-
-            byte[] full = new byte[header.Length + compressed.Length];
-            Array.Copy(header, full, header.Length);
-            Array.Copy(compressed, 0, full, header.Length, compressed.Length);
-        
-            return full;
-        }
-
-        private void CreateBuffers()
-        {
-            m_positions             = new List<Vector3>[RacerCount];
-            m_velocities            = new List<Vector3>[RacerCount];
-            m_rotations             = new List<float>[RacerCount];
-            m_angularVelocities     = new List<float>[RacerCount];
-            m_h                     = new List<sbyte>[RacerCount];
-            m_v                     = new List<sbyte>[RacerCount];
-            m_toggleFramesBoost     = new List<int>[RacerCount];
-
-            m_lastFrameInputs       = new Inputs[RacerCount];
-            m_nextInputIndices      = new int[RacerCount][];
-
-            for (int i = 0; i < RacerCount; i++)
-            {
-                m_positions[i]          = new List<Vector3>();
-                m_velocities[i]         = new List<Vector3>();
-                m_rotations[i]          = new List<float>();
-                m_angularVelocities[i]  = new List<float>();
-                m_h[i]                  = new List<sbyte>();
-                m_v[i]                  = new List<sbyte>();
-                m_toggleFramesBoost[i]  = new List<int>();
-
-                m_nextInputIndices[i]   = new int[1];
-            }
-
-            ResetRecorder();
-        }
-
-        public void ResetRecorder()
-        {
-            Array.ForEach(m_nextInputIndices, array => Array.Clear(array, 0, array.Length));
-            Array.Clear(m_lastFrameInputs, 0, m_lastFrameInputs.Length);
-        }
-
-        public void Record(int fixedFramesSoFar, List<Racer> players)
-        {
-            for (int i = 0; i < RacerCount; i++)
-            {
-                Racer player = players[i];
-
-                if (!player.RaceResult.Finished)
+                if (!racer.RaceResult.Finished)
                 {
-                    if (fixedFramesSoFar % FRAMES_PER_POSITION == 0)
+                    if (fixedFrame % FRAMES_PER_KEYFRAME == 0)
                     {
-                        m_positions[i].Add(player.transform.position);
-                        m_velocities[i].Add(player.Movement.Velocity);
-                        m_rotations[i].Add(player.transform.rotation.eulerAngles.y);
-                        m_angularVelocities[i].Add(player.Movement.AngularVelocity);
+                        m_keyframes[i].Add(new Keyframe(racer));
                     }
-
-                    if (fixedFramesSoFar % FRAMES_PER_INPUT == 0)
-                    {
-                        m_h[i].Add(PackFloat(player.Inputs.h));
-                        m_v[i].Add(PackFloat(player.Inputs.v));
-                        if (m_lastFrameInputs[i].boost != player.Inputs.boost)
-                        {
-                            m_lastFrameInputs[i].boost ^= true;
-                            m_toggleFramesBoost[i].Add(fixedFramesSoFar);
-                        }
-                    }
+                    m_inputs[i].Add(racer.Inputs);
                 }
             }
         }
 
-        public void MoveGhosts(int fixedFrameToDisplay, List<Racer> players, List<RacerCamera> cameras, bool isAfterStart)
+        /// <summary>
+        /// Applies the frame of a recording.
+        /// </summary>
+        /// <param name="fixedFrame">The game frame number from the recording to apply.</param>
+        /// <param name="racers">The racers to apply the recorded state to.</param>
+        /// <param name="cameras">The racer cameras to apply the recorded state to.</param>
+        /// <param name="isAfterStart">Has the race began.</param>
+        public void ApplyRecordedFrame(int fixedFrame, List<Racer> racers, List<RacerCamera> cameras, bool isAfterStart)
         {
-            int fixIndex    = fixedFrameToDisplay / FRAMES_PER_POSITION;
-            int inputIndex  = fixedFrameToDisplay / FRAMES_PER_INPUT;
+            bool isKeyframe = fixedFrame % FRAMES_PER_KEYFRAME == 0;
+            int keyframeIndex = fixedFrame / FRAMES_PER_KEYFRAME;
 
-            for (int i = 0; i < RacerCount; i++)
+            for (int i = 0; i < Params.racerCount; i++)
             {
-                Racer player = players[i];
-                Inputs inputs;
+                Racer racer = racers[i];
 
-                if (fixIndex < m_positions[i].Count)
+                if (isKeyframe && keyframeIndex < m_keyframes[i].Count)
                 {
-                    if (fixedFrameToDisplay % FRAMES_PER_POSITION == 0)
+                    Vector3 lastPos = racer.transform.position;
+
+                    m_keyframes[i][keyframeIndex].Apply(racer);
+
+                    if (cameras.Count > i)
                     {
-                        Vector3 pos = m_positions[i][fixIndex];
-                        float rot = m_rotations[i][fixIndex];
-                        Vector3 vel = m_velocities[i][fixIndex];
-                        float angVel = m_angularVelocities[i][fixIndex];
-
-                        if (cameras.Count > i)
-                        {
-                            RacerCamera camera = cameras[i];
-                            camera.transform.position += pos - player.transform.position;
-                            camera.Interpolator.ForgetPreviousValues();
-                        }
-
-                        player.transform.position = pos;
-                        player.transform.rotation = Quaternion.Euler(0, rot, 0);
-                        player.Movement.Velocity = vel;
-                        player.Movement.AngularVelocity = angVel;
-                        player.Interpolator.ForgetPreviousValues();
+                        RacerCamera camera = cameras[i];
+                        camera.transform.position += lastPos - racer.transform.position;
+                        camera.Interpolator.ForgetPreviousValues();
                     }
                 }
-            
-                if (inputIndex < m_h[i].Count)
-                {
-                    m_lastFrameInputs[i].h = UnpackFloat(m_h[i][inputIndex]);
-                    m_lastFrameInputs[i].v = UnpackFloat(m_v[i][inputIndex]);
-                    if ((m_nextInputIndices[i][0] < m_toggleFramesBoost[i].Count) && (m_toggleFramesBoost[i][m_nextInputIndices[i][0]] == fixedFrameToDisplay))
-                    {
-                        m_nextInputIndices[i][0]++;
-                        m_lastFrameInputs[i].boost ^= true;
-                    }
 
-                    inputs = m_lastFrameInputs[i];
-                }
-                else
-                {
-                    inputs = new Inputs();
-                }
+                Inputs inputs = fixedFrame < m_inputs[i].Count ? m_inputs[i][fixedFrame] : new Inputs();
 
-                player.ProcessReplaying(true, isAfterStart, inputs);
+                racer.ProcessReplaying(true, isAfterStart, inputs);
             }
-        }
-
-        private sbyte PackFloat(float val)
-        {
-            return (sbyte)Mathf.Clamp(Mathf.RoundToInt(val * sbyte.MaxValue), sbyte.MinValue, sbyte.MaxValue);
-        }
-
-        public float UnpackFloat(sbyte val)
-        {
-            return (float)val / sbyte.MaxValue;
         }
     }
 }

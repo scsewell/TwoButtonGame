@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Linq;
 
+using UnityEngine;
+
 using Framework.IO;
 
 namespace BoostBlasters
@@ -21,17 +23,32 @@ namespace BoostBlasters
         protected abstract ushort SerializerVersion { get; }
 
         /// <summary>
+        /// Was this instance successfully deserialized.
+        /// </summary>
+        public bool IsValid { get; private set; } = true;
+
+        /// <summary>
         /// Serializes this data.
         /// </summary>
         /// <param name="writer">The writer to output to.</param>
-        public void Serialize(DataWriter writer)
+        /// <returns>True if the serialization was successful.</returns>
+        public bool Serialize(DataWriter writer)
         {
-            // write the serializer version
-            writer.Write(SerializerType);
-            writer.Write(SerializerVersion);
+            try
+            {
+                // write the serializer version
+                writer.Write(SerializerType.Select(c => (byte)c).ToArray());
+                writer.Write(SerializerVersion);
 
-            // write the contents
-            OnSerialize(writer);
+                // write the contents
+                OnSerialize(writer);
+                return true;
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"Failed to serialize {GetType().Name}! {e.ToString()}");
+                return false;
+            }
         }
 
         /// <summary>
@@ -44,20 +61,32 @@ namespace BoostBlasters
         /// Deserializes data and applies it to this instance.
         /// </summary>
         /// <param name="reader">The reader to get data from.</param>
-        protected void Deserialize(DataReader reader)
+        /// <returns>True if the deserialization was successful.</returns>
+        protected bool Deserialize(DataReader reader)
         {
-            // ensure that upcoming bytes are serialized data of this type
-            char[] type = reader.Read<char>(SerializerType.Length);
-
-            if (!SerializerType.SequenceEqual(type))
+            try
             {
-                throw new Exception($"Serialized data is not a {GetType().Name}!");
+                // ensure that upcoming bytes are serialized data of this type
+                byte[] type = reader.Read<byte>(SerializerType.Length);
+
+                if (!SerializerType.Select(c => (byte)c).SequenceEqual(type))
+                {
+                    throw new Exception($"Serialized data is not a {GetType().Name}!");
+                }
+
+                // get the serialized format version
+                ushort version = reader.Read<ushort>();
+
+                OnDeserialize(reader, version);
+                IsValid = true;
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"Failed to deserialize {GetType().Name}! {e.ToString()}");
+                IsValid = false;
             }
 
-            // get the serialized format version
-            ushort version = reader.Read<ushort>();
-
-            OnDeserialize(reader, version);
+            return IsValid;
         }
 
         /// <summary>

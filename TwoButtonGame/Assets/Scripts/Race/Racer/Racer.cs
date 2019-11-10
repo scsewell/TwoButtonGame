@@ -125,7 +125,7 @@ namespace BoostBlasters.Races.Racers
             m_profile = profile;
             m_characer = config;
 
-            m_raceResult = new RaceResult(profile);
+            m_raceResult = new RaceResult();
 
             m_animation = GetComponentInChildren<RacerAnimation>();
             m_racePath = Main.Instance.RaceManager.RacePath;
