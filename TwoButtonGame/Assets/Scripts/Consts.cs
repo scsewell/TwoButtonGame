@@ -37,7 +37,7 @@ namespace BoostBlasters
         /// <param name="racer">The index of this racer.</param>
         public static Color GetRacerColor(int racer)
         {
-            return racer < MAX_RACERS ? RACER_COLORS[racer] : Color.black;
+            return racer < RACER_COLORS.Length ? RACER_COLORS[racer] : Color.black;
         }
     }
 }

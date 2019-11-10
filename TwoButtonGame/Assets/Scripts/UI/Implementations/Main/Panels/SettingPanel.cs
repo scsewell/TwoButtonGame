@@ -1,6 +1,4 @@
-﻿using System;
-
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
@@ -13,13 +11,13 @@ namespace BoostBlasters.UI.MainMenus
         [SerializeField] private Text m_label = null;
         [SerializeField] private Text m_valueText = null;
 
-        private MenuBase m_menu = null;
+        private SoundPlayer m_sound = null;
         private Setting m_setting = null;
         private string[] m_options = null;
 
         private void Awake()
         {
-            m_menu = GetComponentInParent<MenuBase>();
+            m_sound = GetComponentInParent<SoundPlayer>();
         }
 
         public SettingPanel Init(Setting setting)
@@ -56,13 +54,13 @@ namespace BoostBlasters.UI.MainMenus
         public void OnPreviousValue()
         {
             m_valueText.text = m_options[(GetCurrentIndex() + m_options.Length - 1) % m_options.Length];
-            m_menu.PlaySelectSound();
+            m_sound.PlaySelectSound();
         }
 
         public void OnNextValue()
         {
             m_valueText.text = m_options[(GetCurrentIndex() + 1) % m_options.Length];
-            m_menu.PlaySelectSound();
+            m_sound.PlaySelectSound();
         }
 
         private int GetCurrentIndex()

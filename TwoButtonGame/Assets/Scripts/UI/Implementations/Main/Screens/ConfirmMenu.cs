@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 namespace BoostBlasters.UI.MainMenus
 {
-    public class ConfirmMenu : MenuScreen
+    public class ConfirmMenu : MenuScreen<MainMenu>
     {
         [Header("UI Elements")]
 
@@ -14,7 +14,7 @@ namespace BoostBlasters.UI.MainMenus
         [SerializeField] private Button m_cancelButton = null;
 
         private Action<bool> m_onResponse = null;
-        private MenuScreen m_returnToMenu = null;
+        private MenuScreen<MainMenu> m_returnToMenu = null;
 
         public override void InitMenu()
         {
@@ -22,9 +22,9 @@ namespace BoostBlasters.UI.MainMenus
             m_cancelButton.onClick.AddListener(() => Cancel());
         }
 
-        public void ConfirmAction(string text, Action<bool> onResponse, MenuScreen returnToMenu)
+        public void ConfirmAction(string text, Action<bool> onResponse, MenuScreen<MainMenu> returnToMenu)
         {
-            Menu.SetMenu(((MainMenu)Menu).Confirm);
+            Menu.SetMenu(Menu.Confirm);
 
             m_confirmText.text = text;
             m_onResponse = onResponse;
@@ -40,7 +40,7 @@ namespace BoostBlasters.UI.MainMenus
         {
             m_onResponse(true);
 
-            Menu.PlaySubmitSound();
+            Menu.Sound.PlaySubmitSound();
             Menu.SetMenu(m_returnToMenu);
         }
 
@@ -48,7 +48,7 @@ namespace BoostBlasters.UI.MainMenus
         {
             m_onResponse(false);
 
-            Menu.SetMenu(m_returnToMenu, MenuBase.TransitionSound.Back);
+            Menu.SetMenu(m_returnToMenu, TransitionSound.Back);
         }
     }
 }

@@ -1456,7 +1456,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed789ec3f5cad7140ae23a74cca956d9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_backMenu: {fileID: 0}
   m_closeOnBack: 0
   m_defaultSelection: {fileID: 114467217495562114}
   m_remeberLastSelection: 0
@@ -2191,7 +2190,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 386449e6645d6c3468d4514cf3324b22, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_backMenu: {fileID: 0}
   m_closeOnBack: 1
   m_defaultSelection: {fileID: 114492853714521842}
   m_remeberLastSelection: 0
@@ -3229,6 +3227,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4837803354179306}
   - component: {fileID: 114856836458412740}
+  - component: {fileID: -2737086168725287774}
   m_Layer: 5
   m_Name: RaceUI
   m_TagString: Untagged
@@ -3268,13 +3267,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd457d60c36c53441812ca11bab4e8d9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_selectSound: {fileID: 8300000, guid: 1902bbdd10c7b9046a7a57fe2eae492b, type: 3}
-  m_deselectSound: {fileID: 0}
-  m_submitSound: {fileID: 8300000, guid: 30b8eaa5d4c56724598463640f995fe8, type: 3}
-  m_cancelSound: {fileID: 8300000, guid: a788c717f0cb4af429f95f3097f65974, type: 3}
-  m_openMenu: {fileID: 8300000, guid: 72f36157dbda4964d90044c570038f50, type: 3}
-  m_nextMenu: {fileID: 8300000, guid: f4498ece26193e646834c37d0c29dadd, type: 3}
-  m_backMenu: {fileID: 8300000, guid: a0ac7b707402251458c4ce5527e47028, type: 3}
   m_titleCardMenu: {fileID: 223987514485523042}
   m_trackName: {fileID: 114871375575682954}
   m_songName: {fileID: 114895502055260524}
@@ -3291,6 +3283,19 @@ MonoBehaviour:
   m_fade: {fileID: 114819791464467974}
   m_finishWait: 2
   m_finishFadeInTime: 0.65
+--- !u!114 &-2737086168725287774
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1799371261809078}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1347e1bb0fdaa5e4d94dca25727634b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_config: {fileID: 11400000, guid: 1f60e2257c67c654ab7a4447c923749e, type: 2}
 --- !u!1 &1808764389328614
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 
 using UnityEngine;
 using UnityEngine.UI;
@@ -15,7 +13,7 @@ namespace BoostBlasters.UI
         private Text m_valueName = null;
         private Image m_leftArrow = null;
         private Image m_rightArrow = null;
-        private MenuBase m_menu = null;
+        private SoundPlayer m_sounds = null;
 
         private int m_index = 0;
         private int m_maxIndex = 0;
@@ -37,14 +35,14 @@ namespace BoostBlasters.UI
 
         private void Awake()
         {
+            m_sounds = GetComponentInParent<SoundPlayer>();
+
             m_button = GetComponentInChildren<Button>();
 
             m_name          = transform.Find("Label").GetComponent<Text>();
             m_valueName     = transform.Find("Highlight").GetComponentInChildren<Text>();
             m_leftArrow     = transform.Find("LeftArrow").GetComponent<Image>();
             m_rightArrow    = transform.Find("RightArrow").GetComponent<Image>();
-
-            m_menu = GetComponentInParent<MenuBase>();
         }
 
         public Navigable Init(string name, int maxIndex, Func<int, string> serialize, Action onChange)
@@ -95,12 +93,9 @@ namespace BoostBlasters.UI
             int count = m_maxIndex + 1;
             m_index = (m_index + count + offset) % count;
 
-            if (m_onChange != null)
-            {
-                m_onChange();
-            }
+            m_onChange?.Invoke();
 
-            m_menu.PlaySelectSound();
+            m_sounds.PlaySelectSound();
             UpdateDisplay();
         }
 

@@ -154,7 +154,7 @@ namespace BoostBlasters.Races.Racers
             m_leftGlow.SetColor("_EmissionColor", glow * Mathf.LerpUnclamped(m_notBoostGlow, m_boostGlow, leftNoiseFac));
             m_rightGlow.SetColor("_EmissionColor", glow * Mathf.LerpUnclamped(m_notBoostGlow, m_boostGlow, rightNoiseFac));
 
-            m_audio.enabled = m_racer.IsHuman;
+            m_audio.enabled = m_racer.Config.Type == RacerType.Player;
             float audioSmoothing = Time.deltaTime / m_audioSmoothing;
 
             float leftVolTarget = leftEngine * m_engineNormVol;

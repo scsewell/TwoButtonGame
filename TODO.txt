@@ -2,6 +2,7 @@
 
 Refactoring
 - race params should have a list of racers, which can be human, ai, network etc, rather then the current format
+- Clean up UI code
 - check for spaghetti (check singleton usage)
 - things should not know about level stuff, only interact with race classes
 - implement waypoint as a race concept, things should reference that instead

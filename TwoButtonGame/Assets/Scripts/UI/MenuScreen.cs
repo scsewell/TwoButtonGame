@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 
 using UnityEngine;
 using UnityEngine.UI;
@@ -12,15 +11,34 @@ namespace BoostBlasters.UI
     /// </summary>
     public abstract class MenuScreen : MonoBehaviour
     {
+    }
+
+    /// <summary>
+    /// A menu that the user can interact with.
+    /// </summary>
+    /// <typeparam name="T">The menu this menu screen belongs to.</typeparam>
+    [RequireComponent(typeof(Canvas))]
+    public abstract class MenuScreen<T> : MenuScreen where T : MenuBase<T>
+    {
         [SerializeField]
+        [Tooltip("The menu screen to go to when backing out of this menu screen.")]
         private MenuScreen m_backMenu = null;
+
         [SerializeField]
+        [Tooltip("Will pressing the back button close this menu screen even if a back menu is unassigned.")]
         private bool m_closeOnBack = false;
+
         [SerializeField]
+         [Tooltip("The element to select when going into this menu screen.")]
         private Selectable m_defaultSelection = null;
 
         [SerializeField]
+        [Tooltip("Will the last selected element on this screen start selected when going back into this menu screen.")]
         private bool m_remeberLastSelection = false;
+
+        /// <summary>
+        /// Will the last selected element on this screen start selected when going back into this menu screen.
+        /// </summary>
         public bool RemeberLastSelection
         {
             get => m_remeberLastSelection;
@@ -30,14 +48,21 @@ namespace BoostBlasters.UI
         private Canvas m_canvas = null;
         private Selectable m_lastSelected = null;
 
+        /// <summary>
+        /// When not null overrides the default selection for this menu screen.
+        /// </summary>
         protected Selectable DefaultSelectionOverride { get; set; } = null;
+        
+        /// <summary>
+        /// The base menu instance that manages this menu screen.
+        /// </summary>
+        public T Menu { get; private set; } = null;
 
-        private MenuBase m_baseMenu = null;
-        public MenuBase Menu => m_baseMenu;
 
         protected virtual void Awake()
         {
-            m_baseMenu = GetComponentInParent<MenuBase>();
+            Menu = GetComponentInParent<T>();
+
             m_canvas = GetComponent<Canvas>();
             m_canvas.enabled = false;
         }
@@ -45,26 +70,33 @@ namespace BoostBlasters.UI
         private void OnEnable()
         {
             m_canvas.enabled = true;
+
             OnEnableMenu();
         }
 
         private void OnDisable()
         {
             GameObject selected = EventSystem.current.currentSelectedGameObject;
+
             if (selected != null && selected.transform.IsChildOf(transform))
             {
                 m_lastSelected = selected.GetComponent<Selectable>();
             }
 
             m_canvas.enabled = false;
+
             OnDisableMenu();
         }
 
+        /// <summary>
+        /// Called once to initilize the menu.
+        /// </summary>
         public abstract void InitMenu();
 
         public void ResetMenu(bool fullReset)
         {
             OnResetMenu(fullReset);
+
             if (enabled)
             {
                 HandleSelection();
@@ -95,9 +127,9 @@ namespace BoostBlasters.UI
 
         protected virtual void OnBack()
         {
-            if (m_backMenu != null || m_closeOnBack)
+            if (m_backMenu || m_closeOnBack)
             {
-                m_baseMenu.SetMenu(m_closeOnBack ? null : m_backMenu, MenuBase.TransitionSound.Back);
+                Menu.SetMenu(m_closeOnBack ? null : m_backMenu, TransitionSound.Back);
             }
         }
 

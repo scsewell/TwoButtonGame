@@ -195,7 +195,7 @@ namespace BoostBlasters.Levels
                     {
                         glowFac = 0;
                     }
-                    Color playerColor = racerCam.Owner.GetColor();
+                    Color playerColor = racerCam.Owner.Color;
 
                     diffuse = SampleGradient(glowFac, diffuse, Color.white, playerColor);
                     glow = SampleGradient(glowFac, Color.black, m_secondNextGlowIntensity * Color.white, m_nextGlowIntensity * playerColor);

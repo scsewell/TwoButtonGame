@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 
 using UnityEngine;
 using UnityEngine.UI;
@@ -10,7 +8,7 @@ using Framework.Settings;
 
 namespace BoostBlasters.UI.MainMenus
 {
-    public class SettingsMenu : MenuScreen
+    public class SettingsMenu : MenuScreen<MainMenu>
     {
         [Header("UI Elements")]
 
@@ -29,9 +27,7 @@ namespace BoostBlasters.UI.MainMenus
 
         public override void InitMenu()
         {
-            MainMenu menu = (MainMenu)Menu;
-
-            m_settingsBackButton.onClick.AddListener(() => Menu.SetMenu(menu.Root, MenuBase.TransitionSound.Back));
+            m_settingsBackButton.onClick.AddListener(() => Menu.SetMenu(Menu.Root, TransitionSound.Back));
             m_settingsUseDefaultsButton.onClick.AddListener(() => UseDefaultSettings());
             m_settingsApplyButton.onClick.AddListener(() => ApplySettings());
 

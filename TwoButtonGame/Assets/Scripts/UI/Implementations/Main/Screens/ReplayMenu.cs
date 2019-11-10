@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 using UnityEngine;
@@ -13,7 +12,7 @@ using BoostBlasters.Races;
 
 namespace BoostBlasters.UI.MainMenus
 {
-    public class ReplayMenu : MenuScreen
+    public class ReplayMenu : MenuScreen<MainMenu>
     {
         [SerializeField]
         private GameObject m_selectPanelPrefab = null;
@@ -44,9 +43,7 @@ namespace BoostBlasters.UI.MainMenus
         
         public override void InitMenu()
         {
-            MainMenu menu = (MainMenu)Menu;
-
-            m_backButton.onClick.AddListener(() => Menu.SetMenu(menu.Root, MenuBase.TransitionSound.Back));
+            m_backButton.onClick.AddListener(() => Menu.SetMenu(Menu.Root, TransitionSound.Back));
 
             m_infos = new List<RecordingInfo>();
             m_replayPanels = new List<ReplayPanel>();
@@ -112,16 +109,16 @@ namespace BoostBlasters.UI.MainMenus
                 RecordingInfo info = selectedReplay.ReplayInfo;
                 RaceResult[] results = info.RaceResults.OrderBy(r => r.Rank).ToArray();
 
-                m_levelPreview.sprite = info.RaceParams.level.Preview;
-                m_levelNameText.text = info.RaceParams.level.Name;
-                m_lapsText.text = info.RaceParams.laps.ToString();
+                m_levelPreview.sprite = info.RaceParams.Level.Preview;
+                m_levelNameText.text = info.RaceParams.Level.Name;
+                m_lapsText.text = info.RaceParams.Laps.ToString();
                 m_finishedText.text = results.Any(r => r.Finished) ? "Yes" : "No";
 
                 for (int i = 0; i < m_playerResults.Count; i++)
                 {
                     if (i < results.Length)
                     {
-                        m_playerResults[i].SetResults(info.RaceParams.profiles[i], results[i]);
+                        m_playerResults[i].SetResults(info.RaceParams.Racers[i].Profile, results[i]);
                     }
                     else
                     {
@@ -150,7 +147,7 @@ namespace BoostBlasters.UI.MainMenus
             if (m_infoPage != oldPage)
             {
                 ViewPage(m_infoPage);
-                Menu.PlaySelectSound();
+                Menu.Sound.PlaySelectSound();
             }
         }
 

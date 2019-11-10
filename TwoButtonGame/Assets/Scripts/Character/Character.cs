@@ -45,7 +45,7 @@ namespace BoostBlasters.Characters
 
         [SerializeField]
         private GameObject m_characterGraphics = null;
-        public GameObject CharacterGraphics => m_characterGraphics;
+        public GameObject Graphics => m_characterGraphics;
 
         [SerializeField]
         private Vector3 m_graphicsOffset = Vector3.zero;

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 using UnityEngine;
@@ -13,7 +12,7 @@ using BoostBlasters.Races;
 
 namespace BoostBlasters.UI.MainMenus
 {
-    public class ProfilesMenu : MenuScreen
+    public class ProfilesMenu : MenuScreen<MainMenu>
     {
         [SerializeField]
         private GameObject m_selectPanelPrefab = null;
@@ -45,7 +44,7 @@ namespace BoostBlasters.UI.MainMenus
 
         public override void InitMenu()
         {
-            m_backButton.onClick.AddListener(   () => Menu.SetMenu(((MainMenu)Menu).Root, MenuBase.TransitionSound.Back));
+            m_backButton.onClick.AddListener(   () => Menu.SetMenu(Menu.Root, TransitionSound.Back));
             m_closeButton.onClick.AddListener(  () => CloseSelectedProfile());
             m_editButton.onClick.AddListener(   () => EditSelectedProfile());
             m_deleteButton.onClick.AddListener( () => ConfirmProfileDelete());
@@ -161,7 +160,7 @@ namespace BoostBlasters.UI.MainMenus
             }
             m_selectedProfile = null;
 
-            Menu.PlayCancelSound();
+            Menu.Sound.PlayCancelSound();
         }
 
         private void EditSelectedProfile()
@@ -205,7 +204,7 @@ namespace BoostBlasters.UI.MainMenus
             if (m_page != oldPage)
             {
                 ViewPage(m_page);
-                Menu.PlaySelectSound();
+                Menu.Sound.PlaySelectSound();
             }
         }
 

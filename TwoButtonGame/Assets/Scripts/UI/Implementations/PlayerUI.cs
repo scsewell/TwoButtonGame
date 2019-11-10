@@ -170,7 +170,7 @@ namespace BoostBlasters.UI.RaceMenus
         private float m_energyGainTime = 0f;
         private float m_energyFailTime = 0f;
 
-        private Racer m_player = null;
+        private Racer m_racer = null;
         private PlayerBaseInput m_input = null;
         private RacerCamera m_camera = null;
         private RaceManager m_raceManager = null;
@@ -182,9 +182,9 @@ namespace BoostBlasters.UI.RaceMenus
             m_arrow = Instantiate(m_arrowPrefab);
         }
 
-        public PlayerUI Init(Racer player, PlayerBaseInput input, RacerCamera cam, int humanCount)
+        public PlayerUI Init(Racer racer, PlayerBaseInput input, RacerCamera cam, int humanCount)
         {
-            m_player = player;
+            m_racer = racer;
             m_input = input;
             m_camera = cam;
 
@@ -193,7 +193,7 @@ namespace BoostBlasters.UI.RaceMenus
             m_arrow.gameObject.layer = cam.PlayerUILayer;
 
             RectTransform rt = GetComponent<RectTransform>();
-            Rect splitscreen = RacerCamera.GetSplitscreen(player.RacerNum, humanCount);
+            Rect splitscreen = RacerCamera.GetSplitscreen(racer.RacerNum, humanCount);
 
             rt.localScale = Vector3.one;
             rt.anchorMin = new Vector2(splitscreen.x, splitscreen.y);
@@ -201,13 +201,13 @@ namespace BoostBlasters.UI.RaceMenus
             rt.anchoredPosition = Vector2.zero;
             rt.sizeDelta = Vector2.zero;
 
-            m_playerText.text = player.Profile.Name;
-            m_playerText.color = Color.Lerp(player.GetColor(), Color.white, 0.35f);
+            m_playerText.text = racer.Config.Profile.Name;
+            m_playerText.color = Color.Lerp(racer.Color, Color.white, 0.35f);
 
             m_energyButton.sprite = input.SpriteBoost.First();
 
-            m_player.EnergyGained += Player_EnergyGained;
-            m_player.EnergyUseFailed += Player_EnergyUseFailed;
+            m_racer.EnergyGained += Player_EnergyGained;
+            m_racer.EnergyUseFailed += Player_EnergyUseFailed;
 
             ResetPlayerUI();
 
@@ -235,10 +235,10 @@ namespace BoostBlasters.UI.RaceMenus
                 Destroy(m_arrow);
                 m_arrow = null;
             }
-            if (m_player != null)
+            if (m_racer != null)
             {
-                m_player.EnergyGained -= Player_EnergyGained;
-                m_player.EnergyUseFailed -= Player_EnergyUseFailed;
+                m_racer.EnergyGained -= Player_EnergyGained;
+                m_racer.EnergyUseFailed -= Player_EnergyUseFailed;
             }
         }
 
@@ -253,12 +253,12 @@ namespace BoostBlasters.UI.RaceMenus
                 m_countdownText.text = (countdown > 0) ? Mathf.CeilToInt(countdown).ToString() : "GO!";
             }
 
-            int rank = m_player.RaceResult.Rank;
+            int rank = m_racer.RaceResult.Rank;
             bool isSolo = m_raceManager.RacerCount == 1;
 
-            int lap = m_player.CurrentLap;
+            int lap = m_racer.CurrentLap;
             RacePath path = m_raceManager.RacePath;
-            bool finished = m_player.RaceResult.Finished;
+            bool finished = m_racer.RaceResult.Finished;
 
             m_arrow.gameObject.SetActive(!finished);
             m_rankText.gameObject.SetActive(!finished && !isSolo);
@@ -276,7 +276,7 @@ namespace BoostBlasters.UI.RaceMenus
 
             foreach (Racer player in m_raceManager.Racers.OrderBy(p => Vector3.Distance(m_camera.transform.position, p.transform.position)))
             {
-                if (player != m_player)
+                if (player != m_racer)
                 {
                     RectTransform indicator;
                     if (!m_playerToIndicators.TryGetValue(player, out indicator))
@@ -287,7 +287,7 @@ namespace BoostBlasters.UI.RaceMenus
 
                         foreach (Graphic g in indicator.GetComponentsInChildren<Graphic>())
                         {
-                            g.color = player.GetColor();
+                            g.color = player.Color;
                         }
 
                         m_playerToIndicators.Add(player, indicator);
@@ -362,19 +362,19 @@ namespace BoostBlasters.UI.RaceMenus
             }
 
             // timer
-            float raceTime = finished ? m_player.RaceResult.FinishTime : m_raceManager.GetStartRelativeTime(Time.time);
+            float raceTime = finished ? m_racer.RaceResult.FinishTime : m_raceManager.GetStartRelativeTime(Time.time);
             m_timerText.text = UIUtils.FormatRaceTime(raceTime);
 
             string lapTimes = "";
             if (path.Laps > 1)
             {
-                foreach (float lapTime in m_player.RaceResult.LapTimes)
+                foreach (float lapTime in m_racer.RaceResult.LapTimes)
                 {
                     lapTimes += UIUtils.FormatRaceTime(lapTime) + '\n';
                 }
-                if (!finished && m_player.RaceResult.LapTimes.Count > 0)
+                if (!finished && m_racer.RaceResult.LapTimes.Count > 0)
                 {
-                    lapTimes += UIUtils.FormatRaceTime(raceTime - m_player.RaceResult.LapTimes.Sum());
+                    lapTimes += UIUtils.FormatRaceTime(raceTime - m_racer.RaceResult.LapTimes.Sum());
                 }
             }
             m_lapTimeText.text = lapTimes;
@@ -414,9 +414,9 @@ namespace BoostBlasters.UI.RaceMenus
             m_lastLap = lap;
 
             // energy bar
-            bool usingEnergy = m_player.Movement.IsBoosting;
-            bool canUseEnergy = m_player.Movement.CanBoost;
-            float energyFill = m_player.Energy / m_player.MaxEnergy;
+            bool usingEnergy = m_racer.Movement.IsBoosting;
+            bool canUseEnergy = m_racer.Movement.CanBoost;
+            float energyFill = m_racer.Energy / m_racer.MaxEnergy;
 
             m_energyBarFill.fillAmount = energyFill;
             m_energyBarHighlight.fillAmount = energyFill;
@@ -428,7 +428,7 @@ namespace BoostBlasters.UI.RaceMenus
 
             Color barColorBase = usingEnergy ? Color.white : (canUseEnergy ? 0.85f * Color.white : Color.black);
             float barAlpha = (usingEnergy || canUseEnergy) ? 1 : m_energyCantBoostAlpha;
-            SetColorNoAlpha(m_energyBarFill, Color.Lerp(m_player.GetColor(), barColorBase, usingEnergy ? 0.15f : 0.5f));
+            SetColorNoAlpha(m_energyBarFill, Color.Lerp(m_racer.Color, barColorBase, usingEnergy ? 0.15f : 0.5f));
             SetAlpha(m_energyBarFill, barAlpha);
 
             float energyHighlight = 1 - Mathf.Clamp01((Time.time - m_energyGainTime) / m_energyHighlightDuration);
@@ -442,7 +442,7 @@ namespace BoostBlasters.UI.RaceMenus
             SetAlpha(m_energyBarHighlight, energyHighlight);
             SetAlpha(m_energyButton, energyButtonAlpha);
 
-            SetColorNoAlpha(m_energyBarBorder, Color.Lerp(m_player.GetColor(), Color.white * 0.65f, usingEnergy ? 0 : 0.75f));
+            SetColorNoAlpha(m_energyBarBorder, Color.Lerp(m_racer.Color, Color.white * 0.65f, usingEnergy ? 0 : 0.75f));
         }
 
         private void Player_EnergyGained(float total, float delta)
@@ -457,18 +457,18 @@ namespace BoostBlasters.UI.RaceMenus
 
         private void SetArrow(float smoothing)
         {
-            Waypoint next = m_player.NextWaypoint;
+            Waypoint next = m_racer.NextWaypoint;
 
             if (next != null)
             {
                 Vector3 arrowPos = m_camera.MainCam.ViewportToWorldPoint(new Vector3(0.5f, m_arrowPosition, 1));
-                Vector3 disp = next.Position - m_player.transform.position;
+                Vector3 disp = next.Position - m_racer.transform.position;
                 Quaternion arrowRot = Quaternion.LookRotation(disp);
 
-                Waypoint secNext = m_player.SecondNextWaypoint;
+                Waypoint secNext = m_racer.SecondNextWaypoint;
                 if (secNext != null)
                 {
-                    Quaternion nextArrowRot = Quaternion.LookRotation(secNext.Position - m_player.transform.position);
+                    Quaternion nextArrowRot = Quaternion.LookRotation(secNext.Position - m_racer.transform.position);
                     arrowRot = Quaternion.Slerp(arrowRot, nextArrowRot, 1 - Mathf.Clamp01(disp.magnitude / m_arrowNextBlendDistance));
                 }
 

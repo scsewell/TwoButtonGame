@@ -131,7 +131,7 @@ namespace BoostBlasters
             LastRaceType = RaceType.Race;
             LastRaceParams = raceParams;
 
-            string scene = await raceParams.level.Scene.GetAsync();
+            string scene = await raceParams.Level.Scene.GetAsync();
             AsyncOperation op = SceneManager.LoadSceneAsync(scene);
             await LoadScene(op, doLoad);
 
@@ -150,7 +150,7 @@ namespace BoostBlasters
             LastRaceType = RaceType.Replay;
             LastRaceParams = null;
 
-            string scene = await recording.Params.level.Scene.GetAsync();
+            string scene = await recording.Params.Level.Scene.GetAsync();
             AsyncOperation op = SceneManager.LoadSceneAsync(scene);
             await LoadScene(op, doLoad);
 

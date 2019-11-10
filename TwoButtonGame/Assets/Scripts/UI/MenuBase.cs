@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -10,41 +9,30 @@ namespace BoostBlasters.UI
     /// <summary>
     /// Manages a mutually exclusive set of menu screens.
     /// </summary>
-    public abstract class MenuBase : MonoBehaviour
+    [RequireComponent(typeof(SoundPlayer))]
+    public abstract class MenuBase<T> : MonoBehaviour where T : MenuBase<T>
     {
-        [Header("Audio")]
-
-        [SerializeField] private AudioClip m_selectSound = null;
-        [SerializeField] private AudioClip m_deselectSound = null;
-        [SerializeField] private AudioClip m_submitSound = null;
-        [SerializeField] private AudioClip m_cancelSound = null;
-        [SerializeField] private AudioClip m_openMenu = null;
-        [SerializeField] private AudioClip m_nextMenu = null;
-        [SerializeField] private AudioClip m_backMenu = null;
-
-        private List<MenuSoundClip> m_audioBuffer = null;
         private List<MenuScreen> m_menuScreens = null;
         private MenuScreen m_targetMenu = null;
 
-        private MenuScreen m_activeMenu = null;
-        protected MenuScreen ActiveMenu => m_activeMenu;
+        /// <summary>
+        /// The sound player for the menu.
+        /// </summary>
+        public SoundPlayer Sound { get; private set; } = null;
 
-        private List<PlayerBaseInput> m_inputs = null;
-        public List<PlayerBaseInput> Inputs => m_inputs;
+        /// <summary>
+        /// The menu screen that is currently being used.
+        /// </summary>
+        protected MenuScreen ActiveScreen { get; private set; } = null;
 
-        public enum TransitionSound
-        {
-            None,
-            Open,
-            Next,
-            Back,
-        }
+        public List<PlayerBaseInput> Inputs { get; private set; } = null;
+
 
         protected void InitBase(List<PlayerBaseInput> inputs)
         {
-            m_inputs = inputs;
+            Sound = GetComponent<SoundPlayer>();
 
-            m_audioBuffer = new List<MenuSoundClip>();
+            Inputs = inputs;
 
             CustomInputModule inputModule = gameObject.AddComponent<CustomInputModule>();
             CustomInput customInput = gameObject.AddComponent<CustomInput>();
@@ -54,7 +42,7 @@ namespace BoostBlasters.UI
             m_menuScreens = new List<MenuScreen>();
             GetComponentsInChildren(m_menuScreens);
 
-            foreach (MenuScreen menu in m_menuScreens)
+            foreach (MenuScreen<T> menu in m_menuScreens)
             {
                 menu.InitMenu();
                 menu.enabled = false;
@@ -63,135 +51,71 @@ namespace BoostBlasters.UI
 
         public void SetMenu(MenuScreen menu, TransitionSound sound = TransitionSound.Next)
         {
-            MenuScreen previous = m_targetMenu;
-
-            if (previous != menu)
+            if (m_targetMenu != menu)
             {
                 m_targetMenu = menu;
 
                 switch (sound)
                 {
-                    case TransitionSound.Open: PlayOpenMenuSound(); break;
-                    case TransitionSound.Next: PlayNextMenuSound(); break;
-                    case TransitionSound.Back: PlayBackMenuSound(); break;
+                    case TransitionSound.Open: Sound.PlayOpenMenuSound(); break;
+                    case TransitionSound.Next: Sound.PlayNextMenuSound(); break;
+                    case TransitionSound.Back: Sound.PlayBackMenuSound(); break;
                 }
             }
         }
 
+        /// <summary>
+        /// Updates the menu.
+        /// </summary>
         protected void UpdateBase()
         {
-            m_menuScreens.ForEach(m => m.UpdateMenu());
+            foreach (MenuScreen<T> menu in m_menuScreens)
+            {
+                menu.UpdateMenu();
+            }
         }
 
+        /// <summary>
+        /// Updates the menu at the end of the frame.
+        /// </summary>
+        /// <param name="fullReset">A function which decides if menus should be fully reset.</param>
         protected void LateUpdateBase(Func<MenuScreen, bool> fullReset)
         {
-            if (m_activeMenu != m_targetMenu)
+            // check that we are not already on the menu to switch to
+            if (ActiveScreen != m_targetMenu)
             {
-                MenuScreen previous = m_activeMenu;
-                m_activeMenu = m_targetMenu;
+                MenuScreen previous = ActiveScreen;
+                ActiveScreen = m_targetMenu;
 
-                foreach (MenuScreen menu in m_menuScreens)
+                // disable all other menus screens
+                foreach (MenuScreen<T> menu in m_menuScreens)
                 {
-                    if (menu != m_activeMenu)
+                    if (menu != ActiveScreen as MenuScreen<T>)
                     {
                         menu.enabled = false;
                         menu.ResetMenu(fullReset(previous));
                     }
                 }
 
+                // clear the current selection
                 EventSystem.current.SetSelectedGameObject(null);
 
-                if (m_activeMenu != null)
+                // enable the new menu screen
+                if (ActiveScreen != null && ActiveScreen is MenuScreen<T> activeScreen)
                 {
-                    m_activeMenu.enabled = true;
-                    m_activeMenu.ResetMenu(fullReset(previous));
+                    activeScreen.enabled = true;
+                    activeScreen.ResetMenu(fullReset(previous));
                 }
             }
-            m_menuScreens.ForEach(m => m.UpdateGraphics());
 
-            FlushSoundQueue();
-        }
-
-        protected void FlushSoundQueue()
-        {
-            if (m_audioBuffer.Count > 0)
+            // update the menu graphics
+            foreach (MenuScreen<T> menu in m_menuScreens)
             {
-                m_audioBuffer = m_audioBuffer.OrderByDescending(c => c.priority).ToList();
-
-                int prority = m_audioBuffer.First().priority;
-                foreach (MenuSoundClip clip in m_audioBuffer)
-                {
-                    if (clip.priority < prority)
-                    {
-                        break;
-                    }
-
-                    AudioManager.Instance.PlaySound(clip.clip, clip.volume, true);
-                }
-
-                m_audioBuffer.Clear();
+                menu.UpdateGraphics();
             }
-        }
 
-        private void PlaySound(AudioClip clip, float volume, int priority)
-        {
-            if (clip != null)
-            {
-                m_audioBuffer.Add(new MenuSoundClip(clip, 1, priority));
-            }
-        }
-
-        public void PlaySelectSound(float volume = 1f)
-        {
-            PlaySound(m_selectSound, volume, 10);
-        }
-
-        public void PlayDeselectSound(float volume = 1f)
-        {
-            PlaySound(m_deselectSound, volume, 10);
-        }
-
-        public void PlaySubmitSound(float volume = 1f, AudioClip clip = null)
-        {
-            if (clip == null)
-            {
-                clip = m_submitSound;
-            }
-            PlaySound(clip, volume, 20);
-        }
-
-        public void PlayCancelSound(float volume = 1f)
-        {
-            PlaySound(m_cancelSound, volume, 20);
-        }
-
-        public void PlayOpenMenuSound(float volume = 1f)
-        {
-            PlaySound(m_openMenu, volume, 30);
-        }
-
-        public void PlayNextMenuSound(float volume = 1f)
-        {
-            PlaySound(m_nextMenu, volume, 30);
-        }
-
-        public void PlayBackMenuSound(float volume = 1f)
-        {
-            PlaySound(m_backMenu, volume, 30);
-        }
-
-        private struct MenuSoundClip
-        {
-            public AudioClip clip;
-            public float volume;
-            public int priority;
-
-            public MenuSoundClip(AudioClip clip, float volume, int priority)
-            {
-                this.clip = clip;
-                this.volume = volume;
-                this.priority = priority;
-            }
+            // play any sounds
+            Sound.FlushSoundQueue();
         }
     }
 }

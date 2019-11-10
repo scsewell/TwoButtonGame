@@ -39,8 +39,8 @@ namespace BoostBlasters.Races.Racers
         [SerializeField]
         private bool m_showPrediction = false;
 
-        private Racer m_player = null;
-        private CapsuleCollider m_capsule = null;
+        private Racer m_racer;
+        private CapsuleCollider m_capsule;
         private Rigidbody m_body = null;
         private RaycastHit[] m_hits = new RaycastHit[20];
         private float m_boundsEffect;
@@ -51,7 +51,7 @@ namespace BoostBlasters.Races.Racers
 
         private TrajectoryVisualization m_trajectoryVisualization;
 
-        public bool CanBoost => m_player.Energy >= m_player.Character.BoostEnergyUseRate * m_minBoostTime;
+        public bool CanBoost => m_racer.Energy >= m_racer.Config.Character.BoostEnergyUseRate * m_minBoostTime;
 
         private bool m_isGrounded;
         public bool IsGrounded => m_isGrounded;
@@ -86,7 +86,7 @@ namespace BoostBlasters.Races.Racers
 
         private void Awake()
         {
-            m_player = GetComponentInParent<Racer>();
+            m_racer = GetComponentInParent<Racer>();
             m_body = GetComponent<Rigidbody>();
             m_capsule = GetComponent<CapsuleCollider>();
         }
@@ -121,8 +121,8 @@ namespace BoostBlasters.Races.Racers
 
         public void FixedUpdateMovement(Inputs input, bool acceptInput, bool inPreWarm)
         {
-            Character config = m_player.Character;
-            ConfigurePhysics(config);
+            Character character = m_racer.Config.Character;
+            ConfigurePhysics(character);
 
             if (acceptInput && !inPreWarm)
             {
@@ -137,7 +137,7 @@ namespace BoostBlasters.Races.Racers
                         }
                         else if (!m_boostPressed)
                         {
-                            m_player.OnEnergyUseFail();
+                            m_racer.OnEnergyUseFail();
                         }
                         m_boostPressed = true;
                     }
@@ -158,11 +158,11 @@ namespace BoostBlasters.Races.Racers
 
             if (m_isBoosting)
             {
-                m_player.ConsumeEnergy(config.BoostEnergyUseRate * Time.deltaTime);
+                m_racer.ConsumeEnergy(character.BoostEnergyUseRate * Time.deltaTime);
                 m_boostDuration += Time.deltaTime;
                 m_boostEndTime = Time.time;
 
-                if (m_player.Energy <= 0f)
+                if (m_racer.Energy <= 0f)
                 {
                     m_isBoosting = false;
                 }
@@ -182,21 +182,21 @@ namespace BoostBlasters.Races.Racers
             m_boundsEffect = Mathf.MoveTowards(m_boundsEffect, outOfBounds ? 1f : 0f, Time.deltaTime / 0.2f);
 
             m_boostFactor = 1f - Mathf.Clamp01((Time.time - m_boostEndTime) / 0.2f);
-            float boostStrength = Mathf.Clamp01(Mathf.Exp(-Vector3.Dot(m_body.velocity, transform.forward) / config.BoostSoftCap));
-            Vector3 boostForce = m_boostFactor * config.BoostAcceleration * boostStrength * transform.forward;
+            float boostStrength = Mathf.Clamp01(Mathf.Exp(-Vector3.Dot(m_body.velocity, transform.forward) / character.BoostSoftCap));
+            Vector3 boostForce = m_boostFactor * character.BoostAcceleration * boostStrength * transform.forward;
             force += ApplyBoundsCorrection(boostForce);
 
-            Vector3 gravity = (1f - m_boostFactor) * config.GravityFac * Physics.gravity;
+            Vector3 gravity = (1f - m_boostFactor) * character.GravityFac * Physics.gravity;
             force += ApplyBoundsCorrection(gravity);
 
             float torque = 0f;
             if (!inPreWarm)
             {
-                Vector3 engineForeForce = config.ForwardAccel * transform.forward;
-                Vector3 engineUpForce = config.VerticalAccel * config.GravityFac * Vector3.up;
+                Vector3 engineForeForce = character.ForwardAccel * transform.forward;
+                Vector3 engineUpForce = character.VerticalAccel * character.GravityFac * Vector3.up;
 
                 Vector3 engineForce = (1f - m_boostFactor) * (engineForeForce + engineUpForce);
-                Vector3 forceOffset = config.TurnRatio * transform.right;
+                Vector3 forceOffset = character.TurnRatio * transform.right;
 
                 Vector3 linearForce = Vector3.zero;
 
@@ -209,8 +209,8 @@ namespace BoostBlasters.Races.Racers
                 force += ApplyBoundsCorrection(linearForce);
             }
 
-            m_body.velocity = StepVelocity(m_body.velocity, force, m_body.mass, config.LinearDrag + (m_brake * config.BrakeDrag), Time.deltaTime);
-            m_angVelocity = StepAngularVelocity(m_angVelocity, torque, TENSOR, config.AngularDrag, Time.deltaTime);
+            m_body.velocity = StepVelocity(m_body.velocity, force, m_body.mass, character.LinearDrag + (m_brake * character.BrakeDrag), Time.deltaTime);
+            m_angVelocity = StepAngularVelocity(m_angVelocity, torque, TENSOR, character.AngularDrag, Time.deltaTime);
 
             transform.Rotate(Vector3.up, 180 * m_angVelocity * Time.deltaTime);
 
@@ -278,7 +278,7 @@ namespace BoostBlasters.Races.Racers
 
         public void PredictStep(int steps, List<Vector3> pos, Vector3 velocity, List<float> rot, float angularVelocity, Inputs input, float deltaTime)
         {
-            Character config = m_player.Character;
+            Character character = m_racer.Config.Character;
 
             GetEngines(input, true, out float left, out float right, out float brake);
 
@@ -291,18 +291,18 @@ namespace BoostBlasters.Races.Racers
 
                 if (input.Boost)
                 {
-                    float boostStrength = Mathf.Clamp01(Mathf.Exp(-Vector3.Dot(velocity, forward) / config.BoostSoftCap));
-                    force += config.BoostAcceleration * boostStrength * forward;
+                    float boostStrength = Mathf.Clamp01(Mathf.Exp(-Vector3.Dot(velocity, forward) / character.BoostSoftCap));
+                    force += character.BoostAcceleration * boostStrength * forward;
                 }
                 else
                 {
-                    force += config.GravityFac * Physics.gravity;
+                    force += character.GravityFac * Physics.gravity;
 
-                    Vector3 engineForeForce = config.ForwardAccel * forward;
-                    Vector3 engineUpForce = config.VerticalAccel * config.GravityFac * Vector3.up;
+                    Vector3 engineForeForce = character.ForwardAccel * forward;
+                    Vector3 engineUpForce = character.VerticalAccel * character.GravityFac * Vector3.up;
 
                     Vector3 engineForce = engineForeForce + engineUpForce;
-                    Vector3 forceOffset = config.TurnRatio * Vector3.Cross(Vector3.up, forward).normalized;
+                    Vector3 forceOffset = character.TurnRatio * Vector3.Cross(Vector3.up, forward).normalized;
 
                     force += left * engineForce;
                     torque += left * Vector3.Dot(Vector3.Cross(-forceOffset, engineForce), Vector3.up);
@@ -311,8 +311,8 @@ namespace BoostBlasters.Races.Racers
                     torque += right * Vector3.Dot(Vector3.Cross(forceOffset, engineForce), Vector3.up);
                 }
 
-                velocity = StepVelocity(velocity, force, m_body.mass, m_player.Character.LinearDrag + (brake * config.BrakeDrag), deltaTime);
-                angularVelocity = StepAngularVelocity(angularVelocity, torque, TENSOR, m_player.Character.AngularDrag, deltaTime);
+                velocity = StepVelocity(velocity, force, m_body.mass, character.LinearDrag + (brake * character.BrakeDrag), deltaTime);
+                angularVelocity = StepAngularVelocity(angularVelocity, torque, TENSOR, character.AngularDrag, deltaTime);
 
                 pos.Add(pos.Last() + (velocity * deltaTime));
                 rot.Add(rot.Last() + (180f * angularVelocity * deltaTime));
@@ -346,10 +346,10 @@ namespace BoostBlasters.Races.Racers
 
         private void GetEngines(Inputs input, bool acceptInput, out float left, out float right, out float brake)
         {
-            Vector2 v = Vector2.ClampMagnitude(new Vector2(input.H, input.V), 1);
-            left = acceptInput ? Mathf.Clamp01(Mathf.Sqrt(Mathf.Clamp01(v.y) + Mathf.Clamp01(v.x))) : 0;
-            right = acceptInput ? Mathf.Clamp01(Mathf.Sqrt(Mathf.Clamp01(v.y) + Mathf.Clamp01(-v.x))) : 0;
-            brake = acceptInput && !input.Boost ? Mathf.Clamp01(-v.y) : 0;
+            Vector2 v = Vector2.ClampMagnitude(new Vector2(input.H, input.V), 1f);
+            left = acceptInput ? Mathf.Clamp01(Mathf.Sqrt(Mathf.Clamp01(v.y) + Mathf.Clamp01(v.x))) : 0f;
+            right = acceptInput ? Mathf.Clamp01(Mathf.Sqrt(Mathf.Clamp01(v.y) + Mathf.Clamp01(-v.x))) : 0f;
+            brake = acceptInput && !input.Boost ? Mathf.Clamp01(-v.y) : 0f;
         }
     }
 }

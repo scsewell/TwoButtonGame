@@ -13,7 +13,7 @@ using BoostBlasters.Races;
 
 namespace BoostBlasters.UI.MainMenus
 {
-    public class LevelSelectMenu : MenuScreen
+    public class LevelSelectMenu : MenuScreen<MainMenu>
     {
         [Header("Prefabs")]
 
@@ -104,9 +104,9 @@ namespace BoostBlasters.UI.MainMenus
             RaceParameters lastRace = Main.Instance.LastRaceParams;
             if (lastRace != null)
             {
-                m_trackSelect.SetValue(lastRace.level);
-                m_lapSelect.SetValue(lastRace.laps);
-                m_aiCountSelect.SetValue(lastRace.aiCount);
+                m_trackSelect.SetValue(lastRace.Level);
+                m_lapSelect.SetValue(lastRace.Laps);
+                m_aiCountSelect.SetValue(lastRace.AICount);
             }
             
             UIHelper.SetNavigationVertical(m_optionContent, null, m_startRaceButton, null, null);

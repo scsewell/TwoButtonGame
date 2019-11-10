@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+//using System.Linq;
 
 using UnityEngine;
 
@@ -44,19 +45,21 @@ namespace BoostBlasters.Races.Racers
         private float m_energyFailVolume = 1.0f;
 
         // Configuration
-        private bool m_isHuman;
-        public bool IsHuman => m_isHuman;
 
-        private int m_racerNum = -1;
-        public int RacerNum => m_racerNum;
+        /// <summary>
+        /// The index of this racer in the racer array.
+        /// </summary>
+        public int RacerNum { get; private set; }
 
-        private Profile m_profile;
-        public Profile Profile => m_profile;
+        /// <summary>
+        /// The color used to identify this racer.
+        /// </summary>
+        public Color Color { get; private set; }
 
-        private Character m_characer;
-        public Character Character => m_characer;
-
-        public Color GetColor() => Consts.GetRacerColor(m_racerNum);
+        /// <summary>
+        /// The configuration of the racer.
+        /// </summary>
+        public RacerConfig Config { get; private set; }
 
         // Level Progress
         private int m_waypointsCompleted;
@@ -68,8 +71,7 @@ namespace BoostBlasters.Races.Racers
 
         public int CurrentLap => m_racePath.GetCurrentLap(m_waypointsCompleted);
 
-        private RaceResult m_raceResult;
-        public RaceResult RaceResult => m_raceResult;
+        public RaceResult RaceResult { get; private set; }
 
         // Energy
         public delegate void EnergyGainedHandler(float total, float delta);
@@ -78,7 +80,7 @@ namespace BoostBlasters.Races.Racers
         public delegate void EnergyUseFailHandler();
         public event EnergyUseFailHandler EnergyUseFailed;
 
-        public float MaxEnergy => m_characer.EnergyCap;
+        public float MaxEnergy => Config.Character.EnergyCap;
 
         private float m_energy;
         public float Energy => m_energy;
@@ -105,27 +107,33 @@ namespace BoostBlasters.Races.Racers
             m_movement = GetComponentInChildren<RacerMovement>();
         }
 
-        public Racer InitHuman(int racerNum, Profile profile, Character config, PlayerBaseInput input)
+        /// <summary>
+        /// Initializes this racer.
+        /// </summary>
+        /// <param name="racerNum">The index of this racer in the racer array.</param>
+        /// <param name="config">The configuration of the racer.</param>
+        /// <returns>The initialized racer.</returns>
+        public Racer Init(int racerNum, RacerConfig config)
         {
-            m_isHuman = true;
-            m_inputProvider = new PlayerInputProvider(input);
-            return Init(racerNum, profile, config);
-        }
+            RacerNum = racerNum;
+            Color = Consts.GetRacerColor(racerNum);
+            Config = config;
 
-        public Racer InitAI(int racerNum, Profile profile, Character config)
-        {
-            m_isHuman = false;
-            m_inputProvider = new AIInputProvider(this);
-            return Init(racerNum, profile, config);
-        }
+            switch (config.Type)
+            {
+                case RacerType.Player:
+                    m_inputProvider = new PlayerInputProvider(config.Input);
+                    break;
+                case RacerType.AI:
+                    m_inputProvider = new AIInputProvider(this);
+                    break;
+                case RacerType.Replay:
+                    break;
+                default:
+                    throw new ArgumentException("Unsupported racer config type", nameof(config));
+            }
 
-        private Racer Init(int racerNum, Profile profile, Character config)
-        {
-            m_racerNum = racerNum;
-            m_profile = profile;
-            m_characer = config;
-
-            m_raceResult = new RaceResult();
+            RaceResult = new RaceResult();
 
             m_animation = GetComponentInChildren<RacerAnimation>();
             m_racePath = Main.Instance.RaceManager.RacePath;
@@ -133,29 +141,34 @@ namespace BoostBlasters.Races.Racers
             m_lastPos = transform.position;
             m_spawnPosition = transform.position;
             m_spawnRotation = transform.rotation;
+
             return this;
         }
 
+        /// <summary>
+        /// Resets this 
+        /// </summary>
         public void ResetRacer()
         {
-            transform.position = m_spawnPosition;
-            transform.rotation = m_spawnRotation;
-            m_lastPos = m_spawnPosition;
-
             m_movement.ResetMovement();
             m_inputProvider.ResetProvider();
 
-            if (m_animation)
+            if (m_animation != null)
             {
                 m_animation.ResetAnimation();
             }
 
-            m_interpolator.ForgetPreviousValues();
+            RaceResult.Reset();
 
-            m_energy = 0;
+            // reset the racer properties
+            m_energy = 0f;
             m_waypointsCompleted = 0;
 
-            m_raceResult.Reset();
+            // move back to the spawn
+            transform.SetPositionAndRotation(m_spawnPosition, m_spawnRotation);
+            m_lastPos = m_spawnPosition;
+
+            m_interpolator.ForgetPreviousValues();
         }
 
         public void ProcessPlaying(bool isAfterIntro, bool isAfterStart)
@@ -166,11 +179,11 @@ namespace BoostBlasters.Races.Racers
 
         public void ProcessReplaying(bool isAfterIntro, bool isAfterStart, Inputs inputs)
         {
-            m_movement.FixedUpdateMovement(inputs, isAfterIntro && !m_raceResult.Finished, !isAfterStart);
+            m_movement.FixedUpdateMovement(inputs, isAfterIntro && !RaceResult.Finished, !isAfterStart);
 
-            if (isAfterStart && !m_raceResult.Finished && !m_movement.IsBoosting)
+            if (isAfterStart && !RaceResult.Finished && !m_movement.IsBoosting)
             {
-                m_energy = Mathf.Min(m_energy + (m_characer.EnergyRechargeRate * Time.deltaTime), MaxEnergy);
+                m_energy = Mathf.Min(m_energy + (Config.Character.EnergyRechargeRate * Time.deltaTime), MaxEnergy);
             }
 
             int previousLap = CurrentLap;
@@ -182,9 +195,9 @@ namespace BoostBlasters.Races.Racers
                 m_racePath.ResetEnergyGates(this);
 
                 bool finished = m_racePath.IsFinished(m_waypointsCompleted);
-                if (finished != m_raceResult.Finished)
+                if (finished != RaceResult.Finished)
                 {
-                    m_raceResult.Finished = true;
+                    RaceResult.Finished = true;
                     RecordLapTime();
                 }
 
@@ -195,7 +208,8 @@ namespace BoostBlasters.Races.Racers
                     RecordLapTime();
                 }
 
-                if (m_isHuman)
+                // only play gate progression sounds if a local player
+                if (Config.Type == RacerType.Player)
                 {
                     if (finished)
                     {
@@ -268,7 +282,7 @@ namespace BoostBlasters.Races.Racers
 
         public float ConsumeEnergy(float amountLost)
         {
-            float delta = Mathf.Max(m_energy - amountLost, 0) - m_energy;
+            float delta = Mathf.Max(m_energy - amountLost, 0f) - m_energy;
             m_energy += delta;
             return Mathf.Abs(delta);
         }
@@ -276,7 +290,7 @@ namespace BoostBlasters.Races.Racers
         private void RecordLapTime()
         {
             float currentTime = Main.Instance.RaceManager.GetStartRelativeTime(Time.time);
-            m_raceResult.LapTimes.Add(currentTime - m_raceResult.LapTimes.Sum());
+            RaceResult.LapTimes.Add(currentTime - RaceResult.FinishTime);
         }
     }
 }

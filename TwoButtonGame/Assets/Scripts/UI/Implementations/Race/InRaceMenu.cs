@@ -12,7 +12,7 @@ using BoostBlasters.Levels;
 
 namespace BoostBlasters.UI.RaceMenus
 {
-    public class InRaceMenu : MenuBase
+    public class InRaceMenu : MenuBase<InRaceMenu>
     {
         [Header("Intro Panel")]
 
@@ -52,37 +52,33 @@ namespace BoostBlasters.UI.RaceMenus
         [Range(0f, 5f)]
         private float m_finishFadeInTime = 0.5f;
 
-        private GameMenuRoot m_root = null;
-        public GameMenuRoot Root => m_root;
+        public GameMenuRoot Root { get; private set; }
+        public GameMenuFinished Finish { get; private set; }
 
-        private GameMenuFinished m_finish = null;
-        public GameMenuFinished Finish => m_finish;
-
-        private List<PlayerBaseInput> m_activeInputs = null;
-        public List<PlayerBaseInput> ActiveInputs => m_activeInputs;
+        public List<PlayerBaseInput> ActiveInputs { get; private set; }
 
         private List<PlayerUI> m_playerUIs = null;
         private float m_finishTime = 0f;
 
         public InRaceMenu Init(RaceParameters raceParameters)
         {
-            m_activeInputs = raceParameters.inputs;
+            ActiveInputs = raceParameters.Racers.Where(r => r.Type == RacerType.Player).Select(r => r.Input).ToList();
             InitBase(InputManager.Instance.PlayerInputs.ToList());
 
-            m_root = GetComponentInChildren<GameMenuRoot>();
-            m_finish = GetComponentInChildren<GameMenuFinished>();
+            Root = GetComponentInChildren<GameMenuRoot>();
+            Finish = GetComponentInChildren<GameMenuFinished>();
 
             m_playerUIs = new List<PlayerUI>();
 
             CanvasScaler scaler = m_playerUIParent.GetComponent<CanvasScaler>();
-            Rect splitscreen = RacerCamera.GetSplitscreen(0, raceParameters.humanCount);
+            Rect splitscreen = RacerCamera.GetSplitscreen(0, raceParameters.PlayerCount);
             scaler.referenceResolution = new Vector2(
                 scaler.referenceResolution.x / splitscreen.width,
                 scaler.referenceResolution.y / splitscreen.height
             );
 
-            m_trackName.text = raceParameters.level.Name;
-            SetMusicTitle(raceParameters.level);
+            m_trackName.text = raceParameters.Level.Name;
+            SetMusicTitle(raceParameters.Level);
 
             m_fade.enabled = true;
             m_fade.color = new Color(0f, 0f, 0f, 1f);
@@ -135,15 +131,15 @@ namespace BoostBlasters.UI.RaceMenus
                 SetIntroCardPos(m_cardLower, inTime, 0.1f, outTime, 0.1f);
                 SetIntroCardPos(m_cardBottom, inTime, 0.3f, outTime, 0.0f);
 
-                m_skipControls.UpdateUI("Skip", m_activeInputs.SelectMany(i => i.SpriteAccept).ToList());
+                m_skipControls.UpdateUI("Skip", ActiveInputs.SelectMany(i => i.SpriteAccept).ToList());
 
-                if (ActiveMenu == null)
+                if (ActiveScreen == null)
                 {
                     foreach (PlayerBaseInput input in Inputs)
                     {
                         if (input.UI_Accept && raceManager.SkipIntro())
                         {
-                            PlayNextMenuSound();
+                            Sound.PlayNextMenuSound();
                             break;
                         }
                     }
@@ -163,7 +159,7 @@ namespace BoostBlasters.UI.RaceMenus
                         SetMenu(Root, TransitionSound.Open);
                     }
                 }
-                else if (ActiveMenu == null)
+                else if (ActiveScreen == null)
                 {
                     SetMenu(Finish, TransitionSound.Open);
                 }
@@ -171,7 +167,7 @@ namespace BoostBlasters.UI.RaceMenus
 
             if (!isFinished)
             {
-                if (ActiveMenu == null && !isQuitting)
+                if (ActiveScreen == null && !isQuitting)
                 {
                     raceManager.Resume();
                 }
@@ -195,7 +191,7 @@ namespace BoostBlasters.UI.RaceMenus
         {
             LateUpdateBase((previous) => true);
 
-            m_fade.color = new Color(0, 0, 0, Main.Instance.RaceManager.GetFadeFactor(false));
+            m_fade.color = new Color(0f, 0f, 0f, Main.Instance.RaceManager.GetFadeFactor(false));
         }
 
         private void SetIntroCardPos(CanvasGroup card, float inTime, float inOffset, float outTime, float outOffset)
