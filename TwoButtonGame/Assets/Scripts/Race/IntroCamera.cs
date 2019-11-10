@@ -23,7 +23,10 @@ namespace BoostBlasters.Races
         private AnimationClipPlayable m_currentClip;
         private Queue<Level.CameraShot> m_shotsToPlay = null;
 
-        public bool IsPlaying => m_shotsToPlay.Count > 0 || !m_graph.IsDone();
+        /// <summary>
+        /// Is the intro camera sequence currently playing.
+        /// </summary>
+        public bool IsPlaying => m_shotsToPlay.Count > 0 || (m_graph.IsValid() && !m_graph.IsDone());
 
         private void Awake()
         {
@@ -33,22 +36,32 @@ namespace BoostBlasters.Races
             m_shotsToPlay = new Queue<Level.CameraShot>();
         }
 
-        public IntroCamera Init(Level config)
+        public IntroCamera Init(Level level)
         {
-            m_level = config;
+            m_level = level;
             return this;
         }
 
         private void OnDestroy()
         {
-            m_graph.Destroy();
+            if (m_graph.IsValid())
+            {
+                m_graph.Destroy();
+            }
         }
 
+        /// <summary>
+        /// Gets the duration of the intro in seconds.
+        /// </summary>
+        /// <returns></returns>
         public float GetIntroSequenceLength()
         {
             return m_level.IntroSequence.Sum(s => s.Clip.length / s.Speed);
         }
 
+        /// <summary>
+        /// Starts playing the intro camera sequence.
+        /// </summary>
         public void PlayIntroSequence()
         {
             if (m_graph.IsValid())
@@ -67,11 +80,23 @@ namespace BoostBlasters.Races
             }
         }
 
+        /// <summary>
+        /// Cancels the into sequence.
+        /// </summary>
         public void StopIntroSequence()
         {
+            if (m_graph.IsValid())
+            {
+                m_graph.Destroy();
+            }
+
             m_shotsToPlay.Clear();
         }
 
+        /// <summary>
+        /// Updates the intro animation sequence.
+        /// </summary>
+        /// <param name="enableCamera">Should the camera render the scene.</param>
         public void UpdateCamera(bool enableCamera)
         {
             if (m_shotsToPlay.Count > 0)

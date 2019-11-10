@@ -47,7 +47,7 @@ MonoBehaviour:
     type: 3}
   m_replayCameraPrefab: {fileID: 114430071156818674, guid: 2e2cdada628f72c4eb966a2113925cd6,
     type: 3}
-  m_cameraRigPrefab: {fileID: 114117289867158092, guid: 84fa99131d6c11c4fb8b535a6aee935c,
+  m_introCameraPrefab: {fileID: 114117289867158092, guid: 84fa99131d6c11c4fb8b535a6aee935c,
     type: 3}
   m_raceMenuPrefab: {fileID: 114856836458412740, guid: 6d43815a00386be4dbea0fb5064d975d,
     type: 3}
@@ -68,6 +68,6 @@ MonoBehaviour:
   m_replayStartWait: 7.5
   m_replayMusic:
     m_bundleName: music/corruption
-    m_assetName: Corruption
     m_assetGuid: f8d7da2c931e6c543a434649947695b0
+    m_assetName: Corruption
     m_asset: {fileID: 0}

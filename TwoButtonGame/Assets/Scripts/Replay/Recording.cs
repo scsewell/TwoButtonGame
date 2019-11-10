@@ -76,9 +76,12 @@ namespace BoostBlasters.Replays
             get
             {
                 int frameCount = 0;
-                for (int i = 0; i < m_inputs.Length; i++)
+                if (m_inputs != null)
                 {
-                    frameCount = Mathf.Max(frameCount, m_inputs[i].Count);
+                    for (int i = 0; i < m_inputs.Length; i++)
+                    {
+                        frameCount = Mathf.Max(frameCount, m_inputs[i].Count);
+                    }
                 }
                 return frameCount;
             }
@@ -209,18 +212,6 @@ namespace BoostBlasters.Replays
                     m_keyframes[i] = bodyReader.Read<Keyframe>(bodyReader.Read<int>()).ToList();
                     m_inputs[i] = bodyReader.Read<Inputs>(bodyReader.Read<int>()).ToList();
                 }
-            }
-        }
-
-        /// <summary>
-        /// Clears the recording's frames.
-        /// </summary>
-        public void ResetRecording()
-        {
-            for (int i = 0; i < Params.racerCount; i++)
-            {
-                m_keyframes[i].Clear();
-                m_inputs[i].Clear();
             }
         }
 

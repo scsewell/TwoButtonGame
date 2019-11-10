@@ -4,7 +4,6 @@ using System.Linq;
 using UnityEngine;
 
 using Framework.AssetBundles;
-using Framework.Audio;
 
 using BoostBlasters.Players;
 using BoostBlasters.Characters;
@@ -20,7 +19,7 @@ namespace BoostBlasters.Races
 
         [SerializeField] private Camera m_clearCameraPrefab = null;
         [SerializeField] private ReplayCamera m_replayCameraPrefab = null;
-        [SerializeField] private IntroCamera m_cameraRigPrefab = null;
+        [SerializeField] private IntroCamera m_introCameraPrefab = null;
         [SerializeField] private InRaceMenu m_raceMenuPrefab = null;
         [SerializeField] private Racer m_racerPrefab = null;
         [SerializeField] private RacerCamera m_racerCameraPrefab = null;
@@ -71,7 +70,7 @@ namespace BoostBlasters.Races
 
         private RaceParameters m_raceParams;
         private InRaceMenu m_raceMenu;
-        private IntroCamera m_cameraRig;
+        private IntroCamera m_intoCamera;
         private ReplayCamera m_replayCamera;
 
         private bool m_isQuiting;
@@ -94,7 +93,7 @@ namespace BoostBlasters.Races
         private int m_countdownSecond;
 
         public float TimeRaceLoad => m_raceLoadTime;
-        public float TimeIntroDuration => m_cameraRig.GetIntroSequenceLength();
+        public float TimeIntroDuration => m_intoCamera.GetIntroSequenceLength();
         public float TimeIntroEnd => m_introEndTime;
         public float TimeIntroSkip => m_introSkipTime;
         public float TimeRaceStart => m_raceStartTime;
@@ -143,7 +142,7 @@ namespace BoostBlasters.Races
             {
                 AudioManager.Instance.StopSounds();
                 AudioManager.Instance.StopMusic();
-                m_cameraRig.StopIntroSequence();
+                m_intoCamera.StopIntroSequence();
 
                 StartRace();
 
@@ -159,13 +158,13 @@ namespace BoostBlasters.Races
             m_raceRecording = new Recording(m_raceParams, m_racers.Select(r => r.RaceResult).ToArray());
             m_replayStartTime = float.PositiveInfinity;
 
-            ResetRace(m_cameraRig.GetIntroSequenceLength());
+            ResetRace(m_intoCamera.GetIntroSequenceLength());
 
             m_isInIntro = true;
             m_musicStarted = false;
             m_savedResults = false;
             m_savedRecording = false;
-            m_cameraRig.PlayIntroSequence();
+            m_intoCamera.PlayIntroSequence();
         }
 
         private void ResetRace(float introLength)
@@ -193,7 +192,6 @@ namespace BoostBlasters.Races
 
             m_raceMenu.ResetUI();
 
-            m_raceRecording.ResetRecording();
             m_fixedFramesSoFar = 0;
         }
 
@@ -204,7 +202,7 @@ namespace BoostBlasters.Races
 
             Instantiate(m_clearCameraPrefab);
             m_replayCamera = Instantiate(m_replayCameraPrefab);
-            m_cameraRig = Instantiate(m_cameraRigPrefab).Init(m_raceParams.level);
+            m_intoCamera = Instantiate(m_introCameraPrefab).Init(m_raceParams.level);
 
             List<Transform> spawns = m_racePath.Spawns.Take(RacerCount).ToList();
 
@@ -336,6 +334,7 @@ namespace BoostBlasters.Races
                     AudioManager.Instance.StopMusic();
                     AudioManager.Instance.PlayMusic(m_replayMusic);
                 }
+
                 m_replayStartTime = Time.time + m_raceRecording.Duration + m_replayStartWait;
                 ResetRace(0);
             }
@@ -343,7 +342,7 @@ namespace BoostBlasters.Races
 
         public void UpdateRace()
         {
-            m_cameraRig.UpdateCamera(m_isInIntro);
+            m_intoCamera.UpdateCamera(m_isInIntro);
 
             m_racers.ForEach(p => p.UpdateRacer());
             m_racePath.UpdatePath();
