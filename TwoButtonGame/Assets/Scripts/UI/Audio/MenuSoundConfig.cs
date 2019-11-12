@@ -1,36 +1,51 @@
-﻿using UnityEngine;
+﻿using System;
+
+using UnityEngine;
 
 namespace BoostBlasters.UI
 {
-    [CreateAssetMenu(fileName = "New MenuSoundConfig", menuName = "UI/Menu Sound Config", order = 10)]
+    [CreateAssetMenu(fileName = "New MenuSoundConfig", menuName = "BoostBlasters/UI/Menu Sound Config", order = 0)]
     public class MenuSoundConfig : ScriptableObject
     {
-        [SerializeField]
-        private AudioClip m_selectSound = null;
-        public AudioClip SelectSound => m_selectSound;
+        [Serializable]
+        public class ClipConfig
+        {
+            [SerializeField]
+            private AudioClip m_clip = null;
+            public AudioClip Clip => m_clip;
+
+            [SerializeField]
+            [Range(0f, 1f)]
+            private float m_volume = 1.0f;
+            public float Volume => m_volume;
+        }
 
         [SerializeField]
-        private AudioClip m_deselectSound = null;
-        public AudioClip DeselectSound => m_deselectSound;
+        private ClipConfig m_selectSound = null;
+        public ClipConfig SelectSound => m_selectSound;
 
         [SerializeField]
-        private AudioClip m_submitSound = null;
-        public AudioClip SubmitSound => m_submitSound;
+        private ClipConfig m_deselectSound = null;
+        public ClipConfig DeselectSound => m_deselectSound;
 
         [SerializeField]
-        private AudioClip m_cancelSound = null;
-        public AudioClip CancelSound => m_cancelSound;
+        private ClipConfig m_submitSound = null;
+        public ClipConfig SubmitSound => m_submitSound;
 
         [SerializeField]
-        private AudioClip m_openMenu = null;
-        public AudioClip OpenMenu => m_openMenu;
+        private ClipConfig m_cancelSound = null;
+        public ClipConfig CancelSound => m_cancelSound;
 
         [SerializeField]
-        private AudioClip m_nextMenu = null;
-        public AudioClip NextMenu => m_nextMenu;
+        private ClipConfig m_openMenu = null;
+        public ClipConfig OpenMenu => m_openMenu;
 
         [SerializeField]
-        private AudioClip m_backMenu = null;
-        public AudioClip BackMenu => m_backMenu;
+        private ClipConfig m_nextMenu = null;
+        public ClipConfig NextMenu => m_nextMenu;
+
+        [SerializeField]
+        private ClipConfig m_backMenu = null;
+        public ClipConfig BackMenu => m_backMenu;
     }
 }

@@ -18,10 +18,10 @@ namespace BoostBlasters.UI
             public readonly float volume;
             public readonly int priority;
 
-            public SoundClip(AudioClip clip, float volume, int priority)
+            public SoundClip(MenuSoundConfig.ClipConfig config, float volume, int priority)
             {
-                this.clip = clip;
-                this.volume = volume;
+                this.clip = config.Clip;
+                this.volume = config.Volume * volume;
                 this.priority = priority;
             }
         }
@@ -63,13 +63,9 @@ namespace BoostBlasters.UI
             PlaySound(m_config.DeselectSound, volume, 10);
         }
 
-        public void PlaySubmitSound(float volume = 1f, AudioClip clip = null)
+        public void PlaySubmitSound(float volume = 1f)
         {
-            if (clip == null)
-            {
-                clip = m_config.SubmitSound;
-            }
-            PlaySound(clip, volume, 20);
+            PlaySound(m_config.SubmitSound, volume, 20);
         }
 
         public void PlayCancelSound(float volume = 1f)
@@ -92,11 +88,11 @@ namespace BoostBlasters.UI
             PlaySound(m_config.BackMenu, volume, 30);
         }
 
-        private void PlaySound(AudioClip clip, float volume, int priority)
+        private void PlaySound(MenuSoundConfig.ClipConfig config, float volume, int priority)
         {
-            if (clip != null)
+            if (config != null)
             {
-                m_audioBuffer.Add(new SoundClip(clip, volume, priority));
+                m_audioBuffer.Add(new SoundClip(config, volume, priority));
             }
         }
     }

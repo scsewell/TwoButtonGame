@@ -21,7 +21,7 @@ namespace BoostBlasters.UI.MainMenus
         [SerializeField] private Image m_continueBanner = null;
         [SerializeField] private ControlPanel m_continueControls = null;
 
-        private List<PlayerSelectPanel> m_playerSelectPanels;
+        private readonly List<PlayerSelectPanel> m_playerSelectPanels = new List<PlayerSelectPanel>();
         private bool m_canContine;
         private float m_continueTime;
         private Color m_bannerCol;
@@ -41,16 +41,7 @@ namespace BoostBlasters.UI.MainMenus
         {
             base.Awake();
 
-            m_playerSelectPanels = new List<PlayerSelectPanel>();
-
-            PlayerSelectPanel panel = m_playerSelectContent.GetComponentInChildren<PlayerSelectPanel>();
-            m_playerSelectPanels.Add(panel);
-
-            for (int i = 1; i < 4; i++)
-            {
-                PlayerSelectPanel p = Instantiate(panel, m_playerSelectContent);
-                m_playerSelectPanels.Add(p);
-            }
+            m_playerSelectContent.GetComponentsInChildren(true, m_playerSelectPanels);
         }
 
         public override void InitMenu()

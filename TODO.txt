@@ -1,16 +1,23 @@
 ### To Do ###
 
-Refactoring
-- race params should have a list of racers, which can be human, ai, network etc, rather then the current format
+Short Term
+- Text Mesh Pro
+- Fade between menus
+- Move control help to header bar
+- Make button image 'solid', make varient with arrows for spinners
+- Make shnazzy outline for character select, with integrated name plate at botton, profile plate at top
+	Arrows would be added to the character plate instead
+- Add start menu (press any button to continue, allows useful control prompts to be shown after input detected)
+- Add game version to top right corner
+- Custom logo intro (add setting / command line option to skip in settings)
+- New Input sytstem (remove old system)
+- Multiple controller support
 - Clean up UI code
+- Use player color in 
 - check for spaghetti (check singleton usage)
 - things should not know about level stuff, only interact with race classes
 - implement waypoint as a race concept, things should reference that instead
 - turn race manager into a state machine
-
-Text Mesh Pro
-New Input sytstem (remove old system)
-Multiple controller support
 
 ECS/Unity Physics
 - Make sure to gut Physx as much as possible
@@ -32,13 +39,14 @@ Migrate to URP
 - gate color should be a global shader property, instead of hooking into OnWillRenderObject
 
 General
-- Outline is very expensive on UI, especially the player time...
+- Add character color options
+- Outline is very expensive on UI, especially the player time... (check none are left)
 - Difiiculy setting for levels - gate size differs based on difficulty (remove LevelConfig difficulty)
 - Show player names above heads (fade in when close)
 - Change down input from drag to hover? (might be much easier)
 - look around (right josystick, don't know about keyboard though...)
 - better guide to next waypoint (make waypoint color glow more obvious, improve direction arrow (racing line?), look at next gate button)
-- Custom logo intro (add setting / command line option to skip in settings)
+- end of race stats menu (laps speeds, time in lead, etc)
 
 Replays
 - View replays up to current time in race when paused

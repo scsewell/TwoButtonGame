@@ -29,19 +29,13 @@ namespace BoostBlasters
             }
         }
 
-        [MenuItem("BoostBlasters/Play _F1", priority = 10)]
+        [MenuItem("BoostBlasters/Play _F3", priority = 10)]
         public static void DoPlay()
         {
             Play();
         }
 
-        [MenuItem("BoostBlasters/Bundles _F2", priority = 11)]
-        public static void DoBundles()
-        {
-            Build.BuildBundles(true);
-        }
-
-        [MenuItem("BoostBlasters/Bundles + Play _F3", priority = 12)]
+        [MenuItem("BoostBlasters/Bundles + Play _F4", priority = 12)]
         public static void DoPlayBundles()
         {
             Build.BuildBundles(true);

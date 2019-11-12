@@ -1,7 +1,10 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 using UnityEngine;
 using UnityEngine.UI;
+
+using TMPro;
 
 using Framework.UI;
 using Framework.Settings;
@@ -10,38 +13,43 @@ namespace BoostBlasters.UI.MainMenus
 {
     public class SettingsMenu : MenuScreen<MainMenu>
     {
+        [SerializeField] private SettingPanel m_settingPanelPrefab = null;
+        [SerializeField] private Transform m_categoryPanelPrefab = null;
+
         [Header("UI Elements")]
 
         [SerializeField] private Button m_settingsApplyButton = null;
         [SerializeField] private Button m_settingsUseDefaultsButton = null;
         [SerializeField] private Button m_settingsBackButton = null;
         [SerializeField] private RectTransform m_settingsContent = null;
-        [SerializeField] private SettingPanel m_settingPrefab = null;
 
         [Header("Settings")]
 
         [SerializeField]
         private SettingPresetGroup m_defaultSettings = null;
 
-        private List<SettingPanel> m_settingPanels = null;
+        private readonly List<SettingPanel> m_settingPanels = new List<SettingPanel>();
+
 
         public override void InitMenu()
         {
-            m_settingsBackButton.onClick.AddListener(() => Menu.SetMenu(Menu.Root, TransitionSound.Back));
-            m_settingsUseDefaultsButton.onClick.AddListener(() => UseDefaultSettings());
             m_settingsApplyButton.onClick.AddListener(() => ApplySettings());
-
-            m_settingPanels = new List<SettingPanel>();
+            m_settingsUseDefaultsButton.onClick.AddListener(() => UseDefaultSettings());
+            m_settingsBackButton.onClick.AddListener(() => Menu.SetMenu(Menu.Root, TransitionSound.Back));
 
             foreach (var category in SettingManager.Instance.Catergories)
             {
+                UIHelper.Create(m_categoryPanelPrefab, m_settingsContent).GetComponentInChildren<TMP_Text>().text = category.name;
+
                 foreach (var setting in SettingManager.Instance.GetSettings(category))
                 {
-                    m_settingPanels.Add(UIHelper.Create(m_settingPrefab, m_settingsContent).Init(setting));
+                    m_settingPanels.Add(UIHelper.Create(m_settingPanelPrefab, m_settingsContent).Init(setting));
                 }
             }
 
-            UIHelper.SetNavigationVertical(m_settingsContent, null, m_settingsApplyButton, null, null);
+            var selectables = UIHelper.SetNavigationVertical(m_settingsContent, null, m_settingsApplyButton, null, null);
+
+            UIHelper.SetNavigationHorizontal(m_settingsApplyButton.transform.parent, selectables.Last(), null, null, null, m_settingsApplyButton);
         }
 
         protected override void OnResetMenu(bool fullReset)

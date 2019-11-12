@@ -11,7 +11,7 @@ namespace BoostBlasters.Levels
     /// <summary>
     /// Defines a level and its required properties.
     /// </summary>
-    [CreateAssetMenu(fileName = "level", menuName = "Level", order = 2)]
+    [CreateAssetMenu(fileName = "level", menuName = "BoostBlasters/Level", order = 0)]
     public class Level : ScriptableObject
     {
         [SerializeField]

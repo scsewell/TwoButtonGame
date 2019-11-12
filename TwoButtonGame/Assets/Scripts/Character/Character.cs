@@ -9,7 +9,7 @@ namespace BoostBlasters.Characters
     /// <summary>
     /// The properties that constitute a character.
     /// </summary>
-    [CreateAssetMenu(fileName = "character", menuName = "Character", order = 1)]
+    [CreateAssetMenu(fileName = "character", menuName = "BoostBlasters/Character", order = 0)]
     public class Character : ScriptableObject
     {
         [SerializeField]

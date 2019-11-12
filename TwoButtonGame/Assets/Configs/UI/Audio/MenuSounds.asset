@@ -12,10 +12,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5954340d55d0ba49bb224933112bc1c, type: 3}
   m_Name: MenuSounds
   m_EditorClassIdentifier: 
-  m_selectSound: {fileID: 8300000, guid: 1902bbdd10c7b9046a7a57fe2eae492b, type: 3}
-  m_deselectSound: {fileID: 0}
-  m_submitSound: {fileID: 8300000, guid: 30b8eaa5d4c56724598463640f995fe8, type: 3}
-  m_cancelSound: {fileID: 8300000, guid: a788c717f0cb4af429f95f3097f65974, type: 3}
-  m_openMenu: {fileID: 0}
-  m_nextMenu: {fileID: 8300000, guid: f4498ece26193e646834c37d0c29dadd, type: 3}
-  m_backMenu: {fileID: 8300000, guid: a0ac7b707402251458c4ce5527e47028, type: 3}
+  m_selectSound:
+    m_clip: {fileID: 8300000, guid: 839a4926154d09549a251b6ab30fcadf, type: 3}
+    m_volume: 0.35
+  m_deselectSound:
+    m_clip: {fileID: 0}
+    m_volume: 0.5
+  m_submitSound:
+    m_clip: {fileID: 8300000, guid: 30b8eaa5d4c56724598463640f995fe8, type: 3}
+    m_volume: 0.9
+  m_cancelSound:
+    m_clip: {fileID: 8300000, guid: a788c717f0cb4af429f95f3097f65974, type: 3}
+    m_volume: 0.9
+  m_openMenu:
+    m_clip: {fileID: 0}
+    m_volume: 0.5
+  m_nextMenu:
+    m_clip: {fileID: 8300000, guid: f4498ece26193e646834c37d0c29dadd, type: 3}
+    m_volume: 0.9
+  m_backMenu:
+    m_clip: {fileID: 8300000, guid: a0ac7b707402251458c4ce5527e47028, type: 3}
+    m_volume: 0.9
