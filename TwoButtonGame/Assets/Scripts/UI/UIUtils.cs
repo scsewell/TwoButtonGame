@@ -2,9 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Reflection;
 
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
+using UnityEngine.InputSystem.UI;
 
 namespace BoostBlasters.UI
 {
@@ -34,6 +37,40 @@ namespace BoostBlasters.UI
 
                 return s_builder.ToString();
             }
+        }
+
+        private static FieldInfo s_joystickState = null;
+        private static PropertyInfo s_internalData = null;
+        private static PropertyInfo s_moveCount = null;
+
+        /// <summary>
+        /// Gets the number of times this input module has attempted to move in the current navigation direction.
+        /// </summary>
+        /// <param name="inputModule">The input modele.</param>
+        public static int GetRepeatCount(BaseInputModule inputModule)
+        {
+            int moveCount = 0;
+
+            if (inputModule is InputSystemUIInputModule inputSystem)
+            {
+                if (s_moveCount == null)
+                {
+                    s_joystickState = inputSystem.GetType().GetField("joystickState", BindingFlags.Instance | BindingFlags.NonPublic);
+                    object state = s_joystickState.GetValue(inputSystem);
+
+                    s_internalData = state.GetType().GetProperty("internalData", BindingFlags.Instance | BindingFlags.Public);
+                    object internalData = s_internalData.GetValue(state);
+
+                    s_moveCount = internalData.GetType().GetProperty("consecutiveMoveCount", BindingFlags.Instance | BindingFlags.Public);
+                    moveCount = (int)s_moveCount.GetValue(internalData);
+                }
+                else
+                {
+                    moveCount = (int)s_moveCount.GetValue(s_internalData.GetValue(s_joystickState.GetValue(inputSystem)));
+                }
+            }
+
+            return moveCount;
         }
 
         /// <summary>

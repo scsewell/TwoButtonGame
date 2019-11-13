@@ -9,10 +9,12 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3390857017939793441}
+  - component: {fileID: 3390857017939793440}
   - component: {fileID: 3390857017939793443}
   - component: {fileID: 5720775479058674574}
   - component: {fileID: 3390857017939793444}
-  - component: {fileID: 3390857017939793440}
+  - component: {fileID: 2169710526609762234}
+  - component: {fileID: 1714180972721419598}
   m_Layer: 5
   m_Name: RootButton
   m_TagString: Untagged
@@ -41,6 +43,26 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 600, y: 80}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &3390857017939793440
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3390857017939793454}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 306cc8c2b49d7114eaa3623786fc2126, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IgnoreLayout: 0
+  m_MinWidth: 600
+  m_MinHeight: 80
+  m_PreferredWidth: -1
+  m_PreferredHeight: -1
+  m_FlexibleWidth: -1
+  m_FlexibleHeight: -1
+  m_LayoutPriority: 1
 --- !u!114 &3390857017939793443
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -115,7 +137,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef5264157bb4c8142a57efb92f5309bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &3390857017939793440
+--- !u!114 &2169710526609762234
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -124,17 +146,21 @@ MonoBehaviour:
   m_GameObject: {fileID: 3390857017939793454}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 306cc8c2b49d7114eaa3623786fc2126, type: 3}
+  m_Script: {fileID: 11500000, guid: 97a110618d7b5ea469e16894f92150f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_IgnoreLayout: 0
-  m_MinWidth: 600
-  m_MinHeight: 80
-  m_PreferredWidth: -1
-  m_PreferredHeight: -1
-  m_FlexibleWidth: -1
-  m_FlexibleHeight: -1
-  m_LayoutPriority: 1
+--- !u!114 &1714180972721419598
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3390857017939793454}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c37a9d428c09f594096ecbf68f0d8c05, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &3390857019815114346
 GameObject:
   m_ObjectHideFlags: 0

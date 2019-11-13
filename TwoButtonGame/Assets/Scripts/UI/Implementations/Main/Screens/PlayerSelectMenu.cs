@@ -76,11 +76,11 @@ namespace BoostBlasters.UI.MainMenus
             m_continueTime = 0;
         }
 
-        protected override void OnBack()
+        public override void Back()
         {
             if (Input.GetKeyDown(KeyCode.Escape))
             {
-                base.OnBack();
+                base.Back();
             }
         }
 

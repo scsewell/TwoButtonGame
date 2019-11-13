@@ -127,7 +127,7 @@ namespace BoostBlasters.UI.MainMenus
             m_nameText.text = m_currentName;
         }
 
-        protected override void OnBack()
+        public override void Back()
         {
             Cancel();
         }

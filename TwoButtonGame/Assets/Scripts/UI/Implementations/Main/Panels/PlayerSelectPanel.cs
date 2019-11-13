@@ -211,20 +211,20 @@ namespace BoostBlasters.UI.MainMenus
                 Profile = null;
                 SelectedProfile = 0;
 
-                foreach (PlayerBaseInput input in m_screen.UnreservedInputs)
-                {
-                    if (input.UI_Accept)
-                    {
-                        m_state = State.Profile;
-                        m_input = input;
-                        m_screen.Sound.PlaySubmitSound();
-                        break;
-                    }
-                    else if (input.UI_Cancel)
-                    {
-                        m_screen.SetMenu(m_screen.Root,TransitionSound.Back);
-                    }
-                }
+                //foreach (PlayerBaseInput input in m_screen.UnreservedInputs)
+                //{
+                //    if (input.UI_Accept)
+                //    {
+                //        m_state = State.Profile;
+                //        m_input = input;
+                //        m_screen.Sound.PlaySubmitSound();
+                //        break;
+                //    }
+                //    else if (input.UI_Cancel)
+                //    {
+                //        m_screen.SetMenu(m_screen.Root,TransitionSound.Back);
+                //    }
+                //}
             }
             else if (m_state == State.Profile)
             {

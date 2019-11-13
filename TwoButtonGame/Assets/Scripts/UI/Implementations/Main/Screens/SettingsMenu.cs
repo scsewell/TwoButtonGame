@@ -47,9 +47,19 @@ namespace BoostBlasters.UI.MainMenus
                 }
             }
 
-            var selectables = UIHelper.SetNavigationVertical(m_settingsContent, null, m_settingsApplyButton, null, null);
+            var selectables = UIHelper.SetNavigationVertical(new NavConfig()
+            {
+                parent = m_settingsContent,
+                down = m_settingsApplyButton,
+                wrap = true,
+            });
 
-            UIHelper.SetNavigationHorizontal(m_settingsApplyButton.transform.parent, selectables.Last(), null, null, null, m_settingsApplyButton);
+            UIHelper.SetNavigationHorizontal(new NavConfig()
+            {
+                parent = m_settingsApplyButton.transform.parent,
+                up = selectables.Last(),
+                verticalSelect = m_settingsApplyButton,
+            });
         }
 
         protected override void OnResetMenu(bool fullReset)

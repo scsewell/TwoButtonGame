@@ -162,15 +162,18 @@ namespace BoostBlasters.UI.MainMenus
 
             if (m_replayPanels[0].isActiveAndEnabled)
             {
-                DefaultSelectionOverride = UIHelper.SetNavigationVertical(m_replayListContent, null, m_backButton, null, null).First();
+                DefaultSelectionOverride = UIHelper.SetNavigationVertical(new NavConfig()
+                {
+                    parent = m_replayListContent,
+                    down = m_backButton,
+                }
+                ).First();
             }
             else
             {
                 DefaultSelectionOverride = m_backButton;
 
-                Navigation tempNav;
-
-                tempNav = m_backButton.navigation;
+                Navigation tempNav = m_backButton.navigation;
                 tempNav.selectOnUp = null;
                 m_backButton.navigation = tempNav;
             }

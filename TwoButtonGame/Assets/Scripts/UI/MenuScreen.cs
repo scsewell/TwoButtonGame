@@ -1,6 +1,4 @@
-﻿using System.Linq;
-
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
@@ -11,25 +9,8 @@ namespace BoostBlasters.UI
     /// </summary>
     public abstract class MenuScreen : MonoBehaviour
     {
-    }
-
-    /// <summary>
-    /// A menu that the user can interact with.
-    /// </summary>
-    /// <typeparam name="T">The menu this menu screen belongs to.</typeparam>
-    [RequireComponent(typeof(Canvas))]
-    public abstract class MenuScreen<T> : MenuScreen where T : MenuBase<T>
-    {
         [SerializeField]
-        [Tooltip("The menu screen to go to when backing out of this menu screen.")]
-        private MenuScreen m_backMenu = null;
-
-        [SerializeField]
-        [Tooltip("Will pressing the back button close this menu screen even if a back menu is unassigned.")]
-        private bool m_closeOnBack = false;
-
-        [SerializeField]
-         [Tooltip("The element to select when going into this menu screen.")]
+        [Tooltip("The element to select when going into this menu screen.")]
         private Selectable m_defaultSelection = null;
 
         [SerializeField]
@@ -52,17 +33,10 @@ namespace BoostBlasters.UI
         /// When not null overrides the default selection for this menu screen.
         /// </summary>
         protected Selectable DefaultSelectionOverride { get; set; } = null;
-        
-        /// <summary>
-        /// The base menu instance that manages this menu screen.
-        /// </summary>
-        public T Menu { get; private set; } = null;
 
 
         protected virtual void Awake()
         {
-            Menu = GetComponentInParent<T>();
-
             m_canvas = GetComponent<Canvas>();
             m_canvas.enabled = false;
         }
@@ -76,7 +50,12 @@ namespace BoostBlasters.UI
 
         private void OnDisable()
         {
-            GameObject selected = EventSystem.current.currentSelectedGameObject;
+            GameObject selected = null;
+
+            if (EventSystem.current != null)
+            {
+                selected = EventSystem.current.currentSelectedGameObject;
+            }
 
             if (selected != null && selected.transform.IsChildOf(transform))
             {
@@ -93,6 +72,10 @@ namespace BoostBlasters.UI
         /// </summary>
         public abstract void InitMenu();
 
+        /// <summary>
+        /// Prepares the screen to be switched to.
+        /// </summary>
+        /// <param name="fullReset">Should the screen clear all state.</param>
         public void ResetMenu(bool fullReset)
         {
             OnResetMenu(fullReset);
@@ -103,20 +86,21 @@ namespace BoostBlasters.UI
             }
         }
 
+        /// <summary>
+        /// Updates the menu screen's logic.
+        /// </summary>
         public void UpdateMenu()
         {
             if (enabled)
             {
-                if (Menu.Inputs.Any(i => i.UI_Cancel) || Input.GetKeyDown(KeyCode.Escape))
-                {
-                    OnBack();
-                }
-
                 HandleSelection();
                 OnUpdate();
             }
         }
 
+        /// <summary>
+        /// Updates the menu screen's visuals.
+        /// </summary>
         public void UpdateGraphics()
         {
             if (enabled)
@@ -125,12 +109,11 @@ namespace BoostBlasters.UI
             }
         }
 
-        protected virtual void OnBack()
+        /// <summary>
+        /// Back out of this menu.
+        /// </summary>
+        public virtual void Back()
         {
-            if (m_backMenu || m_closeOnBack)
-            {
-                Menu.SetMenu(m_closeOnBack ? null : m_backMenu, TransitionSound.Back);
-            }
         }
 
         protected virtual void HandleSelection()
@@ -160,5 +143,45 @@ namespace BoostBlasters.UI
         protected virtual void OnResetMenu(bool fullReset) { }
         protected virtual void OnUpdate() { }
         protected virtual void OnUpdateGraphics() { }
+    }
+
+    /// <summary>
+    /// A menu that the user can interact with.
+    /// </summary>
+    /// <typeparam name="T">The menu this menu screen belongs to.</typeparam>
+    [RequireComponent(typeof(Canvas))]
+    public abstract class MenuScreen<T> : MenuScreen where T : MenuBase<T>
+    {
+        [SerializeField]
+        [Tooltip("The menu screen to go to when backing out of this menu screen.")]
+        private MenuScreen m_backMenu = null;
+
+        [SerializeField]
+        [Tooltip("Will pressing the back button close this menu screen even if a back menu is unassigned.")]
+        private bool m_closeOnBack = false;
+
+        /// <summary>
+        /// The base menu instance that manages this menu screen.
+        /// </summary>
+        public T Menu { get; private set; } = null;
+
+
+        protected override void Awake()
+        {
+            base.Awake();
+
+            Menu = GetComponentInParent<T>();
+        }
+
+        /// <summary>
+        /// Back out of this menu.
+        /// </summary>
+        public override void Back()
+        { 
+            if (m_backMenu || m_closeOnBack)
+            {
+                Menu.SetMenu(m_closeOnBack ? null : m_backMenu, TransitionSound.Back);
+            }
+        }
     }
 }

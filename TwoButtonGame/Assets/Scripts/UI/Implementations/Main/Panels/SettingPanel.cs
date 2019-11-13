@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
 using TMPro;
@@ -17,14 +16,6 @@ namespace BoostBlasters.UI.MainMenus
 
         [SerializeField] private TextMeshProUGUI m_label = null;
         [SerializeField] private TextMeshProUGUI m_valueText = null;
-        [SerializeField] private CanvasGroup m_leftArrow = null;
-        [SerializeField] private CanvasGroup m_rightArrow = null;
-
-        [Header("Options")]
-
-        [SerializeField]
-        [Tooltip("Enable wrapping around the options list.")]
-        private bool m_wrap = false;
 
         private SoundPlayer m_sound = null;
         private Setting m_setting = null;
@@ -69,7 +60,6 @@ namespace BoostBlasters.UI.MainMenus
         public void GetValue()
         {
             m_valueText.text = m_setting.SerializedValue;
-            SetArrows();
         }
 
         /// <summary>
@@ -82,50 +72,26 @@ namespace BoostBlasters.UI.MainMenus
 
         public void OnMove(AxisEventData eventData)
         {
+            int newIndex;
             switch (eventData.moveDir)
             {
-                case MoveDirection.Left: OnPreviousValue(); break;
-                case MoveDirection.Right: OnNextValue(); break;
+                case MoveDirection.Left:    newIndex = GetRelativeIndex(eventData, -1); break;
+                case MoveDirection.Right:   newIndex = GetRelativeIndex(eventData, 1);  break;
+                default:
+                    return;
             }
-        }
-
-        private void OnPreviousValue()
-        {
-            int newIndex = GetRelativeIndex(-1);
 
             if (newIndex != CurrentIndex)
             {
                 m_valueText.text = m_options[newIndex];
                 m_sound.PlaySelectSound();
-
-                SetArrows();
             }
         }
 
-        private void OnNextValue()
+        private int GetRelativeIndex(AxisEventData eventData, int offset)
         {
-            int newIndex = GetRelativeIndex(1);
-
-            if (newIndex != CurrentIndex)
-            {
-                m_valueText.text = m_options[newIndex];
-                m_sound.PlaySelectSound();
-
-                SetArrows();
-            }
-        }
-
-        private void SetArrows()
-        {
-            // only enable the arrows if there is a new value to scroll to
-            // in their direction
-            m_leftArrow.alpha = CurrentIndex != GetRelativeIndex(-1) ? 1f : 0f;
-            m_rightArrow.alpha = CurrentIndex != GetRelativeIndex(1) ? 1f : 0f;
-        }
-
-        private int GetRelativeIndex(int offset)
-        {
-            if (m_wrap)
+            // allow wrapping if this is not a repeat navigation input
+            if (UIUtils.GetRepeatCount(eventData.currentInputModule) == 0)
             {
                 return (CurrentIndex + m_options.Length + offset) % m_options.Length;
             }

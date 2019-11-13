@@ -2,17 +2,21 @@
 
 Short Term
 - Text Mesh Pro
-- Fade between menus
+- New Input sytstem (remove old system)
 - Move control help to header bar
-- Make button image 'solid', make varient with arrows for spinners
+- Loop around vertical/horizontal menus as appropriate. Repeated navigation should not loop probably.
+- Settings categories need separate tabs (perhaps with nice icons?)
+- Most settings should apply/save instantly. Screen changes should ask user to apply when they go back or press an apply button.
+- Default settings should be per category
+- Remove back buttons from menus, instead just use control hint at top of screen
+- Add start menu (press any button to continue, allows useful control prompts to be shown after input detected)
 - Make shnazzy outline for character select, with integrated name plate at botton, profile plate at top
 	Arrows would be added to the character plate instead
-- Add start menu (press any button to continue, allows useful control prompts to be shown after input detected)
-- Add game version to top right corner
 - Custom logo intro (add setting / command line option to skip in settings)
-- New Input sytstem (remove old system)
+
 - Multiple controller support
 - Clean up UI code
+
 - Use player color in 
 - check for spaghetti (check singleton usage)
 - things should not know about level stuff, only interact with race classes

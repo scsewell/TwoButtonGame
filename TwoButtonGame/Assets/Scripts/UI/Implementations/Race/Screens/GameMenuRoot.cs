@@ -19,7 +19,12 @@ namespace BoostBlasters.UI.RaceMenus
             m_restartButton.onClick.AddListener(() => Restart());
             m_quitButton.onClick.AddListener(() => Quit());
 
-            UIHelper.SetNavigationVertical(m_resumeButton.transform.parent, null, null, null, null, null, true);
+            
+            UIHelper.SetNavigationVertical(new NavConfig()
+            {
+                parent = m_resumeButton.transform.parent,
+                allowDisabled = true,
+            });
         }
 
         private void Resume()

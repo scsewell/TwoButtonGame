@@ -94,7 +94,7 @@ namespace BoostBlasters.UI.MainMenus
         public override void InitMenu()
         {
             m_startRaceButton.onClick.AddListener(() => ((MainMenu)Menu).LaunchRace());
-            m_backButton.onClick.AddListener(() => OnBack());
+            m_backButton.onClick.AddListener(() => Back());
             
             m_options = new List<Navigable>();
             m_trackSelect   = new Option<Level>(m_options, m_optionPrefab, m_optionContent, "Track", LevelManager.Levels, OnLevelChange);
@@ -109,7 +109,11 @@ namespace BoostBlasters.UI.MainMenus
                 m_aiCountSelect.SetValue(lastRace.AICount);
             }
             
-            UIHelper.SetNavigationVertical(m_optionContent, null, m_startRaceButton, null, null);
+            UIHelper.SetNavigationVertical(new NavConfig() 
+            { 
+                parent = m_optionContent, 
+                down = m_startRaceButton,
+            });
 
             DefaultSelectionOverride = m_trackSelect.Selectable;
 

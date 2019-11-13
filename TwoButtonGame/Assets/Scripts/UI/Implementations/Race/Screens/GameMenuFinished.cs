@@ -19,7 +19,11 @@ namespace BoostBlasters.UI.RaceMenus
             m_againButton.onClick.AddListener(() => Restart());
             m_replayButton.onClick.AddListener(() => ViewReplay());
 
-            UIHelper.SetNavigationVertical(m_leaveButton.transform.parent, null, null, null, null, null, true);
+            UIHelper.SetNavigationVertical(new NavConfig()
+            {
+                parent = m_leaveButton.transform.parent,
+                allowDisabled = true,
+            });
         }
 
         private void Leave()

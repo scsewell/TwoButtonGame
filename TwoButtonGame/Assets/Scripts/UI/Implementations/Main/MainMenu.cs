@@ -64,7 +64,7 @@ namespace BoostBlasters.UI.MainMenus
 
         private void Awake()
         {
-            InitBase(InputManager.Instance.PlayerInputs.ToList());
+            InitBase();
 
             Root = GetComponentInChildren<RootMenu>();
             PlayerSelect = GetComponentInChildren<PlayerSelectMenu>();
@@ -76,7 +76,7 @@ namespace BoostBlasters.UI.MainMenus
             Credits = GetComponentInChildren<CreditsMenu>();
             Confirm = GetComponentInChildren<ConfirmMenu>();
 
-            AvailableInputs = new List<PlayerBaseInput>(InputManager.Instance.PlayerInputs);
+            AvailableInputs = new List<PlayerBaseInput>();
 
             switch (Main.Instance.LastRaceType)
             {
@@ -110,9 +110,9 @@ namespace BoostBlasters.UI.MainMenus
 
         private void LateUpdate()
         {
-            LateUpdateBase((previous) => previous == Root as MenuScreen);
+            LateUpdateBase((previous) => previous == Root);
 
-            if (ActiveScreen == Root as MenuScreen)
+            if (ActiveScreen == Root)
             {
                 List<PlayerBaseInput> contolInputs = AvailableInputs.Where(i => !i.IsController).ToList();
                 m_controls.SetActive(true);

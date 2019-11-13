@@ -165,10 +165,12 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1904570435050895778}
+  - component: {fileID: 1904570435050895779}
   - component: {fileID: 1904570435050895781}
   - component: {fileID: 9157177740123173477}
   - component: {fileID: 1904570435050895780}
-  - component: {fileID: 1904570435050895779}
+  - component: {fileID: 999791754426322882}
+  - component: {fileID: 215805230971425811}
   m_Layer: 5
   m_Name: Button
   m_TagString: Untagged
@@ -197,6 +199,26 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 300, y: 60}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1904570435050895779
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1904570435050895777}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 306cc8c2b49d7114eaa3623786fc2126, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IgnoreLayout: 0
+  m_MinWidth: 300
+  m_MinHeight: 60
+  m_PreferredWidth: -1
+  m_PreferredHeight: -1
+  m_FlexibleWidth: -1
+  m_FlexibleHeight: -1
+  m_LayoutPriority: 1
 --- !u!114 &1904570435050895781
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -271,7 +293,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef5264157bb4c8142a57efb92f5309bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &1904570435050895779
+--- !u!114 &999791754426322882
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -280,17 +302,21 @@ MonoBehaviour:
   m_GameObject: {fileID: 1904570435050895777}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 306cc8c2b49d7114eaa3623786fc2126, type: 3}
+  m_Script: {fileID: 11500000, guid: 97a110618d7b5ea469e16894f92150f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_IgnoreLayout: 0
-  m_MinWidth: 300
-  m_MinHeight: 60
-  m_PreferredWidth: -1
-  m_PreferredHeight: -1
-  m_FlexibleWidth: -1
-  m_FlexibleHeight: -1
-  m_LayoutPriority: 1
+--- !u!114 &215805230971425811
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1904570435050895777}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c37a9d428c09f594096ecbf68f0d8c05, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &8765122045595573323
 GameObject:
   m_ObjectHideFlags: 0

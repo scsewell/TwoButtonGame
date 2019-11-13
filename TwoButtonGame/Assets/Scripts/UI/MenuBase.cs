@@ -12,7 +12,7 @@ namespace BoostBlasters.UI
     [RequireComponent(typeof(SoundPlayer))]
     public abstract class MenuBase<T> : MonoBehaviour where T : MenuBase<T>
     {
-        private List<MenuScreen> m_menuScreens = null;
+        private readonly List<MenuScreen> m_menuScreens = new List<MenuScreen>();
         private MenuScreen m_targetMenu = null;
 
         /// <summary>
@@ -25,24 +25,14 @@ namespace BoostBlasters.UI
         /// </summary>
         protected MenuScreen ActiveScreen { get; private set; } = null;
 
-        public List<PlayerBaseInput> Inputs { get; private set; } = null;
 
-
-        protected void InitBase(List<PlayerBaseInput> inputs)
+        protected void InitBase()
         {
             Sound = GetComponent<SoundPlayer>();
 
-            Inputs = inputs;
-
-            CustomInputModule inputModule = gameObject.AddComponent<CustomInputModule>();
-            CustomInput customInput = gameObject.AddComponent<CustomInput>();
-            customInput.SetInputs(inputs);
-            inputModule.SetInputOverride(customInput);
-
-            m_menuScreens = new List<MenuScreen>();
             GetComponentsInChildren(m_menuScreens);
 
-            foreach (MenuScreen<T> menu in m_menuScreens)
+            foreach (MenuScreen menu in m_menuScreens)
             {
                 menu.InitMenu();
                 menu.enabled = false;
@@ -69,7 +59,7 @@ namespace BoostBlasters.UI
         /// </summary>
         protected void UpdateBase()
         {
-            foreach (MenuScreen<T> menu in m_menuScreens)
+            foreach (MenuScreen menu in m_menuScreens)
             {
                 menu.UpdateMenu();
             }
@@ -78,7 +68,8 @@ namespace BoostBlasters.UI
         /// <summary>
         /// Updates the menu at the end of the frame.
         /// </summary>
-        /// <param name="fullReset">A function which decides if menus should be fully reset.</param>
+        /// <param name="fullReset">A function which takes the previous menu
+        ///  and decides what menus should be fully reset.</param>
         protected void LateUpdateBase(Func<MenuScreen, bool> fullReset)
         {
             // check that we are not already on the menu to switch to
@@ -88,9 +79,9 @@ namespace BoostBlasters.UI
                 ActiveScreen = m_targetMenu;
 
                 // disable all other menus screens
-                foreach (MenuScreen<T> menu in m_menuScreens)
+                foreach (MenuScreen menu in m_menuScreens)
                 {
-                    if (menu != ActiveScreen as MenuScreen<T>)
+                    if (menu != ActiveScreen)
                     {
                         menu.enabled = false;
                         menu.ResetMenu(fullReset(previous));
@@ -101,15 +92,15 @@ namespace BoostBlasters.UI
                 EventSystem.current.SetSelectedGameObject(null);
 
                 // enable the new menu screen
-                if (ActiveScreen != null && ActiveScreen is MenuScreen<T> activeScreen)
+                if (ActiveScreen != null)
                 {
-                    activeScreen.enabled = true;
-                    activeScreen.ResetMenu(fullReset(previous));
+                    ActiveScreen.enabled = true;
+                    ActiveScreen.ResetMenu(fullReset(previous));
                 }
             }
 
             // update the menu graphics
-            foreach (MenuScreen<T> menu in m_menuScreens)
+            foreach (MenuScreen menu in m_menuScreens)
             {
                 menu.UpdateGraphics();
             }

@@ -70,7 +70,7 @@ namespace BoostBlasters.UI.MainMenus
             }
         }
 
-        protected override void OnBack()
+        public override void Back()
         {
             if (m_selectedProfile != null)
             {
@@ -78,7 +78,7 @@ namespace BoostBlasters.UI.MainMenus
             }
             else
             {
-                base.OnBack();
+                base.Back();
             }
         }
         
@@ -225,13 +225,14 @@ namespace BoostBlasters.UI.MainMenus
 
             if (m_selectPanels[0].isActiveAndEnabled)
             {
-                UIHelper.SetNavigationVertical(m_selectContent, null, m_backButton, null, null);
+                UIHelper.SetNavigationVertical(new NavConfig()
+                {
+                    parent = m_selectContent, down = m_backButton,
+                });
             }
             else
             {
-                Navigation tempNav;
-
-                tempNav = m_backButton.navigation;
+                Navigation tempNav = m_backButton.navigation;
                 tempNav.selectOnUp = null;
                 m_backButton.navigation = tempNav;
             }

@@ -8,7 +8,7 @@ public class CustomInputModule : StandaloneInputModule
     public static readonly string ACCEPT_BUTTON = "Accept";
     public static readonly string CANCEL_BUTTON = "Cancel";
 
-    public static readonly float REPEAT_WAIT = 0.25f;
+    public static readonly float REPEAT_WAIT = 0.175f;
     public static readonly float REPEAT_DELAY = 0.065f;
 
     protected override void Awake()

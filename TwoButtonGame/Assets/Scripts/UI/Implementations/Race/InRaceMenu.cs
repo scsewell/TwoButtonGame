@@ -63,7 +63,7 @@ namespace BoostBlasters.UI.RaceMenus
         public InRaceMenu Init(RaceParameters raceParameters)
         {
             ActiveInputs = raceParameters.Racers.Where(r => r.Type == RacerType.Player).Select(r => r.Input).ToList();
-            InitBase(InputManager.Instance.PlayerInputs.ToList());
+            InitBase();
 
             Root = GetComponentInChildren<GameMenuRoot>();
             Finish = GetComponentInChildren<GameMenuFinished>();
@@ -135,35 +135,35 @@ namespace BoostBlasters.UI.RaceMenus
 
                 if (ActiveScreen == null)
                 {
-                    foreach (PlayerBaseInput input in Inputs)
-                    {
-                        if (input.UI_Accept && raceManager.SkipIntro())
-                        {
-                            Sound.PlayNextMenuSound();
-                            break;
-                        }
-                    }
+                    //foreach (PlayerBaseInput input in Inputs)
+                    //{
+                    //    if (input.UI_Accept && raceManager.SkipIntro())
+                    //    {
+                    //        Sound.PlayNextMenuSound();
+                    //        break;
+                    //    }
+                    //}
                 }
             }
 
-            if (Inputs.Any(i => i.UI_Menu) || Input.GetKeyDown(KeyCode.Escape))
-            {
-                if (!isFinished)
-                {
-                    if (isPaused)
-                    {
-                        SetMenu(null, TransitionSound.Back);
-                    }
-                    else
-                    {
-                        SetMenu(Root, TransitionSound.Open);
-                    }
-                }
-                else if (ActiveScreen == null)
-                {
-                    SetMenu(Finish, TransitionSound.Open);
-                }
-            }
+            //if (Inputs.Any(i => i.UI_Menu) || Input.GetKeyDown(KeyCode.Escape))
+            //{
+            //    if (!isFinished)
+            //    {
+            //        if (isPaused)
+            //        {
+            //            SetMenu(null, TransitionSound.Back);
+            //        }
+            //        else
+            //        {
+            //            SetMenu(Root, TransitionSound.Open);
+            //        }
+            //    }
+            //    else if (ActiveScreen == null)
+            //    {
+            //        SetMenu(Finish, TransitionSound.Open);
+            //    }
+            //}
 
             if (!isFinished)
             {

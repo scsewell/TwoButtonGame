@@ -84,7 +84,6 @@ namespace BoostBlasters
             Cursor.visible = freeCursor;
 
             // main update loop
-            InputManager.Instance.Update();
             InterpolationController.Instance.VisualUpdate();
 
             if (RaceManager != null)

@@ -31,7 +31,7 @@ namespace BoostBlasters.UI.MainMenus
             m_returnToMenu = returnToMenu;
         }
 
-        protected override void OnBack()
+        public override void Back()
         {
             Cancel();
         }
