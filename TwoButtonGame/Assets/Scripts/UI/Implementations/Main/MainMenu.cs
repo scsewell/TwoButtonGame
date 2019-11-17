@@ -16,13 +16,6 @@ namespace BoostBlasters.UI.MainMenus
 {
     public class MainMenu : MenuBase<MainMenu>
     {
-        [Header("UI Elements")]
-
-        [SerializeField] private GameObject m_controls = null;
-        [SerializeField] private ControlPanel m_controls1 = null;
-        [SerializeField] private ControlPanel m_controls2 = null;
-        [SerializeField] private ControlPanel m_controls3 = null;
-
         [Header("Options")]
 
         [SerializeField] private AssetBundleMusicReference m_music = null;
@@ -111,19 +104,6 @@ namespace BoostBlasters.UI.MainMenus
         private void LateUpdate()
         {
             LateUpdateBase((previous) => previous == Root);
-
-            if (ActiveScreen == Root)
-            {
-                List<PlayerBaseInput> contolInputs = AvailableInputs.Where(i => !i.IsController).ToList();
-                m_controls.SetActive(true);
-                m_controls1.UpdateUI("Navigate", contolInputs.SelectMany(i => i.SpriteNavigate).ToList());
-                m_controls2.UpdateUI("Accept", contolInputs.SelectMany(i => i.SpriteAccept).ToList());
-                m_controls3.UpdateUI("Cancel", contolInputs.SelectMany(i => i.SpriteCancel).ToList());
-            }
-            else
-            {
-                m_controls.SetActive(false);
-            }
         }
 
         private float GetFadeFactor()

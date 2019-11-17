@@ -248,7 +248,7 @@ namespace BoostBlasters
                     ""interactions"": """"
                 },
                 {
-                    ""name"": ""Submit"",
+                    ""name"": ""Accept"",
                     ""type"": ""Button"",
                     ""id"": ""3b301d44-33f6-4428-9e6b-437e6d76b524"",
                     ""expectedControlType"": ""Button"",
@@ -256,7 +256,7 @@ namespace BoostBlasters
                     ""interactions"": """"
                 },
                 {
-                    ""name"": ""Cancel"",
+                    ""name"": ""Back"",
                     ""type"": ""Button"",
                     ""id"": ""a407a32d-b7b7-4ce8-8e2f-04a338422ad9"",
                     ""expectedControlType"": """",
@@ -272,7 +272,7 @@ namespace BoostBlasters
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Controller"",
-                    ""action"": ""Submit"",
+                    ""action"": ""Accept"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -283,7 +283,7 @@ namespace BoostBlasters
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""WASD"",
-                    ""action"": ""Submit"",
+                    ""action"": ""Accept"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -294,7 +294,7 @@ namespace BoostBlasters
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Arrows"",
-                    ""action"": ""Submit"",
+                    ""action"": ""Accept"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -305,7 +305,7 @@ namespace BoostBlasters
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Controller"",
-                    ""action"": ""Cancel"",
+                    ""action"": ""Back"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -316,7 +316,7 @@ namespace BoostBlasters
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""WASD"",
-                    ""action"": ""Cancel"",
+                    ""action"": ""Back"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -327,7 +327,7 @@ namespace BoostBlasters
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Arrows"",
-                    ""action"": ""Cancel"",
+                    ""action"": ""Back"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -376,9 +376,9 @@ namespace BoostBlasters
                     ""isPartOfComposite"": true
                 },
                 {
-                    ""name"": ""down"",
-                    ""id"": ""8ec3bf2a-3ea3-45d5-8652-8ccd49d1ad4f"",
-                    ""path"": ""<Keyboard>/s"",
+                    ""name"": ""left"",
+                    ""id"": ""fca5ffd1-f905-4fa5-9ce3-edc6a8caf723"",
+                    ""path"": ""<Keyboard>/a"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""WASD"",
@@ -387,9 +387,9 @@ namespace BoostBlasters
                     ""isPartOfComposite"": true
                 },
                 {
-                    ""name"": ""left"",
-                    ""id"": ""fca5ffd1-f905-4fa5-9ce3-edc6a8caf723"",
-                    ""path"": ""<Keyboard>/a"",
+                    ""name"": ""down"",
+                    ""id"": ""8ec3bf2a-3ea3-45d5-8652-8ccd49d1ad4f"",
+                    ""path"": ""<Keyboard>/s"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""WASD"",
@@ -431,9 +431,9 @@ namespace BoostBlasters
                     ""isPartOfComposite"": true
                 },
                 {
-                    ""name"": ""down"",
-                    ""id"": ""12d25a71-67a0-4752-8f19-169fa3ed97ce"",
-                    ""path"": ""<Keyboard>/downArrow"",
+                    ""name"": ""left"",
+                    ""id"": ""0be14d13-1af4-419b-9842-0cbcad165b1c"",
+                    ""path"": ""<Keyboard>/leftArrow"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Arrows"",
@@ -442,9 +442,9 @@ namespace BoostBlasters
                     ""isPartOfComposite"": true
                 },
                 {
-                    ""name"": ""left"",
-                    ""id"": ""0be14d13-1af4-419b-9842-0cbcad165b1c"",
-                    ""path"": ""<Keyboard>/leftArrow"",
+                    ""name"": ""down"",
+                    ""id"": ""12d25a71-67a0-4752-8f19-169fa3ed97ce"",
+                    ""path"": ""<Keyboard>/downArrow"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Arrows"",
@@ -510,8 +510,8 @@ namespace BoostBlasters
             // UI
             m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
             m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
-            m_UI_Submit = m_UI.FindAction("Submit", throwIfNotFound: true);
-            m_UI_Cancel = m_UI.FindAction("Cancel", throwIfNotFound: true);
+            m_UI_Accept = m_UI.FindAction("Accept", throwIfNotFound: true);
+            m_UI_Back = m_UI.FindAction("Back", throwIfNotFound: true);
         }
 
         public void Dispose()
@@ -611,15 +611,15 @@ namespace BoostBlasters
         private readonly InputActionMap m_UI;
         private IUIActions m_UIActionsCallbackInterface;
         private readonly InputAction m_UI_Navigate;
-        private readonly InputAction m_UI_Submit;
-        private readonly InputAction m_UI_Cancel;
+        private readonly InputAction m_UI_Accept;
+        private readonly InputAction m_UI_Back;
         public struct UIActions
         {
             private @PlayerInputActions m_Wrapper;
             public UIActions(@PlayerInputActions wrapper) { m_Wrapper = wrapper; }
             public InputAction @Navigate => m_Wrapper.m_UI_Navigate;
-            public InputAction @Submit => m_Wrapper.m_UI_Submit;
-            public InputAction @Cancel => m_Wrapper.m_UI_Cancel;
+            public InputAction @Accept => m_Wrapper.m_UI_Accept;
+            public InputAction @Back => m_Wrapper.m_UI_Back;
             public InputActionMap Get() { return m_Wrapper.m_UI; }
             public void Enable() { Get().Enable(); }
             public void Disable() { Get().Disable(); }
@@ -632,12 +632,12 @@ namespace BoostBlasters
                     @Navigate.started -= m_Wrapper.m_UIActionsCallbackInterface.OnNavigate;
                     @Navigate.performed -= m_Wrapper.m_UIActionsCallbackInterface.OnNavigate;
                     @Navigate.canceled -= m_Wrapper.m_UIActionsCallbackInterface.OnNavigate;
-                    @Submit.started -= m_Wrapper.m_UIActionsCallbackInterface.OnSubmit;
-                    @Submit.performed -= m_Wrapper.m_UIActionsCallbackInterface.OnSubmit;
-                    @Submit.canceled -= m_Wrapper.m_UIActionsCallbackInterface.OnSubmit;
-                    @Cancel.started -= m_Wrapper.m_UIActionsCallbackInterface.OnCancel;
-                    @Cancel.performed -= m_Wrapper.m_UIActionsCallbackInterface.OnCancel;
-                    @Cancel.canceled -= m_Wrapper.m_UIActionsCallbackInterface.OnCancel;
+                    @Accept.started -= m_Wrapper.m_UIActionsCallbackInterface.OnAccept;
+                    @Accept.performed -= m_Wrapper.m_UIActionsCallbackInterface.OnAccept;
+                    @Accept.canceled -= m_Wrapper.m_UIActionsCallbackInterface.OnAccept;
+                    @Back.started -= m_Wrapper.m_UIActionsCallbackInterface.OnBack;
+                    @Back.performed -= m_Wrapper.m_UIActionsCallbackInterface.OnBack;
+                    @Back.canceled -= m_Wrapper.m_UIActionsCallbackInterface.OnBack;
                 }
                 m_Wrapper.m_UIActionsCallbackInterface = instance;
                 if (instance != null)
@@ -645,12 +645,12 @@ namespace BoostBlasters
                     @Navigate.started += instance.OnNavigate;
                     @Navigate.performed += instance.OnNavigate;
                     @Navigate.canceled += instance.OnNavigate;
-                    @Submit.started += instance.OnSubmit;
-                    @Submit.performed += instance.OnSubmit;
-                    @Submit.canceled += instance.OnSubmit;
-                    @Cancel.started += instance.OnCancel;
-                    @Cancel.performed += instance.OnCancel;
-                    @Cancel.canceled += instance.OnCancel;
+                    @Accept.started += instance.OnAccept;
+                    @Accept.performed += instance.OnAccept;
+                    @Accept.canceled += instance.OnAccept;
+                    @Back.started += instance.OnBack;
+                    @Back.performed += instance.OnBack;
+                    @Back.canceled += instance.OnBack;
                 }
             }
         }
@@ -691,8 +691,8 @@ namespace BoostBlasters
         public interface IUIActions
         {
             void OnNavigate(InputAction.CallbackContext context);
-            void OnSubmit(InputAction.CallbackContext context);
-            void OnCancel(InputAction.CallbackContext context);
+            void OnAccept(InputAction.CallbackContext context);
+            void OnBack(InputAction.CallbackContext context);
         }
     }
 }

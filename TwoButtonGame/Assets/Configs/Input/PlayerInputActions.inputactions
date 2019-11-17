@@ -233,7 +233,7 @@
                     "interactions": ""
                 },
                 {
-                    "name": "Submit",
+                    "name": "Accept",
                     "type": "Button",
                     "id": "3b301d44-33f6-4428-9e6b-437e6d76b524",
                     "expectedControlType": "Button",
@@ -241,7 +241,7 @@
                     "interactions": ""
                 },
                 {
-                    "name": "Cancel",
+                    "name": "Back",
                     "type": "Button",
                     "id": "a407a32d-b7b7-4ce8-8e2f-04a338422ad9",
                     "expectedControlType": "",
@@ -257,7 +257,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Controller",
-                    "action": "Submit",
+                    "action": "Accept",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -268,7 +268,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "WASD",
-                    "action": "Submit",
+                    "action": "Accept",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -279,7 +279,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Arrows",
-                    "action": "Submit",
+                    "action": "Accept",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -290,7 +290,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Controller",
-                    "action": "Cancel",
+                    "action": "Back",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -301,7 +301,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "WASD",
-                    "action": "Cancel",
+                    "action": "Back",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -312,7 +312,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Arrows",
-                    "action": "Cancel",
+                    "action": "Back",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -361,9 +361,9 @@
                     "isPartOfComposite": true
                 },
                 {
-                    "name": "down",
-                    "id": "8ec3bf2a-3ea3-45d5-8652-8ccd49d1ad4f",
-                    "path": "<Keyboard>/s",
+                    "name": "left",
+                    "id": "fca5ffd1-f905-4fa5-9ce3-edc6a8caf723",
+                    "path": "<Keyboard>/a",
                     "interactions": "",
                     "processors": "",
                     "groups": "WASD",
@@ -372,9 +372,9 @@
                     "isPartOfComposite": true
                 },
                 {
-                    "name": "left",
-                    "id": "fca5ffd1-f905-4fa5-9ce3-edc6a8caf723",
-                    "path": "<Keyboard>/a",
+                    "name": "down",
+                    "id": "8ec3bf2a-3ea3-45d5-8652-8ccd49d1ad4f",
+                    "path": "<Keyboard>/s",
                     "interactions": "",
                     "processors": "",
                     "groups": "WASD",
@@ -416,9 +416,9 @@
                     "isPartOfComposite": true
                 },
                 {
-                    "name": "down",
-                    "id": "12d25a71-67a0-4752-8f19-169fa3ed97ce",
-                    "path": "<Keyboard>/downArrow",
+                    "name": "left",
+                    "id": "0be14d13-1af4-419b-9842-0cbcad165b1c",
+                    "path": "<Keyboard>/leftArrow",
                     "interactions": "",
                     "processors": "",
                     "groups": "Arrows",
@@ -427,9 +427,9 @@
                     "isPartOfComposite": true
                 },
                 {
-                    "name": "left",
-                    "id": "0be14d13-1af4-419b-9842-0cbcad165b1c",
-                    "path": "<Keyboard>/leftArrow",
+                    "name": "down",
+                    "id": "12d25a71-67a0-4752-8f19-169fa3ed97ce",
+                    "path": "<Keyboard>/downArrow",
                     "interactions": "",
                     "processors": "",
                     "groups": "Arrows",
