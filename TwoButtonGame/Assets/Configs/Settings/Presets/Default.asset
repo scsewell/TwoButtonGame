@@ -24,7 +24,7 @@ MonoBehaviour:
       m_value: On
     - m_setting: {fileID: 11400000, guid: 7e658b8da504f5d469795cd126fb2f01, type: 2}
       m_value: High
-    - m_setting: {fileID: 11400000, guid: 01486ae7b6e93a746ba5ee066a67209f, type: 2}
-      m_value: 100
     - m_setting: {fileID: 11400000, guid: d4aaa5f9015614c44a87e3b4bc118e88, type: 2}
       m_value: 60
+    - m_setting: {fileID: 11400000, guid: 01486ae7b6e93a746ba5ee066a67209f, type: 2}
+      m_value: 100

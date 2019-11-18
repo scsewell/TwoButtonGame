@@ -60,13 +60,17 @@ namespace BoostBlasters.UI.RaceMenus
         private List<PlayerUI> m_playerUIs = null;
         private float m_finishTime = 0f;
 
-        public InRaceMenu Init(RaceParameters raceParameters)
+        protected override void Awake()
         {
-            ActiveInputs = raceParameters.Racers.Where(r => r.Type == RacerType.Player).Select(r => r.Input).ToList();
-            InitBase();
+            base.Awake();
 
             Root = GetComponentInChildren<GameMenuRoot>();
             Finish = GetComponentInChildren<GameMenuFinished>();
+        }
+
+        public InRaceMenu Init(RaceParameters raceParameters)
+        {
+            ActiveInputs = raceParameters.Racers.Where(r => r.Type == RacerType.Player).Select(r => r.Input).ToList();
 
             m_playerUIs = new List<PlayerUI>();
 
@@ -108,8 +112,6 @@ namespace BoostBlasters.UI.RaceMenus
 
         public void UpdateUI(bool showPlayerUI, bool isPaused, bool isFinished, bool isQuitting)
         {
-            UpdateBase();
-
             m_playerUIParent.enabled = showPlayerUI;
             if (m_playerUIParent.enabled)
             {
@@ -189,8 +191,6 @@ namespace BoostBlasters.UI.RaceMenus
 
         public void LateUpdateUI()
         {
-            LateUpdateBase((previous) => true);
-
             m_fade.color = new Color(0f, 0f, 0f, Main.Instance.RaceManager.GetFadeFactor(false));
         }
 

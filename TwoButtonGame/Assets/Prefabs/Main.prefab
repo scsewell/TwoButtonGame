@@ -60,7 +60,6 @@ MonoBehaviour:
   m_resolution: {fileID: 11400000, guid: 8615e11f0be520e4fb2c237b41af0720, type: 2}
   m_screenMode: {fileID: 11400000, guid: 1c6a50019e6e2e54d8292c60aafb899a, type: 2}
   m_vsync: {fileID: 11400000, guid: 60415f2531615e54c93b857660e1ba4a, type: 2}
-  m_antiAliasing: {fileID: 11400000, guid: 6b0575c7e699671458f61dd184b7792f, type: 2}
   m_shadowQuality: {fileID: 11400000, guid: 7e658b8da504f5d469795cd126fb2f01, type: 2}
 --- !u!114 &5031432643366444219
 MonoBehaviour:
@@ -74,7 +73,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a417b14fb8893cb43b4fdf0405f40f5a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_masterVolumeSetting: {fileID: 11400000, guid: 01486ae7b6e93a746ba5ee066a67209f,
-    type: 2}
   m_musicVolumeSetting: {fileID: 11400000, guid: d4aaa5f9015614c44a87e3b4bc118e88,
     type: 2}
+  m_sfxVolumeSetting: {fileID: 11400000, guid: 01486ae7b6e93a746ba5ee066a67209f, type: 2}

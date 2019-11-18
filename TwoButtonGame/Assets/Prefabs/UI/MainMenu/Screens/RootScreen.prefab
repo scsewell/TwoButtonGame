@@ -383,10 +383,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6217a5774128564cafacce91f2cb31b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_primaryInputModulePrefab: {fileID: 8917968939599273587, guid: e4299256a9bb1fb40869b103ff0bd2af,
+    type: 3}
+  m_secondaryInputModulePrefab: {fileID: 8917968939599273587, guid: 758966314f11dd040a0968bc9e5f12cc,
+    type: 3}
+  m_secondaryRoot: {fileID: 0}
   m_defaultSelection: {fileID: 1907654198125208858}
   m_remeberLastSelection: 1
-  m_backMenu: {fileID: 0}
   m_closeOnBack: 0
+  m_backMenu: {fileID: 0}
   m_playButton: {fileID: 1907654198125208858}
   m_tutorialButton: {fileID: 51003309820703664}
   m_profilesButton: {fileID: 3093171770131490812}
@@ -1787,7 +1792,7 @@ PrefabInstance:
     - target: {fileID: 224770018698898070, guid: 06956c1122b518244bd4af89b0ce3b25,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 176.76001
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 224770018698898070, guid: 06956c1122b518244bd4af89b0ce3b25,
         type: 3}

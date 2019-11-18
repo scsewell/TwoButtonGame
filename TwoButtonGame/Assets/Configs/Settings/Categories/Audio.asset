@@ -12,3 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ca894d183942e6344bdf47a36fbfd8b3, type: 3}
   m_Name: Audio
   m_EditorClassIdentifier: 
+  m_icon: {fileID: -4811510042570975108, guid: d3877c217a1dc404ca5279be2f32c458, type: 3}

@@ -73,10 +73,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b381d6f1499970d4490968a2721c9779, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_backMenu: {fileID: 0}
-  m_closeOnBack: 0
+  m_primaryInputModulePrefab: {fileID: 8917968939599273587, guid: e4299256a9bb1fb40869b103ff0bd2af,
+    type: 3}
+  m_secondaryInputModulePrefab: {fileID: 8917968939599273587, guid: 758966314f11dd040a0968bc9e5f12cc,
+    type: 3}
+  m_secondaryRoot: {fileID: 0}
   m_defaultSelection: {fileID: 4073217945603533185}
   m_remeberLastSelection: 0
+  m_closeOnBack: 1
+  m_backMenu: {fileID: 0}
   m_creditsBackButton: {fileID: 4073217945603533185}
 --- !u!1 &4073217945856762504
 GameObject:
@@ -321,11 +326,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4073217945856762505}
     m_Modifications:
-    - target: {fileID: 1904570435050895777, guid: 36f23db2af947bd42bab55cf4b73da93,
-        type: 3}
-      propertyPath: m_Name
-      value: Back
-      objectReference: {fileID: 0}
     - target: {fileID: 1904570435050895778, guid: 36f23db2af947bd42bab55cf4b73da93,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -431,6 +431,11 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 1904570435050895777, guid: 36f23db2af947bd42bab55cf4b73da93,
+        type: 3}
+      propertyPath: m_Name
+      value: Back
+      objectReference: {fileID: 0}
     - target: {fileID: 548302407527028617, guid: 36f23db2af947bd42bab55cf4b73da93,
         type: 3}
       propertyPath: m_text
@@ -468,11 +473,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4073217945677166079}
     m_Modifications:
-    - target: {fileID: 2545665881273416656, guid: ce29f03be8393dc40b89d34f0851699b,
-        type: 3}
-      propertyPath: m_Name
-      value: TitledFrame
-      objectReference: {fileID: 0}
     - target: {fileID: 3720086210381958781, guid: ce29f03be8393dc40b89d34f0851699b,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -577,6 +577,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2545665881273416656, guid: ce29f03be8393dc40b89d34f0851699b,
+        type: 3}
+      propertyPath: m_Name
+      value: TitledFrame
       objectReference: {fileID: 0}
     - target: {fileID: 9201128566060918952, guid: ce29f03be8393dc40b89d34f0851699b,
         type: 3}

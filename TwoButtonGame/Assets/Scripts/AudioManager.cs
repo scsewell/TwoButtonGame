@@ -15,9 +15,9 @@ namespace BoostBlasters
     public class AudioManager : ComponentSingleton<AudioManager>
     {
         [SerializeField]
-        private IntSetting m_masterVolumeSetting = null;
-        [SerializeField]
         private IntSetting m_musicVolumeSetting = null;
+        [SerializeField]
+        private IntSetting m_sfxVolumeSetting = null;
 
         private AudioSource m_audio = null;
         private AudioSource m_noPauseAudio = null;
@@ -27,7 +27,7 @@ namespace BoostBlasters
         private float m_volume = 1.0f;
 
         /// <summary>
-        /// The global volume.
+        /// The master volume.
         /// </summary>
         public float Volume
         {
@@ -87,8 +87,9 @@ namespace BoostBlasters
         private void Update()
         {
             m_music.Update();
-            m_music.Volume = m_musicVolume * Mathf.Pow(m_musicVolumeSetting.Value / 100.0f, 2.0f);
-            AudioListener.volume = Volume * Mathf.Pow(m_masterVolumeSetting.Value / 100.0f, 2.0f);
+            m_music.Volume = ProcessVolume(m_musicVolume, m_musicVolumeSetting);
+
+            AudioListener.volume = Volume;
         }
 
         /// <summary>
@@ -99,6 +100,8 @@ namespace BoostBlasters
         /// <param name="ignorePause">Will the sound play while the game is paused.</param>
         public void PlaySound(AudioClip clip, float volume = 1f, bool ignorePause = false)
         {
+            volume = ProcessVolume(volume, m_sfxVolumeSetting);
+
             if (clip != null && volume > 0f)
             {
                 if (!m_lastPlayTimes.TryGetValue(clip, out float lastPlayTime))
@@ -155,6 +158,11 @@ namespace BoostBlasters
         public void StopMusic()
         {
             m_music.Stop();
+        }
+
+        private float ProcessVolume(float volume, IntSetting setting)
+        {
+            return volume * Mathf.Pow(setting.Value / 100.0f, 2.0f);
         }
     }
 }

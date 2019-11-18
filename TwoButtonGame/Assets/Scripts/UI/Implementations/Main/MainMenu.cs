@@ -49,15 +49,13 @@ namespace BoostBlasters.UI.MainMenus
         private float m_menuLoadTime;
         private float m_menuExitTime;
 
-        public List<PlayerBaseInput> AvailableInputs { get; private set; }
-
-        public List<PlayerBaseInput> UnreservedInputs => AvailableInputs.Where(i => !ReservedInputs.Contains(i)).ToList();
+        public List<PlayerBaseInput> UnreservedInputs => new List<PlayerBaseInput>().Where(i => !ReservedInputs.Contains(i)).ToList();
 
         public List<PlayerBaseInput> ReservedInputs => PlayerSelect.ActiveInputs;
 
-        private void Awake()
+        protected override void Awake()
         {
-            InitBase();
+            base.Awake();
 
             Root = GetComponentInChildren<RootMenu>();
             PlayerSelect = GetComponentInChildren<PlayerSelectMenu>();
@@ -68,8 +66,11 @@ namespace BoostBlasters.UI.MainMenus
             Settings = GetComponentInChildren<SettingsMenu>();
             Credits = GetComponentInChildren<CreditsMenu>();
             Confirm = GetComponentInChildren<ConfirmMenu>();
+        }
 
-            AvailableInputs = new List<PlayerBaseInput>();
+        protected override void Start()
+        {
+            base.Start();
 
             switch (Main.Instance.LastRaceType)
             {
@@ -91,9 +92,9 @@ namespace BoostBlasters.UI.MainMenus
             AudioManager.Instance.PlayMusic(m_music);
         }
 
-        private void Update()
+        protected override void Update()
         {
-            UpdateBase();
+            base.Update();
 
             float factor = GetFadeFactor();
             m_fade.color = new Color(0f, 0f, 0f, factor);
@@ -101,9 +102,10 @@ namespace BoostBlasters.UI.MainMenus
             AudioManager.Instance.Volume = Mathf.MoveTowards(AudioManager.Instance.Volume, 1f - factor, Time.unscaledDeltaTime / 0.35f);
         }
 
-        private void LateUpdate()
+        protected override bool ShouldFullReset(MenuScreen menu, MenuScreen from, MenuScreen to)
         {
-            LateUpdateBase((previous) => previous == Root);
+            // when at the main menu reset all state in the menus
+            return from == Root;
         }
 
         private float GetFadeFactor()

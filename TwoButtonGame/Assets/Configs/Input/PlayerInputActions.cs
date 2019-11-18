@@ -248,6 +248,14 @@ namespace BoostBlasters
                     ""interactions"": """"
                 },
                 {
+                    ""name"": ""Switch Category"",
+                    ""type"": ""Value"",
+                    ""id"": ""294e7859-c7fa-49c1-a3ca-7a9e7627f41e"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                },
+                {
                     ""name"": ""Accept"",
                     ""type"": ""Button"",
                     ""id"": ""3b301d44-33f6-4428-9e6b-437e6d76b524"",
@@ -462,6 +470,171 @@ namespace BoostBlasters
                     ""action"": ""Navigate"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""BumperAxis"",
+                    ""id"": ""72b39b7c-46e2-40dd-a4b0-045f49d8c79b"",
+                    ""path"": ""2DVector(normalize=false)"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Switch Category"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""up"",
+                    ""id"": ""70c4e013-a540-41d9-a88b-45123060445a"",
+                    ""path"": """",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Switch Category"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""down"",
+                    ""id"": ""7ad8b566-c663-487f-b8c9-74f4f86460bd"",
+                    ""path"": """",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Switch Category"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""left"",
+                    ""id"": ""d5611b8c-a0f8-475e-9fbc-60c64a8a3787"",
+                    ""path"": ""<Gamepad>/leftShoulder"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Controller"",
+                    ""action"": ""Switch Category"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""right"",
+                    ""id"": ""b45fe22d-7fcc-45e3-9296-2cb8cef8ec2e"",
+                    ""path"": ""<Gamepad>/rightShoulder"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Controller"",
+                    ""action"": ""Switch Category"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""ZXAxis"",
+                    ""id"": ""2eed93da-c903-4ff3-8eec-4ae90e1e2645"",
+                    ""path"": ""2DVector(normalize=false)"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Switch Category"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""up"",
+                    ""id"": ""d0f52d42-b994-4197-9a3f-c659cc6c5b4c"",
+                    ""path"": """",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Switch Category"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""down"",
+                    ""id"": ""2d9834d1-f62b-4152-ade5-fc2541c511fd"",
+                    ""path"": """",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Switch Category"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""left"",
+                    ""id"": ""506566f1-4ff4-420b-ab2c-e7db22113359"",
+                    ""path"": ""<Keyboard>/z"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""WASD"",
+                    ""action"": ""Switch Category"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""right"",
+                    ""id"": ""acad37b5-3a50-496c-9560-97296c7973da"",
+                    ""path"": ""<Keyboard>/x"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""WASD"",
+                    ""action"": ""Switch Category"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""PageAxis"",
+                    ""id"": ""076f81f1-8cb9-4db0-babc-ce2d37ac554a"",
+                    ""path"": ""2DVector(normalize=false)"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Switch Category"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""up"",
+                    ""id"": ""d57affdf-23d3-488f-a292-cf74e3b0645a"",
+                    ""path"": """",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Switch Category"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""down"",
+                    ""id"": ""4f52753c-3c8c-4b38-9bf6-0a64f8966297"",
+                    ""path"": """",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Switch Category"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""left"",
+                    ""id"": ""f265023d-5102-46b7-902a-0ba11c5b87bb"",
+                    ""path"": ""<Keyboard>/pageDown"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Arrows"",
+                    ""action"": ""Switch Category"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""right"",
+                    ""id"": ""7d2376cc-cfee-4412-9231-9c93c4464039"",
+                    ""path"": ""<Keyboard>/pageUp"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Arrows"",
+                    ""action"": ""Switch Category"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
                 }
             ]
         }
@@ -510,6 +683,7 @@ namespace BoostBlasters
             // UI
             m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
             m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
+            m_UI_SwitchCategory = m_UI.FindAction("Switch Category", throwIfNotFound: true);
             m_UI_Accept = m_UI.FindAction("Accept", throwIfNotFound: true);
             m_UI_Back = m_UI.FindAction("Back", throwIfNotFound: true);
         }
@@ -611,6 +785,7 @@ namespace BoostBlasters
         private readonly InputActionMap m_UI;
         private IUIActions m_UIActionsCallbackInterface;
         private readonly InputAction m_UI_Navigate;
+        private readonly InputAction m_UI_SwitchCategory;
         private readonly InputAction m_UI_Accept;
         private readonly InputAction m_UI_Back;
         public struct UIActions
@@ -618,6 +793,7 @@ namespace BoostBlasters
             private @PlayerInputActions m_Wrapper;
             public UIActions(@PlayerInputActions wrapper) { m_Wrapper = wrapper; }
             public InputAction @Navigate => m_Wrapper.m_UI_Navigate;
+            public InputAction @SwitchCategory => m_Wrapper.m_UI_SwitchCategory;
             public InputAction @Accept => m_Wrapper.m_UI_Accept;
             public InputAction @Back => m_Wrapper.m_UI_Back;
             public InputActionMap Get() { return m_Wrapper.m_UI; }
@@ -632,6 +808,9 @@ namespace BoostBlasters
                     @Navigate.started -= m_Wrapper.m_UIActionsCallbackInterface.OnNavigate;
                     @Navigate.performed -= m_Wrapper.m_UIActionsCallbackInterface.OnNavigate;
                     @Navigate.canceled -= m_Wrapper.m_UIActionsCallbackInterface.OnNavigate;
+                    @SwitchCategory.started -= m_Wrapper.m_UIActionsCallbackInterface.OnSwitchCategory;
+                    @SwitchCategory.performed -= m_Wrapper.m_UIActionsCallbackInterface.OnSwitchCategory;
+                    @SwitchCategory.canceled -= m_Wrapper.m_UIActionsCallbackInterface.OnSwitchCategory;
                     @Accept.started -= m_Wrapper.m_UIActionsCallbackInterface.OnAccept;
                     @Accept.performed -= m_Wrapper.m_UIActionsCallbackInterface.OnAccept;
                     @Accept.canceled -= m_Wrapper.m_UIActionsCallbackInterface.OnAccept;
@@ -645,6 +824,9 @@ namespace BoostBlasters
                     @Navigate.started += instance.OnNavigate;
                     @Navigate.performed += instance.OnNavigate;
                     @Navigate.canceled += instance.OnNavigate;
+                    @SwitchCategory.started += instance.OnSwitchCategory;
+                    @SwitchCategory.performed += instance.OnSwitchCategory;
+                    @SwitchCategory.canceled += instance.OnSwitchCategory;
                     @Accept.started += instance.OnAccept;
                     @Accept.performed += instance.OnAccept;
                     @Accept.canceled += instance.OnAccept;
@@ -691,6 +873,7 @@ namespace BoostBlasters
         public interface IUIActions
         {
             void OnNavigate(InputAction.CallbackContext context);
+            void OnSwitchCategory(InputAction.CallbackContext context);
             void OnAccept(InputAction.CallbackContext context);
             void OnBack(InputAction.CallbackContext context);
         }

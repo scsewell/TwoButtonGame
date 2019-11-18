@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: Motion Blur
   m_EditorClassIdentifier: 
   m_category: {fileID: 11400000, guid: ee6120dbec47e3e47b890ee586045878, type: 2}
-  m_requiresRestart: 0
+  m_description: Adds motion blur to the camera.
   m_displayMode: 2
   m_defaultValue: On

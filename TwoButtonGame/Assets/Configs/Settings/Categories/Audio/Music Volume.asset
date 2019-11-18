@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Music Volume
   m_EditorClassIdentifier: 
   m_category: {fileID: 11400000, guid: da6b54692858fb544af44d860185c583, type: 2}
+  m_description: The music volume.
   m_displayMode: 2
   m_defaultValue: 60
   m_range:
