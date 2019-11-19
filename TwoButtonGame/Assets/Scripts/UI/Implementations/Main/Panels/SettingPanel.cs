@@ -21,7 +21,12 @@ namespace BoostBlasters.UI.MainMenus
         private Setting m_setting = null;
         private string[] m_options = null;
 
-        public int CurrentIndex
+        /// <summary>
+        /// The setting controlled by this panel.
+        /// </summary>
+        public Setting Setting => m_setting;
+
+        private int CurrentIndex
         {
             get
             {

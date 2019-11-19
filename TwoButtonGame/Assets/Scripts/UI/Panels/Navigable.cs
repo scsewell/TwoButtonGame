@@ -36,7 +36,6 @@ namespace BoostBlasters.UI
         private void Awake()
         {
             m_sounds = GetComponentInParent<SoundPlayer>();
-
             m_button = GetComponentInChildren<Button>();
 
             m_name          = transform.Find("Label").GetComponent<Text>();

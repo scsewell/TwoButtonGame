@@ -2,6 +2,7 @@
 using System.Linq;
 
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 using TMPro;
@@ -66,7 +67,10 @@ namespace BoostBlasters.UI.MainMenus
 
                 foreach (var setting in SettingManager.Instance.GetSettings(category))
                 {
-                    settings.Add(UIHelper.Create(m_settingSpinnerPrefab, settingCategory).Init(setting));
+                    SettingPanel panel = UIHelper.Create(m_settingSpinnerPrefab, settingCategory);
+                    panel.Init(setting);
+
+                    settings.Add(panel);
                 }
 
                 UIHelper.SetNavigationVertical(new NavConfig()
@@ -108,7 +112,18 @@ namespace BoostBlasters.UI.MainMenus
 
         protected override void OnUpdateGraphics()
         {
-            //m_description.text = 
+            // display the description for the currently selected item
+            GameObject selected = PrimaryEvents.currentSelectedGameObject;
+            SettingPanel setting = selected.GetComponent<SettingPanel>();
+
+            if (setting != null)
+            {
+                m_description.text = setting.Setting.Description;
+            }
+            else
+            {
+                m_description.text = string.Empty;
+            }
         }
 
         private void SetCategory(SettingCategory category)
