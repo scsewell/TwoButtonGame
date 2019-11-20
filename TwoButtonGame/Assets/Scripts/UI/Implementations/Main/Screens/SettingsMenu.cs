@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 using TMPro;
@@ -16,8 +14,9 @@ namespace BoostBlasters.UI.MainMenus
     {
         [Header("Prefabs")]
 
-        [SerializeField] private Tab m_categoryTabPrefab = null;
-        [SerializeField] private SettingPanel m_settingSpinnerPrefab = null;
+        [SerializeField] private Tab m_tabPrefab = null;
+        [SerializeField] private Spinner m_spinnerPrefab = null;
+        [SerializeField] private Slider m_sliderPrefab = null;
 
         [Header("UI Elements")]
 
@@ -47,7 +46,7 @@ namespace BoostBlasters.UI.MainMenus
             foreach (var category in SettingManager.Instance.Catergories)
             {
                 // create a tab for the category
-                UIHelper.Create(m_categoryTabPrefab, m_categoryTabs, category.name).Init(category.Icon, () =>
+                UIHelper.Create(m_tabPrefab, m_categoryTabs, category.name).Init(category.Icon, () =>
                 {
                     SetCategory(category);
                 });
@@ -67,9 +66,20 @@ namespace BoostBlasters.UI.MainMenus
 
                 foreach (var setting in SettingManager.Instance.GetSettings(category))
                 {
-                    SettingPanel panel = UIHelper.Create(m_settingSpinnerPrefab, settingCategory);
-                    panel.Init(setting);
+                    GameObject go;
 
+                    switch (setting.DisplayMode)
+                    {
+                        case SettingDisplayMode.Slider:
+                            go = UIHelper.Create(m_sliderPrefab, settingCategory).gameObject;
+                            break;
+                        case SettingDisplayMode.Spinner:
+                        default:
+                            go = UIHelper.Create(m_spinnerPrefab, settingCategory).gameObject;
+                            break;
+                    }
+
+                    SettingPanel panel = go.AddComponent<SettingPanel>().Init(setting);
                     settings.Add(panel);
                 }
 
@@ -96,7 +106,7 @@ namespace BoostBlasters.UI.MainMenus
 
         protected override void OnResetMenu(bool fullReset)
         {
-            m_currentCategory = null;
+            SetCategory(null);
 
             RefreshSettings();
         }
@@ -114,15 +124,19 @@ namespace BoostBlasters.UI.MainMenus
         {
             // display the description for the currently selected item
             GameObject selected = PrimaryEvents.currentSelectedGameObject;
-            SettingPanel setting = selected.GetComponent<SettingPanel>();
 
-            if (setting != null)
+            if (selected)
             {
-                m_description.text = setting.Setting.Description;
-            }
-            else
-            {
-                m_description.text = string.Empty;
+                SettingPanel setting = selected.GetComponent<SettingPanel>();
+
+                if (setting != null)
+                {
+                    m_description.text = setting.Setting.Description;
+                }
+                else
+                {
+                    m_description.text = string.Empty;
+                }
             }
         }
 

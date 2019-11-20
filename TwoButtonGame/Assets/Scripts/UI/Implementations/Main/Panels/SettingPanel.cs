@@ -1,7 +1,4 @@
 ﻿using UnityEngine;
-using UnityEngine.EventSystems;
-
-using TMPro;
 
 using Framework.Settings;
 
@@ -10,49 +7,51 @@ namespace BoostBlasters.UI.MainMenus
     /// <summary>
     /// A UI widget which allows modifying a setting.
     /// </summary>
-    public class SettingPanel : MonoBehaviour, IMoveHandler
+    public class SettingPanel : MonoBehaviour
     {
-        [Header("UI Elements")]
-
-        [SerializeField] private TextMeshProUGUI m_label = null;
-        [SerializeField] private TextMeshProUGUI m_valueText = null;
-
-        private SoundPlayer m_sound = null;
-        private Setting m_setting = null;
-        private string[] m_options = null;
+        private Spinner m_spinner = null;
+        private Slider m_slider = null;
 
         /// <summary>
         /// The setting controlled by this panel.
         /// </summary>
-        public Setting Setting => m_setting;
-
-        private int CurrentIndex
-        {
-            get
-            {
-                for (int i = 0; i < m_options.Length; i++)
-                {
-                    if (m_options[i] == m_valueText.text)
-                    {
-                        return i;
-                    }
-                }
-                return 0;
-            }
-        }
+        public Setting Setting { get; private set; } = null;
 
 
         private void Awake()
         {
-            m_sound = GetComponentInParent<SoundPlayer>();
+            m_spinner = GetComponent<Spinner>();
+            m_slider = GetComponent<Slider>();
         }
 
         public SettingPanel Init(Setting setting)
         {
-            m_setting = setting;
+            Setting = setting;
 
-            m_label.text = setting.name;
-            m_options = setting.DisplayValues;
+            if (m_spinner != null)
+            {
+                m_spinner.Init(setting.DisplayValues);
+                m_spinner.Label = setting.name;
+            }
+            if (m_slider != null)
+            {
+                float min = 0f;
+                float max = 0f;
+
+                if (setting is RangeSetting<int> intRange)
+                {
+                    min = intRange.Min;
+                    max = intRange.Max;
+                }
+                if (setting is RangeSetting<float> floatRange)
+                {
+                    min = floatRange.Min;
+                    max = floatRange.Max;
+                }
+
+                m_slider.Init(setting.DisplayValues, min, max);
+                m_slider.Label = setting.name;
+            }
 
             GetValue();
 
@@ -64,7 +63,14 @@ namespace BoostBlasters.UI.MainMenus
         /// </summary>
         public void GetValue()
         {
-            m_valueText.text = m_setting.SerializedValue;
+            if (m_spinner != null)
+            {
+                m_spinner.Value = Setting.SerializedValue;
+            }
+            if (m_slider != null)
+            {
+                m_slider.Value = Setting.SerializedValue;
+            }
         }
 
         /// <summary>
@@ -72,37 +78,13 @@ namespace BoostBlasters.UI.MainMenus
         /// </summary>
         public void Apply()
         {
-            m_setting.SetSerializedValue(m_valueText.text);
-        }
-
-        public void OnMove(AxisEventData eventData)
-        {
-            int newIndex;
-            switch (eventData.moveDir)
+            if (m_spinner != null)
             {
-                case MoveDirection.Left:    newIndex = GetRelativeIndex(eventData, -1); break;
-                case MoveDirection.Right:   newIndex = GetRelativeIndex(eventData, 1);  break;
-                default:
-                    return;
+                Setting.SetSerializedValue(m_spinner.Value);
             }
-
-            if (newIndex != CurrentIndex)
+            if (m_slider != null)
             {
-                m_valueText.text = m_options[newIndex];
-                m_sound.PlaySelectSound();
-            }
-        }
-
-        private int GetRelativeIndex(AxisEventData eventData, int offset)
-        {
-            // allow wrapping if this is not a repeat navigation input
-            if (UIUtils.GetRepeatCount(eventData.currentInputModule) == 0)
-            {
-                return (CurrentIndex + m_options.Length + offset) % m_options.Length;
-            }
-            else
-            {
-                return Mathf.Clamp(CurrentIndex + offset, 0, m_options.Length - 1);
+                Setting.SetSerializedValue(m_slider.Value);
             }
         }
     }

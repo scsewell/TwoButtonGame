@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.EventSystems;
 using UnityEngine.InputSystem.UI;
 
 using Framework;
@@ -19,10 +18,6 @@ namespace BoostBlasters.UI
         [SerializeField]
         [Tooltip("The input module used for the screen's secondary input, if used.")]
         private InputSystemUIInputModule m_secondaryInputModulePrefab = null;
-
-        [SerializeField]
-        [Tooltip("The elements contolled using the secondary input.")]
-        private GameObject m_secondaryRoot = null;
 
         [SerializeField]
         [Tooltip("The element to select when going into this menu screen.")]
@@ -64,7 +59,7 @@ namespace BoostBlasters.UI
                 m_primaryInputModule = Instantiate(m_primaryInputModulePrefab, transform);
 
                 PrimaryEvents = m_primaryInputModule.GetComponent<MultiplayerEventSystem>();
-                PrimaryEvents.firstSelectedGameObject = m_defaultSelection.gameObject;
+                PrimaryEvents.firstSelectedGameObject = m_defaultSelection != null ? m_defaultSelection.gameObject : null;
                 PrimaryEvents.playerRoot = transform.gameObject;
             }
 
@@ -74,7 +69,7 @@ namespace BoostBlasters.UI
 
                 SecondaryEvents = m_secondaryInputModule.GetComponent<MultiplayerEventSystem>();
                 SecondaryEvents.firstSelectedGameObject = null;
-                SecondaryEvents.playerRoot = m_secondaryRoot;
+                SecondaryEvents.playerRoot = transform.gameObject;
             }
         }
 

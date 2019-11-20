@@ -158,9 +158,10 @@ GameObject:
   - component: {fileID: 2363044692039698518}
   - component: {fileID: 7677047287234220481}
   - component: {fileID: 2221666748950175477}
-  - component: {fileID: 2115682864955662003}
   - component: {fileID: -268866635478483615}
   - component: {fileID: 320336791116544786}
+  - component: {fileID: -1175219621792366717}
+  - component: {fileID: 2115682864955662003}
   m_Layer: 5
   m_Name: Tab
   m_TagString: Untagged
@@ -271,19 +272,6 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &2115682864955662003
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7414438418059000706}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 32b25e26a1291854ca9051baba289787, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_image: {fileID: 8986513619035266004}
 --- !u!114 &-268866635478483615
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -308,3 +296,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 97a110618d7b5ea469e16894f92150f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &-1175219621792366717
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7414438418059000706}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c37a9d428c09f594096ecbf68f0d8c05, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &2115682864955662003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7414438418059000706}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 32b25e26a1291854ca9051baba289787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_image: {fileID: 8986513619035266004}

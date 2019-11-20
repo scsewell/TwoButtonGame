@@ -2,6 +2,7 @@
 
 Short Term
 - Text Mesh Pro
+- Blink arrows in direction moved on spinner/slider
 - Settings categories need separate tabs (perhaps with nice icons?)
 - Most settings should apply/save instantly. Screen changes should ask user to apply when they go back or press an apply button.
 - Default settings should be per category
@@ -45,6 +46,7 @@ Migrate to URP
 - gate color should be a global shader property, instead of hooking into OnWillRenderObject
 
 General
+- Rumble controller on impact
 - Add character color options
 - Outline is very expensive on UI, especially the player time... (check none are left)
 - Difiiculy setting for levels - gate size differs based on difficulty (remove LevelConfig difficulty)

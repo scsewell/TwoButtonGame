@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_category: {fileID: 11400000, guid: 2fbab0be1d0c95a41b1561cec6dcca70, type: 2}
   m_description: The screen resolution.
-  m_displayMode: 2
+  m_displayMode: 1
   m_defaultValue: 2560 x 1440

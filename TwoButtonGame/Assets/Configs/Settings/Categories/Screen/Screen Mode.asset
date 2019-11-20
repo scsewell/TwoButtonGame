@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_category: {fileID: 11400000, guid: 2fbab0be1d0c95a41b1561cec6dcca70, type: 2}
   m_description: The windowing mode to use.
-  m_displayMode: 2
+  m_displayMode: 1
   m_defaultValue: Fullscreen Window
   m_enumType: UnityEngine.FullScreenMode, UnityEngine.CoreModule, Version=0.0.0.0,
     Culture=neutral, PublicKeyToken=null
