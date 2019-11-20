@@ -2,23 +2,17 @@
 
 Short Term
 - Text Mesh Pro
-- Blink arrows in direction moved on spinner/slider
-- Settings categories need separate tabs (perhaps with nice icons?)
-- Most settings should apply/save instantly. Screen changes should ask user to apply when they go back or press an apply button.
-- Default settings should be per category
-- Add setting description
-- Add dropdown/slider widgets
-- Move control help to header bar
-- Loop around vertical/horizontal menus as appropriate. Repeated navigation should not loop probably.
 - New Input sytstem (remove old system)
+- Fix back when there is no selectable with a cancelhandler
+- Combine control help into sprite sheets
+- Blink arrows in direction moved on spinner/slider
+- Default settings should be per category
+- Add dropdown widget
 - Remove back buttons from menus, instead just use control hint at top of screen
 - Add start menu (press any button to continue, allows useful control prompts to be shown after input detected)
 - Make shnazzy outline for character select, with integrated name plate at botton, profile plate at top
 	Arrows would be added to the character plate instead
 - Custom logo intro (add setting / command line option to skip in settings)
-
-- Multiple controller support
-- Clean up UI code
 
 - Use player color in 
 - check for spaghetti (check singleton usage)

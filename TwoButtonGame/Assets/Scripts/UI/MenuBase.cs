@@ -67,7 +67,6 @@ namespace BoostBlasters.UI
         /// <param name="sound">The sound to play for the menu transition.</param>
         public void SetMenu(MenuScreen menu, TransitionSound sound = TransitionSound.Next)
         {
-            Debug.Log(menu);
             m_targetMenu = menu;
             m_targetSound = sound;
         }

@@ -20,9 +20,7 @@ namespace BoostBlasters.UI.MainMenus
 
         [Header("UI Elements")]
 
-        [SerializeField] private Button m_settingsApplyButton = null;
-        [SerializeField] private Button m_settingsUseDefaultsButton = null;
-        [SerializeField] private Button m_settingsBackButton = null;
+        //[SerializeField] private Button m_settingsUseDefaultsButton = null;
         [SerializeField] private TMP_Text m_categoryTitle = null;
         [SerializeField] private TMP_Text m_description = null;
         [SerializeField] private RectTransform m_categoryTabs = null;
@@ -39,9 +37,7 @@ namespace BoostBlasters.UI.MainMenus
 
         public override void InitMenu()
         {
-            m_settingsApplyButton.onClick.AddListener(() => ApplySettings());
-            m_settingsUseDefaultsButton.onClick.AddListener(() => UseDefaultSettings());
-            m_settingsBackButton.onClick.AddListener(() => Menu.SetMenu(Menu.Root, TransitionSound.Back));
+            //m_settingsUseDefaultsButton.onClick.AddListener(() => UseDefaultSettings());
 
             foreach (var category in SettingManager.Instance.Catergories)
             {
@@ -104,11 +100,15 @@ namespace BoostBlasters.UI.MainMenus
             SecondaryEvents.firstSelectedGameObject = tabs[0].gameObject;
         }
 
+        protected override void OnDisableMenu()
+        {
+            // save the settings when leaving the menu
+            SettingManager.Instance.Save();
+        }
+
         protected override void OnResetMenu(bool fullReset)
         {
             SetCategory(null);
-
-            RefreshSettings();
         }
 
         protected override void OnUpdate()
@@ -151,45 +151,38 @@ namespace BoostBlasters.UI.MainMenus
             // hide the old category
             if (m_currentCategory != null)
             {
-                var settings = m_categoryToSettings[m_currentCategory];
+                List<SettingPanel> settings = m_categoryToSettings[m_currentCategory];
                 settings[0].transform.parent.gameObject.SetActive(false);
             }
 
             m_currentCategory = category;
 
             // show the new category
-            m_categoryTitle.text = m_currentCategory.name;
+            m_categoryTitle.text = m_currentCategory != null ? m_currentCategory.name : null;
 
             if (m_currentCategory != null)
             {
-                var setting = m_categoryToSettings[m_currentCategory][0];
+                // load the category's settings
+                List<SettingPanel> settings = m_categoryToSettings[m_currentCategory];
+
+                foreach (var setting in settings)
+                {
+                    setting.LoadValue();
+                }
 
                 // enable the setting group
-                setting.transform.parent.gameObject.SetActive(true);
+                SettingPanel first = settings[0];
+                first.transform.parent.gameObject.SetActive(true);
 
                 // prepare the selection
-                PrimaryEvents.firstSelectedGameObject = setting.gameObject;
-                PrimaryEvents.SetSelectedGameObject(setting.gameObject);
+                PrimaryEvents.firstSelectedGameObject = first.gameObject;
+                PrimaryEvents.SetSelectedGameObject(first.gameObject);
             }
         }
 
         private void UseDefaultSettings()
         {
             //m_defaultSettings.Apply();
-            SettingManager.Instance.Save();
-            RefreshSettings();
-        }
-
-        private void ApplySettings()
-        {
-            //m_categoryToSettings.ForEach(p => p.Apply());
-            SettingManager.Instance.Save();
-            RefreshSettings();
-        }
-
-        private void RefreshSettings()
-        {
-            //m_categoryToSettings.ForEach(p => p.GetValue());
         }
     }
 }

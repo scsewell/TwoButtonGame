@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 
+using Framework;
 using Framework.Settings;
 
 namespace BoostBlasters.UI.MainMenus
@@ -9,8 +10,7 @@ namespace BoostBlasters.UI.MainMenus
     /// </summary>
     public class SettingPanel : MonoBehaviour
     {
-        private Spinner m_spinner = null;
-        private Slider m_slider = null;
+        private ValueSelector m_selector = null;
 
         /// <summary>
         /// The setting controlled by this panel.
@@ -20,72 +20,50 @@ namespace BoostBlasters.UI.MainMenus
 
         private void Awake()
         {
-            m_spinner = GetComponent<Spinner>();
-            m_slider = GetComponent<Slider>();
+            m_selector = GetComponent<ValueSelector>();
+            m_selector.ValueChanged += Apply;
+        }
+
+        private void OnDestroy()
+        {
+            m_selector.ValueChanged -= Apply;
         }
 
         public SettingPanel Init(Setting setting)
         {
             Setting = setting;
 
-            if (m_spinner != null)
-            {
-                m_spinner.Init(setting.DisplayValues);
-                m_spinner.Label = setting.name;
-            }
-            if (m_slider != null)
-            {
-                float min = 0f;
-                float max = 0f;
+            m_selector.Label = setting.name;
+            m_selector.Options = setting.DisplayValues;
 
+            if (m_selector is Slider slider)
+            {
                 if (setting is RangeSetting<int> intRange)
                 {
-                    min = intRange.Min;
-                    max = intRange.Max;
+                    slider.Range = new MinMaxRange(intRange.Min, intRange.Max);
                 }
                 if (setting is RangeSetting<float> floatRange)
                 {
-                    min = floatRange.Min;
-                    max = floatRange.Max;
+                    slider.Range = new MinMaxRange(floatRange.Min, floatRange.Max);
                 }
-
-                m_slider.Init(setting.DisplayValues, min, max);
-                m_slider.Label = setting.name;
             }
 
-            GetValue();
+            LoadValue();
 
             return this;
         }
 
         /// <summary>
-        /// Updates the display from the current settings value.
+        /// Updates the display from the setting's current value.
         /// </summary>
-        public void GetValue()
+        public void LoadValue()
         {
-            if (m_spinner != null)
-            {
-                m_spinner.Value = Setting.SerializedValue;
-            }
-            if (m_slider != null)
-            {
-                m_slider.Value = Setting.SerializedValue;
-            }
+            m_selector.Value = Setting.SerializedValue;
         }
 
-        /// <summary>
-        /// Applies the currently selected option to the setting.
-        /// </summary>
-        public void Apply()
+        private void Apply(string value)
         {
-            if (m_spinner != null)
-            {
-                Setting.SetSerializedValue(m_spinner.Value);
-            }
-            if (m_slider != null)
-            {
-                Setting.SetSerializedValue(m_slider.Value);
-            }
+            Setting.SetSerializedValue(value);
         }
     }
 }

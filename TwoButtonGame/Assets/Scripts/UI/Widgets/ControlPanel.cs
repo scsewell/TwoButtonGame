@@ -243,11 +243,15 @@ namespace BoostBlasters.UI
 
                 if (showImage)
                 {
-                    LayoutElement layout = mapping.image.GetComponent<LayoutElement>();
                     Sprite sprite = mapping.image.sprite;
 
-                    layout.preferredHeight = GetComponent<RectTransform>().rect.height;
-                    layout.preferredWidth = sprite.rect.width * (layout.preferredHeight / sprite.rect.height);
+                    if (sprite != null)
+                    {
+                        LayoutElement layout = mapping.image.GetComponent<LayoutElement>();
+
+                        layout.preferredHeight = GetComponent<RectTransform>().rect.height;
+                        layout.preferredWidth = sprite.rect.width * (layout.preferredHeight / sprite.rect.height);
+                    }
                 }
 
                 mapping.image.gameObject.SetActive(showImage);

@@ -104,8 +104,20 @@ namespace BoostBlasters.UI
 
         private void OnDisable()
         {
-            m_canvas.enabled = false;
+            // clear the selection if it should be forgotten
+            if (!m_remeberLastSelection)
+            {
+                if (PrimaryEvents != null)
+                {
+                    PrimaryEvents.SetSelectedGameObject(null);
+                }
+                if (SecondaryEvents != null)
+                {
+                    SecondaryEvents.SetSelectedGameObject(null);
+                }
+            }
 
+            // disable the input for this screen while it is closed
             if (m_primaryInputModule != null)
             {
                 m_primaryInputModule.gameObject.SetActive(false);
@@ -114,6 +126,8 @@ namespace BoostBlasters.UI
             {
                 m_secondaryInputModule.gameObject.SetActive(false);
             }
+
+            m_canvas.enabled = false;
 
             OnDisableMenu();
         }
@@ -130,24 +144,6 @@ namespace BoostBlasters.UI
         public void ResetMenu(bool fullReset)
         {
             OnResetMenu(fullReset);
-
-            if (enabled)
-            {
-                // clear the selection if desired
-                if (!m_remeberLastSelection)
-                {
-                    if (PrimaryEvents != null)
-                    {
-                        PrimaryEvents.SetSelectedGameObject(PrimaryEvents.firstSelectedGameObject);
-                    }
-                    if (SecondaryEvents)
-                    {
-                        SecondaryEvents.SetSelectedGameObject(SecondaryEvents.firstSelectedGameObject);
-                    }
-                }
-
-                HandleSelection();
-            }
         }
 
         /// <summary>
@@ -157,8 +153,8 @@ namespace BoostBlasters.UI
         {
             if (enabled)
             {
-                HandleSelection();
                 OnUpdate();
+                HandleSelection();
             }
         }
 
@@ -182,29 +178,14 @@ namespace BoostBlasters.UI
 
         protected virtual void HandleSelection()
         {
-            //if (!SecondaryEvents.alreadySelecting)
-            //{
-            //    SecondaryEvents.SetSelectedGameObject(SecondaryEvents.firstSelectedGameObject);
-            //}
-
-            //GameObject selected = EventSystem.current.currentSelectedGameObject;
-
-            //if (selected == null || !selected.activeInHierarchy)
-            //{
-            //    if (m_remeberLastSelection && m_lastSelected != null && m_lastSelected.isActiveAndEnabled)
-            //    {
-            //        m_lastSelected.Select();
-            //        m_lastSelected = null;
-            //    }
-            //    else if (DefaultSelectionOverride != null && DefaultSelectionOverride.isActiveAndEnabled)
-            //    {
-            //        DefaultSelectionOverride.Select();
-            //    }
-            //    else if (m_defaultSelection != null && m_defaultSelection.isActiveAndEnabled)
-            //    {
-            //        m_defaultSelection.Select();
-            //    }
-            //}
+            if (PrimaryEvents != null && PrimaryEvents.currentSelectedGameObject == null)
+            {
+                PrimaryEvents.SetSelectedGameObject(PrimaryEvents.firstSelectedGameObject);
+            }
+            if (SecondaryEvents != null && SecondaryEvents.currentSelectedGameObject == null)
+            {
+                SecondaryEvents.SetSelectedGameObject(SecondaryEvents.firstSelectedGameObject);
+            }
         }
 
         protected virtual void OnEnableMenu() { }
