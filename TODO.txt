@@ -4,7 +4,6 @@ Short Term
 - Text Mesh Pro
 - New Input sytstem (remove old system)
 - Fix back when there is no selectable with a cancelhandler
-- Combine control help into sprite sheets
 - Blink arrows in direction moved on spinner/slider
 - Default settings should be per category
 - Add dropdown widget

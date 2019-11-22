@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 using UnityEngine;
 using UnityEngine.UI;
@@ -250,7 +252,7 @@ namespace BoostBlasters.UI
                         LayoutElement layout = mapping.image.GetComponent<LayoutElement>();
 
                         layout.preferredHeight = GetComponent<RectTransform>().rect.height;
-                        layout.preferredWidth = sprite.rect.width * (layout.preferredHeight / sprite.rect.height);
+                        layout.preferredWidth = layout.preferredHeight * (sprite.rect.width / sprite.rect.height);
                     }
                 }
 
@@ -270,34 +272,38 @@ namespace BoostBlasters.UI
             // device first (ie XInputControllerWindows), then fall back to the
             // general device class (ie Gamepad).
 
-            // remove the leading slash
+            // there is a leading slash we should remove
             string path = control.path.Substring(1);
 
-            Sprite sprite = Resources.Load<Sprite>(path);
+            // we have one sprite sheet per device class
+            string sheet = path.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
+
+            // the item will be the path without the device and the slashes replaced as dashes
+            string item = path.Substring(path.IndexOf('/') + 1).Replace('/', '-');
+
+            Sprite sprite = GetSprite(sheet, item);
 
             if (sprite == null)
             {
+                // try the loading the sprite using the appropriate class of device
+                sheet = control.device.description.deviceClass;
+
                 // The device class seems to be null for at least some gamepads.
                 // We should try to find out what device class is suitable ourselves
                 // in these cases.
-                string deviceClass = control.device.description.deviceClass;
-
-                if (string.IsNullOrEmpty(deviceClass))
+                if (string.IsNullOrEmpty(sheet))
                 {
                     foreach (Gamepad gamepad in Gamepad.all)
                     {
                         if (gamepad.deviceId == control.device.deviceId)
                         {
-                            deviceClass = "gamepad";
+                            sheet = "Gamepad";
                             break;
                         }
                     }
                 }
 
-                // remove the device name
-                string controlPath = path.Substring(path.IndexOf('/'));
-                string backupPath = $"{deviceClass}{controlPath}";
-                sprite = Resources.Load<Sprite>(backupPath);
+                sprite = GetSprite(sheet, item);
             }
 
             if (sprite == null)
@@ -306,6 +312,26 @@ namespace BoostBlasters.UI
             }
 
             return sprite;
+        }
+
+        private static Sprite GetSprite(string spriteSheet, string itemName)
+        {
+            Sprite[] sprites = Resources.LoadAll<Sprite>(spriteSheet);
+
+            if (sprites != null && sprites.Length > 0)
+            {
+                foreach (Sprite sprite in sprites)
+                {
+                    if (sprite.name == itemName)
+                    {
+                        return sprite;
+                    }
+                }
+
+                Debug.LogError($"Unable to find control sprite \"{itemName}\" in sheet \"{spriteSheet}\"");
+            }
+
+            return null;
         }
     }
 }
