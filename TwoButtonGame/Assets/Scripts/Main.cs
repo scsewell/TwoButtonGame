@@ -68,7 +68,7 @@ namespace BoostBlasters
 
         private void FixedUpdate()
         {
-            InterpolationController.Instance.EarlyFixedUpdate();
+            InterpolationController.EarlyFixedUpdate();
 
             if (RaceManager != null)
             {
@@ -84,7 +84,7 @@ namespace BoostBlasters
             Cursor.visible = freeCursor;
 
             // main update loop
-            InterpolationController.Instance.VisualUpdate();
+            InterpolationController.VisualUpdate();
 
             if (RaceManager != null)
             {

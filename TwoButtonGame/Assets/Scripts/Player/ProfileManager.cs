@@ -35,6 +35,14 @@ namespace BoostBlasters.Players
         public static IReadOnlyList<Profile> Profiles => m_profiles;
 
 
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void Init()
+        {
+            m_tempProfiles.Clear();
+            m_uniqueTempProfiles.Clear();
+            m_profiles.Clear();
+        }
+
         /// <summary>
         /// Loads all the available player profiles.
         /// </summary>

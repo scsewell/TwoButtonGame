@@ -2,7 +2,7 @@
 
 Short Term
 - Text Mesh Pro
-- New Input sytstem (remove old system)
+- New Input sytstem (remove old Input system and framework controls)
 - Add dropdown widget
 - Blink arrows in direction moved on spinner/slider
 - Fix back when there is no selectable with a cancelhandler

@@ -136,6 +136,6 @@ public class PlayerKeyboardInput : PlayerBaseInput
 
     private Sprite LoadSprite(string str)
     {
-        return Resources.Load<Sprite>("Keyboard_" + str);
+        return null;// Resources.Load<Sprite>("Keyboard_" + str);
     }
 }

@@ -102,6 +102,6 @@ public class PlayerJoystickInput : PlayerBaseInput
     
     private Sprite LoadSprite(string name)
     {
-        return Resources.Load<Sprite>("Controller_" + name);
+        return null;// Resources.Load<Sprite>("Controller_" + name);
     }
 }

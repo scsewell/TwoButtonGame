@@ -14,7 +14,7 @@ namespace BoostBlasters.Replays
     /// <summary>
     /// Manages the loading and saving of race recordings.
     /// </summary>
-    public class RecordingManager : Singleton<RecordingManager>
+    public class RecordingManager : ComponentSingleton<RecordingManager>
     {
         /// <summary>
         /// The name of the folder to store replays under.

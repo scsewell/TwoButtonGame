@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using Framework;
 
-public class InputManager : Singleton<InputManager>
+public class InputManager : ComponentSingleton<InputManager>
 {
     private PlayerBaseInput[] m_playerInputs =
     {
