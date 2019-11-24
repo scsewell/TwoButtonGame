@@ -10,7 +10,7 @@ namespace BoostBlasters.UI.MainMenus
     /// </summary>
     public class SettingPanel : MonoBehaviour
     {
-        private ValueSelector m_selector = null;
+        private IValueSelector m_selector = null;
 
         /// <summary>
         /// The setting controlled by this panel.
@@ -20,7 +20,7 @@ namespace BoostBlasters.UI.MainMenus
 
         private void Awake()
         {
-            m_selector = GetComponent<ValueSelector>();
+            m_selector = GetComponent<IValueSelector>();
             m_selector.ValueChanged += Apply;
         }
 

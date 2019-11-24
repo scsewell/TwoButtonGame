@@ -192,7 +192,7 @@ namespace BoostBlasters.UI
                 }
 
                 // if this sprite is distinct create an image to display it
-                GameObject go = UIHelper.Create(transform).gameObject;
+                GameObject go = UIHelper.Create(transform, control.displayName).gameObject;
                 go.AddComponent<CanvasRenderer>();
 
                 Image image = go.AddComponent<Image>();

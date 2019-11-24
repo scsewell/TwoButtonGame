@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 using UnityEngine;
 
@@ -7,16 +8,16 @@ using TMPro;
 namespace BoostBlasters.UI
 {
     /// <summary>
-    /// A UI widget which allows selecting a value from a limited set of values.
+    /// A UI widget which allows selecting from a list of values.
     /// </summary>
-    public class ValueSelector : MonoBehaviour
+    public class Dropdown : MonoBehaviour, IValueSelector
     {
         [Header("UI Elements")]
 
         [SerializeField] private TextMeshProUGUI m_label = null;
-        [SerializeField] private TextMeshProUGUI m_valueText = null;
 
-        private SoundPlayer m_sound = null;
+        private TMP_Dropdown m_dropdown = null;
+        private string[] m_options = null;
 
         /// <summary>
         /// The label text.
@@ -30,14 +31,33 @@ namespace BoostBlasters.UI
         /// <summary>
         /// All the displayable values.
         /// </summary>
-        public string[] Options { get; set; } = null;
+        public string[] Options
+        {
+            get => m_options;
+            set
+            {
+                if (m_options != value)
+                {
+                    m_options = value;
+
+                    if (m_options == null || m_options.Length == 0)
+                    {
+                        m_dropdown.ClearOptions();
+                    }
+                    else
+                    {
+                        m_dropdown.options = m_options.Select(o => new TMP_Dropdown.OptionData(o)).ToList();
+                    }
+                }
+            }
+        }
 
         /// <summary>
         /// The label text.
         /// </summary>
         public string Value
         {
-            get => m_valueText.text;
+            get => m_options[m_dropdown.value];
             set
             {
                 // get the index of the value in the options array
@@ -54,55 +74,34 @@ namespace BoostBlasters.UI
                 // if the value is valid set the selection
                 if (index >= 0)
                 {
-                    SetValue(index);
+                    m_dropdown.value = index;
                 }
                 else
                 {
-                    Debug.LogError($"Spinner \"{name}\" does not have value \"{value}\" as an option!");
+                    Debug.LogError($"Dropdown \"{name}\" does not have value \"{value}\" as an option!");
                 }
             }
         }
 
         /// <summary>
-        /// The index of the currently selected value in the options array.
-        /// </summary>
-        protected int CurrentIndex { get; private set; } = -1;
-
-        /// <summary>
-        /// An event triggered when the user changes the value and passes the new value.
+        /// An event triggered when the user changes the value.
         /// </summary>
         public event Action<string> ValueChanged;
 
 
         private void Awake()
         {
-            m_sound = GetComponentInParent<SoundPlayer>();
+            m_dropdown = GetComponent<TMP_Dropdown>();
+
+            m_dropdown.onValueChanged.AddListener(SelectIndex);
         }
 
-        /// <summary>
-        /// Selects the option at the provided index.
-        /// </summary>
-        /// <param name="newIndex">The new value index.</param>
-        protected void SelectIndex(int newIndex)
+        private void SelectIndex(int newIndex)
         {
-            if (CurrentIndex != newIndex)
+            if (m_dropdown.value != newIndex)
             {
-                SetValue(newIndex);
                 ValueChanged?.Invoke(Value);
-                m_sound.PlaySelectSound();
             }
-        }
-
-        private void SetValue(int index)
-        {
-            CurrentIndex = index;
-            m_valueText.text = Options[CurrentIndex];
-
-            OnValueChanged();
-        }
-
-        protected virtual void OnValueChanged()
-        {
         }
     }
 }

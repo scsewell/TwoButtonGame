@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 047005d0342ca0a4790b6f3e0a030c6d, type: 3}
+  m_Name: AudioDefaults
+  m_EditorClassIdentifier: 
+  m_presets:
+    array:
+    - m_setting: {fileID: 11400000, guid: 01486ae7b6e93a746ba5ee066a67209f, type: 2}
+      m_value: 100
+    - m_setting: {fileID: 11400000, guid: d4aaa5f9015614c44a87e3b4bc118e88, type: 2}
+      m_value: 60

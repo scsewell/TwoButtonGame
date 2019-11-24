@@ -1,10 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 using UnityEngine;
 using UnityEngine.UI;
 
 using TMPro;
 
+using Framework;
 using Framework.UI;
 using Framework.Settings;
 
@@ -15,13 +17,13 @@ namespace BoostBlasters.UI.MainMenus
         [Header("Prefabs")]
 
         [SerializeField] private Tab m_tabPrefab = null;
+        [SerializeField] private Dropdown m_dropdownPrefab = null;
         [SerializeField] private Spinner m_spinnerPrefab = null;
         [SerializeField] private Slider m_sliderPrefab = null;
         [SerializeField] private Button m_buttonPrefab = null;
 
         [Header("UI Elements")]
 
-        //[SerializeField] private Button m_settingsUseDefaultsButton = null;
         [SerializeField] private TMP_Text m_categoryTitle = null;
         [SerializeField] private TMP_Text m_description = null;
         [SerializeField] private RectTransform m_categoryTabs = null;
@@ -30,7 +32,25 @@ namespace BoostBlasters.UI.MainMenus
         [Header("Settings")]
 
         [SerializeField]
-        private SettingPresetGroup m_defaultSettings = null;
+        [Reorderable]
+        private CategoryArray m_defaultSettings = null;
+
+        [Serializable]
+        private struct CategoryDefaults
+        {
+            [SerializeField]
+            private SettingCategory _category;
+            public SettingCategory Category => _category;
+
+            [SerializeField]
+            private SettingPresetGroup _preset;
+            public SettingPresetGroup Preset => _preset;
+        }
+
+        [Serializable]
+        private class CategoryArray : ReorderableArray<CategoryDefaults>
+        {
+        }
 
         private readonly Dictionary<SettingCategory, List<SettingPanel>> m_categoryToSettings = new Dictionary<SettingCategory, List<SettingPanel>>();
         private SettingCategory m_currentCategory = null;
@@ -65,6 +85,9 @@ namespace BoostBlasters.UI.MainMenus
 
                     switch (setting.DisplayMode)
                     {
+                        case SettingDisplayMode.Dropdown:
+                            go = UIHelper.Create(m_dropdownPrefab, settingCategory).gameObject;
+                            break;
                         case SettingDisplayMode.Slider:
                             go = UIHelper.Create(m_sliderPrefab, settingCategory).gameObject;
                             break;
@@ -83,7 +106,10 @@ namespace BoostBlasters.UI.MainMenus
 
                 Button defaultsButton = UIHelper.Create(m_buttonPrefab, settingCategory);
                 defaultsButton.GetComponentInChildren<TMP_Text>().text = "Defaults";
-                defaultsButton.onClick.AddListener(() => UseDefaultSettings());
+                defaultsButton.onClick.AddListener(() =>
+                {
+                    ApplyDefaults(category);
+                });
 
                 UIHelper.SetNavigationVertical(new NavConfig()
                 {
@@ -190,9 +216,31 @@ namespace BoostBlasters.UI.MainMenus
             }
         }
 
-        private void UseDefaultSettings()
+        private void ApplyDefaults(SettingCategory category)
         {
-            //m_defaultSettings.Apply();
+            if (category == null)
+            {
+                return;
+            }
+
+            foreach (var categoryDefaults in m_defaultSettings)
+            {
+                if (categoryDefaults.Category == category)
+                {
+                    // appy the defaults settings
+                    categoryDefaults.Preset.Apply();
+
+                    // refresh the displayed values
+                    List<SettingPanel> settings = m_categoryToSettings[category];
+
+                    foreach (var setting in settings)
+                    {
+                        setting.LoadValue();
+                    }
+
+                    return;
+                }   
+            }
         }
     }
 }

@@ -12,7 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a524bd016ecbe644d87d885661f97870, type: 3}
   m_Name: character
   m_EditorClassIdentifier: 
-  m_id: 7047
+  m_guid:
+    m_part0: 5001456582357476387
+    m_part1: 7864085582030618548
   m_sortOrder: 999
   m_name: Test Character
   m_description: This character is lame...

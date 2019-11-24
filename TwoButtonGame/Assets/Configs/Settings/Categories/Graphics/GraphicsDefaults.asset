@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 047005d0342ca0a4790b6f3e0a030c6d, type: 3}
+  m_Name: GraphicsDefaults
+  m_EditorClassIdentifier: 
+  m_presets:
+    array:
+    - m_setting: {fileID: 11400000, guid: 6b0575c7e699671458f61dd184b7792f, type: 2}
+      m_value: High
+    - m_setting: {fileID: 11400000, guid: c835278b3c9000d4d839f5c10270d1bb, type: 2}
+      m_value: On
+    - m_setting: {fileID: 11400000, guid: 7e658b8da504f5d469795cd126fb2f01, type: 2}
+      m_value: High
