@@ -3,11 +3,10 @@
 Short Term
 - Text Mesh Pro
 - New Input sytstem (remove old system)
-- Fix back when there is no selectable with a cancelhandler
-- Blink arrows in direction moved on spinner/slider
 - Default settings should be per category
 - Add dropdown widget
-- Remove back buttons from menus, instead just use control hint at top of screen
+- Blink arrows in direction moved on spinner/slider
+- Fix back when there is no selectable with a cancelhandler
 - Add start menu (press any button to continue, allows useful control prompts to be shown after input detected)
 - Make shnazzy outline for character select, with integrated name plate at botton, profile plate at top
 	Arrows would be added to the character plate instead

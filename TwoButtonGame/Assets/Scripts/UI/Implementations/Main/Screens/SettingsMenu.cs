@@ -17,6 +17,7 @@ namespace BoostBlasters.UI.MainMenus
         [SerializeField] private Tab m_tabPrefab = null;
         [SerializeField] private Spinner m_spinnerPrefab = null;
         [SerializeField] private Slider m_sliderPrefab = null;
+        [SerializeField] private Button m_buttonPrefab = null;
 
         [Header("UI Elements")]
 
@@ -37,8 +38,6 @@ namespace BoostBlasters.UI.MainMenus
 
         public override void InitMenu()
         {
-            //m_settingsUseDefaultsButton.onClick.AddListener(() => UseDefaultSettings());
-
             foreach (var category in SettingManager.Instance.Catergories)
             {
                 // create a tab for the category
@@ -78,6 +77,13 @@ namespace BoostBlasters.UI.MainMenus
                     SettingPanel panel = go.AddComponent<SettingPanel>().Init(setting);
                     settings.Add(panel);
                 }
+
+                // add a button to restore defaults for this category
+                UIHelper.AddSpacer(settingCategory, 10f);
+
+                Button defaultsButton = UIHelper.Create(m_buttonPrefab, settingCategory);
+                defaultsButton.GetComponentInChildren<TMP_Text>().text = "Defaults";
+                defaultsButton.onClick.AddListener(() => UseDefaultSettings());
 
                 UIHelper.SetNavigationVertical(new NavConfig()
                 {
@@ -132,6 +138,10 @@ namespace BoostBlasters.UI.MainMenus
                 if (setting != null)
                 {
                     m_description.text = setting.Setting.Description;
+                }
+                else if (selected.GetComponent<Button>() != null)
+                {
+                    m_description.text = "Restore the default settings.";
                 }
                 else
                 {
