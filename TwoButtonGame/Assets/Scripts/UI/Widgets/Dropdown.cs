@@ -98,10 +98,7 @@ namespace BoostBlasters.UI
 
         private void SelectIndex(int newIndex)
         {
-            if (m_dropdown.value != newIndex)
-            {
-                ValueChanged?.Invoke(Value);
-            }
+            ValueChanged?.Invoke(Value);
         }
     }
 }

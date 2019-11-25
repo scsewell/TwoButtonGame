@@ -86,14 +86,14 @@ namespace BoostBlasters.UI.MainMenus
                     switch (setting.DisplayMode)
                     {
                         case SettingDisplayMode.Dropdown:
-                            go = UIHelper.Create(m_dropdownPrefab, settingCategory).gameObject;
+                            go = UIHelper.Create(m_dropdownPrefab, settingCategory, setting.name).gameObject;
                             break;
                         case SettingDisplayMode.Slider:
-                            go = UIHelper.Create(m_sliderPrefab, settingCategory).gameObject;
+                            go = UIHelper.Create(m_sliderPrefab, settingCategory, setting.name).gameObject;
                             break;
                         case SettingDisplayMode.Spinner:
                         default:
-                            go = UIHelper.Create(m_spinnerPrefab, settingCategory).gameObject;
+                            go = UIHelper.Create(m_spinnerPrefab, settingCategory, setting.name).gameObject;
                             break;
                     }
 
@@ -187,6 +187,8 @@ namespace BoostBlasters.UI.MainMenus
             // hide the old category
             if (m_currentCategory != null)
             {
+                PrimaryEvents.SetSelectedGameObject(null);
+
                 List<SettingPanel> settings = m_categoryToSettings[m_currentCategory];
                 settings[0].transform.parent.gameObject.SetActive(false);
             }
