@@ -31,12 +31,6 @@ namespace BoostBlasters.UI.MainMenus
             m_settingsButton.onClick.AddListener(       () => Menu.SetMenu(Menu.Settings));
             m_creditsButton.onClick.AddListener(        () => Menu.SetMenu(Menu.Credits));
             m_quitButton.onClick.AddListener(           () => Application.Quit());
-
-            UIHelper.SetNavigationVertical(new NavConfig()
-            {
-                parent = m_playButton.transform.parent,
-                wrap = true,
-            });
         }
     }
 }
