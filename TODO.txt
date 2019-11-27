@@ -3,9 +3,6 @@
 Short Term
 - Text Mesh Pro
 - New Input sytstem (remove old Input system and framework controls)
-- Add dropdown widget
-- Blink arrows in direction moved on spinner/slider
-- Fix back when there is no selectable with a cancelhandler
 - Add start menu (press any button to continue, allows useful control prompts to be shown after input detected)
 - Make shnazzy outline for character select, with integrated name plate at botton, profile plate at top
 	Arrows would be added to the character plate instead
@@ -46,6 +43,7 @@ General
 - look around (right josystick, don't know about keyboard though...)
 - better guide to next waypoint (make waypoint color glow more obvious, improve direction arrow (racing line?), look at next gate button)
 - end of race stats menu (laps speeds, time in lead, etc)
+- Add goals for players to achieve per level
 
 Replays
 - View replays up to current time in race when paused
