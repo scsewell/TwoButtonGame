@@ -2,6 +2,7 @@
 
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 using TMPro;
 
@@ -17,6 +18,7 @@ namespace BoostBlasters.UI
         [SerializeField] private TextMeshProUGUI m_label = null;
         [SerializeField] private TextMeshProUGUI m_valueText = null;
 
+        private Selectable m_selectable = null;
         private SoundPlayer m_sound = null;
 
         /// <summary>
@@ -77,6 +79,7 @@ namespace BoostBlasters.UI
 
         private void Awake()
         {
+            m_selectable = GetComponent<Selectable>();
             m_sound = GetComponentInParent<SoundPlayer>();
         }
 
@@ -108,6 +111,11 @@ namespace BoostBlasters.UI
 
         public void OnMove(AxisEventData eventData)
         {
+            if (!m_selectable.IsInteractable())
+            {
+                return;
+            }
+
             switch (eventData.moveDir)
             {
                 case MoveDirection.Left: SelectIndex(GetRelativeIndex(eventData, -1)); break;

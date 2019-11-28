@@ -3,10 +3,9 @@
 Short Term
 - Text Mesh Pro
 - New Input sytstem (remove old Input system and framework controls)
-- Add start menu (press any button to continue, allows useful control prompts to be shown after input detected)
+- Custom logo intro (add setting / command line option to skip in settings)
 - Make shnazzy outline for character select, with integrated name plate at botton, profile plate at top
 	Arrows would be added to the character plate instead
-- Custom logo intro (add setting / command line option to skip in settings)
 
 - Use player color in 
 - check for spaghetti (check singleton usage)

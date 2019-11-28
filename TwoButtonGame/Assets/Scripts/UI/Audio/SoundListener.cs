@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 using Framework;
 
@@ -15,6 +16,7 @@ namespace BoostBlasters.UI
         ICancelHandler,
         IDragHandler
     {
+        private Selectable m_selectable = null;
         private SoundPlayer m_player = null;
         private CancelHandler m_cancelHandler = null;
 
@@ -32,43 +34,62 @@ namespace BoostBlasters.UI
 
         private void Awake()
         {
+            m_selectable = GetComponent<Selectable>();
             m_cancelHandler = GetComponent<CancelHandler>();
         }
 
         public void OnPointerEnter(PointerEventData e)
         {
-            Player.PlaySelectSound();
+            if (m_selectable.IsInteractable())
+            {
+                Player.PlaySelectSound();
+            }
         }
 
         public void OnPointerExit(PointerEventData e)
         {
-            Player.PlayDeselectSound();
+            if (m_selectable.IsInteractable())
+            {
+                Player.PlayDeselectSound();
+            }
         }
 
         public void OnSelect(BaseEventData e)
         {
-            Player.PlaySelectSound();
+            if (m_selectable.IsInteractable())
+            {
+                Player.PlaySelectSound();
+            }
         }
 
         public void OnDeselect(BaseEventData e)
         {
-            Player.PlayDeselectSound();
+            if (m_selectable.IsInteractable())
+            {
+                Player.PlayDeselectSound();
+            }
         }
 
         public void OnPointerClick(PointerEventData e)
         {
-            Player.PlaySubmitSound();
+            if (m_selectable.IsInteractable())
+            {
+                Player.PlaySubmitSound();
+            }
         }
 
         public void OnSubmit(BaseEventData e)
         {
-            Player.PlaySubmitSound();
+            if (m_selectable.IsInteractable())
+            {
+                Player.PlaySubmitSound();
+            }
         }
 
         public void OnCancel(BaseEventData eventData)
         {
             // if there is custom cancel behaviour, we should not play a sound
-            if (m_cancelHandler == null)
+            if (m_selectable.IsInteractable() && m_cancelHandler == null)
             {
                 Player.PlayCancelSound();
             }
