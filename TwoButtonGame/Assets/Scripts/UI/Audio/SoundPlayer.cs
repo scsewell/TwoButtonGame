@@ -5,10 +5,19 @@ using UnityEngine;
 namespace BoostBlasters.UI
 {
     /// <summary>
-    /// Plays audio used by the menu system.
+    /// Plays audio used by the menu system. This is used to limit the number of sounds 
+    /// playing in the menu during navigation by only playing higher priority sounds
+    /// if many sounds are played within a few frames.
     /// </summary>
     public class SoundPlayer : MonoBehaviour
     {
+        /// <summary>
+        /// How many frames the sounds are delayed to ensure that 
+        /// low priority sounds are not played near a higher priority sound.
+        /// </summary>
+        private const int FRAME_BUFFER_COUNT = 1;
+
+
         [SerializeField]
         private MenuSoundConfig m_config = null;
 
@@ -17,16 +26,20 @@ namespace BoostBlasters.UI
             public readonly AudioClip clip;
             public readonly float volume;
             public readonly int priority;
+            public int frameCount;
 
             public SoundClip(MenuSoundConfig.ClipConfig config, float volume, int priority)
             {
                 this.clip = config.Clip;
                 this.volume = config.Volume * volume;
                 this.priority = priority;
+                
+                frameCount = 0;
             }
         }
 
-        private List<SoundClip> m_audioBuffer = new List<SoundClip>();
+        private readonly List<SoundClip> m_audioBuffer = new List<SoundClip>();
+
 
         /// <summary>
         /// Plays the highest prioriity sounds submitted since the last flush.
@@ -38,18 +51,32 @@ namespace BoostBlasters.UI
                 // sort by decending proprity
                 m_audioBuffer.Sort((x, y) => -x.priority.CompareTo(y.priority));
 
-                int prority = m_audioBuffer[0].priority;
-                foreach (SoundClip clip in m_audioBuffer)
+                // Remove all clips with lower priority than the highest proprity sound
+                // and play sounds if they are the highest priority sounds in the last 
+                // few frames.
+                int highestPrority = m_audioBuffer[0].priority;
+
+                for (int i = 0; i < m_audioBuffer.Count;)
                 {
-                    if (clip.priority < prority)
+                    SoundClip clip = m_audioBuffer[i];
+
+                    if (clip.priority < highestPrority)
                     {
+                        m_audioBuffer.RemoveRange(i, m_audioBuffer.Count - i);
                         break;
                     }
-
-                    AudioManager.Instance.PlaySound(clip.clip, clip.volume, true);
+                    else if (clip.frameCount == FRAME_BUFFER_COUNT)
+                    {
+                        AudioManager.Instance.PlaySound(clip.clip, clip.volume, true);
+                        m_audioBuffer.RemoveAt(i);
+                    }
+                    else
+                    {
+                        clip.frameCount++;
+                        m_audioBuffer[i] = clip;
+                        i++;
+                    }
                 }
-
-                m_audioBuffer.Clear();
             }
         }
 
@@ -90,7 +117,7 @@ namespace BoostBlasters.UI
 
         private void PlaySound(MenuSoundConfig.ClipConfig config, float volume, int priority)
         {
-            if (config != null)
+            if (config != null && config.Clip != null)
             {
                 m_audioBuffer.Add(new SoundClip(config, volume, priority));
             }
