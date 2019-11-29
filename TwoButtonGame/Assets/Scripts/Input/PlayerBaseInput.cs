@@ -86,17 +86,17 @@ public abstract class PlayerBaseInput
 
     protected bool GetKey(KeyCode key)
     {
-        return CanPress(key) && Input.GetKey(key);
+        return CanPress(key);
     }
 
     protected bool GetKeyDown(KeyCode key)
     {
-        return CanPress(key) && Input.GetKeyDown(key);
+        return CanPress(key);
     }
 
     protected bool GetKeyUp(KeyCode key)
     {
-        return CanPress(key) && Input.GetKeyUp(key);
+        return CanPress(key);
     }
 
     private bool CanPress(KeyCode key)

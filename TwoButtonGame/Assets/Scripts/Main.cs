@@ -2,10 +2,12 @@
 using System.Threading.Tasks;
 
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.Scripting;
+using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 using Framework;
+using Framework.IO;
 using Framework.Interpolation;
 
 using BoostBlasters.Players;
@@ -27,7 +29,10 @@ namespace BoostBlasters
         private static readonly ulong GC_SLICE_DURATION = 2 * 1000 * 1000;
 
 
-        private RaceManager m_raceManagerPrefab;
+        [SerializeField]
+        private InputActionAsset m_inputActions = null;
+
+        private RaceManager m_raceManagerPrefab = null;
 
         public RaceManager RaceManager { get; private set; }
         public RaceParameters LastRaceParams { get; private set; }
@@ -43,6 +48,16 @@ namespace BoostBlasters
 
         private async void Start()
         {
+            // prepare input system
+            var miscActions = m_inputActions.FindActionMap("Misc", true);
+
+            var screenshotAction = miscActions.FindAction("Screenshot", true);
+            screenshotAction.performed += TakeScreenshot;
+            screenshotAction.Enable();
+
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = false;
+
             // configure how much time the gc can use
             GarbageCollector.incrementalTimeSliceNanoseconds = GC_SLICE_DURATION;
 
@@ -78,23 +93,11 @@ namespace BoostBlasters
 
         private void Update()
         {
-            // lock the cursor if required
-            bool freeCursor = Input.GetKey(KeyCode.LeftControl);
-            Cursor.lockState = true ? CursorLockMode.None : CursorLockMode.Locked;
-            Cursor.visible = freeCursor;
-
-            // main update loop
             InterpolationController.VisualUpdate();
 
             if (RaceManager != null)
             {
                 RaceManager.UpdateRace();
-            }
-
-            // save a screenshot if requested
-            if (Input.GetKeyDown(KeyCode.F11))
-            {
-                ScreenCapture.CaptureScreenshot($"screenshot_{DateTime.Now.ToString("MM-dd-yy_H-mm-ss")}.png");
             }
         }
 
@@ -185,6 +188,13 @@ namespace BoostBlasters
             AudioListener.pause = false;
 
             Time.timeScale = 1f;
+        }
+
+        private static void TakeScreenshot(InputAction.CallbackContext ctx)
+        {
+            string name = $"screenshot_{DateTime.Now.ToString("MM-dd-yy_H-mm-ss")}.png";
+            ScreenCapture.CaptureScreenshot(name);
+            Debug.Log($"Saved screenshot \"{name}\"");
         }
     }
 }

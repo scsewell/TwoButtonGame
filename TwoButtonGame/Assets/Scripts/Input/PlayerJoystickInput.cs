@@ -21,11 +21,11 @@ public class PlayerJoystickInput : PlayerBaseInput
 
     public override float H
     {
-        get { return Input.GetAxis(m_LX); }
+        get { return 0f; }
     }
     public override float V
     {
-        get { return -Input.GetAxis(m_LY); }
+        get { return 0f; }
     }
     public override bool BoostPress
     {
@@ -40,8 +40,8 @@ public class PlayerJoystickInput : PlayerBaseInput
     private KeyCode m_cancel;
     private KeyCode m_menu;
 
-    public override float UI_H { get { return H + Input.GetAxis(m_DX); } }
-    public override float UI_V { get { return V + Input.GetAxis(m_DY); } }
+    public override float UI_H { get { return H; } }
+    public override float UI_V { get { return V; } }
 
     public override bool UI_Accept
     {

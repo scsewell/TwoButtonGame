@@ -637,6 +637,33 @@ namespace BoostBlasters
                     ""isPartOfComposite"": true
                 }
             ]
+        },
+        {
+            ""name"": ""Misc"",
+            ""id"": ""749ead7c-adf5-42e7-a1a2-f4b1079e9b2c"",
+            ""actions"": [
+                {
+                    ""name"": ""Screenshot"",
+                    ""type"": ""Button"",
+                    ""id"": ""f63f884e-2e9a-48e3-bf94-5788ee48130f"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""055ad49e-aede-4f94-b282-4a3c1e72bb79"",
+                    ""path"": ""<Keyboard>/printScreen"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Screenshot"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": [
@@ -686,6 +713,9 @@ namespace BoostBlasters
             m_UI_SwitchCategory = m_UI.FindAction("Switch Category", throwIfNotFound: true);
             m_UI_Accept = m_UI.FindAction("Accept", throwIfNotFound: true);
             m_UI_Back = m_UI.FindAction("Back", throwIfNotFound: true);
+            // Misc
+            m_Misc = asset.FindActionMap("Misc", throwIfNotFound: true);
+            m_Misc_Screenshot = m_Misc.FindAction("Screenshot", throwIfNotFound: true);
         }
 
         public void Dispose()
@@ -837,6 +867,39 @@ namespace BoostBlasters
             }
         }
         public UIActions @UI => new UIActions(this);
+
+        // Misc
+        private readonly InputActionMap m_Misc;
+        private IMiscActions m_MiscActionsCallbackInterface;
+        private readonly InputAction m_Misc_Screenshot;
+        public struct MiscActions
+        {
+            private @PlayerInputActions m_Wrapper;
+            public MiscActions(@PlayerInputActions wrapper) { m_Wrapper = wrapper; }
+            public InputAction @Screenshot => m_Wrapper.m_Misc_Screenshot;
+            public InputActionMap Get() { return m_Wrapper.m_Misc; }
+            public void Enable() { Get().Enable(); }
+            public void Disable() { Get().Disable(); }
+            public bool enabled => Get().enabled;
+            public static implicit operator InputActionMap(MiscActions set) { return set.Get(); }
+            public void SetCallbacks(IMiscActions instance)
+            {
+                if (m_Wrapper.m_MiscActionsCallbackInterface != null)
+                {
+                    @Screenshot.started -= m_Wrapper.m_MiscActionsCallbackInterface.OnScreenshot;
+                    @Screenshot.performed -= m_Wrapper.m_MiscActionsCallbackInterface.OnScreenshot;
+                    @Screenshot.canceled -= m_Wrapper.m_MiscActionsCallbackInterface.OnScreenshot;
+                }
+                m_Wrapper.m_MiscActionsCallbackInterface = instance;
+                if (instance != null)
+                {
+                    @Screenshot.started += instance.OnScreenshot;
+                    @Screenshot.performed += instance.OnScreenshot;
+                    @Screenshot.canceled += instance.OnScreenshot;
+                }
+            }
+        }
+        public MiscActions @Misc => new MiscActions(this);
         private int m_ControllerSchemeIndex = -1;
         public InputControlScheme ControllerScheme
         {
@@ -876,6 +939,10 @@ namespace BoostBlasters
             void OnSwitchCategory(InputAction.CallbackContext context);
             void OnAccept(InputAction.CallbackContext context);
             void OnBack(InputAction.CallbackContext context);
+        }
+        public interface IMiscActions
+        {
+            void OnScreenshot(InputAction.CallbackContext context);
         }
     }
 }
