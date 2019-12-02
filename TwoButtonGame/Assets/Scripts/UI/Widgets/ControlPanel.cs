@@ -152,7 +152,10 @@ namespace BoostBlasters.UI
             // remove the current action images
             foreach (ImageMapping mapping in m_images)
             {
-                Destroy(mapping.image.gameObject);
+                if (mapping.image != null)
+                {
+                    Destroy(mapping.image.gameObject);
+                }
             }
             m_images.Clear();
 

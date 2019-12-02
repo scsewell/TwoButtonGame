@@ -14,6 +14,8 @@ namespace BoostBlasters.UI.MainMenus
 {
     public class ReplayMenu : MenuScreen<MainMenu>
     {
+        [Header("Prefabs")]
+
         [SerializeField]
         private GameObject m_selectPanelPrefab = null;
 

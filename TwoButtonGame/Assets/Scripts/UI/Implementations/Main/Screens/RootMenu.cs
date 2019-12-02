@@ -48,14 +48,26 @@ namespace BoostBlasters.UI.MainMenus
             if (m_showStartMenu)
             {
                 // check if there is any button pressed
-                bool anyKey = Keyboard.current.anyKey.isPressed;
+                bool anyKey = false;
 
-                foreach (var control in Gamepad.current.allControls)
+                foreach (Keyboard keyboard in Keyboard.all)
                 {
-                    if (control.IsActuated(0.5f))
+                    if (keyboard.anyKey.isPressed)
                     {
                         anyKey = true;
                         break;
+                    }
+                }
+
+                foreach (Gamepad gamepad in Gamepad.all)
+                {
+                    foreach (var control in gamepad.allControls)
+                    {
+                        if (control.IsActuated(0.5f))
+                        {
+                            anyKey = true;
+                            break;
+                        }
                     }
                 }
 
