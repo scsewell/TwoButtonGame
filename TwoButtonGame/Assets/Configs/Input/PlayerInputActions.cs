@@ -10,7 +10,7 @@ namespace BoostBlasters
 {
     public class @PlayerInputActions : IInputActionCollection, IDisposable
     {
-        private InputActionAsset asset;
+        public InputActionAsset asset { get; }
         public @PlayerInputActions()
         {
             asset = InputActionAsset.FromJson(@"{

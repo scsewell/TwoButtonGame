@@ -32,24 +32,19 @@ namespace BoostBlasters.UI.MainMenus
         [Header("Settings")]
 
         [SerializeField]
-        [Reorderable]
-        private CategoryArray m_defaultSettings = null;
+        private List<CategoryDefaults> m_defaultSettings = null;
 
         [Serializable]
         private struct CategoryDefaults
         {
             [SerializeField]
-            private SettingCategory _category;
-            public SettingCategory Category => _category;
+            private SettingCategory m_category;
 
             [SerializeField]
-            private SettingPresetGroup _preset;
-            public SettingPresetGroup Preset => _preset;
-        }
+            private SettingPresetGroup m_preset;
 
-        [Serializable]
-        private class CategoryArray : ReorderableArray<CategoryDefaults>
-        {
+            public SettingCategory Category => m_category;
+            public SettingPresetGroup Preset => m_preset;
         }
 
         private readonly Dictionary<SettingCategory, List<SettingPanel>> m_categoryToSettings = new Dictionary<SettingCategory, List<SettingPanel>>();
@@ -92,9 +87,10 @@ namespace BoostBlasters.UI.MainMenus
                             go = UIHelper.Create(m_sliderPrefab, settingCategory, setting.name).gameObject;
                             break;
                         case SettingDisplayMode.Spinner:
-                        default:
                             go = UIHelper.Create(m_spinnerPrefab, settingCategory, setting.name).gameObject;
                             break;
+                        default:
+                            continue;
                     }
 
                     SettingPanel panel = go.AddComponent<SettingPanel>().Init(setting);

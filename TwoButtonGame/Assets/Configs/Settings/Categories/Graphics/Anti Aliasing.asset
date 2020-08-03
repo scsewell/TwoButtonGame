@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_category: {fileID: 11400000, guid: ee6120dbec47e3e47b890ee586045878, type: 2}
   m_description: Smooths the edges of objects.
-  m_displayMode: 2
+  m_displayMode: 25
   m_defaultValue: High
   m_enumType: BoostBlasters.AntiAliasingQuality, Assembly-CSharp, Version=0.0.0.0,
     Culture=neutral, PublicKeyToken=null

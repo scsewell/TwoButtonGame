@@ -18,6 +18,9 @@ ECS/Unity Physics
 - Any math transformation of inputs must be done in burst compiled code... otherwise determinism will not work
 - Ensure physics update order is deterministic
 
+- Framwork interpolation system for ecs
+- Framwork volume system for ecs
+
 Optimization
 - Add profiling markers at useful locations
 - Racer movement probably can be optimized

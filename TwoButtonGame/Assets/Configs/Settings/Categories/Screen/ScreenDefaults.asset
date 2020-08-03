@@ -13,8 +13,7 @@ MonoBehaviour:
   m_Name: ScreenDefaults
   m_EditorClassIdentifier: 
   m_presets:
-    array:
-    - m_setting: {fileID: 11400000, guid: 1c6a50019e6e2e54d8292c60aafb899a, type: 2}
-      m_value: Fullscreen Window
-    - m_setting: {fileID: 11400000, guid: 60415f2531615e54c93b857660e1ba4a, type: 2}
-      m_value: On
+  - m_setting: {fileID: 11400000, guid: 1c6a50019e6e2e54d8292c60aafb899a, type: 2}
+    m_value: Exclusive Fullscreen
+  - m_setting: {fileID: 11400000, guid: 60415f2531615e54c93b857660e1ba4a, type: 2}
+    m_value: On

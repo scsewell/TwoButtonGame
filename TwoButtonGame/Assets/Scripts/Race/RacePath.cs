@@ -1,7 +1,7 @@
-﻿using UnityEngine;
-
-using BoostBlasters.Levels;
+﻿using BoostBlasters.Levels;
 using BoostBlasters.Races.Racers;
+
+using UnityEngine;
 
 namespace BoostBlasters.Races
 {
@@ -15,29 +15,25 @@ namespace BoostBlasters.Races
         private Transform[] m_spawns = null;
         public Transform[] Spawns => m_spawns;
 
-        private int m_laps;
-        public int Laps => m_laps;
+        public int Laps { get; private set; }
 
         private BoostGate[] m_energyGates = null;
 
-        private void Awake()
-        {
-            m_energyGates = GetComponentsInChildren<BoostGate>();
-        }
+        private void Awake() => m_energyGates = GetComponentsInChildren<BoostGate>();
 
         public RacePath Init(int laps)
         {
-            m_laps = laps;
+            Laps = laps;
             return this;
         }
 
         public void ResetPath()
         {
-            foreach (Waypoint waypoint in m_path)
+            foreach (var waypoint in m_path)
             {
                 waypoint.ResetGate();
             }
-            foreach (BoostGate energyGate in m_energyGates)
+            foreach (var energyGate in m_energyGates)
             {
                 energyGate.ResetGate();
             }
@@ -47,7 +43,7 @@ namespace BoostBlasters.Races
         {
             if (m_path.Length > 0)
             {
-                return waypointIndex >= (m_path.Length * m_laps);
+                return waypointIndex >= (m_path.Length * Laps);
             }
             return false;
         }
@@ -56,7 +52,7 @@ namespace BoostBlasters.Races
         {
             if (m_path.Length > 0)
             {
-                return Mathf.Clamp((waypointIndex / m_path.Length) + 1, 1, m_laps);
+                return Mathf.Clamp((waypointIndex / m_path.Length) + 1, 1, Laps);
             }
             return 0;
         }
@@ -72,7 +68,7 @@ namespace BoostBlasters.Races
 
         public void FixedUpdatePath()
         {
-            foreach (Waypoint waypoint in m_path)
+            foreach (var waypoint in m_path)
             {
                 waypoint.FixedUpdateWaypoint();
             }
@@ -80,11 +76,11 @@ namespace BoostBlasters.Races
 
         public void UpdatePath()
         {
-            foreach (Waypoint waypoint in m_path)
+            foreach (var waypoint in m_path)
             {
                 waypoint.UpdateWaypoint();
             }
-            foreach (BoostGate energyGate in m_energyGates)
+            foreach (var energyGate in m_energyGates)
             {
                 energyGate.UpdateGate();
             }
@@ -92,7 +88,7 @@ namespace BoostBlasters.Races
 
         public void ResetEnergyGates(Racer player)
         {
-            foreach (BoostGate energyGate in m_energyGates)
+            foreach (var energyGate in m_energyGates)
             {
                 energyGate.ResetGate(player);
             }
@@ -100,9 +96,9 @@ namespace BoostBlasters.Races
 
         private void OnDrawGizmos()
         {
-            for (int i = 0; i < m_spawns.Length; i++)
+            for (var i = 0; i < m_spawns.Length; i++)
             {
-                Transform spawn = m_spawns[i];
+                var spawn = m_spawns[i];
 
                 if (spawn == null)
                 {
@@ -117,7 +113,7 @@ namespace BoostBlasters.Races
 
                 if (m_path.Length > 0)
                 {
-                    Waypoint first = m_path[0];
+                    var first = m_path[0];
                     if (first != null)
                     {
                         Gizmos.DrawLine(spawn.position, first.Position);
@@ -125,10 +121,10 @@ namespace BoostBlasters.Races
                 }
             }
 
-            for (int i = 0; i < m_path.Length; i++)
+            for (var i = 0; i < m_path.Length; i++)
             {
-                Waypoint start = m_path[i];
-                Waypoint end = m_path[(i + 1) % m_path.Length];
+                var start = m_path[i];
+                var end = m_path[(i + 1) % m_path.Length];
 
                 if (start == null || end == null)
                 {
@@ -137,8 +133,8 @@ namespace BoostBlasters.Races
 
                 Gizmos.color = Color.yellow;
 
-                Vector3 startPos = start.Position;
-                Vector3 endPos = end.Position;
+                var startPos = start.Position;
+                var endPos = end.Position;
                 Gizmos.DrawLine(startPos, endPos);
             }
         }

@@ -13,10 +13,9 @@ MonoBehaviour:
   m_Name: GraphicsDefaults
   m_EditorClassIdentifier: 
   m_presets:
-    array:
-    - m_setting: {fileID: 11400000, guid: 6b0575c7e699671458f61dd184b7792f, type: 2}
-      m_value: High
-    - m_setting: {fileID: 11400000, guid: c835278b3c9000d4d839f5c10270d1bb, type: 2}
-      m_value: On
-    - m_setting: {fileID: 11400000, guid: 7e658b8da504f5d469795cd126fb2f01, type: 2}
-      m_value: High
+  - m_setting: {fileID: 11400000, guid: 6b0575c7e699671458f61dd184b7792f, type: 2}
+    m_value: High
+  - m_setting: {fileID: 11400000, guid: 7e658b8da504f5d469795cd126fb2f01, type: 2}
+    m_value: High
+  - m_setting: {fileID: 11400000, guid: c835278b3c9000d4d839f5c10270d1bb, type: 2}
+    m_value: On

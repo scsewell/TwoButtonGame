@@ -59,19 +59,13 @@ namespace BoostBlasters.Levels
             public AnimationClip Clip => m_clip;
 
             [SerializeField]
-            [Range(0f, 10f)]
+            [Range(0f, 2f)]
             private float m_speed = 1f;
             public float Speed => m_speed;
         }
 
-        [Serializable]
-        public class CameraShotArray : ReorderableArray<CameraShot>
-        {
-        }
-
         [SerializeField]
-        [Reorderable]
-        private CameraShotArray m_introSequence = null;
+        private CameraShot[] m_introSequence = null;
 
         /// <summary>
         /// The animations used for the intro camera.

@@ -12,7 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a6a0c07ab74de21488d2a40c54704dc6, type: 3}
   m_Name: level
   m_EditorClassIdentifier: 
-  m_id: 4644
   m_guid:
     m_part0: 4974351067502933872
     m_part1: -7136721760529392708
@@ -32,13 +31,12 @@ MonoBehaviour:
     m_asset: {fileID: 0}
   m_musicDelay: 0.5
   m_introSequence:
-    array:
-    - m_clip: {fileID: -5798141595226340778, guid: 747f753530d4a7f4888e36e068ee27b9,
-        type: 3}
-      m_speed: 1.2
-    - m_clip: {fileID: -8559316596730737245, guid: 747f753530d4a7f4888e36e068ee27b9,
-        type: 3}
-      m_speed: 0.9
-    - m_clip: {fileID: 3297925568181831423, guid: 747f753530d4a7f4888e36e068ee27b9,
-        type: 3}
-      m_speed: 0.9
+  - m_clip: {fileID: -5798141595226340778, guid: 747f753530d4a7f4888e36e068ee27b9,
+      type: 3}
+    m_speed: 1.2
+  - m_clip: {fileID: -8559316596730737245, guid: 747f753530d4a7f4888e36e068ee27b9,
+      type: 3}
+    m_speed: 0.9
+  - m_clip: {fileID: 3297925568181831423, guid: 747f753530d4a7f4888e36e068ee27b9,
+      type: 3}
+    m_speed: 0.9

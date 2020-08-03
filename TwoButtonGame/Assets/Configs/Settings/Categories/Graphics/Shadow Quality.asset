@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_category: {fileID: 11400000, guid: ee6120dbec47e3e47b890ee586045878, type: 2}
   m_description: The quality and distance of dynamic shadow effects.
-  m_displayMode: 2
+  m_displayMode: 15
   m_defaultValue: High
   m_enumType: BoostBlasters.ShadowQuality, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
     PublicKeyToken=null

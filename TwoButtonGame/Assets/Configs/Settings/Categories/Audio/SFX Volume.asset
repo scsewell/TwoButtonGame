@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_category: {fileID: 11400000, guid: da6b54692858fb544af44d860185c583, type: 2}
   m_description: The sound effect volume.
-  m_displayMode: 4
+  m_displayMode: 20
   m_defaultValue: 100
   m_range:
     m_min: 0

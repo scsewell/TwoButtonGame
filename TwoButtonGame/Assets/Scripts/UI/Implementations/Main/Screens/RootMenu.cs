@@ -50,9 +50,9 @@ namespace BoostBlasters.UI.MainMenus
                 // check if there is any button pressed
                 bool anyKey = false;
 
-                foreach (Keyboard keyboard in Keyboard.all)
+                foreach (var device in InputSystem.devices)
                 {
-                    if (keyboard.anyKey.isPressed)
+                    if (device is Keyboard keyboard && keyboard.anyKey.isPressed)
                     {
                         anyKey = true;
                         break;
