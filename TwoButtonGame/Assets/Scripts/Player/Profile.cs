@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 
-using Framework.IO;
-
-using BoostBlasters.Races;
 using BoostBlasters.Levels;
+using BoostBlasters.Races;
+
+using Framework.IO;
 
 namespace BoostBlasters.Players
 {
@@ -13,11 +13,11 @@ namespace BoostBlasters.Players
     /// </summary>
     public class Profile : SerializableData
     {
-        private static readonly char[] SERIALIZER_TYPE = new char[] { 'B', 'B', 'P', 'F' };
-
-        protected override char[] SerializerType => SERIALIZER_TYPE;
+        protected override char[] SerializerType { get; } = new char[] { 'B', 'B', 'P', 'F' };
         protected override ushort SerializerVersion => 1;
 
+        private readonly List<RaceResult> m_results = new List<RaceResult>();
+        private readonly Dictionary<Guid, List<RaceResult>> m_levelToResults = new Dictionary<Guid, List<RaceResult>>();
 
         /// <summary>
         /// The ID of this profile.
@@ -25,7 +25,7 @@ namespace BoostBlasters.Players
         public Guid Guid { get; private set; }
 
         /// <summary>
-        /// The name of the player.
+        /// The name of the profile.
         /// </summary>
         public string Name { get; set; }
 
@@ -34,11 +34,8 @@ namespace BoostBlasters.Players
         /// </summary>
         public bool IsTemporary { get; }
 
-        private readonly List<RaceResult> m_results = new List<RaceResult>();
-        private readonly Dictionary<Guid, List<RaceResult>> m_levelToResults = new Dictionary<Guid, List<RaceResult>>();
-
         /// <summary>
-        /// The races that this player has completed.
+        /// The completed races associated with this profile.
         /// </summary>
         public IReadOnlyList<RaceResult> RaceResults => m_results;
 
@@ -46,7 +43,7 @@ namespace BoostBlasters.Players
         /// <summary>
         /// Creates a new profile.
         /// </summary>
-        /// <param name="name">The name of the player.</param>
+        /// <param name="name">The name of the profile.</param>
         /// <param name="isTemporary">Is this a temporary profile.</param>
         public Profile(string name, bool isTemporary)
         {
@@ -73,11 +70,11 @@ namespace BoostBlasters.Players
             writer.Write(Name);
 
             writer.Write(m_levelToResults.Keys.Count);
-            foreach (KeyValuePair<Guid, List<RaceResult>> results in m_levelToResults)
+            foreach (var results in m_levelToResults)
             {
                 writer.Write(results.Key);
                 writer.Write(results.Value.Count);
-                foreach (RaceResult result in results.Value)
+                foreach (var result in results.Value)
                 {
                     result.Serialize(writer);
                 }
@@ -89,16 +86,16 @@ namespace BoostBlasters.Players
             Guid = reader.Read<Guid>();
             Name = reader.ReadString();
 
-            int levelCount = reader.Read<int>();
-            for (int i = 0; i < levelCount; i++)
+            var levelCount = reader.Read<int>();
+            for (var i = 0; i < levelCount; i++)
             {
-                Guid levelGuid = reader.Read<Guid>();
+                var levelGuid = reader.Read<Guid>();
 
-                int resultCount = reader.Read<int>();
-                List<RaceResult> results = new List<RaceResult>(resultCount);
-                for (int j = 0; j < resultCount; j++)
+                var resultCount = reader.Read<int>();
+                var results = new List<RaceResult>(resultCount);
+                for (var j = 0; j < resultCount; j++)
                 {
-                    RaceResult result = new RaceResult(reader);
+                    var result = new RaceResult(reader);
 
                     m_results.Add(result);
                     results.Add(result);
@@ -135,7 +132,7 @@ namespace BoostBlasters.Players
         /// <returns>The list of results for this player.</returns>
         public List<RaceResult> GetRaceResults(Level level)
         {
-            if (!m_levelToResults.TryGetValue(level.Guid, out List<RaceResult> results))
+            if (!m_levelToResults.TryGetValue(level.Guid, out var results))
             {
                 results = new List<RaceResult>();
                 m_levelToResults.Add(level.Guid, results);

@@ -182,7 +182,7 @@ namespace BoostBlasters.Replays
 
                 Guid guid = reader.Read<Guid>();
                 string name = reader.ReadString();
-                Profile profile = ProfileManager.GetTemporaryProfile(name, false);
+                Profile profile = ProfileManager.CreateTemporaryProfile(name, false);
 
                 racers[i] = RacerConfig.CreateReplay(character, profile);
                 Results[i] = new RaceResult(reader);

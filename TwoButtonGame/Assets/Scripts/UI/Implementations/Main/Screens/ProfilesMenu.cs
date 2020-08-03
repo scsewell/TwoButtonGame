@@ -137,7 +137,7 @@ namespace BoostBlasters.UI.MainMenus
             if (mode == PlayerProfilePanel.Mode.AddNew)
             {
                 MainMenu menu = (MainMenu)Menu;
-                menu.ProfileName.EditProfile(ProfileManager.AddNewProfile(), true, menu.Profiles, null);
+                menu.ProfileName.EditProfile(ProfileManager.CreateProfile(), true, menu.Profiles, null);
             }
         }
 

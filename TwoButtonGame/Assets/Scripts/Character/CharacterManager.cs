@@ -7,7 +7,7 @@ using Framework.AssetBundles;
 namespace BoostBlasters.Characters
 {
     /// <summary>
-    /// Manages the playable characters.
+    /// Manages the character assets.
     /// </summary>
     public static class CharacterManager
     {
@@ -23,7 +23,7 @@ namespace BoostBlasters.Characters
         /// <returns>The character, or null if not found.</returns>
         public static Character GetByGUID(Guid guid)
         {
-            foreach (Character character in Characters)
+            foreach (var character in Characters)
             {
                 if (character.Guid == guid)
                 {
@@ -38,7 +38,7 @@ namespace BoostBlasters.Characters
         /// </summary>
         public static async Task LoadCharactersAsync()
         {
-            Character[] characters = await AssetBundleManager.LoadAssetsAsync<Character>("character", "character");
+            var characters = await AssetBundleManager.LoadAssetsAsync<Character>("character", "character");
 
             // sort and assign the results
             Characters = characters.OrderBy(c => c.SortOrder).ToArray();

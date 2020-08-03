@@ -1,7 +1,7 @@
-﻿using UnityEngine;
-
-using Framework;
+﻿using Framework;
 using Framework.Settings;
+
+using UnityEngine;
 
 namespace BoostBlasters
 {
@@ -46,7 +46,7 @@ namespace BoostBlasters
             QualitySettings.vSyncCount = m_vsync.Value ? 1 : 0;
 
             SetShadowQuality(m_shadowQuality.GetTypedValue<ShadowQuality>());
-            
+
             // listen for changes to the settings
             m_resolution.OnValueChanged += (res) => Screen.SetResolution(res.width, res.height, Screen.fullScreenMode);
             m_screenMode.OnValueChanged += (mode) => Screen.fullScreenMode = m_screenMode.GetTypedValue<FullScreenMode>();

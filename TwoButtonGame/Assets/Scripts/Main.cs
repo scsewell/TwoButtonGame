@@ -1,19 +1,19 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-using UnityEngine;
-using UnityEngine.Scripting;
-using UnityEngine.InputSystem;
-using UnityEngine.SceneManagement;
+using BoostBlasters.Characters;
+using BoostBlasters.Levels;
+using BoostBlasters.Players;
+using BoostBlasters.Races;
+using BoostBlasters.Replays;
 
 using Framework;
 using Framework.Interpolation;
 
-using BoostBlasters.Players;
-using BoostBlasters.Characters;
-using BoostBlasters.Levels;
-using BoostBlasters.Races;
-using BoostBlasters.Replays;
+using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
+using UnityEngine.Scripting;
 
 namespace BoostBlasters
 {
@@ -29,6 +29,7 @@ namespace BoostBlasters
 
 
         [SerializeField]
+        [Tooltip("The input actions for the game.")]
         private InputActionAsset m_inputActions = null;
 
         private RaceManager m_raceManagerPrefab = null;
@@ -115,7 +116,7 @@ namespace BoostBlasters
         /// should be allowed to occur.</param>
         public async void LoadMainMenu(Func<bool> doLoad = null)
         {
-            AsyncOperation op = SceneManager.LoadSceneAsync(1);
+            var op = SceneManager.LoadSceneAsync(1);
             await LoadScene(op, doLoad);
 
             RaceManager = null;
@@ -132,8 +133,8 @@ namespace BoostBlasters
             LastRaceType = RaceType.Race;
             LastRaceParams = raceParams;
 
-            string scene = await raceParams.Level.Scene.GetAsync();
-            AsyncOperation op = SceneManager.LoadSceneAsync(scene);
+            var scene = await raceParams.Level.Scene.GetAsync();
+            var op = SceneManager.LoadSceneAsync(scene);
             await LoadScene(op, doLoad);
 
             RaceManager = Instantiate(m_raceManagerPrefab);
@@ -151,8 +152,8 @@ namespace BoostBlasters
             LastRaceType = RaceType.Replay;
             LastRaceParams = null;
 
-            string scene = await recording.Params.Level.Scene.GetAsync();
-            AsyncOperation op = SceneManager.LoadSceneAsync(scene);
+            var scene = await recording.Params.Level.Scene.GetAsync();
+            var op = SceneManager.LoadSceneAsync(scene);
             await LoadScene(op, doLoad);
 
             RaceManager = Instantiate(m_raceManagerPrefab);
@@ -181,7 +182,7 @@ namespace BoostBlasters
             GarbageCollector.CollectIncremental(GC_SLICE_DURATION);
 
             // restore default state
-            AudioManager.Instance.MusicVolume = 1f; 
+            AudioManager.Instance.MusicVolume = 1f;
             AudioManager.Instance.Volume = 1f;
 
             AudioListener.pause = false;
@@ -191,7 +192,7 @@ namespace BoostBlasters
 
         private static void TakeScreenshot(InputAction.CallbackContext ctx)
         {
-            string name = $"screenshot_{DateTime.Now.ToString("MM-dd-yy_H-mm-ss")}.png";
+            var name = $"screenshot_{DateTime.Now:MM-dd-yy_H-mm-ss}.png";
             ScreenCapture.CaptureScreenshot(name);
             Debug.Log($"Saved screenshot \"{name}\"");
         }

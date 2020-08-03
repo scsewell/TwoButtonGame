@@ -44,8 +44,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 01614664b831546d2ae94a42149d80ac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_RepeatDelay: 0.175
-  m_RepeatRate: 0.075
+  m_MoveRepeatDelay: 0.175
+  m_MoveRepeatRate: 0.075
   m_ActionsAsset: {fileID: -944628639613478452, guid: 8c055b25acaec8e4e8096ef2e78e8684,
     type: 3}
   m_PointAction: {fileID: 0}
@@ -61,7 +61,8 @@ MonoBehaviour:
   m_ScrollWheelAction: {fileID: 0}
   m_TrackedDevicePositionAction: {fileID: 0}
   m_TrackedDeviceOrientationAction: {fileID: 0}
-  m_TrackedDeviceSelectAction: {fileID: 0}
+  m_DeselectOnBackgroundClick: 1
+  m_PointerBehavior: 0
 --- !u!114 &5450944536213004347
 MonoBehaviour:
   m_ObjectHideFlags: 0

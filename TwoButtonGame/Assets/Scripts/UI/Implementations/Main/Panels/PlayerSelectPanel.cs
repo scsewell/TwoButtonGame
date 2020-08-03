@@ -159,8 +159,8 @@ namespace BoostBlasters.UI.MainMenus
             {
                 GameObject pivot = new GameObject("CharacterPivot");
 
-                GameObject previewObject = Instantiate(config.Graphics, pivot.transform);
-                previewObject.transform.localPosition = config.GraphicsOffset + Vector3.up;
+                GameObject previewObject = Instantiate(config.Graphics.Rig, pivot.transform);
+                previewObject.transform.localPosition = config.Graphics.Offset + Vector3.up;
                 previewObject.GetComponentsInChildren<Transform>(true).ToList().ForEach(r => r.gameObject.layer = previewLayer);
 
                 m_configToPreview.Add(config, pivot);
@@ -235,13 +235,13 @@ namespace BoostBlasters.UI.MainMenus
                     if (SelectedProfile == 0)
                     {
                         m_state = State.Select;
-                        Profile = ProfileManager.GetTemporaryProfile("Guest", true);
+                        Profile = ProfileManager.CreateTemporaryProfile("Guest", true);
                         SelectCharacter(m_selectedCharacter);
                         m_screen.Sound.PlaySubmitSound();
                     }
                     else if (SelectedProfile == 1)
                     {
-                        m_screen.ProfileName.EditProfile(ProfileManager.AddNewProfile(), true, m_screen.PlayerSelect, OnProfileCreate);
+                        m_screen.ProfileName.EditProfile(ProfileManager.CreateProfile(), true, m_screen.PlayerSelect, OnProfileCreate);
                     }
                     else
                     {
@@ -450,15 +450,15 @@ namespace BoostBlasters.UI.MainMenus
                 }
             }
 
-            m_characterName.text = config.Name;
+            m_characterName.text = config.Meta.Name;
             m_characterHighlight.color = new Color(1f, 1f, 1f, Mathf.Lerp(m_characterHighlight.color.a, 0f, Time.unscaledDeltaTime /  0.035f));
 
             m_characterStats.SetActive(m_state == State.Select);
             if (m_characterStats.activeInHierarchy)
             {
-                SetRating(m_characterSpeed, config.SpeedRating);
-                SetRating(m_characterAgility, config.AgilityRating);
-                m_characterDesc.text = config.Description;
+                SetRating(m_characterSpeed, config.Meta.SpeedRating);
+                SetRating(m_characterAgility, config.Meta.AgilityRating);
+                m_characterDesc.text = config.Meta.Description;
             }
         }
 

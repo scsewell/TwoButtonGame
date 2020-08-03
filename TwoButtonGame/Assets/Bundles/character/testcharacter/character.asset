@@ -16,23 +16,28 @@ MonoBehaviour:
     m_part0: 5001456582357476387
     m_part1: 7864085582030618548
   m_sortOrder: 999
-  m_name: Test Character
-  m_description: This character is lame...
-  m_speedRating: 2
-  m_agilityRating: 6
-  m_characterGraphics: {fileID: 1309904247820802, guid: 54bf9a0ec326a3a479a4e0cedef80d70,
-    type: 3}
-  m_graphicsOffset: {x: 0, y: -1, z: 0}
-  m_physicsMat: {fileID: 13400000, guid: a98a30527bb05cb4e9413f0318de73d6, type: 2}
-  m_linearDrag: 0.35
-  m_brakeDrag: 1
-  m_angularDrag: 4
-  m_gravityFac: 2.5
-  m_forwardAccel: 18
-  m_verticalAccel: 9
-  m_turnRatio: 0.0625
-  m_energyCap: 200
-  m_energyRechargeRate: 10
-  m_boostEnergyUseRate: 100
-  m_boostSoftCap: 80
-  m_boostAcceleration: 200
+  m_meta:
+    m_name: Test Character
+    m_description: Defaut settings ;)
+    m_speedRating: 5
+    m_agilityRating: 5
+  m_graphics:
+    m_characterRig: {fileID: 1309904247820802, guid: 54bf9a0ec326a3a479a4e0cedef80d70,
+      type: 3}
+    m_offset: {x: 0, y: -1, z: 0}
+  m_physics:
+    m_material: {fileID: 13400000, guid: a98a30527bb05cb4e9413f0318de73d6, type: 2}
+    m_linearDrag: 0.35
+    m_brakeDrag: 1
+    m_angularDrag: 4
+    m_gravityMultiplier: 2
+    m_forwardAcceleration: 15
+    m_verticalAcceleration: 7.5
+    m_forceOffset: 0.05
+  m_energy:
+    m_cap: 200
+    m_rechargeRate: 10
+  m_boost:
+    m_energyUseRate: 100
+    m_acceleration: 200
+    m_softCap: 80

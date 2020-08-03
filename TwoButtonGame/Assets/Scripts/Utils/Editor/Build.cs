@@ -1,14 +1,17 @@
 ﻿using System.IO;
 
-using UnityEngine;
+using Framework;
 
 using UnityEditor;
 using UnityEditor.Build.Reporting;
 
-using Framework;
+using UnityEngine;
 
 namespace BoostBlasters
 {
+    /// <summary>
+    /// A class containing methods for managing builds.
+    /// </summary>
     public class Build
     {
         private static string BuildPath => $"{Application.dataPath}/../../Build/{Application.version}";
@@ -16,31 +19,44 @@ namespace BoostBlasters
         private static string ProductName => Application.productName.Replace(" ", "");
         private static string ExecutableName => $"{ProductName}.exe";
 
+        /// <summary>
+        /// Builds the main executable and the asset bundles.
+        /// </summary>
         [MenuItem("BoostBlasters/Build All _F5", priority = 100)]
         public static void DoBuild()
         {
-            BuildPlayerOptions buildPlayerOptions = new BuildPlayerOptions();
-            buildPlayerOptions.locationPathName = $"{BuildPath}/{ExecutableName}";
-            buildPlayerOptions.target = EditorUserBuildSettings.activeBuildTarget;
-            buildPlayerOptions.options = BuildOptions.None;
+            var buildPlayerOptions = new BuildPlayerOptions
+            {
+                locationPathName = $"{BuildPath}/{ExecutableName}",
+                target = EditorUserBuildSettings.activeBuildTarget,
+                options = BuildOptions.None
+            };
 
             BuildProject(buildPlayerOptions);
             BuildBundles(false);
         }
 
+        /// <summary>
+        /// Builds only the asset bundles.
+        /// </summary>
         [MenuItem("BoostBlasters/Build Bundles _F6", priority = 105)]
         public static void DoBuildBundles()
         {
             BuildBundles(false);
         }
 
+        /// <summary>
+        /// Builds the main executable and the asset bundles, then lanches the executable.
+        /// </summary>
         [MenuItem("BoostBlasters/Build All + Run _F7", priority = 110)]
         public static void DoBuildRun()
         {
-            BuildPlayerOptions buildPlayerOptions = new BuildPlayerOptions();
-            buildPlayerOptions.locationPathName = $"{BuildPath}/{ExecutableName}";
-            buildPlayerOptions.target = EditorUserBuildSettings.activeBuildTarget;
-            buildPlayerOptions.options = BuildOptions.None;
+            var buildPlayerOptions = new BuildPlayerOptions
+            {
+                locationPathName = $"{BuildPath}/{ExecutableName}",
+                target = EditorUserBuildSettings.activeBuildTarget,
+                options = BuildOptions.None
+            };
 
             BuildProject(buildPlayerOptions);
             BuildBundles(false);
@@ -49,6 +65,10 @@ namespace BoostBlasters
             System.Diagnostics.Process.Start(buildPlayerOptions.locationPathName);
         }
 
+        /// <summary>
+        /// Builds the main game executable.
+        /// </summary>
+        /// <param name="options">The build options.</param>
         public static void BuildProject(BuildPlayerOptions options)
         {
             Debug.Log("Starting build...");
@@ -61,8 +81,8 @@ namespace BoostBlasters
             };
 
             // build the game
-            BuildReport report = BuildPipeline.BuildPlayer(options);
-            BuildSummary summary = report.summary;
+            var report = BuildPipeline.BuildPlayer(options);
+            var summary = report.summary;
 
             if (summary.result == BuildResult.Succeeded)
             {
@@ -75,6 +95,11 @@ namespace BoostBlasters
             }
         }
 
+        /// <summary>
+        /// Builds the game asset bundles.
+        /// </summary>
+        /// <param name="isEditor">If true builds the asset bundles used for play mode in the editor.</param>
+        /// <param name="cleanBuild">If true, cleans the bundle directories before building the new bundles.</param>
         public static void BuildBundles(bool isEditor, bool cleanBuild = true)
         {
             // get the build path
@@ -102,7 +127,7 @@ namespace BoostBlasters
             // build the asset bundles
             Debug.Log("Building asset bundles...");
 
-            BuildAssetBundleOptions options =
+            var options =
                 BuildAssetBundleOptions.StrictMode |
                 BuildAssetBundleOptions.DisableLoadAssetByFileNameWithExtension;
 
@@ -111,7 +136,7 @@ namespace BoostBlasters
                 options |= BuildAssetBundleOptions.ForceRebuildAssetBundle;
             }
 
-            AssetBundleManifest manifest = BuildPipeline.BuildAssetBundles(
+            var manifest = BuildPipeline.BuildAssetBundles(
                 path,
                 options,
                 EditorUserBuildSettings.activeBuildTarget
@@ -124,9 +149,9 @@ namespace BoostBlasters
             }
 
             // verify that there are no unexpected dependencies between asset bundles
-            foreach (string bundle in manifest.GetAllAssetBundles())
+            foreach (var bundle in manifest.GetAllAssetBundles())
             {
-                foreach (string dependency in manifest.GetAllDependencies(bundle))
+                foreach (var dependency in manifest.GetAllDependencies(bundle))
                 {
                     Debug.LogError($"Asset bundle \"{bundle}\" has dependancy \"{dependency}\"! Asset bundles are expected to have no dependencies.");
                 }

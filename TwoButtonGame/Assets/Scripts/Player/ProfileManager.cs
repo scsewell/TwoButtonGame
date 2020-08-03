@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
-using UnityEngine;
-
 using Framework.IO;
+
+using UnityEngine;
 
 namespace BoostBlasters.Players
 {
@@ -54,7 +54,7 @@ namespace BoostBlasters.Players
         private static void LoadProfiles()
         {
             // get all profile files
-            List<FileInfo> files = FileIO.GetFiles(GetProfileDirectory(), FILE_EXTENTION).ToList();
+            var files = FileIO.GetFiles(GetProfileDirectory(), FILE_EXTENTION).ToList();
 
             // sort the files by the date of creation so the oldest appear first
             files.Sort((x, y) => x.CreationTimeUtc.CompareTo(y.CreationTimeUtc));
@@ -62,13 +62,13 @@ namespace BoostBlasters.Players
             // parse the profiles from the files
             m_profiles.Clear();
 
-            foreach (FileInfo file in files)
+            foreach (var file in files)
             {
-                if (FileIO.ReadFileBytes(file.FullName, out byte[] bytes))
+                if (FileIO.ReadFileBytes(file.FullName, out var bytes))
                 {
-                    using (DataReader reader = new DataReader(bytes))
+                    using (var reader = new DataReader(bytes))
                     {
-                        Profile profile = new Profile(reader);
+                        var profile = new Profile(reader);
 
                         if (profile.IsValid)
                         {
@@ -85,7 +85,7 @@ namespace BoostBlasters.Players
         /// Saves a player profile.
         /// </summary>
         /// <param name="profile">The profile to save.</param>
-        /// <returns>True if the profile was successfully saved.</returns>
+        /// <returns>True if the profile was successfully saved or if the profile is not persistent.</returns>
         public static bool SaveProfile(Profile profile)
         {
             // don't write temporary profiles
@@ -94,7 +94,7 @@ namespace BoostBlasters.Players
                 return true;
             }
 
-            using (DataWriter writer = new DataWriter())
+            using (var writer = new DataWriter())
             {
                 if (profile.Serialize(writer) && FileIO.WriteFile(GetProfileFilePath(profile), writer.GetBytes()))
                 {
@@ -110,12 +110,62 @@ namespace BoostBlasters.Players
         }
 
         /// <summary>
+        /// Creates a new player profile.
+        /// </summary>
+        /// <returns>The new profile.</returns>
+        public static Profile CreateProfile()
+        {
+            var profile = CreateProfile(m_profiles, false, "DefaultName", true);
+            SaveProfile(profile);
+            return profile;
+        }
+
+        /// <summary>
+        /// Renames a player profile.
+        /// </summary>
+        /// <param name="profile">The profile to rename.</param>
+        /// <param name="newName">The desired name.</param>
+        public static void RenameProfile(Profile profile, string newName)
+        {
+            var name = GetUniqueName(profile, newName, false, m_profiles);
+
+            if (profile.Name != name)
+            {
+                File.Delete(GetProfileFilePath(profile));
+                profile.Name = name;
+                SaveProfile(profile);
+            }
+        }
+
+        /// <summary>
+        /// Deletes a player profile.
+        /// </summary>
+        /// <param name="profile">The persistent profile to delete.</param>
+        /// <returns>True if the profile was deleted.</returns>
+        public static bool DeleteProfile(Profile profile)
+        {
+            if (profile == null || profile.IsTemporary)
+            {
+                return false;
+            }
+
+            var removedProfile = m_profiles.Remove(profile);
+
+            if (removedProfile)
+            {
+                File.Delete(GetProfileFilePath(profile));
+            }
+
+            return removedProfile;
+        }
+
+        /// <summary>
         /// Creates a temporary profile.
         /// </summary>
         /// <param name="name">The desired name for the profile.</param>
-        /// <param name="enforceUnique">Make sure the name does not match any other profile names.</param>
+        /// <param name="enforceUnique">Ensures sure the name does not match any other profile names.</param>
         /// <returns>The new profile.</returns>
-        public static Profile GetTemporaryProfile(string name, bool enforceUnique)
+        public static Profile CreateTemporaryProfile(string name, bool enforceUnique)
         {
             return CreateProfile(enforceUnique ? m_uniqueTempProfiles : m_tempProfiles, true, name, enforceUnique);
         }
@@ -135,75 +185,29 @@ namespace BoostBlasters.Players
             m_uniqueTempProfiles.Remove(profile);
         }
 
-        /// <summary>
-        /// Creates a new player profile.
-        /// </summary>
-        /// <returns>The new profile.</returns>
-        public static Profile AddNewProfile()
-        {
-            Profile profile = CreateProfile(m_profiles, false, "DefaultName", true);
-            SaveProfile(profile);
-            return profile;
-        }
-
-        /// <summary>
-        /// Renames a player profile.
-        /// </summary>
-        /// <param name="profile">The profile to rename.</param>
-        /// <param name="newName">The desired name.</param>
-        public static void RenameProfile(Profile profile, string newName)
-        {
-            string name = GetUniqueName(profile, newName, false, m_profiles);
-
-            if (profile.Name != name)
-            {
-                File.Delete(GetProfileFilePath(profile));
-                profile.Name = name;
-                SaveProfile(profile);
-            }
-        }
-
-        /// <summary>
-        /// Deletes a player profile
-        /// </summary>
-        /// <param name="profile">The profile to delete.</param>
-        /// <returns>True if the profile was deleted.</returns>
-        public static bool DeleteProfile(Profile profile)
-        {
-            if (profile == null || profile.IsTemporary)
-            {
-                return false;
-            }
-
-            bool removedProfile = m_profiles.Remove(profile);
-            if (removedProfile)
-            {
-                File.Delete(GetProfileFilePath(profile));
-            }
-            return removedProfile;
-        }
-
         private static Profile CreateProfile(List<Profile> profiles, bool isTemporary, string baseName, bool uniqueName)
         {
-            string name = uniqueName ? GetUniqueName(null, baseName, true, profiles) : baseName;
+            var name = uniqueName ? GetUniqueName(null, baseName, true, profiles) : baseName;
 
-            Profile profile = new Profile(name, isTemporary);
+            var profile = new Profile(name, isTemporary);
             profiles.Add(profile);
+
             return profile;
         }
 
         private static string GetUniqueName(Profile profile, string baseName, bool startWithCount, List<Profile> profiles)
         {
-            List<Profile> others = profiles.Where(p => p != profile).ToList();
+            var others = profiles.Where(p => p != profile).ToList();
 
-            int count = 0;
-            string name = startWithCount ? baseName + (++count) : baseName;
+            var count = 0;
+            var name = startWithCount ? baseName + (++count) : baseName;
 
             while (others.Any(p => p.Name == name))
             {
                 count++;
                 name = baseName + count;
             }
+
             return name;
         }
 

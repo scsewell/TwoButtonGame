@@ -6,7 +6,7 @@ namespace BoostBlasters
     {
         public static void GetTensor(Rigidbody rb, out Vector3 tensor, out Quaternion tensorRotation)
         {
-            RigidbodyConstraints constraints = rb.constraints;
+            var constraints = rb.constraints;
             rb.constraints = RigidbodyConstraints.None;
             rb.ResetInertiaTensor();
 
@@ -18,9 +18,9 @@ namespace BoostBlasters
 
         public static Vector3 GetAngularAcceleration(Quaternion rotation, Vector3 tensor, Quaternion tensorRotation, Vector3 torque)
         {
-            Quaternion q = rotation * tensorRotation;
+            var q = rotation * tensorRotation;
 
-            Vector3 acceleration = Quaternion.Inverse(q) * torque;
+            var acceleration = Quaternion.Inverse(q) * torque;
             if (tensor.x > 0)
             {
                 acceleration.x /= tensor.x;

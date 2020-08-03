@@ -79,7 +79,7 @@ Levels
 - Alternate paths
 - need fancy visual effect for passing through a gate
 - Moving gates with rotation along paths
-- Improve boost gate graphics (animate the rings) - particles/screen effect to make it obvious boost was gained
+- Improve boost gate graphics (animate the rings) - particles/character effect/screen effect to make it obvious boost was gained
 - Wind zones
 
 Level Ideas (try to think of creative hazzards)

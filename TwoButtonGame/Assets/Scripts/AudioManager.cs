@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 
-using UnityEngine;
-
 using Framework;
 using Framework.AssetBundles;
 using Framework.Audio;
 using Framework.Settings;
+
+using UnityEngine;
 
 namespace BoostBlasters
 {
@@ -104,7 +104,7 @@ namespace BoostBlasters
 
             if (clip != null && volume > 0f)
             {
-                if (!m_lastPlayTimes.TryGetValue(clip, out float lastPlayTime))
+                if (!m_lastPlayTimes.TryGetValue(clip, out var lastPlayTime))
                 {
                     lastPlayTime = -1f;
                 }

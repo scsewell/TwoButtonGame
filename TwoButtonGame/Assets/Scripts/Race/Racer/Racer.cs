@@ -80,7 +80,7 @@ namespace BoostBlasters.Races.Racers
         public delegate void EnergyUseFailHandler();
         public event EnergyUseFailHandler EnergyUseFailed;
 
-        public float MaxEnergy => Config.Character.EnergyCap;
+        public float MaxEnergy => Config.Character.Energy.Cap;
 
         private float m_energy;
         public float Energy => m_energy;
@@ -183,7 +183,7 @@ namespace BoostBlasters.Races.Racers
 
             if (isAfterStart && !RaceResult.Finished && !m_movement.IsBoosting)
             {
-                m_energy = Mathf.Min(m_energy + (Config.Character.EnergyRechargeRate * Time.deltaTime), MaxEnergy);
+                m_energy = Mathf.Min(m_energy + (Config.Character.Energy.RechargeRate * Time.deltaTime), MaxEnergy);
             }
 
             int previousLap = CurrentLap;

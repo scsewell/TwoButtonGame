@@ -1,7 +1,7 @@
-﻿using UnityEngine;
-using UnityEngine.Rendering.PostProcessing;
+﻿using Framework.Settings;
 
-using Framework.Settings;
+using UnityEngine;
+using UnityEngine.Rendering.PostProcessing;
 
 namespace BoostBlasters
 {

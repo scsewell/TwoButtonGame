@@ -137,7 +137,7 @@ namespace BoostBlasters.UI.MainMenus
                 {
                     racers[i] = RacerConfig.CreateAI(
                         CharacterManager.Characters.PickRandom(),
-                        ProfileManager.GetTemporaryProfile($"AI {i + 1}", false)
+                        ProfileManager.CreateTemporaryProfile($"AI {i + 1}", false)
                     );
                 }
             }

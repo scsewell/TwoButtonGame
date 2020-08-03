@@ -220,8 +220,8 @@ namespace BoostBlasters.Races
                 m_racers.Add(racer);
 
                 // create the graphics for the racer
-                GameObject graphics = Instantiate(config.Character.Graphics, racer.transform);
-                graphics.transform.localPosition = config.Character.GraphicsOffset;
+                GameObject graphics = Instantiate(config.Character.Graphics.Rig, racer.transform);
+                graphics.transform.localPosition = config.Character.Graphics.Offset;
                 graphics.transform.localRotation = Quaternion.identity;
 
                 // prepare the racer

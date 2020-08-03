@@ -1,20 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Reflection;
 using System.Text;
-using System.Reflection;
 
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem.UI;
+using UnityEngine.UI;
 
 namespace BoostBlasters.UI
 {
+    /// <summary>
+    /// Contains utility methods used by the UI.
+    /// </summary>
     public static class UIUtils
     {
-        private static StringBuilder s_builder = new StringBuilder();
+        private static readonly StringBuilder s_builder = new StringBuilder();
 
+        /// <summary>
+        /// Gets the time formatted as minutes:seconds:milliseconds.
+        /// </summary>
+        /// <param name="time">The time in seconds.</param>
+        /// <returns>The formatted string.</returns>
         public static string FormatRaceTime(float time)
         {
             if (time < 0f)
@@ -23,9 +28,9 @@ namespace BoostBlasters.UI
             }
             else
             {
-                int minutes = Mathf.FloorToInt(time / 60f);
-                int seconds = Mathf.FloorToInt(time - (minutes * 60));
-                int milliseconds = Mathf.FloorToInt((time - seconds - (minutes * 60)) * 100);
+                var minutes = Mathf.FloorToInt(time / 60f);
+                var seconds = Mathf.FloorToInt(time - (minutes * 60));
+                var milliseconds = Mathf.FloorToInt((time - seconds - (minutes * 60)) * 100);
 
                 s_builder.Clear();
 
@@ -39,9 +44,8 @@ namespace BoostBlasters.UI
             }
         }
 
-        private static FieldInfo s_joystickState = null;
-        private static PropertyInfo s_internalData = null;
-        private static PropertyInfo s_moveCount = null;
+        private static FieldInfo s_navigationState = null;
+        private static FieldInfo s_moveCount = null;
 
         /// <summary>
         /// Gets the number of times this input module has attempted to move in the current navigation direction.
@@ -49,24 +53,21 @@ namespace BoostBlasters.UI
         /// <param name="inputModule">The input modele.</param>
         public static int GetRepeatCount(BaseInputModule inputModule)
         {
-            int moveCount = 0;
+            var moveCount = 0;
 
             if (inputModule is InputSystemUIInputModule inputSystem)
             {
                 if (s_moveCount == null)
                 {
-                    s_joystickState = inputSystem.GetType().GetField("joystickState", BindingFlags.Instance | BindingFlags.NonPublic);
-                    object state = s_joystickState.GetValue(inputSystem);
+                    s_navigationState = inputSystem.GetType().GetField("m_NavigationState", BindingFlags.Instance | BindingFlags.NonPublic);
+                    var state = s_navigationState.GetValue(inputSystem);
 
-                    s_internalData = state.GetType().GetProperty("internalData", BindingFlags.Instance | BindingFlags.Public);
-                    object internalData = s_internalData.GetValue(state);
-
-                    s_moveCount = internalData.GetType().GetProperty("consecutiveMoveCount", BindingFlags.Instance | BindingFlags.Public);
-                    moveCount = (int)s_moveCount.GetValue(internalData);
+                    s_moveCount = state.GetType().GetField("consecutiveMoveCount", BindingFlags.Instance | BindingFlags.Public);
+                    moveCount = (int)s_moveCount.GetValue(state);
                 }
                 else
                 {
-                    moveCount = (int)s_moveCount.GetValue(s_internalData.GetValue(s_joystickState.GetValue(inputSystem)));
+                    moveCount = (int)s_moveCount.GetValue(s_navigationState.GetValue(inputSystem));
                 }
             }
 
@@ -74,19 +75,19 @@ namespace BoostBlasters.UI
         }
 
         /// <summary>
-        /// Cuts of the text using epllises if needed.
+        /// Cuts of text using epllises if the text does not fit in the rect.
         /// </summary>
         /// <param name="text">The text component.</param>
-        /// <param name="value"></param>
+        /// <param name="value">The text value to set.</param>
         public static void FitText(Text text, string value)
         {
-            RectTransform rt = text.GetComponent<RectTransform>();
+            var rt = text.GetComponent<RectTransform>();
 
-            float maxWidth = Mathf.Abs(rt.lossyScale.x * rt.rect.width);
+            var maxWidth = Mathf.Abs(rt.lossyScale.x * rt.rect.width);
 
-            TextGenerationSettings settings = text.GetGenerationSettings(Vector2.zero);
-            string name = value;
-            int length = name.Length;
+            var settings = text.GetGenerationSettings(Vector2.zero);
+            var name = value;
+            var length = name.Length;
 
             while (length > 0 && text.cachedTextGenerator.GetPreferredWidth(name, settings) > maxWidth)
             {

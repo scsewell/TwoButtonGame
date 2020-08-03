@@ -51,7 +51,7 @@ namespace BoostBlasters.Races.Racers
 
         private TrajectoryVisualization m_trajectoryVisualization;
 
-        public bool CanBoost => m_racer.Energy >= m_racer.Config.Character.BoostEnergyUseRate * m_minBoostTime;
+        public bool CanBoost => m_racer.Energy >= m_racer.Config.Character.Boost.EnergyUseRate * m_minBoostTime;
 
         private bool m_isGrounded;
         public bool IsGrounded => m_isGrounded;
@@ -158,7 +158,7 @@ namespace BoostBlasters.Races.Racers
 
             if (m_isBoosting)
             {
-                m_racer.ConsumeEnergy(character.BoostEnergyUseRate * Time.deltaTime);
+                m_racer.ConsumeEnergy(character.Boost.EnergyUseRate * Time.deltaTime);
                 m_boostDuration += Time.deltaTime;
                 m_boostEndTime = Time.time;
 
@@ -182,21 +182,21 @@ namespace BoostBlasters.Races.Racers
             m_boundsEffect = Mathf.MoveTowards(m_boundsEffect, outOfBounds ? 1f : 0f, Time.deltaTime / 0.2f);
 
             m_boostFactor = 1f - Mathf.Clamp01((Time.time - m_boostEndTime) / 0.2f);
-            float boostStrength = Mathf.Clamp01(Mathf.Exp(-Vector3.Dot(m_body.velocity, transform.forward) / character.BoostSoftCap));
-            Vector3 boostForce = m_boostFactor * character.BoostAcceleration * boostStrength * transform.forward;
+            float boostStrength = Mathf.Clamp01(Mathf.Exp(-Vector3.Dot(m_body.velocity, transform.forward) / character.Boost.SoftCap));
+            Vector3 boostForce = m_boostFactor * character.Boost.Acceleration * boostStrength * transform.forward;
             force += ApplyBoundsCorrection(boostForce);
 
-            Vector3 gravity = (1f - m_boostFactor) * character.GravityFac * Physics.gravity;
+            Vector3 gravity = (1f - m_boostFactor) * character.Physics.GravityMultiplier * Physics.gravity;
             force += ApplyBoundsCorrection(gravity);
 
             float torque = 0f;
             if (!inPreWarm)
             {
-                Vector3 engineForeForce = character.ForwardAccel * transform.forward;
-                Vector3 engineUpForce = character.VerticalAccel * character.GravityFac * Vector3.up;
+                Vector3 engineForeForce = character.Physics.ForwardAcceleration * transform.forward;
+                Vector3 engineUpForce = character.Physics.VerticalAcceleration * character.Physics.GravityMultiplier * Vector3.up;
 
                 Vector3 engineForce = (1f - m_boostFactor) * (engineForeForce + engineUpForce);
-                Vector3 forceOffset = character.TurnRatio * transform.right;
+                Vector3 forceOffset = character.Physics.ForceOffset * transform.right;
 
                 Vector3 linearForce = Vector3.zero;
 
@@ -209,8 +209,8 @@ namespace BoostBlasters.Races.Racers
                 force += ApplyBoundsCorrection(linearForce);
             }
 
-            m_body.velocity = StepVelocity(m_body.velocity, force, m_body.mass, character.LinearDrag + (m_brake * character.BrakeDrag), Time.deltaTime);
-            m_angVelocity = StepAngularVelocity(m_angVelocity, torque, TENSOR, character.AngularDrag, Time.deltaTime);
+            m_body.velocity = StepVelocity(m_body.velocity, force, m_body.mass, character.Physics.LinearDrag + (m_brake * character.Physics.BrakeDrag), Time.deltaTime);
+            m_angVelocity = StepAngularVelocity(m_angVelocity, torque, TENSOR, character.Physics.AngularDrag, Time.deltaTime);
 
             transform.Rotate(Vector3.up, 180 * m_angVelocity * Time.deltaTime);
 
@@ -273,7 +273,7 @@ namespace BoostBlasters.Races.Racers
             m_body.useGravity = false;
             m_body.drag = 0f;
             m_body.angularDrag = 0f;
-            m_capsule.material = config.PhysicsMat;
+            m_capsule.material = config.Physics.Material;
         }
 
         public void PredictStep(int steps, List<Vector3> pos, Vector3 velocity, List<float> rot, float angularVelocity, Inputs input, float deltaTime)
@@ -291,18 +291,18 @@ namespace BoostBlasters.Races.Racers
 
                 if (input.Boost)
                 {
-                    float boostStrength = Mathf.Clamp01(Mathf.Exp(-Vector3.Dot(velocity, forward) / character.BoostSoftCap));
-                    force += character.BoostAcceleration * boostStrength * forward;
+                    float boostStrength = Mathf.Clamp01(Mathf.Exp(-Vector3.Dot(velocity, forward) / character.Boost.SoftCap));
+                    force += character.Boost.Acceleration * boostStrength * forward;
                 }
                 else
                 {
-                    force += character.GravityFac * Physics.gravity;
+                    force += character.Physics.GravityMultiplier * Physics.gravity;
 
-                    Vector3 engineForeForce = character.ForwardAccel * forward;
-                    Vector3 engineUpForce = character.VerticalAccel * character.GravityFac * Vector3.up;
+                    Vector3 engineForeForce = character.Physics.ForwardAcceleration * forward;
+                    Vector3 engineUpForce = character.Physics.VerticalAcceleration * character.Physics.GravityMultiplier * Vector3.up;
 
                     Vector3 engineForce = engineForeForce + engineUpForce;
-                    Vector3 forceOffset = character.TurnRatio * Vector3.Cross(Vector3.up, forward).normalized;
+                    Vector3 forceOffset = character.Physics.ForceOffset * Vector3.Cross(Vector3.up, forward).normalized;
 
                     force += left * engineForce;
                     torque += left * Vector3.Dot(Vector3.Cross(-forceOffset, engineForce), Vector3.up);
@@ -311,8 +311,8 @@ namespace BoostBlasters.Races.Racers
                     torque += right * Vector3.Dot(Vector3.Cross(forceOffset, engineForce), Vector3.up);
                 }
 
-                velocity = StepVelocity(velocity, force, m_body.mass, character.LinearDrag + (brake * character.BrakeDrag), deltaTime);
-                angularVelocity = StepAngularVelocity(angularVelocity, torque, TENSOR, character.AngularDrag, deltaTime);
+                velocity = StepVelocity(velocity, force, m_body.mass, character.Physics.LinearDrag + (brake * character.Physics.BrakeDrag), deltaTime);
+                angularVelocity = StepAngularVelocity(angularVelocity, torque, TENSOR, character.Physics.AngularDrag, deltaTime);
 
                 pos.Add(pos.Last() + (velocity * deltaTime));
                 rot.Add(rot.Last() + (180f * angularVelocity * deltaTime));

@@ -7,7 +7,7 @@ using Framework.AssetBundles;
 namespace BoostBlasters.Levels
 {
     /// <summary>
-    /// Manages the levels.
+    /// Manages the level assets.
     /// </summary>
     public static class LevelManager
     {
@@ -23,7 +23,7 @@ namespace BoostBlasters.Levels
         /// <returns>The level, or null if not found.</returns>
         public static Level GetByGUID(Guid guid)
         {
-            foreach (Level level in Levels)
+            foreach (var level in Levels)
             {
                 if (level.Guid == guid)
                 {
@@ -38,7 +38,7 @@ namespace BoostBlasters.Levels
         /// </summary>
         public static async Task LoadLevelsAsync()
         {
-            Level[] levels = await AssetBundleManager.LoadAssetsAsync<Level>("level", "level");
+            var levels = await AssetBundleManager.LoadAssetsAsync<Level>("level", "level");
 
             // sort and assign the results
             Levels = levels.OrderBy(c => c.SortOrder).ToArray();
