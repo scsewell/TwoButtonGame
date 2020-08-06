@@ -12,14 +12,14 @@ using BoostBlasters.Levels;
 
 namespace BoostBlasters.UI.RaceMenus
 {
-    public class InRaceMenu : MenuBase<InRaceMenu>
+    public class InRaceMenu : MenuBase
     {
         [Header("Intro Panel")]
 
         [SerializeField] private Canvas m_titleCardMenu = null;
         [SerializeField] private Text m_trackName = null;
         [SerializeField] private Text m_songName = null;
-        [SerializeField] private ControlPanel m_skipControls = null;
+        [SerializeField] private Control m_skipControls = null;
         [SerializeField] private CanvasGroup m_cardUpper = null;
         [SerializeField] private CanvasGroup m_cardLower = null;
         [SerializeField] private CanvasGroup m_cardBottom = null;
@@ -39,8 +39,8 @@ namespace BoostBlasters.UI.RaceMenus
         [Header("UI Elements")]
 
         [SerializeField] private Canvas m_playerUIParent = null;
-        [SerializeField] private ControlPanel m_menuControls1 = null;
-        [SerializeField] private ControlPanel m_menuControls2 = null;
+        [SerializeField] private Control m_menuControls1 = null;
+        [SerializeField] private Control m_menuControls2 = null;
         [SerializeField] private Image m_fade = null;
 
         [Header("Fade")]

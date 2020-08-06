@@ -7,7 +7,7 @@ using Framework;
 namespace BoostBlasters.UI
 {
     /// <summary>
-    /// Generates interaction sounds based on UI element interactions.
+    /// A component that handles playing UI interaction sounds using UI events.
     /// </summary>
     public class SoundListener : MonoBehaviour,
         IPointerEnterHandler, ISelectHandler,
@@ -46,19 +46,19 @@ namespace BoostBlasters.UI
             }
         }
 
-        public void OnPointerExit(PointerEventData e)
-        {
-            if (m_selectable.IsInteractable())
-            {
-                Player.PlayDeselectSound();
-            }
-        }
-
         public void OnSelect(BaseEventData e)
         {
             if (m_selectable.IsInteractable())
             {
                 Player.PlaySelectSound();
+            }
+        }
+
+        public void OnPointerExit(PointerEventData e)
+        {
+            if (m_selectable.IsInteractable())
+            {
+                Player.PlayDeselectSound();
             }
         }
 

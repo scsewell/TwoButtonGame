@@ -1,23 +1,27 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 using UnityEngine;
 
 namespace BoostBlasters.UI
 {
     /// <summary>
-    /// Manages a mutually exclusive set of menu screens.
+    /// A menu UI component that manages the <see cref="MenuScreen"/> instances that
+    /// constitute a menu.
     /// </summary>
     [RequireComponent(typeof(SoundPlayer))]
-    public abstract class MenuBase<T> : MonoBehaviour where T : MenuBase<T>
+    public abstract class MenuBase : MonoBehaviour
     {
         private readonly List<MenuScreen> m_menuScreens = new List<MenuScreen>();
+        private readonly Dictionary<Type, MenuScreen> m_typeToMenu = new Dictionary<Type, MenuScreen>();
+
         private MenuScreen m_targetMenu = null;
-        private TransitionSound m_targetSound = TransitionSound.None;
+        private TransitionSound m_targetSound;
 
         /// <summary>
         /// The sound player for the menu.
         /// </summary>
-        public SoundPlayer Sound { get; private set; } = null;
+        public SoundPlayer Sound { get; private set; }
 
         /// <summary>
         /// The menu screen that is currently open.
@@ -28,12 +32,17 @@ namespace BoostBlasters.UI
         protected virtual void Awake()
         {
             Sound = GetComponent<SoundPlayer>();
-            GetComponentsInChildren(m_menuScreens);
+            GetComponentsInChildren(true, m_menuScreens);
+
+            foreach (var menu in m_menuScreens)
+            {
+                m_typeToMenu.Add(menu.GetType(), menu);
+            }
         }
 
         protected virtual void Start()
         {
-            foreach (MenuScreen menu in m_menuScreens)
+            foreach (var menu in m_menuScreens)
             {
                 menu.InitMenu();
                 menu.enabled = false;
@@ -46,7 +55,7 @@ namespace BoostBlasters.UI
 
             Sound.FlushSoundQueue();
 
-            foreach (MenuScreen menu in m_menuScreens)
+            foreach (var menu in m_menuScreens)
             {
                 menu.UpdateMenu();
             }
@@ -54,51 +63,88 @@ namespace BoostBlasters.UI
 
         protected virtual void LateUpdate()
         {
-            foreach (MenuScreen menu in m_menuScreens)
+            foreach (var menu in m_menuScreens)
             {
                 menu.UpdateGraphics();
             }
         }
 
         /// <summary>
-        /// Changes to the target menu.
+        /// Gets a <see cref="MenuScreen"/> from this menu.
         /// </summary>
-        /// <param name="menu">The menu to enable.</param>
-        /// <param name="sound">The sound to play for the menu transition.</param>
-        public void SetMenu(MenuScreen menu, TransitionSound sound = TransitionSound.Next)
+        /// <typeparam name="TScreen">The type of the menu screen to get.</typeparam>
+        /// <returns>The menu screen, or null if there is no screen of the given
+        /// type in the menu.</returns>
+        public TScreen Get<TScreen>() where TScreen : MenuScreen
         {
-            m_targetMenu = menu;
+            return m_typeToMenu.TryGetValue(typeof(TScreen), out var screen) ? screen as TScreen : null;
+        }
+
+        /// <summary>
+        /// Changes the active menu screen to a given screen.
+        /// </summary>
+        /// <typeparam name="TScreen">The type of the screen to activate.</typeparam>
+        /// <param name="sound">The sound to play for the menu transition.</param>
+        public void SwitchTo<TScreen>(TransitionSound sound = TransitionSound.Next) where TScreen : MenuScreen
+        {
+            SwitchTo(Get<TScreen>(), sound);
+        }
+
+        /// <summary>
+        /// Changes the active menu screen to a given screen.
+        /// </summary>
+        /// <param name="screen">The screen to activate. If null the active screen is closed.</param>
+        /// <param name="sound">The sound to play for the menu transition.</param>
+        public void SwitchTo(MenuScreen screen, TransitionSound sound = TransitionSound.Next)
+        {
+            m_targetMenu = screen;
             m_targetSound = sound;
         }
 
         /// <summary>
-        /// Determines if a menu screen should get initialized back to default values
+        /// Closes all menu screens.
+        /// </summary>
+        /// <param name="sound">The sound to play for the menu transition.</param>
+        public void Close(TransitionSound sound = TransitionSound.Next)
+        {
+            SwitchTo(null, sound);
+        }
+
+        /// <summary>
+        /// Determines if all menu screens should be reset back to their default state
         /// when a menu screen transition is occuring.
         /// </summary>
-        /// <param name="menu">The menu to reset.</param>
         /// <param name="from">The previous menu screen.</param>
         /// <param name="to">The menu screen being opened.</param>
-        /// <returns>If true the menu is reset.</returns>
-        protected virtual bool ShouldFullReset(MenuScreen menu, MenuScreen from, MenuScreen to)
+        /// <returns>If true all menu is reset upon transition.</returns>
+        protected virtual bool ShouldForceReset(MenuScreen from, MenuScreen to)
         {
-            return true;
+            return false;
         }
 
         private void DoScreenTransition()
         {
-            // check that we are not already on the menu to switch to
             if (ActiveScreen != m_targetMenu)
             {
-                MenuScreen previous = ActiveScreen;
-                ActiveScreen = m_targetMenu;
-
-                foreach (MenuScreen menu in m_menuScreens)
+                if (ActiveScreen != null)
                 {
-                    menu.enabled = menu == ActiveScreen;
-                    menu.ResetMenu(ShouldFullReset(menu, previous, ActiveScreen));
+                    ActiveScreen.enabled = false;
                 }
 
-                // play the transition sound
+                var previous = ActiveScreen;
+                ActiveScreen = m_targetMenu;
+
+                if (ActiveScreen != null)
+                {
+                    ActiveScreen.enabled = true;
+                }
+
+                var forceReset = ShouldForceReset(previous, ActiveScreen);
+                foreach (var menu in m_menuScreens)
+                {
+                    menu.OnTransition(forceReset, previous, ActiveScreen);
+                }
+
                 switch (m_targetSound)
                 {
                     case TransitionSound.Open: Sound.PlayOpenMenuSound(); break;

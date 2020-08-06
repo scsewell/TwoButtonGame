@@ -1,9 +1,6 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
-
-namespace BoostBlasters.UI.MainMenus
+﻿namespace BoostBlasters.UI.MainMenus
 {
-    public class CreditsMenu : MenuScreen<MainMenu>
+    public class CreditsMenu : MenuScreen
     {
         public override void InitMenu()
         {

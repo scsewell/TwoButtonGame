@@ -1,6 +1,9 @@
 ### To Do ###
 
 Short Term
+- Only show control hints for connected devices
+- Allow using overlay menu screen(s)?
+
 - Text Mesh Pro
 - New Input sytstem (remove old Input system and framework controls)
 - Custom logo intro (add setting / command line option to skip in settings)

@@ -5,8 +5,8 @@ using UnityEngine.UI;
 namespace BoostBlasters.UI
 {
     /// <summary>
-    /// Used to pick up cancel events for the menu. Should be placed on all
-    /// selectables in a menu.
+    /// A component used to pick up cancel events for the menu. Should be 
+    /// placed on all selectables in a menu.
     /// </summary>
     public class CancelHandler : MonoBehaviour, ICancelHandler
     {

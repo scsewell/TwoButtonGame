@@ -1,18 +1,16 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.EventSystems;
+using BoostBlasters.Replays;
 
 using Framework.UI;
 
-using BoostBlasters.Replays;
-using BoostBlasters.Races;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace BoostBlasters.UI.MainMenus
 {
-    public class ReplayMenu : MenuScreen<MainMenu>
+    public class ReplayMenu : MenuScreen
     {
         [Header("Prefabs")]
 
@@ -42,57 +40,57 @@ namespace BoostBlasters.UI.MainMenus
         private List<ReplayPanel> m_replayPanels = null;
         private List<PlayerResultPanel> m_playerResults = null;
         private int m_infoPage = 0;
-        
+
         public override void InitMenu()
         {
-            m_backButton.onClick.AddListener(() => Menu.SetMenu(Menu.Root, TransitionSound.Back));
+            m_backButton.onClick.AddListener(() => Menu.SwitchTo<RootMenu>(TransitionSound.Back));
 
             m_infos = new List<RecordingInfo>();
             m_replayPanels = new List<ReplayPanel>();
 
-            for (int i = 0; i < m_panelCount; i++)
+            for (var i = 0; i < m_panelCount; i++)
             {
                 m_replayPanels.Add(Instantiate(m_selectPanelPrefab, m_replayListContent).AddComponent<ReplayPanel>());
             }
 
             m_playerResults = new List<PlayerResultPanel>();
 
-            PlayerResultPanel resultsTemplate = m_resultsContent.GetComponentInChildren<PlayerResultPanel>();
+            var resultsTemplate = m_resultsContent.GetComponentInChildren<PlayerResultPanel>();
             m_playerResults.Add(resultsTemplate);
 
-            for (int i = 0; i < Consts.MAX_RACERS - 1; i++)
+            for (var i = 0; i < Consts.MAX_RACERS - 1; i++)
             {
                 m_playerResults.Add(Instantiate(resultsTemplate, m_resultsContent));
             }
         }
 
-        protected override void OnResetMenu(bool fullReset)
-        {
-            if (enabled)
-            {
-                RecordingManager.Instance.RefreshRecordingsAsync();
-                m_infos = RecordingManager.Instance.Replays;
-            }
-            m_infoPage = 0;
-            ViewPage(0);
-        }
+        //protected override void OnResetMenu(bool fullReset)
+        //{
+        //    if (enabled)
+        //    {
+        //        RecordingManager.RefreshRecordingsAsync();
+        //        m_infos = RecordingManager.Replays;
+        //    }
+        //    m_infoPage = 0;
+        //    ViewPage(0);
+        //}
 
         protected override void OnUpdate()
         {
-            m_infos = RecordingManager.Instance.Replays;
+            m_infos = RecordingManager.Replays;
         }
 
         protected override void OnUpdateGraphics()
         {
-            int maxPage = GetMaxPageCount();
+            var maxPage = GetMaxPageCount();
             m_pageText.text = (m_infoPage + 1) + "/" + (maxPage + 1);
 
             ViewPage(m_infoPage);
 
-            GameObject selected = EventSystem.current.currentSelectedGameObject;
+            var selected = PrimarySelection.Current;
 
             ReplayPanel selectedReplay = null;
-            foreach (ReplayPanel replay in m_replayPanels)
+            foreach (var replay in m_replayPanels)
             {
                 if (replay.gameObject == selected)
                 {
@@ -108,15 +106,15 @@ namespace BoostBlasters.UI.MainMenus
 
             if (m_mainPanel.activeInHierarchy)
             {
-                RecordingInfo info = selectedReplay.ReplayInfo;
-                RaceResult[] results = info.RaceResults.OrderBy(r => r.Rank).ToArray();
+                var info = selectedReplay.ReplayInfo;
+                var results = info.RaceResults.OrderBy(r => r.Rank).ToArray();
 
                 m_levelPreview.sprite = info.RaceParams.Level.Preview;
                 m_levelNameText.text = info.RaceParams.Level.Name;
                 m_lapsText.text = info.RaceParams.Laps.ToString();
                 m_finishedText.text = results.Any(r => r.Finished) ? "Yes" : "No";
 
-                for (int i = 0; i < m_playerResults.Count; i++)
+                for (var i = 0; i < m_playerResults.Count; i++)
                 {
                     if (i < results.Length)
                     {
@@ -142,7 +140,7 @@ namespace BoostBlasters.UI.MainMenus
 
         private void ChangePage(int offset)
         {
-            int oldPage = m_infoPage;
+            var oldPage = m_infoPage;
 
             m_infoPage = Mathf.Clamp(m_infoPage + offset, 0, GetMaxPageCount());
 
@@ -155,27 +153,27 @@ namespace BoostBlasters.UI.MainMenus
 
         private void ViewPage(int page)
         {
-            for (int i = 0; i < m_replayPanels.Count; i++)
+            for (var i = 0; i < m_replayPanels.Count; i++)
             {
-                int index = (page * m_panelCount) + i;
+                var index = (page * m_panelCount) + i;
 
                 m_replayPanels[i].SetRecording((index < m_infos.Count) ? m_infos[index] : null);
             }
 
             if (m_replayPanels[0].isActiveAndEnabled)
             {
-                DefaultSelectionOverride = UIHelper.SetNavigationVertical(new NavConfig()
+                PrimarySelection.DefaultSelectionOverride = UIHelper.SetNavigationVertical(new NavConfig()
                 {
                     parent = m_replayListContent,
                     down = m_backButton,
                 }
-                ).First();
+                ).First().gameObject;
             }
             else
             {
-                DefaultSelectionOverride = m_backButton;
+                PrimarySelection.DefaultSelectionOverride = m_backButton.gameObject;
 
-                Navigation tempNav = m_backButton.navigation;
+                var tempNav = m_backButton.navigation;
                 tempNav.selectOnUp = null;
                 m_backButton.navigation = tempNav;
             }

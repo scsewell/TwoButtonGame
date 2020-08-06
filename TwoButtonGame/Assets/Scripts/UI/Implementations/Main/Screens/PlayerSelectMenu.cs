@@ -9,7 +9,7 @@ using BoostBlasters.Races;
 
 namespace BoostBlasters.UI.MainMenus
 {
-    public class PlayerSelectMenu : MenuScreen<MainMenu>
+    public class PlayerSelectMenu : MenuScreen
     {
         private static readonly List<int> s_playerPanelIndices = new List<int>();
 
@@ -19,7 +19,7 @@ namespace BoostBlasters.UI.MainMenus
         [SerializeField] private RectTransform m_playerSelectContent = null;
         [SerializeField] private GameObject m_continueBar = null;
         [SerializeField] private Image m_continueBanner = null;
-        [SerializeField] private ControlPanel m_continueControls = null;
+        [SerializeField] private Control m_continueControls = null;
 
         private readonly List<PlayerSelectPanel> m_playerSelectPanels = new List<PlayerSelectPanel>();
         private bool m_canContine;
@@ -41,6 +41,7 @@ namespace BoostBlasters.UI.MainMenus
         {
             base.Awake();
 
+            // WHy not INitMenu?
             m_playerSelectContent.GetComponentsInChildren(true, m_playerSelectPanels);
         }
 
@@ -69,12 +70,12 @@ namespace BoostBlasters.UI.MainMenus
             m_playerSelectPanels.ForEach(p => p.SetCameraActive(false));
         }
 
-        protected override void OnResetMenu(bool fullReset)
-        {
-            m_playerSelectPanels.ForEach(p => p.ResetState(fullReset));
-            m_canContine = false;
-            m_continueTime = 0;
-        }
+        //protected override void OnResetMenu(bool fullReset)
+        //{
+        //    m_playerSelectPanels.ForEach(p => p.ResetState(fullReset));
+        //    m_canContine = false;
+        //    m_continueTime = 0;
+        //}
 
         public override void Back()
         {
@@ -107,11 +108,11 @@ namespace BoostBlasters.UI.MainMenus
             }
             else if (m_canContine)
             {
-                m_continueControls.UpdateUI("Continue", Menu.ReservedInputs.SelectMany(i => i.SpriteAccept).ToList());
+                m_continueControls.UpdateUI("Continue", (Menu as MainMenu).ReservedInputs.SelectMany(i => i.SpriteAccept).ToList());
 
                 if (m_playerSelectPanels.Any(p => p.Continue))
                 {
-                    Menu.SetMenu(Menu.LevelSelect);
+                    Menu.SwitchTo<LevelSelectMenu>();
                 }
             }
         }
@@ -121,7 +122,7 @@ namespace BoostBlasters.UI.MainMenus
             m_continueBar.SetActive(m_canContine);
             m_continueBanner.color = Color.Lerp(Color.white, m_bannerCol, (Time.unscaledTime - m_continueTime) / 0.5f);
 
-            m_playerSelectPanels.ForEach(p => p.UpdateGraphics(Menu));
+            m_playerSelectPanels.ForEach(p => p.UpdateGraphics(Menu as MainMenu));
         }
     }
 }

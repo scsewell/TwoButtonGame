@@ -13,7 +13,7 @@ using BoostBlasters.Races;
 
 namespace BoostBlasters.UI.MainMenus
 {
-    public class LevelSelectMenu : MenuScreen<MainMenu>
+    public class LevelSelectMenu : MenuScreen
     {
         [Header("Prefabs")]
 
@@ -115,7 +115,7 @@ namespace BoostBlasters.UI.MainMenus
                 down = m_startRaceButton,
             });
 
-            DefaultSelectionOverride = m_trackSelect.Selectable;
+            PrimarySelection.DefaultSelectionOverride = m_trackSelect.Selectable.gameObject;
 
             m_playerResults = new List<PlayerResultPanel>();
             PlayerResultPanel resultsTemplate = m_resultsContent.GetComponentInChildren<PlayerResultPanel>();
@@ -180,19 +180,19 @@ namespace BoostBlasters.UI.MainMenus
             }
         }
 
-        protected override void OnResetMenu(bool fullReset)
-        {
-            m_aiCountSelect.SetMaxIndex(Consts.MAX_RACERS - ((MainMenu)Menu).ReservedInputs.Count);
+        //protected override void OnResetMenu(bool fullReset)
+        //{
+        //    m_aiCountSelect.SetMaxIndex(Consts.MAX_RACERS - ((MainMenu)Menu).ReservedInputs.Count);
 
-            if (fullReset)
-            {
-                m_trackSelect.SetValue(LevelManager.Levels.FirstOrDefault());
-                m_lapSelect.SetValue(m_defaultLapCount);
-                m_aiCountSelect.SetValue(m_defaultAICount);
-            }
+        //    if (fullReset)
+        //    {
+        //        m_trackSelect.SetValue(LevelManager.Levels.FirstOrDefault());
+        //        m_lapSelect.SetValue(m_defaultLapCount);
+        //        m_aiCountSelect.SetValue(m_defaultAICount);
+        //    }
 
-            m_levelHighlight.color = new Color(1, 1, 1, 0);
-        }
+        //    m_levelHighlight.color = new Color(1, 1, 1, 0);
+        //}
 
         protected override void OnUpdate()
         {

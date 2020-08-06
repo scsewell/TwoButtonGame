@@ -57,6 +57,9 @@ namespace BoostBlasters
             // remember the currently open scene
             EditorPrefs.SetString(PrefKey, SceneManager.GetActiveScene().path);
 
+            // save the scene if it is dirty
+            EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo();
+
             // open the load scene
             EditorSceneManager.OpenScene("Assets/Scenes/main.unity", OpenSceneMode.Single);
             EditorApplication.EnterPlaymode();

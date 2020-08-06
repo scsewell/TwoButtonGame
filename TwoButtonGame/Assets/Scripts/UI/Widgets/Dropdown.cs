@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Linq;
 
-using UnityEngine;
-
 using TMPro;
+
+using UnityEngine;
 
 namespace BoostBlasters.UI
 {
@@ -19,18 +19,14 @@ namespace BoostBlasters.UI
         private TMP_Dropdown m_dropdown = null;
         private string[] m_options = null;
 
-        /// <summary>
-        /// The label text.
-        /// </summary>
+        /// <inheritdoc/>
         public string Label
         {
             get => m_label.text;
             set => m_label.text = value;
         }
 
-        /// <summary>
-        /// All the displayable values.
-        /// </summary>
+        /// <inheritdoc/>
         public string[] Options
         {
             get => m_options;
@@ -52,17 +48,15 @@ namespace BoostBlasters.UI
             }
         }
 
-        /// <summary>
-        /// The label text.
-        /// </summary>
+        /// <inheritdoc/>
         public string Value
         {
             get => m_options[m_dropdown.value];
             set
             {
                 // get the index of the value in the options array
-                int index = -1;
-                for (int i = 0; i < Options.Length; i++)
+                var index = -1;
+                for (var i = 0; i < Options.Length; i++)
                 {
                     if (Options[i] == value)
                     {
@@ -83,9 +77,7 @@ namespace BoostBlasters.UI
             }
         }
 
-        /// <summary>
-        /// An event triggered when the user changes the value.
-        /// </summary>
+        /// <inheritdoc/>
         public event Action<string> ValueChanged;
 
 

@@ -6,6 +6,8 @@ using UnityEngine.EventSystems;
 
 namespace BoostBlasters.UI
 {
+
+    // TO BE REMOVED
     public class Navigable : MonoBehaviour, IMoveHandler
     {
         private Text m_name = null;

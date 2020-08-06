@@ -1,7 +1,7 @@
-﻿using UnityEngine;
-
-using Framework;
+﻿using Framework;
 using Framework.Settings;
+
+using UnityEngine;
 
 namespace BoostBlasters.UI.MainMenus
 {

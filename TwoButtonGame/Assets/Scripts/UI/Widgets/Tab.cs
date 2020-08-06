@@ -6,27 +6,32 @@ using UnityEngine.UI;
 
 namespace BoostBlasters.UI
 {
+    /// <summary>
+    /// A UI widget that displays an icon.
+    /// </summary>
     public class Tab : MonoBehaviour, ISelectHandler
     {
         [SerializeField]
+        [Tooltip("The image used to show the tab icon.")]
         private Image m_image = null;
 
-        private Action m_onSelect = null;
+        /// <summary>
+        /// The icon shown in the tab.
+        /// </summary>
+        public Sprite Icon
+        {
+            get => m_image.sprite;
+            set => m_image.sprite = value;
+        }
 
         /// <summary>
-        /// Prepares the tab.
+        /// The event invoked when the tab is selected.
         /// </summary>
-        /// <param name="icon">The icon to display for this tab.</param>
-        /// <param name="onSelect">The action completed when this tab is selected.</param>
-        public void Init(Sprite icon, Action onSelect)
-        {
-            m_image.sprite = icon;
-            m_onSelect = onSelect;
-        }
+        public event Action Selected;
 
         public void OnSelect(BaseEventData eventData)
         {
-            m_onSelect?.Invoke();
+            Selected?.Invoke();
         }
     }
 }

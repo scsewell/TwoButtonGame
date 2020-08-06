@@ -1,18 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 
-using UnityEngine;
-using UnityEngine.UI;
+using Framework.Settings;
+using Framework.UI;
 
 using TMPro;
 
-using Framework;
-using Framework.UI;
-using Framework.Settings;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace BoostBlasters.UI.MainMenus
 {
-    public class SettingsMenu : MenuScreen<MainMenu>
+    public class SettingsMenu : MenuScreen
     {
         [Header("Prefabs")]
 
@@ -56,13 +55,12 @@ namespace BoostBlasters.UI.MainMenus
             foreach (var category in SettingManager.Instance.Catergories)
             {
                 // create a tab for the category
-                UIHelper.Create(m_tabPrefab, m_categoryTabs, category.name).Init(category.Icon, () =>
-                {
-                    SetCategory(category);
-                });
+                var tab = UIHelper.Create(m_tabPrefab, m_categoryTabs, category.name);
+                tab.Icon = category.Icon;
+                tab.Selected += () => SetCategory(category);
 
                 // create a transform to hold the setting list for the category
-                RectTransform settingCategory = UIHelper.Create(m_settingsContent, category.name);
+                var settingCategory = UIHelper.Create(m_settingsContent, category.name);
 
                 var layout = settingCategory.gameObject.AddComponent<VerticalLayoutGroup>();
 
@@ -72,7 +70,7 @@ namespace BoostBlasters.UI.MainMenus
                 layout.childForceExpandWidth = true;
 
                 // create the settings list
-                List<SettingPanel> settings = new List<SettingPanel>();
+                var settings = new List<SettingPanel>();
 
                 foreach (var setting in SettingManager.Instance.GetSettings(category))
                 {
@@ -90,17 +88,18 @@ namespace BoostBlasters.UI.MainMenus
                             go = UIHelper.Create(m_spinnerPrefab, settingCategory, setting.name).gameObject;
                             break;
                         default:
+                            Debug.LogError($"Setting \"{setting}\" uses unsupported display mode {setting.DisplayMode}!");
                             continue;
                     }
 
-                    SettingPanel panel = go.AddComponent<SettingPanel>().Init(setting);
+                    var panel = go.AddComponent<SettingPanel>().Init(setting);
                     settings.Add(panel);
                 }
 
                 // add a button to restore defaults for this category
                 UIHelper.AddSpacer(settingCategory, 10f);
 
-                Button defaultsButton = UIHelper.Create(m_buttonPrefab, settingCategory);
+                var defaultsButton = UIHelper.Create(m_buttonPrefab, settingCategory);
                 defaultsButton.GetComponentInChildren<TMP_Text>().text = "Defaults";
                 defaultsButton.onClick.AddListener(() =>
                 {
@@ -125,17 +124,14 @@ namespace BoostBlasters.UI.MainMenus
                 wrap = true,
             });
 
-            SecondaryEvents.firstSelectedGameObject = tabs[0].gameObject;
+            SecondarySelection.DefaultSelectionOverride = tabs[0].gameObject;
         }
 
         protected override void OnDisableMenu()
         {
             // save the settings when leaving the menu
             SettingManager.Instance.Save();
-        }
 
-        protected override void OnResetMenu(bool fullReset)
-        {
             SetCategory(null);
         }
 
@@ -151,11 +147,11 @@ namespace BoostBlasters.UI.MainMenus
         protected override void OnUpdateGraphics()
         {
             // display the description for the currently selected item
-            GameObject selected = PrimaryEvents.currentSelectedGameObject;
+            var selected = PrimarySelection.Current;
 
             if (selected)
             {
-                SettingPanel setting = selected.GetComponent<SettingPanel>();
+                var setting = selected.GetComponent<SettingPanel>();
 
                 if (setting != null)
                 {
@@ -183,9 +179,9 @@ namespace BoostBlasters.UI.MainMenus
             // hide the old category
             if (m_currentCategory != null)
             {
-                PrimaryEvents.SetSelectedGameObject(null);
+                PrimarySelection.Current = null;
 
-                List<SettingPanel> settings = m_categoryToSettings[m_currentCategory];
+                var settings = m_categoryToSettings[m_currentCategory];
                 settings[0].transform.parent.gameObject.SetActive(false);
             }
 
@@ -197,7 +193,7 @@ namespace BoostBlasters.UI.MainMenus
             if (m_currentCategory != null)
             {
                 // load the category's settings
-                List<SettingPanel> settings = m_categoryToSettings[m_currentCategory];
+                var settings = m_categoryToSettings[m_currentCategory];
 
                 foreach (var setting in settings)
                 {
@@ -205,12 +201,12 @@ namespace BoostBlasters.UI.MainMenus
                 }
 
                 // enable the setting group
-                SettingPanel first = settings[0];
+                var first = settings[0];
                 first.transform.parent.gameObject.SetActive(true);
 
                 // prepare the selection
-                PrimaryEvents.firstSelectedGameObject = first.gameObject;
-                PrimaryEvents.SetSelectedGameObject(first.gameObject);
+                PrimarySelection.DefaultSelectionOverride = first.gameObject;
+                PrimarySelection.SelectDefault();
             }
         }
 
@@ -229,7 +225,7 @@ namespace BoostBlasters.UI.MainMenus
                     categoryDefaults.Preset.Apply();
 
                     // refresh the displayed values
-                    List<SettingPanel> settings = m_categoryToSettings[category];
+                    var settings = m_categoryToSettings[category];
 
                     foreach (var setting in settings)
                     {
@@ -237,7 +233,7 @@ namespace BoostBlasters.UI.MainMenus
                     }
 
                     return;
-                }   
+                }
             }
         }
     }

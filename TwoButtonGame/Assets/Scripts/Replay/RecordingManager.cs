@@ -1,20 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
-using UnityEngine;
-
-using Framework;
 using Framework.IO;
+
+using UnityEngine;
 
 namespace BoostBlasters.Replays
 {
     /// <summary>
     /// Manages the loading and saving of race recordings.
     /// </summary>
-    public class RecordingManager : ComponentSingleton<RecordingManager>
+    public static class RecordingManager
     {
         /// <summary>
         /// The name of the folder to store replays under.
@@ -37,14 +36,14 @@ namespace BoostBlasters.Replays
         private static readonly int MAX_REPLAYS = 100;
 
 
-        private readonly object m_replayLock = new object();
-        private readonly List<RecordingInfo> m_replays = new List<RecordingInfo>();
-        private bool m_isRefreshing = false;
+        private static readonly object m_replayLock = new object();
+        private static readonly List<RecordingInfo> m_replays = new List<RecordingInfo>();
+        private static bool m_isRefreshing;
 
         /// <summary>
-        /// Gets all new list with all currently loaded replay information.
+        /// Gets a new list with all currently loaded replay information.
         /// </summary>
-        public List<RecordingInfo> Replays
+        public static List<RecordingInfo> Replays
         {
             get
             {
@@ -58,7 +57,7 @@ namespace BoostBlasters.Replays
         /// <summary>
         /// Checks if the replay information is currently being refreshed.
         /// </summary>
-        public bool IsRefreshing
+        public static bool IsRefreshing
         {
             get
             {
@@ -70,10 +69,17 @@ namespace BoostBlasters.Replays
         }
 
 
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void Init()
+        {
+            m_replays.Clear();
+            m_isRefreshing = false;
+        }
+
         /// <summary>
         /// Loads all exising replay file information.
         /// </summary>
-        public async void RefreshRecordingsAsync()
+        public static async void RefreshRecordingsAsync()
         {
             lock (m_replayLock)
             {
@@ -94,7 +100,7 @@ namespace BoostBlasters.Replays
         /// </summary>
         /// <param name="info">The info of the recording to load.</param>
         /// <returns>The race recording.</returns>
-        public async Task<Recording> LoadReplayAsync(RecordingInfo info)
+        public static async Task<Recording> LoadReplayAsync(RecordingInfo info)
         {
             return await Task.Run(() => LoadReplay(info));
         }
@@ -104,13 +110,13 @@ namespace BoostBlasters.Replays
         /// </summary>
         /// <param name="info">The info of the recording to load.</param>
         /// <returns>The race recording.</returns>
-        public Recording LoadReplay(RecordingInfo info)
+        private static Recording LoadReplay(RecordingInfo info)
         {
-            if (FileIO.OpenFileStream(info.File.FullName, out FileStream stream))
+            if (FileIO.OpenFileStream(info.File.FullName, out var stream))
             {
-                using (DataReader reader = new DataReader(stream))
+                using (var reader = new DataReader(stream))
                 {
-                    Recording recording = new Recording(reader);
+                    var recording = new Recording(reader);
 
                     Debug.Log($"Loaded replay \"{info.File.Name}\"");
                     return recording;
@@ -127,7 +133,7 @@ namespace BoostBlasters.Replays
         /// Saves a replay file asynchronously.
         /// </summary>
         /// <param name="replay">The replay to save.</param>
-        public async void SaveReplayAsync(Recording replay)
+        public static async void SaveReplayAsync(Recording replay)
         {
             await Task.Run(() => SaveReplay(replay));
         }
@@ -136,12 +142,12 @@ namespace BoostBlasters.Replays
         /// Saves a replay file.
         /// </summary>
         /// <param name="replay">The replay to save.</param>
-        public void SaveReplay(Recording replay)
+        private static void SaveReplay(Recording replay)
         {
-            string name = $"Replay_{DateTime.Now.ToString(FILE_DATE_FORMAT)}{FILE_EXTENTION}";
-            string path = Path.Combine(GetReplayDir(), name);
+            var name = $"Replay_{DateTime.Now.ToString(FILE_DATE_FORMAT)}{FILE_EXTENTION}";
+            var path = Path.Combine(GetReplayDir(), name);
 
-            using (DataWriter writer = new DataWriter())
+            using (var writer = new DataWriter())
             {
                 if (replay.Serialize(writer) && FileIO.WriteFile(path, writer.GetBytes()))
                 {
@@ -154,12 +160,12 @@ namespace BoostBlasters.Replays
             }
         }
 
-        private void GetReplays()
+        private static void GetReplays()
         {
-            List<FileInfo> files = FileIO.GetFiles(GetReplayDir(), FILE_EXTENTION).ToList();
+            var files = FileIO.GetFiles(GetReplayDir(), FILE_EXTENTION).ToList();
             files.Sort((x, y) => y.CreationTime.CompareTo(x.CreationTime));
 
-            foreach (FileInfo file in files)
+            foreach (var file in files)
             {
                 // remove replays if there are too many
                 int replayCount;
@@ -176,15 +182,15 @@ namespace BoostBlasters.Replays
                 }
 
                 // try to load the recording information
-                if (FileIO.OpenFileStream(file.FullName, out FileStream stream))
+                if (FileIO.OpenFileStream(file.FullName, out var stream))
                 {
-                    using (DataReader reader = new DataReader(stream))
+                    using (var reader = new DataReader(stream))
                     {
-                        Recording recording = new Recording(reader, true);
+                        var recording = new Recording(reader, true);
 
                         if (recording.IsValid)
                         {
-                            RecordingInfo info = new RecordingInfo(file, recording.Params, recording.Results);
+                            var info = new RecordingInfo(file, recording.Params, recording.Results);
 
                             lock (m_replayLock)
                             {
@@ -202,7 +208,7 @@ namespace BoostBlasters.Replays
             }
         }
 
-        private string GetReplayDir()
+        private static string GetReplayDir()
         {
             return Path.Combine(FileIO.GetConfigDirectory(), FOLDER_NAME);
         }

@@ -447,7 +447,7 @@ namespace BoostBlasters.Races
         {
             if (!m_savedRecording && m_fixedFramesSoFar > 0)
             {
-                RecordingManager.Instance.SaveReplayAsync(m_raceRecording);
+                RecordingManager.SaveReplayAsync(m_raceRecording);
                 m_savedRecording = true;
             }
         }

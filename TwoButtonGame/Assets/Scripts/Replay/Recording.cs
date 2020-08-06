@@ -2,15 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 
-using UnityEngine;
+using BoostBlasters.Characters;
+using BoostBlasters.Levels;
+using BoostBlasters.Players;
+using BoostBlasters.Races;
+using BoostBlasters.Races.Racers;
 
 using Framework.IO;
 
-using BoostBlasters.Players;
-using BoostBlasters.Characters;
-using BoostBlasters.Levels;
-using BoostBlasters.Races;
-using BoostBlasters.Races.Racers;
+using UnityEngine;
 
 namespace BoostBlasters.Replays
 {
@@ -19,17 +19,12 @@ namespace BoostBlasters.Replays
     /// </summary>
     public class Recording : SerializableData
     {
-        private static readonly char[] SERIALIZER_TYPE = new char[] { 'B', 'B', 'R', 'C' };
-
-        protected override char[] SerializerType => SERIALIZER_TYPE;
+        protected override char[] SerializerType { get; } = new char[] { 'B', 'B', 'R', 'C' };
         protected override ushort SerializerVersion => 1;
 
         private const int FRAMES_PER_KEYFRAME = 10;
 
 
-        /// <summary>
-        /// A keyframe used in a recording.
-        /// </summary>
         private struct Keyframe
         {
             private Vector3 m_position;
@@ -75,10 +70,10 @@ namespace BoostBlasters.Replays
         {
             get
             {
-                int frameCount = 0;
+                var frameCount = 0;
                 if (m_inputs != null)
                 {
-                    for (int i = 0; i < m_inputs.Length; i++)
+                    for (var i = 0; i < m_inputs.Length; i++)
                     {
                         frameCount = Mathf.Max(frameCount, m_inputs[i].Count);
                     }
@@ -108,7 +103,7 @@ namespace BoostBlasters.Replays
             m_keyframes = new List<Keyframe>[raceParams.RacerCount];
             m_inputs = new List<Inputs>[raceParams.RacerCount];
 
-            for (int i = 0; i < raceParams.RacerCount; i++)
+            for (var i = 0; i < raceParams.RacerCount; i++)
             {
                 m_keyframes[i] = new List<Keyframe>();
                 m_inputs[i] = new List<Inputs>();
@@ -134,9 +129,9 @@ namespace BoostBlasters.Replays
             writer.Write(Params.Laps);
 
             writer.Write(Params.RacerCount);
-            for (int i = 0; i < Params.RacerCount; i++)
+            for (var i = 0; i < Params.RacerCount; i++)
             {
-                RacerConfig racer = Params.Racers[i];
+                var racer = Params.Racers[i];
 
                 writer.Write(racer.Character.Guid);
                 writer.Write(racer.Profile.Guid);
@@ -146,9 +141,9 @@ namespace BoostBlasters.Replays
             }
 
             // write recording contents
-            using (DataWriter bodyWriter = new DataWriter())
+            using (var bodyWriter = new DataWriter())
             {
-                for (int i = 0; i < Params.RacerCount; i++)
+                for (var i = 0; i < Params.RacerCount; i++)
                 {
                     var keyframes = m_keyframes[i].ToArray();
                     bodyWriter.Write(keyframes.Length);
@@ -159,7 +154,7 @@ namespace BoostBlasters.Replays
                     bodyWriter.Write(inputs);
                 }
 
-                byte[] body = Compression.Compress(bodyWriter.GetBytes());
+                var body = Compression.Compress(bodyWriter.GetBytes());
                 writer.Write(body.Length);
                 writer.Write(body);
             }
@@ -168,21 +163,21 @@ namespace BoostBlasters.Replays
         protected override void OnDeserialize(DataReader reader, ushort version)
         {
             // load the header data
-            Level level = LevelManager.GetByGUID(reader.Read<Guid>());
-            int laps = reader.Read<int>();
+            var level = LevelManager.GetByGUID(reader.Read<Guid>());
+            var laps = reader.Read<int>();
 
-            int racerCount = reader.Read<int>();
+            var racerCount = reader.Read<int>();
 
-            RacerConfig[] racers = new RacerConfig[racerCount];
+            var racers = new RacerConfig[racerCount];
             Results = new RaceResult[racerCount];
 
-            for (int i = 0; i < racerCount; i++)
+            for (var i = 0; i < racerCount; i++)
             {
-                Character character = CharacterManager.GetByGUID(reader.Read<Guid>());
+                var character = CharacterManager.GetByGUID(reader.Read<Guid>());
 
-                Guid guid = reader.Read<Guid>();
-                string name = reader.ReadString();
-                Profile profile = ProfileManager.CreateTemporaryProfile(name, false);
+                var guid = reader.Read<Guid>();
+                var name = reader.ReadString();
+                var profile = ProfileManager.CreateTemporaryProfile(name, false);
 
                 racers[i] = RacerConfig.CreateReplay(character, profile);
                 Results[i] = new RaceResult(reader);
@@ -196,15 +191,15 @@ namespace BoostBlasters.Replays
                 return;
             }
 
-            int bodySize = reader.Read<int>();
-            byte[] body = Compression.Decompress(reader.Read<byte>(bodySize));
+            var bodySize = reader.Read<int>();
+            var body = Compression.Decompress(reader.Read<byte>(bodySize));
 
-            using (DataReader bodyReader = new DataReader(body))
+            using (var bodyReader = new DataReader(body))
             {
                 m_keyframes = new List<Keyframe>[Params.RacerCount];
                 m_inputs = new List<Inputs>[Params.RacerCount];
 
-                for (int i = 0; i < Params.RacerCount; i++)
+                for (var i = 0; i < Params.RacerCount; i++)
                 {
                     m_keyframes[i] = bodyReader.Read<Keyframe>(bodyReader.Read<int>()).ToList();
                     m_inputs[i] = bodyReader.Read<Inputs>(bodyReader.Read<int>()).ToList();
@@ -219,9 +214,9 @@ namespace BoostBlasters.Replays
         /// <param name="racers">The racers to record the state of.</param>
         public void Record(int fixedFrame, List<Racer> racers)
         {
-            for (int i = 0; i < Params.RacerCount; i++)
+            for (var i = 0; i < Params.RacerCount; i++)
             {
-                Racer racer = racers[i];
+                var racer = racers[i];
 
                 if (!racer.RaceResult.Finished)
                 {
@@ -243,28 +238,28 @@ namespace BoostBlasters.Replays
         /// <param name="isAfterStart">Has the race began.</param>
         public void ApplyRecordedFrame(int fixedFrame, List<Racer> racers, List<RacerCamera> cameras, bool isAfterStart)
         {
-            bool isKeyframe = fixedFrame % FRAMES_PER_KEYFRAME == 0;
-            int keyframeIndex = fixedFrame / FRAMES_PER_KEYFRAME;
+            var isKeyframe = fixedFrame % FRAMES_PER_KEYFRAME == 0;
+            var keyframeIndex = fixedFrame / FRAMES_PER_KEYFRAME;
 
-            for (int i = 0; i < Params.RacerCount; i++)
+            for (var i = 0; i < Params.RacerCount; i++)
             {
-                Racer racer = racers[i];
+                var racer = racers[i];
 
                 if (isKeyframe && keyframeIndex < m_keyframes[i].Count)
                 {
-                    Vector3 lastPos = racer.transform.position;
+                    var lastPos = racer.transform.position;
 
                     m_keyframes[i][keyframeIndex].Apply(racer);
 
                     if (cameras.Count > i)
                     {
-                        RacerCamera camera = cameras[i];
+                        var camera = cameras[i];
                         camera.transform.position += lastPos - racer.transform.position;
                         camera.Interpolator.ForgetPreviousValues();
                     }
                 }
 
-                Inputs inputs = fixedFrame < m_inputs[i].Count ? m_inputs[i][fixedFrame] : new Inputs();
+                var inputs = fixedFrame < m_inputs[i].Count ? m_inputs[i][fixedFrame] : new Inputs();
 
                 racer.ProcessReplaying(true, isAfterStart, inputs);
             }

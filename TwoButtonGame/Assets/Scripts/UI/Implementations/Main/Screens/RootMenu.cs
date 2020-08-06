@@ -1,13 +1,21 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.InputSystem;
+﻿using TMPro;
 
-using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace BoostBlasters.UI.MainMenus
 {
-    public class RootMenu : MenuScreen<MainMenu>
+    public class RootMenu : MenuScreen
     {
+        private static bool m_showStartMenu;
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void Init()
+        {
+            m_showStartMenu = true;
+        }
+
+
         [Header("UI Elements")]
 
         [SerializeField] private Button m_playButton = null;
@@ -20,13 +28,6 @@ namespace BoostBlasters.UI.MainMenus
         [SerializeField] private TextMeshProUGUI m_version = null;
         [SerializeField] private Animator m_animator = null;
 
-        private static bool m_showStartMenu;
-
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        private static void Init()
-        {
-            m_showStartMenu = true;
-        }
 
         public override void InitMenu()
         {
@@ -35,50 +36,23 @@ namespace BoostBlasters.UI.MainMenus
             // show the start menu if the game was just launched
             m_animator.Play(m_showStartMenu ? "Start" : "Main");
 
-            m_playButton.onClick.AddListener(           () => Menu.SetMenu(Menu.PlayerSelect));
-            m_profilesButton.onClick.AddListener(       () => Menu.SetMenu(Menu.Profiles));
-            m_replaysButton.onClick.AddListener(        () => Menu.SetMenu(Menu.Replays));
-            m_settingsButton.onClick.AddListener(       () => Menu.SetMenu(Menu.Settings));
-            m_creditsButton.onClick.AddListener(        () => Menu.SetMenu(Menu.Credits));
-            m_quitButton.onClick.AddListener(           () => Application.Quit());
+            m_playButton.onClick.AddListener(() => Menu.SwitchTo<PlayerSelectMenu>());
+            m_profilesButton.onClick.AddListener(() => Menu.SwitchTo<ProfilesMenu>());
+            m_replaysButton.onClick.AddListener(() => Menu.SwitchTo<ReplayMenu>());
+            m_settingsButton.onClick.AddListener(() => Menu.SwitchTo<SettingsMenu>());
+            m_creditsButton.onClick.AddListener(() => Menu.SwitchTo<CreditsMenu>());
+            m_quitButton.onClick.AddListener(() => Application.Quit());
         }
 
         protected override void OnUpdate()
         {
-            if (m_showStartMenu)
+            // close the start menu once a button has been pressed
+            if (m_showStartMenu && InputUtils.GetCurrentDevice() != null)
             {
-                // check if there is any button pressed
-                bool anyKey = false;
+                m_showStartMenu = false;
 
-                foreach (var device in InputSystem.devices)
-                {
-                    if (device is Keyboard keyboard && keyboard.anyKey.isPressed)
-                    {
-                        anyKey = true;
-                        break;
-                    }
-                }
-
-                foreach (Gamepad gamepad in Gamepad.all)
-                {
-                    foreach (var control in gamepad.allControls)
-                    {
-                        if (control.IsActuated(0.5f))
-                        {
-                            anyKey = true;
-                            break;
-                        }
-                    }
-                }
-
-                // close the start menu if a button is pressed
-                if (anyKey)
-                {
-                    m_animator.SetTrigger("Activate");
-                    Menu.Sound.PlayNextMenuSound();
-
-                    m_showStartMenu = false;
-                }
+                m_animator.SetTrigger("Activate");
+                Menu.Sound.PlayNextMenuSound();
             }
         }
     }

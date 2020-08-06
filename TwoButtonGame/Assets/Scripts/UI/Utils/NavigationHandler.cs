@@ -1,13 +1,13 @@
-﻿using UnityEngine;
+﻿using Framework.UI;
+
+using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-
-using Framework.UI;
 
 namespace BoostBlasters.UI
 {
     /// <summary>
-    /// Handles moving selection between selectables.
+    /// A component that handles moving selection between selectables.
     /// </summary>
     public class NavigationHandler : MonoBehaviour, IMoveHandler
     {
@@ -35,10 +35,10 @@ namespace BoostBlasters.UI
 
             switch (eventData.moveDir)
             {
-                case MoveDirection.Up:      toSelect = m_selectable.navigation.selectOnUp;      break;
-                case MoveDirection.Down:    toSelect = m_selectable.navigation.selectOnDown;    break;
-                case MoveDirection.Left:    toSelect = m_selectable.navigation.selectOnLeft;    break;
-                case MoveDirection.Right:   toSelect = m_selectable.navigation.selectOnRight;   break;
+                case MoveDirection.Up: toSelect = m_selectable.navigation.selectOnUp; break;
+                case MoveDirection.Down: toSelect = m_selectable.navigation.selectOnDown; break;
+                case MoveDirection.Left: toSelect = m_selectable.navigation.selectOnLeft; break;
+                case MoveDirection.Right: toSelect = m_selectable.navigation.selectOnRight; break;
             }
 
             // ensure the target exists

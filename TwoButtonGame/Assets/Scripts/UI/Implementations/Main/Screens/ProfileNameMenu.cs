@@ -7,7 +7,7 @@ using BoostBlasters.Players;
 
 namespace BoostBlasters.UI.MainMenus
 {
-    public class ProfileNameMenu : MenuScreen<MainMenu>
+    public class ProfileNameMenu : MenuScreen
     {
         private static readonly int MAX_NAME_LENGTH = 16;
 
@@ -33,12 +33,12 @@ namespace BoostBlasters.UI.MainMenus
             m_cancelButton.onClick.AddListener(() => Cancel());
         }
 
-        protected override void OnResetMenu(bool fullReset)
-        {
-            m_delete = false;
-            m_deleteRepeat = false;
-            m_deleteWait = 0f;
-        }
+        //protected override void OnResetMenu(bool fullReset)
+        //{
+        //    m_delete = false;
+        //    m_deleteRepeat = false;
+        //    m_deleteWait = 0f;
+        //}
 
         protected override void OnEnableMenu()
         {
@@ -141,7 +141,7 @@ namespace BoostBlasters.UI.MainMenus
 
             m_currentName = editProfile.Name;
 
-            Menu.SetMenu(Menu.ProfileName);
+            Menu.SwitchTo<ProfileNameMenu>();
         }
         
         private void Accept()
@@ -151,7 +151,7 @@ namespace BoostBlasters.UI.MainMenus
             if (trimmed.Length > 0)
             {
                 ProfileManager.RenameProfile(m_editProfile, trimmed);
-                Menu.SetMenu(m_returnToMenu);
+                Menu.SwitchTo(m_returnToMenu);
             }
             else
             {
@@ -167,7 +167,7 @@ namespace BoostBlasters.UI.MainMenus
             {
                 ProfileManager.DeleteProfile(m_editProfile);
             }
-            Menu.SetMenu(m_returnToMenu, TransitionSound.Back);
+            Menu.SwitchTo(m_returnToMenu, TransitionSound.Back);
 
             m_onComplete?.Invoke(null);
         }

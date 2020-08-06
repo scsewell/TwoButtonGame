@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 namespace BoostBlasters.UI.MainMenus
 {
-    public class ConfirmMenu : MenuScreen<MainMenu>
+    public class ConfirmMenu : MenuScreen
     {
         [Header("UI Elements")]
 
@@ -14,7 +14,7 @@ namespace BoostBlasters.UI.MainMenus
         [SerializeField] private Button m_cancelButton = null;
 
         private Action<bool> m_onResponse = null;
-        private MenuScreen<MainMenu> m_returnToMenu = null;
+        private MenuScreen m_returnToMenu = null;
 
         public override void InitMenu()
         {
@@ -22,11 +22,17 @@ namespace BoostBlasters.UI.MainMenus
             m_cancelButton.onClick.AddListener(() => Cancel());
         }
 
-        public void ConfirmAction(string text, Action<bool> onResponse, MenuScreen<MainMenu> returnToMenu)
+        /// <summary>
+        /// Opens a confirmation prompt.
+        /// </summary>
+        /// <param name="message">The message shown to the user.</param>
+        /// <param name="onResponse">The action to complete using the received response.</param>
+        /// <param name="returnToMenu">The menu to open once the reponse is received.</param>
+        public void ConfirmAction(string message, Action<bool> onResponse, MenuScreen returnToMenu)
         {
-            Menu.SetMenu(Menu.Confirm);
+            Menu.SwitchTo(this);
 
-            m_confirmText.text = text;
+            m_confirmText.text = message;
             m_onResponse = onResponse;
             m_returnToMenu = returnToMenu;
         }
@@ -41,14 +47,14 @@ namespace BoostBlasters.UI.MainMenus
             m_onResponse(true);
 
             Menu.Sound.PlaySubmitSound();
-            Menu.SetMenu(m_returnToMenu);
+            Menu.SwitchTo(m_returnToMenu, TransitionSound.None);
         }
 
         private void Cancel()
         {
             m_onResponse(false);
 
-            Menu.SetMenu(m_returnToMenu, TransitionSound.Back);
+            Menu.SwitchTo(m_returnToMenu, TransitionSound.Back);
         }
     }
 }

@@ -1,10 +1,10 @@
 ﻿using System;
 
+using TMPro;
+
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-
-using TMPro;
 
 namespace BoostBlasters.UI
 {
@@ -21,31 +21,25 @@ namespace BoostBlasters.UI
         private Selectable m_selectable = null;
         private SoundPlayer m_sound = null;
 
-        /// <summary>
-        /// The label text.
-        /// </summary>
+        /// <inheritdoc/>
         public string Label
         {
             get => m_label.text;
             set => m_label.text = value;
         }
 
-        /// <summary>
-        /// All the displayable values.
-        /// </summary>
+        /// <inheritdoc/>
         public string[] Options { get; set; } = null;
 
-        /// <summary>
-        /// The currently selected value.
-        /// </summary>
+        /// <inheritdoc/>
         public string Value
         {
             get => m_valueText.text;
             set
             {
                 // get the index of the value in the options array
-                int index = -1;
-                for (int i = 0; i < Options.Length; i++)
+                var index = -1;
+                for (var i = 0; i < Options.Length; i++)
                 {
                     if (Options[i] == value)
                     {
@@ -57,7 +51,7 @@ namespace BoostBlasters.UI
                 // if the value is valid set the selection
                 if (index >= 0)
                 {
-                    SetValue(index);
+                    SelectIndex(index);
                 }
                 else
                 {
@@ -66,47 +60,19 @@ namespace BoostBlasters.UI
             }
         }
 
+        /// <inheritdoc/>
+        public event Action<string> ValueChanged;
+
         /// <summary>
         /// The index of the currently selected value in the options array.
         /// </summary>
         protected int CurrentIndex { get; private set; } = -1;
 
-        /// <summary>
-        /// An event triggered when the user changes the value.
-        /// </summary>
-        public event Action<string> ValueChanged;
 
-
-        private void Awake()
+        protected virtual void Awake()
         {
             m_selectable = GetComponent<Selectable>();
             m_sound = GetComponentInParent<SoundPlayer>();
-        }
-
-        /// <summary>
-        /// Selects the option at the provided index.
-        /// </summary>
-        /// <param name="newIndex">The new value index.</param>
-        protected void SelectIndex(int newIndex)
-        {
-            if (CurrentIndex != newIndex)
-            {
-                SetValue(newIndex);
-                ValueChanged?.Invoke(Value);
-                m_sound.PlaySelectSound();
-            }
-        }
-
-        private void SetValue(int index)
-        {
-            CurrentIndex = index;
-            m_valueText.text = Options[CurrentIndex];
-
-            OnValueChanged();
-        }
-
-        protected virtual void OnValueChanged()
-        {
         }
 
         public void OnMove(AxisEventData eventData)
@@ -118,10 +84,8 @@ namespace BoostBlasters.UI
 
             switch (eventData.moveDir)
             {
-                case MoveDirection.Left: SelectIndex(GetRelativeIndex(eventData, -1)); break;
-                case MoveDirection.Right: SelectIndex(GetRelativeIndex(eventData, 1)); break;
-                default:
-                    return;
+                case MoveDirection.Left: NavigateToIndex(GetRelativeIndex(eventData, -1)); break;
+                case MoveDirection.Right: NavigateToIndex(GetRelativeIndex(eventData, 1)); break;
             }
         }
 
@@ -130,11 +94,31 @@ namespace BoostBlasters.UI
             // allow wrapping if this is not a repeat navigation input
             if (UIUtils.GetRepeatCount(eventData.currentInputModule) == 0)
             {
-                return (CurrentIndex + Options.Length + offset) % Options.Length;
+                return (CurrentIndex + offset + Options.Length) % Options.Length;
             }
             else
             {
                 return Mathf.Clamp(CurrentIndex + offset, 0, Options.Length - 1);
+            }
+        }
+
+        private void NavigateToIndex(int newIndex)
+        {
+            if (CurrentIndex != newIndex)
+            {
+                SelectIndex(newIndex);
+                m_sound.PlaySelectSound();
+            }
+        }
+
+        private void SelectIndex(int newIndex)
+        {
+            if (CurrentIndex != newIndex)
+            {
+                CurrentIndex = newIndex;
+                m_valueText.text = Options[newIndex];
+
+                ValueChanged?.Invoke(Value);
             }
         }
     }

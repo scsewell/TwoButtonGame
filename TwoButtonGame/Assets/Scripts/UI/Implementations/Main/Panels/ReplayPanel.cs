@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using BoostBlasters.Replays;
 
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.EventSystems;
-
-using BoostBlasters.Replays;
+using UnityEngine.UI;
 
 namespace BoostBlasters.UI.MainMenus
 {

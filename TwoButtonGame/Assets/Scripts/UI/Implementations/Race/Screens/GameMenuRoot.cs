@@ -5,7 +5,7 @@ using Framework.UI;
 
 namespace BoostBlasters.UI.RaceMenus
 {
-    public class GameMenuRoot : MenuScreen<InRaceMenu>
+    public class GameMenuRoot : MenuScreen
     {
         [Header("UI Elements")]
 
@@ -30,20 +30,20 @@ namespace BoostBlasters.UI.RaceMenus
         private void Resume()
         {
             Main.Instance.RaceManager.Resume();
-            Menu.SetMenu(null, TransitionSound.Back);
+            Menu.SwitchTo(null, TransitionSound.Back);
         }
 
         private void Restart()
         {
             Main.Instance.RaceManager.Resume();
             Main.Instance.RaceManager.RestartRace();
-            Menu.SetMenu(null);
+            Menu.SwitchTo(null);
         }
 
         private void Quit()
         {
             Main.Instance.RaceManager.Quit();
-            Menu.SetMenu(null);
+            Menu.SwitchTo(null);
         }
     }
 }

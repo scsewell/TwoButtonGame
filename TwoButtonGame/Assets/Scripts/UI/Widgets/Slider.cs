@@ -1,6 +1,6 @@
-﻿using UnityEngine;
+﻿using Framework;
 
-using Framework;
+using UnityEngine;
 
 namespace BoostBlasters.UI
 {
@@ -16,12 +16,17 @@ namespace BoostBlasters.UI
         /// </summary>
         public MinMaxRange Range { get; set; }
 
-        protected override void OnValueChanged()
+        protected override void Awake()
         {
-            // fill the bar to match the value in the range
-            Vector2 anchor = m_fill.anchorMax;
-            anchor.x = Range.InverseLerp(float.Parse(Value));
-            m_fill.anchorMax = anchor;
+            base.Awake();
+
+            ValueChanged += (v) =>
+            {
+                // fill the bar to match the value in the range
+                var anchor = m_fill.anchorMax;
+                anchor.x = Range.InverseLerp(float.Parse(Value));
+                m_fill.anchorMax = anchor;
+            };
         }
     }
 }
