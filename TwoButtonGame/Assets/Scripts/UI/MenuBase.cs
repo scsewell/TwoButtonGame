@@ -12,11 +12,22 @@ namespace BoostBlasters.UI
     [RequireComponent(typeof(SoundPlayer))]
     public abstract class MenuBase : MonoBehaviour
     {
-        private readonly List<MenuScreen> m_menuScreens = new List<MenuScreen>();
-        private readonly Dictionary<Type, MenuScreen> m_typeToMenu = new Dictionary<Type, MenuScreen>();
+        private struct Transition
+        {
+            public enum Type
+            {
+                Show,
+                Hide,
+            }
 
-        private MenuScreen m_targetMenu = null;
-        private TransitionSound m_targetSound;
+            public Type type;
+            public MenuScreen screen;
+            public TransitionSound sound;
+        }
+
+        private readonly List<MenuScreen> m_menuScreens = new List<MenuScreen>();
+        private readonly Dictionary<Type, List<MenuScreen>> m_typeToScreens = new Dictionary<Type, List<MenuScreen>>();
+        private readonly Dictionary<MenuScreen, Transition> m_transitions = new Dictionary<MenuScreen, Transition>();
 
         /// <summary>
         /// The sound player for the menu.
@@ -24,9 +35,14 @@ namespace BoostBlasters.UI
         public SoundPlayer Sound { get; private set; }
 
         /// <summary>
-        /// The menu screen that is currently open.
+        /// An event triggered when a menu screen has become visible.
         /// </summary>
-        protected MenuScreen ActiveScreen { get; private set; } = null;
+        public event Action<MenuScreen> ScreenShown;
+
+        /// <summary>
+        /// An event triggered when a menu screen has become hidden.
+        /// </summary>
+        public event Action<MenuScreen> ScreenHidden;
 
 
         protected virtual void Awake()
@@ -36,7 +52,15 @@ namespace BoostBlasters.UI
 
             foreach (var menu in m_menuScreens)
             {
-                m_typeToMenu.Add(menu.GetType(), menu);
+                var type = menu.GetType();
+
+                if (!m_typeToScreens.TryGetValue(type, out var menus))
+                {
+                    menus = new List<MenuScreen>();
+                    m_typeToScreens.Add(type, menus);
+                }
+
+                menus.Add(menu);
             }
         }
 
@@ -44,15 +68,13 @@ namespace BoostBlasters.UI
         {
             foreach (var menu in m_menuScreens)
             {
-                menu.InitMenu();
-                menu.enabled = false;
+                menu.Initialize();
             }
         }
 
         protected virtual void Update()
         {
-            DoScreenTransition();
-
+            FlushTransitions();
             Sound.FlushSoundQueue();
 
             foreach (var menu in m_menuScreens)
@@ -65,92 +87,184 @@ namespace BoostBlasters.UI
         {
             foreach (var menu in m_menuScreens)
             {
-                menu.UpdateGraphics();
+                menu.UpdateVisuals();
             }
         }
 
         /// <summary>
-        /// Gets a <see cref="MenuScreen"/> from this menu.
+        /// Gets the first <see cref="MenuScreen"/> instance in this menu.
         /// </summary>
         /// <typeparam name="TScreen">The type of the menu screen to get.</typeparam>
         /// <returns>The menu screen, or null if there is no screen of the given
         /// type in the menu.</returns>
         public TScreen Get<TScreen>() where TScreen : MenuScreen
         {
-            return m_typeToMenu.TryGetValue(typeof(TScreen), out var screen) ? screen as TScreen : null;
+            return m_typeToScreens.TryGetValue(typeof(TScreen), out var screens) ? screens[0] as TScreen : null;
+        }
+       
+        /// <summary>
+        /// Gets all the <see cref="MenuScreen"/> instances in this menu.
+        /// </summary>
+        /// <typeparam name="TScreen">The type of the menu screens to get.</typeparam>
+        /// <param name="results">The list used to return the results.</param>
+        public void GetAll<TScreen>(List<TScreen> results) where TScreen : MenuScreen
+        {
+            results.Clear();
+
+            if (m_typeToScreens.TryGetValue(typeof(TScreen), out var screens))
+            {
+                foreach (var screen in screens)
+                {
+                    results.Add(screen as TScreen);
+                }
+            }
         }
 
         /// <summary>
-        /// Changes the active menu screen to a given screen.
+        /// Show a menu screen.
         /// </summary>
-        /// <typeparam name="TScreen">The type of the screen to activate.</typeparam>
-        /// <param name="sound">The sound to play for the menu transition.</param>
-        public void SwitchTo<TScreen>(TransitionSound sound = TransitionSound.Next) where TScreen : MenuScreen
+        /// <typeparam name="TScreen">The type of the screen to show.</typeparam>
+        /// <param name="sound">The sound to play for the transition.</param>
+        public void Show<TScreen>(TransitionSound sound) where TScreen : MenuScreen
+        {
+            Show(Get<TScreen>(), sound);
+        }
+
+        /// <summary>
+        /// Show a menu screen.
+        /// </summary>
+        /// <param name="screen">The screen to show.</param>
+        /// <param name="sound">The sound to play for the transition.</param>
+        public void Show(MenuScreen screen, TransitionSound sound)
+        {
+            if (screen != null)
+            {
+                if (!screen.Visible)
+                {
+                    m_transitions[screen] = new Transition
+                    {
+                        type = Transition.Type.Show,
+                        screen = screen,
+                        sound = sound,
+                    };
+                }
+                else
+                {
+                    m_transitions.Remove(screen);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Hides a menu screen.
+        /// </summary>
+        /// <typeparam name="TScreen">The type of the screen to close.</typeparam>
+        /// <param name="sound">The sound to play for the transition.</param>
+        public void Close<TScreen>(TransitionSound sound) where TScreen : MenuScreen
+        {
+            Close(Get<TScreen>(), sound);
+        }
+
+        /// <summary>
+        /// Hides a menu screen.
+        /// </summary>
+        /// <param name="screen">The screen to close.</param>
+        /// <param name="sound">The sound to play for the transition.</param>
+        public void Close(MenuScreen screen, TransitionSound sound)
+        {
+            if (screen != null)
+            {
+                if (screen.Visible)
+                {
+                    m_transitions[screen] = new Transition
+                    {
+                        type = Transition.Type.Hide,
+                        screen = screen,
+                        sound = sound,
+                    };
+                }
+                else
+                {
+                    m_transitions.Remove(screen);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Show a menu, hiding all other menu screens.
+        /// </summary>
+        /// <typeparam name="TScreen">The type of the screen to show.</typeparam>
+        /// <param name="sound">The sound to play for the transition.</param>
+        public void SwitchTo<TScreen>(TransitionSound sound) where TScreen : MenuScreen
         {
             SwitchTo(Get<TScreen>(), sound);
         }
 
         /// <summary>
-        /// Changes the active menu screen to a given screen.
+        /// Show a menu, hiding all other menu screens.
         /// </summary>
-        /// <param name="screen">The screen to activate. If null the active screen is closed.</param>
-        /// <param name="sound">The sound to play for the menu transition.</param>
-        public void SwitchTo(MenuScreen screen, TransitionSound sound = TransitionSound.Next)
+        /// <param name="screen">The screen to show.</param>
+        /// <param name="sound">The sound to play for the transition.</param>
+        public void SwitchTo(MenuScreen screen, TransitionSound sound)
         {
-            m_targetMenu = screen;
-            m_targetSound = sound;
+            CloseAll(TransitionSound.None);
+            Show(screen, sound);
         }
 
         /// <summary>
         /// Closes all menu screens.
         /// </summary>
-        /// <param name="sound">The sound to play for the menu transition.</param>
-        public void Close(TransitionSound sound = TransitionSound.Next)
+        /// <param name="sound">The sound to play for the transition.</param>
+        public void CloseAll(TransitionSound sound)
         {
-            SwitchTo(null, sound);
-        }
-
-        /// <summary>
-        /// Determines if all menu screens should be reset back to their default state
-        /// when a menu screen transition is occuring.
-        /// </summary>
-        /// <param name="from">The previous menu screen.</param>
-        /// <param name="to">The menu screen being opened.</param>
-        /// <returns>If true all menu is reset upon transition.</returns>
-        protected virtual bool ShouldForceReset(MenuScreen from, MenuScreen to)
-        {
-            return false;
-        }
-
-        private void DoScreenTransition()
-        {
-            if (ActiveScreen != m_targetMenu)
+            foreach (var menu in m_menuScreens)
             {
-                if (ActiveScreen != null)
-                {
-                    ActiveScreen.enabled = false;
-                }
+                Close(menu, sound);
+            }
+        }
 
-                var previous = ActiveScreen;
-                ActiveScreen = m_targetMenu;
-
-                if (ActiveScreen != null)
+        private void FlushTransitions()
+        {
+            // hide all menus before showing new ones
+            foreach (var transition in m_transitions)
+            {
+                if (transition.Value.type == Transition.Type.Hide)
                 {
-                    ActiveScreen.enabled = true;
+                    DoTransition(transition.Value);
                 }
-
-                var forceReset = ShouldForceReset(previous, ActiveScreen);
-                foreach (var menu in m_menuScreens)
+            }
+            foreach (var transition in m_transitions)
+            {
+                if (transition.Value.type == Transition.Type.Show)
                 {
-                    menu.OnTransition(forceReset, previous, ActiveScreen);
+                    DoTransition(transition.Value);
                 }
+            }
 
-                switch (m_targetSound)
-                {
-                    case TransitionSound.Open: Sound.PlayOpenMenuSound(); break;
-                    case TransitionSound.Next: Sound.PlayNextMenuSound(); break;
-                    case TransitionSound.Back: Sound.PlayBackMenuSound(); break;
-                }
+            m_transitions.Clear();
+        }
+
+        private void DoTransition(Transition transition)
+        {
+            var screen = transition.screen;
+
+            switch (transition.type)
+            {
+                case Transition.Type.Show:
+                    screen.Show();
+                    ScreenShown?.Invoke(screen);
+                    break;
+                case Transition.Type.Hide:
+                    transition.screen.Hide();
+                    ScreenHidden?.Invoke(screen);
+                    break;
+            }
+
+            switch (transition.sound)
+            {
+                case TransitionSound.Open: Sound.PlayOpenMenuSound(); break;
+                case TransitionSound.Next: Sound.PlayNextMenuSound(); break;
+                case TransitionSound.Back: Sound.PlayBackMenuSound(); break;
             }
         }
     }

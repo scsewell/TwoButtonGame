@@ -45,7 +45,7 @@ namespace BoostBlasters.UI.MainMenus
             m_playerSelectContent.GetComponentsInChildren(true, m_playerSelectPanels);
         }
 
-        public override void InitMenu()
+        protected override void OnInitialize()
         {
             for (int i = 0; i < 4; i++)
             {
@@ -65,7 +65,7 @@ namespace BoostBlasters.UI.MainMenus
             }
         }
         
-        protected override void OnDisableMenu()
+        protected override void OnHide()
         {
             m_playerSelectPanels.ForEach(p => p.SetCameraActive(false));
         }
@@ -112,12 +112,12 @@ namespace BoostBlasters.UI.MainMenus
 
                 if (m_playerSelectPanels.Any(p => p.Continue))
                 {
-                    Menu.SwitchTo<LevelSelectMenu>();
+                    Menu.SwitchTo<LevelSelectMenu>(TransitionSound.Next);
                 }
             }
         }
 
-        protected override void OnUpdateGraphics()
+        protected override void OnUpdateVisuals()
         {
             m_continueBar.SetActive(m_canContine);
             m_continueBanner.color = Color.Lerp(Color.white, m_bannerCol, (Time.unscaledTime - m_continueTime) / 0.5f);

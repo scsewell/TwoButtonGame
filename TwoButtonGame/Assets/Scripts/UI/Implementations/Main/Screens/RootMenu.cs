@@ -29,18 +29,18 @@ namespace BoostBlasters.UI.MainMenus
         [SerializeField] private Animator m_animator = null;
 
 
-        public override void InitMenu()
+        protected override void OnInitialize()
         {
             m_version.text = $"v{Application.version}";
 
             // show the start menu if the game was just launched
             m_animator.Play(m_showStartMenu ? "Start" : "Main");
 
-            m_playButton.onClick.AddListener(() => Menu.SwitchTo<PlayerSelectMenu>());
-            m_profilesButton.onClick.AddListener(() => Menu.SwitchTo<ProfilesMenu>());
-            m_replaysButton.onClick.AddListener(() => Menu.SwitchTo<ReplayMenu>());
-            m_settingsButton.onClick.AddListener(() => Menu.SwitchTo<SettingsMenu>());
-            m_creditsButton.onClick.AddListener(() => Menu.SwitchTo<CreditsMenu>());
+            m_playButton.onClick.AddListener(() => Menu.SwitchTo<PlayerSelectMenu>(TransitionSound.Next));
+            m_profilesButton.onClick.AddListener(() => Menu.SwitchTo<ProfilesMenu>(TransitionSound.Next));
+            m_replaysButton.onClick.AddListener(() => Menu.SwitchTo<ReplayMenu>(TransitionSound.Next));
+            m_settingsButton.onClick.AddListener(() => Menu.SwitchTo<SettingsMenu>(TransitionSound.Next));
+            m_creditsButton.onClick.AddListener(() => Menu.SwitchTo<CreditsMenu>(TransitionSound.Next));
             m_quitButton.onClick.AddListener(() => Application.Quit());
         }
 

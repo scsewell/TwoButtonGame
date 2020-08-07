@@ -8,6 +8,11 @@ namespace BoostBlasters
     public static class Consts
     {
         /// <summary>
+        /// The amount of characters that may be used in a profile name.
+        /// </summary>
+        public const int MAX_PROFILE_NAME_LENGTH = 20;
+
+        /// <summary>
         /// The maximum number of races supported.
         /// </summary>
         public const int MAX_RACERS = 12;

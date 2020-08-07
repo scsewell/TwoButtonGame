@@ -42,7 +42,7 @@ namespace BoostBlasters.UI.MainMenus
         private Profile m_selectedProfile = null;
         private PlayerProfilePanel m_selectedPanel = null;
 
-        public override void InitMenu()
+        protected override void OnInitialize()
         {
             m_backButton.onClick.AddListener(   () => Menu.SwitchTo<RootMenu>(TransitionSound.Back));
             m_closeButton.onClick.AddListener(  () => CloseSelectedProfile());
@@ -89,7 +89,7 @@ namespace BoostBlasters.UI.MainMenus
             SetDefaultSelection();
         }
 
-        protected override void OnUpdateGraphics()
+        protected override void OnUpdateVisuals()
         {
             IReadOnlyList<Profile> profiles = ProfileManager.Profiles;
 
@@ -144,7 +144,7 @@ namespace BoostBlasters.UI.MainMenus
             if (mode == PlayerProfilePanel.Mode.AddNew)
             {
                 MainMenu menu = Menu as MainMenu;
-                menu.Get<ProfileNameMenu>().EditProfile(ProfileManager.CreateProfile(), true, this, null);
+                menu.Get<ProfileNameMenu>().EditProfile(ProfileManager.CreateProfile(), true, null, this);
             }
         }
 
@@ -171,9 +171,7 @@ namespace BoostBlasters.UI.MainMenus
         private void EditSelectedProfile()
         {
             MainMenu menu = (MainMenu)Menu;
-
-            menu.SwitchTo<ProfileNameMenu>();
-            menu.Get<ProfileNameMenu>().EditProfile(m_selectedProfile, false, this, null);
+            menu.Get<ProfileNameMenu>().EditProfile(m_selectedProfile, false, null, this);
         }
 
         private void ConfirmProfileDelete()

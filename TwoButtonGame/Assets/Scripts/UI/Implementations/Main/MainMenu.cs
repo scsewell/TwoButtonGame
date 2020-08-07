@@ -71,11 +71,6 @@ namespace BoostBlasters.UI.MainMenus
             AudioManager.Instance.Volume = Mathf.MoveTowards(AudioManager.Instance.Volume, 1f - factor, Time.unscaledDeltaTime / 0.35f);
         }
 
-        protected override bool ShouldForceReset(MenuScreen from, MenuScreen to)
-        {
-            return from == Get<RootMenu>();
-        }
-
         private float GetFadeFactor()
         {
             var fac = 1f - Mathf.Clamp01((Time.unscaledTime - m_menuLoadTime) / m_fadeInDuration);
@@ -127,7 +122,7 @@ namespace BoostBlasters.UI.MainMenus
                 return GetFadeFactor() >= 0.99f;
             });
 
-            Close();
+            CloseAll(TransitionSound.Next);
         }
 
         public async void LaunchReplay(RecordingInfo info)
@@ -142,7 +137,7 @@ namespace BoostBlasters.UI.MainMenus
                 return GetFadeFactor() >= 0.99f;
             });
 
-            Close();
+            CloseAll(TransitionSound.Next);
         }
     }
 }

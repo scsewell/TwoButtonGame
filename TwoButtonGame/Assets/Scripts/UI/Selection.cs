@@ -56,6 +56,8 @@ namespace BoostBlasters.UI
                 m_eventSystem = m_inputModule.GetComponent<MultiplayerEventSystem>();
                 m_eventSystem.firstSelectedGameObject = m_defaultSelection != null ? m_defaultSelection.gameObject : null;
                 m_eventSystem.playerRoot = screen.gameObject;
+
+                OnDisable(false);
             }
         }
 

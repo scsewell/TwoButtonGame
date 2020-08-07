@@ -241,7 +241,7 @@ namespace BoostBlasters.UI.MainMenus
                     }
                     else if (SelectedProfile == 1)
                     {
-                        m_menu.Get<ProfileNameMenu>().EditProfile(ProfileManager.CreateProfile(), true, m_selectMenu, OnProfileCreate);
+                        m_menu.Get<ProfileNameMenu>().EditProfile(ProfileManager.CreateProfile(), true, OnProfileCreate, m_selectMenu);
                     }
                     else
                     {

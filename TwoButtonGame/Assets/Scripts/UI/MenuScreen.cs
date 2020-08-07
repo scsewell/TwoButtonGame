@@ -9,15 +9,19 @@ namespace BoostBlasters.UI
     public abstract class MenuScreen : MonoBehaviour
     {
         [SerializeField]
-        [Tooltip("The primary input/selection configuration.")]
+        [Tooltip("The primary selection configuration.")]
         private Selection m_primarySelection;
 
         [SerializeField]
-        [Tooltip("The secondary input/selection configuration.")]
+        [Tooltip("The secondary selection configuration.")]
         private Selection m_secondarySelection;
 
         [SerializeField]
-        [Tooltip("Remeber the last selected element on this screen and select it when going back into this menu screen.")]
+        [Tooltip("Enable selection and input for this menu screen automatically when it is shown.")]
+        private bool m_enableInteractionOnShow = true;
+
+        [SerializeField]
+        [Tooltip("Remeber the last selected elements when disabling interaction on this screen and select them again when interaction is next enabled.")]
         private bool m_remeberLastSelection = false;
 
         [SerializeField]
@@ -29,6 +33,7 @@ namespace BoostBlasters.UI
         private MenuScreen m_backMenu = null;
 
         private Canvas m_canvas = null;
+        private bool m_interactable = false;
 
         /// <summary>
         /// The menu that owns this menu screen.
@@ -36,17 +41,7 @@ namespace BoostBlasters.UI
         public MenuBase Menu { get; private set; }
 
         /// <summary>
-        /// Remeber the last selected elements on this screen and select them when going
-        /// back into this menu screen.
-        /// </summary>
-        public bool RemeberLastSelection
-        {
-            get => m_remeberLastSelection;
-            set => m_remeberLastSelection = value;
-        }
-
-        /// <summary>
-        /// The selection used for primary navigation and submit/cancellation events.
+        /// The selection used for primary navigation and submit/cancel events.
         /// </summary>
         protected Selection PrimarySelection => m_primarySelection;
 
@@ -59,6 +54,46 @@ namespace BoostBlasters.UI
         /// </remarks>
         protected Selection SecondarySelection => m_secondarySelection;
 
+        /// <summary>
+        /// Remeber the last selected elements when disabling interaction on this screen and select them
+        /// again when interaction is next enabled.
+        /// </summary>
+        public bool RemeberLastSelection
+        {
+            get => m_remeberLastSelection;
+            set => m_remeberLastSelection = value;
+        }
+
+        /// <summary>
+        /// Is this menu currently shown.
+        /// </summary>
+        public bool Visible { get; private set; } = false;
+
+        /// <summary>
+        /// Can this menu have a selection and receive input.
+        /// </summary>
+        public bool Interactable
+        {
+            get => m_interactable;
+            set
+            {
+                if (m_interactable != value)
+                {
+                    m_interactable = value;
+
+                    if (m_interactable)
+                    {
+                        m_primarySelection.OnEnable();
+                        m_secondarySelection.OnEnable();
+                    }
+                    else
+                    {
+                        m_primarySelection.OnDisable(m_remeberLastSelection);
+                        m_secondarySelection.OnDisable(m_remeberLastSelection);
+                    }
+                }
+            }
+        }
 
         protected virtual void Awake()
         {
@@ -71,24 +106,45 @@ namespace BoostBlasters.UI
             m_secondarySelection.Initialize(this);
         }
 
-        private void OnEnable()
+        /// <summary>
+        /// Called once to initilize the menu.
+        /// </summary>
+        public void Initialize()
         {
-            m_canvas.enabled = true;
-
-            m_primarySelection.OnEnable();
-            m_secondarySelection.OnEnable();
-
-            OnEnableMenu();
+            OnInitialize();
+            OnHide();
         }
 
-        private void OnDisable()
+        /// <summary>
+        /// Makes the menu visible.
+        /// </summary>
+        public void Show()
         {
-            m_canvas.enabled = false;
+            if (!Visible)
+            {
+                Visible = true;
+                m_canvas.enabled = true;
 
-            m_primarySelection.OnDisable(m_remeberLastSelection);
-            m_secondarySelection.OnDisable(m_remeberLastSelection);
+                Interactable = m_enableInteractionOnShow;
 
-            OnDisableMenu();
+                OnShow();
+            }
+        }
+
+        /// <summary>
+        /// Makes the menu not visible.
+        /// </summary>
+        public void Hide()
+        {
+            if (Visible)
+            {
+                Visible = false;
+                m_canvas.enabled = false;
+
+                Interactable = false;
+
+                OnHide();
+            }
         }
 
         /// <summary>
@@ -96,10 +152,12 @@ namespace BoostBlasters.UI
         /// </summary>
         public void UpdateMenu()
         {
-            if (enabled)
+            if (Visible)
             {
                 OnUpdate();
-
+            }
+            if (m_interactable)
+            {
                 m_primarySelection.AquireSelectionIfNeeded();
                 m_secondarySelection.AquireSelectionIfNeeded();
             }
@@ -108,43 +166,55 @@ namespace BoostBlasters.UI
         /// <summary>
         /// Updates the menu visuals.
         /// </summary>
-        public void UpdateGraphics()
+        public void UpdateVisuals()
         {
-            if (enabled)
+            if (Visible)
             {
-                OnUpdateGraphics();
+                OnUpdateVisuals();
             }
         }
 
         /// <summary>
-        /// Backs out of this menu.
+        /// Back out of this menu.
         /// </summary>
         public virtual void Back()
         {
-            if (enabled && m_closeOnBack && m_backMenu)
+            if (m_interactable && m_closeOnBack)
             {
-                Menu.SwitchTo(m_backMenu, TransitionSound.Back);
+                if (m_backMenu)
+                {
+                    Menu.SwitchTo(m_backMenu, TransitionSound.Back);
+                }
+                else
+                {
+                    Menu.Close(this, TransitionSound.Back);
+                }
             }
         }
 
         /// <summary>
-        /// Called once to initilize the menu.
+        /// Called when the menu is initializing.
         /// </summary>
-        public abstract void InitMenu();
+        protected virtual void OnInitialize() {}
 
         /// <summary>
-        /// Prepares the menu screen prior to being made visible.
+        /// Called after the menu becomes visible.
         /// </summary>
-        /// <param name="fullReset">Should the screen clear all state.</param>
-        /// <param name="from">The previous menu screen.</param>
-        /// <param name="to">The menu screen being opened.</param>
-        public virtual void OnTransition(bool fullReset, MenuScreen from, MenuScreen to)
-        {
-        }
+        protected virtual void OnShow() {}
 
-        protected virtual void OnEnableMenu() { }
-        protected virtual void OnDisableMenu() { }
-        protected virtual void OnUpdate() { }
-        protected virtual void OnUpdateGraphics() { }
+        /// <summary>
+        /// Called after the menu becomes not visible.
+        /// </summary>
+        protected virtual void OnHide() {}
+
+        /// <summary>
+        /// Called to update the menu logic.
+        /// </summary>
+        protected virtual void OnUpdate() {}
+
+        /// <summary>
+        /// Called to update the menu visuals.
+        /// </summary>
+        protected virtual void OnUpdateVisuals() {}
     }
 }

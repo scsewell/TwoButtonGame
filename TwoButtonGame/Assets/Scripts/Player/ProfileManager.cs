@@ -115,7 +115,8 @@ namespace BoostBlasters.Players
         /// <returns>The new profile.</returns>
         public static Profile CreateProfile()
         {
-            var profile = CreateProfile(m_profiles, false, "DefaultName", true);
+            var name = GetUniqueName(null, "DefaultName", true, m_profiles);
+            var profile = CreateProfile(m_profiles, false, name);
             SaveProfile(profile);
             return profile;
         }
@@ -167,7 +168,15 @@ namespace BoostBlasters.Players
         /// <returns>The new profile.</returns>
         public static Profile CreateTemporaryProfile(string name, bool enforceUnique)
         {
-            return CreateProfile(enforceUnique ? m_uniqueTempProfiles : m_tempProfiles, true, name, enforceUnique);
+            if (enforceUnique)
+            {
+                name = GetUniqueName(null, name, true, m_uniqueTempProfiles);
+                return CreateProfile(m_uniqueTempProfiles, true, name);
+            }
+            else
+            {
+                return CreateProfile(m_tempProfiles, true, name);
+            }
         }
 
         /// <summary>
@@ -185,13 +194,10 @@ namespace BoostBlasters.Players
             m_uniqueTempProfiles.Remove(profile);
         }
 
-        private static Profile CreateProfile(List<Profile> profiles, bool isTemporary, string baseName, bool uniqueName)
+        private static Profile CreateProfile(List<Profile> profiles, bool isTemporary, string name)
         {
-            var name = uniqueName ? GetUniqueName(null, baseName, true, profiles) : baseName;
-
-            var profile = new Profile(name, isTemporary);
+            var profile = new Profile(isTemporary, name);
             profiles.Add(profile);
-
             return profile;
         }
 

@@ -91,7 +91,7 @@ namespace BoostBlasters.UI.MainMenus
         private readonly Dictionary<Level, LevelInfo> m_levelInfo = new Dictionary<Level, LevelInfo>();
 
 
-        public override void InitMenu()
+        protected override void OnInitialize()
         {
             m_startRaceButton.onClick.AddListener(() => ((MainMenu)Menu).LaunchRace());
             m_backButton.onClick.AddListener(() => Back());
@@ -164,7 +164,7 @@ namespace BoostBlasters.UI.MainMenus
             }
         }
 
-        protected override void OnEnableMenu()
+        protected override void OnShow()
         {
             if (m_previewCam != null)
             {
@@ -172,7 +172,7 @@ namespace BoostBlasters.UI.MainMenus
             }
         }
 
-        protected override void OnDisableMenu()
+        protected override void OnHide()
         {
             if (m_previewCam != null)
             {
@@ -199,7 +199,7 @@ namespace BoostBlasters.UI.MainMenus
             m_camPivot.Rotate(Vector3.up, m_rotateSpeed * Time.deltaTime);
         }
 
-        protected override void OnUpdateGraphics()
+        protected override void OnUpdateVisuals()
         {
             m_options.ForEach(o => o.UpdateGraphics());
 

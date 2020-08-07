@@ -13,7 +13,7 @@ namespace BoostBlasters.UI.RaceMenus
         [SerializeField] private Button m_restartButton = null;
         [SerializeField] private Button m_quitButton = null;
 
-        public override void InitMenu()
+        protected override void OnInitialize()
         {
             m_resumeButton.onClick.AddListener(() => Resume());
             m_restartButton.onClick.AddListener(() => Restart());
@@ -37,13 +37,13 @@ namespace BoostBlasters.UI.RaceMenus
         {
             Main.Instance.RaceManager.Resume();
             Main.Instance.RaceManager.RestartRace();
-            Menu.SwitchTo(null);
+            //Menu.SwitchTo(null);
         }
 
         private void Quit()
         {
             Main.Instance.RaceManager.Quit();
-            Menu.SwitchTo(null);
+            //Menu.SwitchTo(null);
         }
     }
 }

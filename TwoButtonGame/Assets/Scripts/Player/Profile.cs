@@ -20,6 +20,11 @@ namespace BoostBlasters.Players
         private readonly Dictionary<Guid, List<RaceResult>> m_levelToResults = new Dictionary<Guid, List<RaceResult>>();
 
         /// <summary>
+        /// Is this a temporary profile.
+        /// </summary>
+        public bool IsTemporary { get; }
+
+        /// <summary>
         /// The ID of this profile.
         /// </summary>
         public Guid Guid { get; private set; }
@@ -30,11 +35,6 @@ namespace BoostBlasters.Players
         public string Name { get; set; }
 
         /// <summary>
-        /// Is this a temporary profile.
-        /// </summary>
-        public bool IsTemporary { get; }
-
-        /// <summary>
         /// The completed races associated with this profile.
         /// </summary>
         public IReadOnlyList<RaceResult> RaceResults => m_results;
@@ -43,13 +43,14 @@ namespace BoostBlasters.Players
         /// <summary>
         /// Creates a new profile.
         /// </summary>
-        /// <param name="name">The name of the profile.</param>
         /// <param name="isTemporary">Is this a temporary profile.</param>
-        public Profile(string name, bool isTemporary)
+        /// <param name="name">The name of the profile.</param>
+        public Profile(bool isTemporary, string name)
         {
+            IsTemporary = isTemporary;
+
             Guid = Guid.NewGuid();
             Name = name;
-            IsTemporary = isTemporary;
         }
 
         /// <summary>
@@ -58,7 +59,6 @@ namespace BoostBlasters.Players
         /// <param name="reader">A data reader at a serialized profile.</param>
         public Profile(DataReader reader)
         {
-            // serialized profiles are not temporary
             IsTemporary = false;
 
             Deserialize(reader);

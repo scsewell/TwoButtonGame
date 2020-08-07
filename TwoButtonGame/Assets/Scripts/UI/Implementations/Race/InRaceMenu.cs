@@ -135,7 +135,7 @@ namespace BoostBlasters.UI.RaceMenus
 
                 m_skipControls.UpdateUI("Skip", ActiveInputs.SelectMany(i => i.SpriteAccept).ToList());
 
-                if (ActiveScreen == null)
+                //if (ActiveScreen == null)
                 {
                     //foreach (PlayerBaseInput input in Inputs)
                     //{
@@ -169,11 +169,11 @@ namespace BoostBlasters.UI.RaceMenus
 
             if (!isFinished)
             {
-                if (ActiveScreen == null && !isQuitting)
+                //if (ActiveScreen == null && !isQuitting)
                 {
                     raceManager.Resume();
                 }
-                else
+                //else
                 {
                     raceManager.Pause();
                 }

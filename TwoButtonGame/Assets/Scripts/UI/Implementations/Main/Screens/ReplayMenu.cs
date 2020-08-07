@@ -41,7 +41,7 @@ namespace BoostBlasters.UI.MainMenus
         private List<PlayerResultPanel> m_playerResults = null;
         private int m_infoPage = 0;
 
-        public override void InitMenu()
+        protected override void OnInitialize()
         {
             m_backButton.onClick.AddListener(() => Menu.SwitchTo<RootMenu>(TransitionSound.Back));
 
@@ -80,7 +80,7 @@ namespace BoostBlasters.UI.MainMenus
             m_infos = RecordingManager.Replays;
         }
 
-        protected override void OnUpdateGraphics()
+        protected override void OnUpdateVisuals()
         {
             var maxPage = GetMaxPageCount();
             m_pageText.text = (m_infoPage + 1) + "/" + (maxPage + 1);

@@ -50,7 +50,7 @@ namespace BoostBlasters.UI.MainMenus
         private SettingCategory m_currentCategory = null;
 
 
-        public override void InitMenu()
+        protected override void OnInitialize()
         {
             foreach (var category in SettingManager.Instance.Catergories)
             {
@@ -127,7 +127,7 @@ namespace BoostBlasters.UI.MainMenus
             SecondarySelection.DefaultSelectionOverride = tabs[0].gameObject;
         }
 
-        protected override void OnDisableMenu()
+        protected override void OnHide()
         {
             // save the settings when leaving the menu
             SettingManager.Instance.Save();
@@ -144,7 +144,7 @@ namespace BoostBlasters.UI.MainMenus
             }
         }
 
-        protected override void OnUpdateGraphics()
+        protected override void OnUpdateVisuals()
         {
             // display the description for the currently selected item
             var selected = PrimarySelection.Current;

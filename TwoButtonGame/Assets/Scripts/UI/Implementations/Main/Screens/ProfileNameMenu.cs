@@ -1,16 +1,14 @@
 ﻿using System;
 
+using BoostBlasters.Players;
+
 using UnityEngine;
 using UnityEngine.UI;
-
-using BoostBlasters.Players;
 
 namespace BoostBlasters.UI.MainMenus
 {
     public class ProfileNameMenu : MenuScreen
     {
-        private static readonly int MAX_NAME_LENGTH = 16;
-
         [Header("UI Elements")]
 
         [SerializeField] private Text m_titleText = null;
@@ -18,16 +16,17 @@ namespace BoostBlasters.UI.MainMenus
         [SerializeField] private Button m_acceptButton = null;
         [SerializeField] private Button m_cancelButton = null;
 
-        private Profile m_editProfile = null;
+        private Profile m_profile = null;
         private bool m_isNew = false;
-        private MenuScreen m_returnToMenu = null;
         private Action<Profile> m_onComplete = null;
+        private MenuScreen m_returnToMenu = null;
         private string m_currentName = null;
         private bool m_delete = false;
         private bool m_deleteRepeat = false;
         private float m_deleteWait = 0f;
 
-        public override void InitMenu()
+
+        protected override void OnInitialize()
         {
             m_acceptButton.onClick.AddListener(() => Accept());
             m_cancelButton.onClick.AddListener(() => Cancel());
@@ -40,22 +39,34 @@ namespace BoostBlasters.UI.MainMenus
         //    m_deleteWait = 0f;
         //}
 
-        protected override void OnEnableMenu()
+        public void EditProfile(Profile profile, bool isNew, Action<Profile> onComplete, MenuScreen returnToMenu)
         {
-            InputManager.Instance.SetKeyboardMuting(InputMuting.TypingKeys);
+            Menu.SwitchTo(this, TransitionSound.Next);
+
+            m_profile = profile;
+            m_isNew = isNew;
+            m_returnToMenu = returnToMenu;
+            m_onComplete = onComplete;
+
+            m_currentName = profile.Name;
         }
 
-        protected override void OnDisableMenu()
+        protected override void OnShow()
         {
-            InputManager.Instance.SetKeyboardMuting(InputMuting.None);
-            m_editProfile = null;
+            //InputManager.Instance.SetKeyboardMuting(InputMuting.TypingKeys);
+        }
+
+        protected override void OnHide()
+        {
+            //InputManager.Instance.SetKeyboardMuting(InputMuting.None);
+            m_profile = null;
         }
 
         protected override void OnUpdate()
         {
             m_delete = false;
 
-            if (m_editProfile != null)
+            if (m_profile != null)
             {
                 if (Input.GetKey(KeyCode.Delete) || Input.GetKey(KeyCode.Backspace))
                 {
@@ -75,10 +86,10 @@ namespace BoostBlasters.UI.MainMenus
                     m_deleteRepeat = false;
                     m_deleteWait = 0;
                 }
-                
-                bool typeSound = false;
-                bool deleteSound = false;
-                bool invalidSound = false;
+
+                var typeSound = false;
+                var deleteSound = false;
+                var invalidSound = false;
 
                 if (m_delete)
                 {
@@ -93,9 +104,9 @@ namespace BoostBlasters.UI.MainMenus
                     }
                 }
 
-                foreach (char c in Input.inputString)
+                foreach (var c in Input.inputString)
                 {
-                    if (m_currentName.Length < MAX_NAME_LENGTH && char.IsLetterOrDigit(c))
+                    if (m_currentName.Length < Consts.MAX_PROFILE_NAME_LENGTH && char.IsLetterOrDigit(c))
                     {
                         m_currentName += c;
                         typeSound = true;
@@ -121,7 +132,7 @@ namespace BoostBlasters.UI.MainMenus
             }
         }
 
-        protected override void OnUpdateGraphics()
+        protected override void OnUpdateVisuals()
         {
             m_titleText.text = m_isNew ? "Enter Profile Name" : "Rename Profile";
             m_nameText.text = m_currentName;
@@ -132,44 +143,49 @@ namespace BoostBlasters.UI.MainMenus
             Cancel();
         }
 
-        public void EditProfile(Profile editProfile, bool isNew, MenuScreen returnToMenu, Action<Profile> onComplete)
-        {
-            m_editProfile = editProfile;
-            m_isNew = isNew;
-            m_returnToMenu = returnToMenu;
-            m_onComplete = onComplete;
-
-            m_currentName = editProfile.Name;
-
-            Menu.SwitchTo<ProfileNameMenu>();
-        }
-        
         private void Accept()
         {
-            string trimmed = m_currentName.Trim();
+            Complete();
+
+            var trimmed = m_currentName.Trim();
 
             if (trimmed.Length > 0)
             {
-                ProfileManager.RenameProfile(m_editProfile, trimmed);
-                Menu.SwitchTo(m_returnToMenu);
+                ProfileManager.RenameProfile(m_profile, trimmed);
+                Menu.SwitchTo(m_returnToMenu, TransitionSound.None);
+                Menu.Sound.PlaySubmitSound();
             }
             else
             {
                 Menu.Sound.PlayCancelSound();
             }
 
-            m_onComplete?.Invoke(m_editProfile);
+            m_onComplete?.Invoke(m_profile);
         }
 
         private void Cancel()
         {
+            Complete();
+
             if (m_isNew)
             {
-                ProfileManager.DeleteProfile(m_editProfile);
+                ProfileManager.DeleteProfile(m_profile);
             }
             Menu.SwitchTo(m_returnToMenu, TransitionSound.Back);
 
             m_onComplete?.Invoke(null);
+        }
+
+        private void Complete()
+        {
+            if (m_returnToMenu != null)
+            {
+                Menu.SwitchTo(m_returnToMenu, TransitionSound.None);
+            }
+            else
+            {
+                Menu.Close(this, TransitionSound.None);
+            }
         }
     }
 }
