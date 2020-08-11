@@ -287,7 +287,7 @@ namespace BoostBlasters
                 {
                     ""name"": """",
                     ""id"": ""e801c2e2-4c85-4568-af04-33fd1cafada9"",
-                    ""path"": ""<Keyboard>/e"",
+                    ""path"": ""<Keyboard>/leftShift"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""WASD"",
@@ -320,7 +320,7 @@ namespace BoostBlasters
                 {
                     ""name"": """",
                     ""id"": ""01d20baf-7096-4680-a7d5-1aed53e0c11e"",
-                    ""path"": ""<Keyboard>/q"",
+                    ""path"": ""<Keyboard>/leftCtrl"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""WASD"",
@@ -335,6 +335,17 @@ namespace BoostBlasters
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Arrows"",
+                    ""action"": ""Back"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f0cf450f-6633-4c3f-8fe3-412d8b3f1739"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
                     ""action"": ""Back"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false

@@ -1,0 +1,18 @@
+{
+    "name": "BoostBlasters.Profiles",
+    "rootNamespace": "BoostBlasters.Profiles",
+    "references": [
+        "GUID:b06f75a97055fbc4fb17f72ecfb1de49",
+        "GUID:dfd573705fb2c044fbae5a8c915b12d6",
+        "GUID:1eb9abac0a508c648850cf214b4ab68a"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

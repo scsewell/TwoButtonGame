@@ -1,6 +1,7 @@
 ﻿using System.IO;
 
 using BoostBlasters.Races;
+using BoostBlasters.Profiles;
 
 namespace BoostBlasters.Replays
 {

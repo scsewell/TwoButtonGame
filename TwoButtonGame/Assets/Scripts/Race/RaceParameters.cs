@@ -1,4 +1,4 @@
-﻿using BoostBlasters.Players;
+﻿using BoostBlasters.Profiles;
 using BoostBlasters.Characters;
 using BoostBlasters.Levels;
 

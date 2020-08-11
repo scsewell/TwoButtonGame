@@ -74,15 +74,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_primarySelection:
-    m_inputModulePrefab: {fileID: 8917968939599273587, guid: e4299256a9bb1fb40869b103ff0bd2af,
-      type: 3}
+    m_selectionRoot: {fileID: 0}
     m_defaultSelection: {fileID: 299079837115186686}
   m_secondarySelection:
-    m_inputModulePrefab: {fileID: 8917968939599273587, guid: 758966314f11dd040a0968bc9e5f12cc,
-      type: 3}
+    m_selectionRoot: {fileID: 0}
     m_defaultSelection: {fileID: 0}
+  m_enableInteractionOnShow: 1
   m_remeberLastSelection: 0
-  m_closeOnBack: 1
+  m_backMode: 0
   m_backMenu: {fileID: 0}
 --- !u!1 &4073217946766493529
 GameObject:
@@ -155,8 +154,8 @@ MonoBehaviour:
     under Creative Commons: By Attribution 3.0\r\nhttp://creativecommons.org/licenses/by/3.0/\n\n\xA9
     2019 Scott Sewell\n"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 30896e9e12ab1d040bb46b1bc7a82ef3, type: 2}
-  m_sharedMaterial: {fileID: -6179343676707657735, guid: 30896e9e12ab1d040bb46b1bc7a82ef3,
+  m_fontAsset: {fileID: 11400000, guid: 641af437741c28c49a852333ee49bf3c, type: 2}
+  m_sharedMaterial: {fileID: -7978298216137307250, guid: 641af437741c28c49a852333ee49bf3c,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -187,7 +186,7 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 0
   m_fontSizeMax: 107
-  m_fontStyle: 1
+  m_fontStyle: 0
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535

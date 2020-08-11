@@ -4,7 +4,6 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem.UI;
-using UnityEngine.UI;
 
 namespace BoostBlasters.UI
 {
@@ -72,30 +71,6 @@ namespace BoostBlasters.UI
             }
 
             return moveCount;
-        }
-
-        /// <summary>
-        /// Cuts of text using epllises if the text does not fit in the rect.
-        /// </summary>
-        /// <param name="text">The text component.</param>
-        /// <param name="value">The text value to set.</param>
-        public static void FitText(Text text, string value)
-        {
-            var rt = text.GetComponent<RectTransform>();
-
-            var maxWidth = Mathf.Abs(rt.lossyScale.x * rt.rect.width);
-
-            var settings = text.GetGenerationSettings(Vector2.zero);
-            var name = value;
-            var length = name.Length;
-
-            while (length > 0 && text.cachedTextGenerator.GetPreferredWidth(name, settings) > maxWidth)
-            {
-                length--;
-                name = name.Substring(0, length) + "...";
-            }
-
-            text.text = name;
         }
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 
 using UnityEngine;
+using UnityEngine.InputSystem.UI;
 
 namespace BoostBlasters.UI
 {
@@ -12,12 +13,23 @@ namespace BoostBlasters.UI
     [RequireComponent(typeof(SoundPlayer))]
     public abstract class MenuBase : MonoBehaviour
     {
+        [Header("Input")]
+
+        [SerializeField]
+        [Tooltip("The selection used for primary navigation and submit/cancel events.")]
+        private InputSystemUIInputModule m_primaryInputPrefab;
+
+        [SerializeField]
+        [Tooltip("The input modeule used for secondary navigation events (ex. L/R bumpers).")]
+        private InputSystemUIInputModule m_secondaryInputPrefab;
+
+
         private struct Transition
         {
             public enum Type
             {
-                Show,
-                Hide,
+                Open,
+                Close,
             }
 
             public Type type;
@@ -25,6 +37,7 @@ namespace BoostBlasters.UI
             public TransitionSound sound;
         }
 
+        private readonly List<MenuInput> m_inputs = new List<MenuInput>();
         private readonly List<MenuScreen> m_menuScreens = new List<MenuScreen>();
         private readonly Dictionary<Type, List<MenuScreen>> m_typeToScreens = new Dictionary<Type, List<MenuScreen>>();
         private readonly Dictionary<MenuScreen, Transition> m_transitions = new Dictionary<MenuScreen, Transition>();
@@ -37,17 +50,24 @@ namespace BoostBlasters.UI
         /// <summary>
         /// An event triggered when a menu screen has become visible.
         /// </summary>
-        public event Action<MenuScreen> ScreenShown;
+        public event Action<MenuScreen> Shown;
 
         /// <summary>
         /// An event triggered when a menu screen has become hidden.
         /// </summary>
-        public event Action<MenuScreen> ScreenHidden;
+        public event Action<MenuScreen> Hidden;
 
 
         protected virtual void Awake()
         {
             Sound = GetComponent<SoundPlayer>();
+
+            // initialize the menu input
+            var primary = new Input(Instantiate(m_primaryInputPrefab, transform));
+            var secondary = new Input(Instantiate(m_secondaryInputPrefab, transform));
+            m_inputs.Add(new MenuInput(primary, secondary));
+
+            // get all menu screens in the menu
             GetComponentsInChildren(true, m_menuScreens);
 
             foreach (var menu in m_menuScreens)
@@ -125,9 +145,9 @@ namespace BoostBlasters.UI
         /// </summary>
         /// <typeparam name="TScreen">The type of the screen to show.</typeparam>
         /// <param name="sound">The sound to play for the transition.</param>
-        public void Show<TScreen>(TransitionSound sound) where TScreen : MenuScreen
+        public void Open<TScreen>(TransitionSound sound) where TScreen : MenuScreen
         {
-            Show(Get<TScreen>(), sound);
+            Open(Get<TScreen>(), sound);
         }
 
         /// <summary>
@@ -135,23 +155,21 @@ namespace BoostBlasters.UI
         /// </summary>
         /// <param name="screen">The screen to show.</param>
         /// <param name="sound">The sound to play for the transition.</param>
-        public void Show(MenuScreen screen, TransitionSound sound)
+        public void Open(MenuScreen screen, TransitionSound sound)
         {
             if (screen != null)
             {
-                if (!screen.Visible)
+                foreach (var menu in m_menuScreens)
                 {
-                    m_transitions[screen] = new Transition
-                    {
-                        type = Transition.Type.Show,
-                        screen = screen,
-                        sound = sound,
-                    };
+                    menu.SetInput(null);
                 }
-                else
+
+                m_transitions[screen] = new Transition
                 {
-                    m_transitions.Remove(screen);
-                }
+                    type = Transition.Type.Open,
+                    screen = screen,
+                    sound = sound,
+                };
             }
         }
 
@@ -174,24 +192,17 @@ namespace BoostBlasters.UI
         {
             if (screen != null)
             {
-                if (screen.Visible)
+                m_transitions[screen] = new Transition
                 {
-                    m_transitions[screen] = new Transition
-                    {
-                        type = Transition.Type.Hide,
-                        screen = screen,
-                        sound = sound,
-                    };
-                }
-                else
-                {
-                    m_transitions.Remove(screen);
-                }
+                    type = Transition.Type.Close,
+                    screen = screen,
+                    sound = sound,
+                };
             }
         }
 
         /// <summary>
-        /// Show a menu, hiding all other menu screens.
+        /// Opens a menu, closing all other menu screens.
         /// </summary>
         /// <typeparam name="TScreen">The type of the screen to show.</typeparam>
         /// <param name="sound">The sound to play for the transition.</param>
@@ -201,14 +212,14 @@ namespace BoostBlasters.UI
         }
 
         /// <summary>
-        /// Show a menu, hiding all other menu screens.
+        /// Opens a menu, closing all other menu screens.
         /// </summary>
         /// <param name="screen">The screen to show.</param>
         /// <param name="sound">The sound to play for the transition.</param>
         public void SwitchTo(MenuScreen screen, TransitionSound sound)
         {
             CloseAll(TransitionSound.None);
-            Show(screen, sound);
+            Open(screen, sound);
         }
 
         /// <summary>
@@ -228,14 +239,14 @@ namespace BoostBlasters.UI
             // hide all menus before showing new ones
             foreach (var transition in m_transitions)
             {
-                if (transition.Value.type == Transition.Type.Hide)
+                if (transition.Value.type == Transition.Type.Close)
                 {
                     DoTransition(transition.Value);
                 }
             }
             foreach (var transition in m_transitions)
             {
-                if (transition.Value.type == Transition.Type.Show)
+                if (transition.Value.type == Transition.Type.Open)
                 {
                     DoTransition(transition.Value);
                 }
@@ -250,13 +261,13 @@ namespace BoostBlasters.UI
 
             switch (transition.type)
             {
-                case Transition.Type.Show:
-                    screen.Show();
-                    ScreenShown?.Invoke(screen);
+                case Transition.Type.Open:
+                    screen.Show(m_inputs[0]);
+                    Shown?.Invoke(screen);
                     break;
-                case Transition.Type.Hide:
+                case Transition.Type.Close:
                     transition.screen.Hide();
-                    ScreenHidden?.Invoke(screen);
+                    Hidden?.Invoke(screen);
                     break;
             }
 

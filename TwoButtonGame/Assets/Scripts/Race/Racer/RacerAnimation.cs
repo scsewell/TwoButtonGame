@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-using BoostBlasters.Levels;
+using BoostBlasters.Levels.Elements;
 
 namespace BoostBlasters.Races.Racers
 {

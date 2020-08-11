@@ -5,7 +5,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
-using BoostBlasters.Players;
+using BoostBlasters.Profiles;
 using BoostBlasters.Characters;
 using BoostBlasters.Races;
 
@@ -70,7 +70,7 @@ namespace BoostBlasters.UI.MainMenus
 
         private MenuBase m_menu = null;
         private PlayerSelectMenu m_selectMenu = null;
-        private List<PlayerProfilePanel> m_profilePanels = null;
+        private List<ProfilePanel> m_profilePanels = null;
         private Camera m_previewCam = null;
         private RenderTexture m_previewTex = null;
         private Dictionary<Character, GameObject> m_configToPreview = null;
@@ -138,11 +138,11 @@ namespace BoostBlasters.UI.MainMenus
             m_playerNum = index;
 
             // create panels used for selecting from available player profiles
-            m_profilePanels = new List<PlayerProfilePanel>();
+            m_profilePanels = new List<ProfilePanel>();
 
             for (int i = 0; i < m_profilePanelCount; i++)
             {
-                m_profilePanels.Add(Instantiate(m_profileSelectPrefab, m_profileContent).AddComponent<PlayerProfilePanel>());
+                m_profilePanels.Add(Instantiate(m_profileSelectPrefab, m_profileContent).AddComponent<ProfilePanel>());
             }
 
             // create a camera for rendering the character preview
@@ -241,7 +241,7 @@ namespace BoostBlasters.UI.MainMenus
                     }
                     else if (SelectedProfile == 1)
                     {
-                        m_menu.Get<ProfileNameMenu>().EditProfile(ProfileManager.CreateProfile(), true, OnProfileCreate, m_selectMenu);
+                        m_menu.Get<ProfileNameMenu>().CreateNew(OnProfileCreate, m_selectMenu);
                     }
                     else
                     {
@@ -340,19 +340,19 @@ namespace BoostBlasters.UI.MainMenus
             {
                 int profileIndex = i - 2 + m_profileWindow;
                 Profile profile = 0 <= profileIndex && profileIndex < profiles.Count ? profiles[profileIndex] : null;
-                
-                PlayerProfilePanel.Mode mode = PlayerProfilePanel.Mode.Profile;
+
+                ProfilePanel.Mode mode = ProfilePanel.Mode.Profile;
                 if (m_profileWindow + i == 0)
                 {
-                    mode = PlayerProfilePanel.Mode.Guest;
+                    mode = ProfilePanel.Mode.Guest;
                 }
                 else if (m_profileWindow + i == 1)
                 {
-                    mode = PlayerProfilePanel.Mode.AddNew;
+                    mode = ProfilePanel.Mode.AddNew;
                 }
 
-                m_profilePanels[i].SetProfile(profile, mode, null, null);
-                m_profilePanels[i].UpdateGraphics((i + m_profileWindow) == SelectedProfile, m_selectMenu.PlayerProfiles.Contains(profile));
+                //m_profilePanels[i].SetProfile(profile, mode, null, null);
+                //m_profilePanels[i].UpdateGraphics((i + m_profileWindow) == SelectedProfile, m_selectMenu.PlayerProfiles.Contains(profile));
             }
         }
 
@@ -370,7 +370,7 @@ namespace BoostBlasters.UI.MainMenus
             m_playerName.gameObject.SetActive(Profile != null);
             if (Profile != null)
             {
-                UIUtils.FitText(m_playerName, Profile.Name);
+                //UIUtils.FitText(m_playerName, Profile.Name);
                 m_playerName.color = playerCol;
             }
 

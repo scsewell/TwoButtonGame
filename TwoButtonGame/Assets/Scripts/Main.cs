@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 using BoostBlasters.Characters;
 using BoostBlasters.Levels;
-using BoostBlasters.Players;
+using BoostBlasters.Profiles;
 using BoostBlasters.Races;
 using BoostBlasters.Replays;
 

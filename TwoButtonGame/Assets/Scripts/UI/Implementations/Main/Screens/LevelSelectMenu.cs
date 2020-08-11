@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 using Framework.UI;
 
-using BoostBlasters.Players;
+using BoostBlasters.Profiles;
 using BoostBlasters.Levels;
 using BoostBlasters.Races;
 

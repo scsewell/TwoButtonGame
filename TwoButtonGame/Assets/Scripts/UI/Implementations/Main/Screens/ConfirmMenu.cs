@@ -32,7 +32,7 @@ namespace BoostBlasters.UI.MainMenus
         /// <param name="onResponse">The action to complete using the received response.</param>
         public void ConfirmAction(string message, Action<bool> onResponse)
         {
-            Menu.Show(this, TransitionSound.Next);
+            Menu.Open(this, TransitionSound.Next);
 
             m_confirmText.text = message;
             m_onResponse = onResponse;

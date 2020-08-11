@@ -1,21 +1,21 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.EventSystems;
+using BoostBlasters.Profiles;
 
 using Framework.UI;
 
-using BoostBlasters.Players;
-using BoostBlasters.Races;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 namespace BoostBlasters.UI.MainMenus
 {
     public class ProfilesMenu : MenuScreen
     {
-        [SerializeField]
-        private GameObject m_selectPanelPrefab = null;
+        [Header("Prefabs")]
+
+        [SerializeField] private GameObject m_selectPanelPrefab = null;
 
         [Header("UI Elements")]
 
@@ -37,23 +37,23 @@ namespace BoostBlasters.UI.MainMenus
         [SerializeField]
         private int m_selectPanelCount = 15;
 
-        private List<PlayerProfilePanel> m_selectPanels = null;
+        private List<ProfilePanel> m_selectPanels = null;
         private int m_page = 0;
         private Profile m_selectedProfile = null;
-        private PlayerProfilePanel m_selectedPanel = null;
+        private ProfilePanel m_selectedPanel = null;
 
         protected override void OnInitialize()
         {
-            m_backButton.onClick.AddListener(   () => Menu.SwitchTo<RootMenu>(TransitionSound.Back));
-            m_closeButton.onClick.AddListener(  () => CloseSelectedProfile());
-            m_editButton.onClick.AddListener(   () => EditSelectedProfile());
-            m_deleteButton.onClick.AddListener( () => ConfirmProfileDelete());
+            m_backButton.onClick.AddListener(() => Menu.SwitchTo<RootMenu>(TransitionSound.Back));
+            m_closeButton.onClick.AddListener(() => CloseSelectedProfile());
+            m_editButton.onClick.AddListener(() => EditSelectedProfile());
+            m_deleteButton.onClick.AddListener(() => ConfirmProfileDelete());
 
-            m_selectPanels = new List<PlayerProfilePanel>();
+            m_selectPanels = new List<ProfilePanel>();
 
-            for (int i = 0; i < m_selectPanelCount; i++)
+            for (var i = 0; i < m_selectPanelCount; i++)
             {
-                m_selectPanels.Add(Instantiate(m_selectPanelPrefab, m_selectContent).AddComponent<PlayerProfilePanel>());
+                m_selectPanels.Add(Instantiate(m_selectPanelPrefab, m_selectContent).AddComponent<ProfilePanel>());
             }
         }
 
@@ -91,25 +91,25 @@ namespace BoostBlasters.UI.MainMenus
 
         protected override void OnUpdateVisuals()
         {
-            IReadOnlyList<Profile> profiles = ProfileManager.Profiles;
+            var profiles = ProfileManager.Profiles;
 
-            int maxPage = (profiles.Count / m_selectPanelCount);
+            var maxPage = (profiles.Count / m_selectPanelCount);
             m_pageText.text = (m_page + 1) + "/" + (maxPage + 1);
-            
-            PlayerProfilePanel selectedPanel = null;
-            foreach (PlayerProfilePanel panel in m_selectPanels)
+
+            ProfilePanel selectedPanel = null;
+            foreach (var panel in m_selectPanels)
             {
                 if (panel.gameObject == PrimarySelection.Current)
                 {
                     selectedPanel = panel;
                 }
-                panel.UpdateGraphics(selectedPanel == panel, false);
+                //panel.UpdateGraphics(selectedPanel == panel, false);
             }
-            
+
             m_arrowLeft.enabled = m_page > 0 && selectedPanel != null;
             m_arrowRight.enabled = m_page < maxPage && selectedPanel != null;
 
-            Profile menuProfile = m_selectedProfile ?? (selectedPanel != null ? selectedPanel.Profile : null);
+            var menuProfile = m_selectedProfile ?? (selectedPanel != null ? selectedPanel.Profile : null);
 
             m_mainContent.SetActive(menuProfile != null);
 
@@ -117,7 +117,7 @@ namespace BoostBlasters.UI.MainMenus
             {
                 m_profleNameText.text = menuProfile.Name;
 
-                IReadOnlyList<RaceResult> results = menuProfile.RaceResults;
+                var results = menuProfile.RaceResults;
                 m_raceCountText.text = results.Count.ToString();
 
                 float winRate = 0;
@@ -130,7 +130,7 @@ namespace BoostBlasters.UI.MainMenus
             }
         }
 
-        private void OnSelect(PlayerProfilePanel panel, Profile profile, PlayerProfilePanel.Mode mode)
+        private void OnSelect(ProfilePanel panel, Profile profile, ProfilePanel.Mode mode)
         {
             m_selectedPanel = panel;
             m_selectedProfile = profile;
@@ -140,17 +140,17 @@ namespace BoostBlasters.UI.MainMenus
             PrimarySelection.SelectDefault();
 
             RemeberLastSelection = true;
-            
-            if (mode == PlayerProfilePanel.Mode.AddNew)
+
+            if (mode == ProfilePanel.Mode.AddNew)
             {
-                MainMenu menu = Menu as MainMenu;
-                menu.Get<ProfileNameMenu>().EditProfile(ProfileManager.CreateProfile(), true, null, this);
+                var menu = Menu as MainMenu;
+                menu.Get<ProfileNameMenu>().Rename(ProfileManager.CreateProfile(), null, this);
             }
         }
 
         private void SetDefaultSelection()
         {
-            Selectable selectProfile = m_selectPanels[0].isActiveAndEnabled ? m_selectPanels[0].GetComponent<Selectable>() : m_backButton;
+            var selectProfile = m_selectPanels[0].isActiveAndEnabled ? m_selectPanels[0].GetComponent<Selectable>() : m_backButton;
             PrimarySelection.DefaultSelectionOverride = (m_selectedProfile != null ? m_closeButton : selectProfile).gameObject;
         }
 
@@ -160,7 +160,7 @@ namespace BoostBlasters.UI.MainMenus
 
             if (m_selectedPanel != null)
             {
-                GameObject toSelect = m_selectPanels[Mathf.Min(m_selectPanels.IndexOf(m_selectedPanel), m_selectPanels.Count - 1)].gameObject;
+                var toSelect = m_selectPanels[Mathf.Min(m_selectPanels.IndexOf(m_selectedPanel), m_selectPanels.Count - 1)].gameObject;
                 PrimarySelection.Current = toSelect;
             }
             m_selectedProfile = null;
@@ -170,13 +170,13 @@ namespace BoostBlasters.UI.MainMenus
 
         private void EditSelectedProfile()
         {
-            MainMenu menu = (MainMenu)Menu;
-            menu.Get<ProfileNameMenu>().EditProfile(m_selectedProfile, false, null, this);
+            var menu = (MainMenu)Menu;
+            menu.Get<ProfileNameMenu>().Rename(m_selectedProfile, null, this);
         }
 
         private void ConfirmProfileDelete()
         {
-            MainMenu menu = (MainMenu)Menu;
+            var menu = (MainMenu)Menu;
             menu.Get<ConfirmMenu>().ConfirmAction("Delete Profile:   " + m_selectedProfile.Name, DeleteSelectedProfile, this);
         }
 
@@ -201,7 +201,7 @@ namespace BoostBlasters.UI.MainMenus
 
         private void ChangePage(int offset)
         {
-            int oldPage = m_page;
+            var oldPage = m_page;
             m_page = Mathf.Clamp(m_page + offset, 0, ProfileManager.Profiles.Count / m_selectPanelCount);
 
             if (m_page != oldPage)
@@ -215,27 +215,28 @@ namespace BoostBlasters.UI.MainMenus
         {
             m_page = Mathf.Clamp(page, 0, ProfileManager.Profiles.Count / m_selectPanelCount);
 
-            for (int i = 0; i < m_selectPanels.Count; i++)
+            for (var i = 0; i < m_selectPanels.Count; i++)
             {
-                bool isAddNew = (i == 0 && m_page == 0);
-                int index = Mathf.Max((m_page * m_selectPanelCount) + i - 1, 0);
+                var isAddNew = (i == 0 && m_page == 0);
+                var index = Mathf.Max((m_page * m_selectPanelCount) + i - 1, 0);
 
-                IReadOnlyList<Profile> profiles = ProfileManager.Profiles;
-                PlayerProfilePanel.Mode mode = isAddNew ? PlayerProfilePanel.Mode.AddNew : PlayerProfilePanel.Mode.Profile;
+                var profiles = ProfileManager.Profiles;
+                var mode = isAddNew ? ProfilePanel.Mode.AddNew : ProfilePanel.Mode.Profile;
 
-                m_selectPanels[i].SetProfile((!isAddNew && index < profiles.Count) ? profiles[index] : null, mode, OnSelect, OnMove);
+                //m_selectPanels[i].SetProfile((!isAddNew && index < profiles.Count) ? profiles[index] : null, mode, OnSelect, OnMove);
             }
 
             if (m_selectPanels[0].isActiveAndEnabled)
             {
                 UIHelper.SetNavigationVertical(new NavConfig()
                 {
-                    parent = m_selectContent, down = m_backButton,
+                    parent = m_selectContent,
+                    down = m_backButton,
                 });
             }
             else
             {
-                Navigation tempNav = m_backButton.navigation;
+                var tempNav = m_backButton.navigation;
                 tempNav.selectOnUp = null;
                 m_backButton.navigation = tempNav;
             }

@@ -2,7 +2,7 @@
 using System.Linq;
 
 using BoostBlasters.Characters;
-using BoostBlasters.Players;
+using BoostBlasters.Profiles;
 using BoostBlasters.Races;
 using BoostBlasters.Replays;
 

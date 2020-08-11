@@ -4,10 +4,11 @@ using System.Linq;
 
 using BoostBlasters.Characters;
 using BoostBlasters.Levels;
-using BoostBlasters.Players;
+using BoostBlasters.Profiles;
 using BoostBlasters.Races;
 using BoostBlasters.Races.Racers;
 
+using Framework;
 using Framework.IO;
 
 using UnityEngine;
@@ -19,7 +20,7 @@ namespace BoostBlasters.Replays
     /// </summary>
     public class Recording : SerializableData
     {
-        protected override char[] SerializerType { get; } = new char[] { 'B', 'B', 'R', 'C' };
+        protected override FourCC SerializerType { get; } = new FourCC("RECO");
         protected override ushort SerializerVersion => 1;
 
         private const int FRAMES_PER_KEYFRAME = 10;

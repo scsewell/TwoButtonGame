@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
-using BoostBlasters.Players;
+using BoostBlasters.Profiles;
 using BoostBlasters.Races;
 
 namespace BoostBlasters.UI.MainMenus
@@ -79,10 +79,10 @@ namespace BoostBlasters.UI.MainMenus
 
         public override void Back()
         {
-            if (Input.GetKeyDown(KeyCode.Escape))
-            {
-                base.Back();
-            }
+            //if (Input.GetKeyDown(KeyCode.Escape))
+            //{
+            //    base.Back();
+            //}
         }
 
         protected override void OnUpdate()

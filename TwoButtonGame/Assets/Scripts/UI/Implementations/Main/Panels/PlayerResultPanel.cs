@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
+
+using BoostBlasters.Profiles;
 
 using UnityEngine;
 using UnityEngine.UI;
-
-using BoostBlasters.Players;
-using BoostBlasters.Races;
 
 namespace BoostBlasters.UI.MainMenus
 {
@@ -45,8 +42,8 @@ namespace BoostBlasters.UI.MainMenus
             if (gameObject.activeInHierarchy)
             {
                 m_rank.text = rank.ToString();
-                
-                UIUtils.FitText(m_name, profile.Name);
+
+                //UIUtils.FitText(m_name, profile.Name);
 
                 if (m_finishTime != null)
                 {

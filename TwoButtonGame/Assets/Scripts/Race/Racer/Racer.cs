@@ -1,13 +1,12 @@
 ﻿using System;
-//using System.Linq;
 
 using UnityEngine;
 
 using Framework.Interpolation;
 
-using BoostBlasters.Players;
+using BoostBlasters.Profiles;
 using BoostBlasters.Characters;
-using BoostBlasters.Levels;
+using BoostBlasters.Levels.Elements;
 
 namespace BoostBlasters.Races.Racers
 {
@@ -133,7 +132,7 @@ namespace BoostBlasters.Races.Racers
                     throw new ArgumentException("Unsupported racer config type", nameof(config));
             }
 
-            RaceResult = new RaceResult();
+            //RaceResult = new RaceResult();
 
             m_animation = GetComponentInChildren<RacerAnimation>();
             m_racePath = Main.Instance.RaceManager.RacePath;
@@ -158,7 +157,7 @@ namespace BoostBlasters.Races.Racers
                 m_animation.ResetAnimation();
             }
 
-            RaceResult.Reset();
+            //RaceResult.Reset();
 
             // reset the racer properties
             m_energy = 0f;
@@ -197,7 +196,7 @@ namespace BoostBlasters.Races.Racers
                 bool finished = m_racePath.IsFinished(m_waypointsCompleted);
                 if (finished != RaceResult.Finished)
                 {
-                    RaceResult.Finished = true;
+                    //RaceResult.Finished = true;
                     RecordLapTime();
                 }
 
@@ -254,10 +253,10 @@ namespace BoostBlasters.Races.Racers
         private void OnTriggerEnter(Collider other)
         {
             BoostGate boostGate = other.GetComponentInParent<BoostGate>();
-            if (boostGate != null && boostGate.UseGate(this))
-            {
-                OnEnergyGained(boostGate.Energy);
-            }
+            //if (boostGate != null && boostGate.UseGate(this))
+            //{
+            //    OnEnergyGained(boostGate.Energy);
+            //}
         }
 
         public void OnEnergyUseFail()
@@ -289,8 +288,8 @@ namespace BoostBlasters.Races.Racers
 
         private void RecordLapTime()
         {
-            float currentTime = Main.Instance.RaceManager.GetStartRelativeTime(Time.time);
-            RaceResult.LapTimes.Add(currentTime - RaceResult.FinishTime);
+            //float currentTime = Main.Instance.RaceManager.GetStartRelativeTime(Time.time);
+            //RaceResult.LapTimes.Add(currentTime - RaceResult.FinishTime);
         }
     }
 }

@@ -37,7 +37,7 @@ namespace BoostBlasters.UI.MainMenus
             m_animator.Play(m_showStartMenu ? "Start" : "Main");
 
             m_playButton.onClick.AddListener(() => Menu.SwitchTo<PlayerSelectMenu>(TransitionSound.Next));
-            m_profilesButton.onClick.AddListener(() => Menu.SwitchTo<ProfilesMenu>(TransitionSound.Next));
+            m_profilesButton.onClick.AddListener(() => Menu.SwitchTo<ProfileListMenu>(TransitionSound.Next));
             m_replaysButton.onClick.AddListener(() => Menu.SwitchTo<ReplayMenu>(TransitionSound.Next));
             m_settingsButton.onClick.AddListener(() => Menu.SwitchTo<SettingsMenu>(TransitionSound.Next));
             m_creditsButton.onClick.AddListener(() => Menu.SwitchTo<CreditsMenu>(TransitionSound.Next));

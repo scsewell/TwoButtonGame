@@ -1,0 +1,17 @@
+{
+    "name": "BoostBlasters.Characters",
+    "rootNamespace": "BoostBlasters.Characters",
+    "references": [
+        "Framework.Utils",
+        "Framework.AssetBundles"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

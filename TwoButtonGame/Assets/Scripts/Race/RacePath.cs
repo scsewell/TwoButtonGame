@@ -1,4 +1,4 @@
-﻿using BoostBlasters.Levels;
+﻿using BoostBlasters.Levels.Elements;
 using BoostBlasters.Races.Racers;
 
 using UnityEngine;
@@ -82,7 +82,7 @@ namespace BoostBlasters.Races
             }
             foreach (var energyGate in m_energyGates)
             {
-                energyGate.UpdateGate();
+                //energyGate.UpdateGate();
             }
         }
 
@@ -90,7 +90,7 @@ namespace BoostBlasters.Races
         {
             foreach (var energyGate in m_energyGates)
             {
-                energyGate.ResetGate(player);
+                //energyGate.ResetGate(player);
             }
         }
 

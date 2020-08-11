@@ -28,7 +28,7 @@ namespace BoostBlasters.UI.MainMenus
         [SerializeField] private RectTransform m_categoryTabs = null;
         [SerializeField] private RectTransform m_settingsContent = null;
 
-        [Header("Settings")]
+        [Header("Options")]
 
         [SerializeField]
         private List<CategoryDefaults> m_defaultSettings = null;
@@ -36,14 +36,8 @@ namespace BoostBlasters.UI.MainMenus
         [Serializable]
         private struct CategoryDefaults
         {
-            [SerializeField]
-            private SettingCategory m_category;
-
-            [SerializeField]
-            private SettingPresetGroup m_preset;
-
-            public SettingCategory Category => m_category;
-            public SettingPresetGroup Preset => m_preset;
+            public SettingCategory category;
+            public SettingPresetGroup preset;
         }
 
         private readonly Dictionary<SettingCategory, List<SettingPanel>> m_categoryToSettings = new Dictionary<SettingCategory, List<SettingPanel>>();
@@ -149,7 +143,7 @@ namespace BoostBlasters.UI.MainMenus
             // display the description for the currently selected item
             var selected = PrimarySelection.Current;
 
-            if (selected)
+            if (selected != null)
             {
                 var setting = selected.GetComponent<SettingPanel>();
 
@@ -219,10 +213,10 @@ namespace BoostBlasters.UI.MainMenus
 
             foreach (var categoryDefaults in m_defaultSettings)
             {
-                if (categoryDefaults.Category == category)
+                if (categoryDefaults.category == category)
                 {
                     // appy the defaults settings
-                    categoryDefaults.Preset.Apply();
+                    categoryDefaults.preset.Apply();
 
                     // refresh the displayed values
                     var settings = m_categoryToSettings[category];

@@ -1,7 +1,6 @@
 ﻿using System;
 
 using UnityEngine;
-using UnityEngine.InputSystem.UI;
 using UnityEngine.UI;
 
 namespace BoostBlasters.UI
@@ -13,78 +12,72 @@ namespace BoostBlasters.UI
     public class Selection
     {
         [SerializeField]
-        [Tooltip("The input module used to trigger events for this selection. If not assigned, this selection is not used.")]
-        private InputSystemUIInputModule m_inputModulePrefab = null;
+        [Tooltip("If set, only allows selection of children of this game object.")]
+        private GameObject m_selectionRoot = null;
 
         [SerializeField]
         [Tooltip("The default element to select when initializing the selection.")]
         private Selectable m_defaultSelection = null;
 
-        private GameObject m_inputModule = null;
-        private MultiplayerEventSystem m_eventSystem = null;
+        private Input m_input = null;
+        private GameObject m_selection = null;
 
         /// <summary>
-        /// When not null, overrides the default selection for this menu screen.
+        /// When not null, overrides the default selection.
         /// </summary>
         public GameObject DefaultSelectionOverride { get; set; } = null;
 
         /// <summary>
-        /// The current selection.
+        /// The currently selected GameObject.
         /// </summary>
         public GameObject Current
         {
-            get => m_eventSystem != null ? m_eventSystem.currentSelectedGameObject : null;
+            get => m_input != null ? m_input.EventSystem.currentSelectedGameObject : m_selection;
             set
             {
-                if (m_eventSystem != null)
+                m_selection = value;
+
+                if (m_input != null)
                 {
-                    m_eventSystem.SetSelectedGameObject(value);
+                    m_input.EventSystem.SetSelectedGameObject(value);
                 }
             }
         }
 
         /// <summary>
-        /// Initializes the input and event system.
+        /// Gets if this selection is currently active.
         /// </summary>
-        /// <param name="screen">The menu screen using this selection.</param>
-        public void Initialize(MenuScreen screen)
+        public bool Enabled => m_input != null;
+
+        /// <summary>
+        /// Enables selection.
+        /// </summary>
+        /// <param name="input">The input to drive this selection with.</param>
+        public void Enable(Input input)
         {
-            if (m_inputModule == null && m_inputModulePrefab != null)
-            {
-                m_inputModule = UnityEngine.Object.Instantiate(m_inputModulePrefab, screen.transform).gameObject;
+            m_input = input;
 
-                m_eventSystem = m_inputModule.GetComponent<MultiplayerEventSystem>();
-                m_eventSystem.firstSelectedGameObject = m_defaultSelection != null ? m_defaultSelection.gameObject : null;
-                m_eventSystem.playerRoot = screen.gameObject;
-
-                OnDisable(false);
-            }
+            var eventSystem = m_input.EventSystem;
+            eventSystem.SetSelectedGameObject(m_selection);
+            eventSystem.playerRoot = m_selectionRoot;
         }
 
         /// <summary>
-        /// Enables input and selection.
-        /// </summary>
-        public void OnEnable()
-        {
-            if (m_inputModule != null)
-            {
-                m_inputModule.SetActive(true);
-            }
-        }
-
-        /// <summary>
-        /// Disables input and selection.
+        /// Disables selection.
         /// </summary>
         /// <param name="rememberLastSelection">Do not reset the selection when next enabled.</param>
-        public void OnDisable(bool rememberLastSelection)
+        public void Disable(bool rememberLastSelection)
         {
-            if (!rememberLastSelection && m_eventSystem != null)
+            if (m_input != null)
             {
-                m_eventSystem.SetSelectedGameObject(null);
-            }
-            if (m_inputModule != null)
-            {
-                m_inputModule.SetActive(false);
+                var eventSystem = m_input.EventSystem;
+
+                m_selection = rememberLastSelection ? eventSystem.currentSelectedGameObject : null;
+
+                eventSystem.SetSelectedGameObject(null);
+                eventSystem.playerRoot = null;
+
+                m_input = null;
             }
         }
 
@@ -97,9 +90,9 @@ namespace BoostBlasters.UI
             {
                 Current = DefaultSelectionOverride.gameObject;
             }
-            else if (m_eventSystem != null)
+            else if (m_defaultSelection != null)
             {
-                Current = m_eventSystem.firstSelectedGameObject;
+                Current = m_defaultSelection.gameObject;
             }
         }
 
@@ -108,7 +101,7 @@ namespace BoostBlasters.UI
         /// </summary>
         public void AquireSelectionIfNeeded()
         {
-            if (Current == null)
+            if (Current == null || !Current.activeInHierarchy)
             {
                 SelectDefault();
             }

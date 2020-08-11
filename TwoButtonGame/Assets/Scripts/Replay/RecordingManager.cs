@@ -177,7 +177,7 @@ namespace BoostBlasters.Replays
 
                 if (replayCount >= MAX_REPLAYS)
                 {
-                    File.Delete(file.FullName);
+                    FileIO.DeleteFile(file.FullName);
                     continue;
                 }
 

@@ -6,7 +6,7 @@ using UnityEngine;
 using Framework;
 using Framework.AssetBundles;
 
-using BoostBlasters.Players;
+using BoostBlasters.Profiles;
 using BoostBlasters.Characters;
 using BoostBlasters.Races.Racers;
 using BoostBlasters.Replays;
@@ -304,7 +304,7 @@ namespace BoostBlasters.Races
                         }
                     }
                 }
-                player.RaceResult.Rank = rank;
+                //player.RaceResult.Rank = rank;
             }
 
             if (m_state == State.Racing && m_racers.All(p => p.RaceResult.Finished))

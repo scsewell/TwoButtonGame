@@ -1,20 +1,23 @@
 ### To Do ###
 
 Short Term
-- Only show control hints for connected devices
-- Allow using overlay menu screen(s)?
 
 - Text Mesh Pro
+- Check font licenses
 - New Input sytstem (remove old Input system and framework controls)
+- Character/Level version numbering (builtin charactesr and levels should match core game version)
+
 - Custom logo intro (add setting / command line option to skip in settings)
 - Make shnazzy outline for character select, with integrated name plate at botton, profile plate at top
 	Arrows would be added to the character plate instead
 
-- Use player color in 
-- check for spaghetti (check singleton usage)
-- things should not know about level stuff, only interact with race classes
-- implement waypoint as a race concept, things should reference that instead
-- turn race manager into a state machine
+Steam API
+- Integrate in framework
+- Setup deployment pipeline
+- Abstract profile as needed
+
+Migrate to URP
+- gate color should be a global shader property, instead of hooking into OnWillRenderObject
 
 ECS/Unity Physics
 - Make sure to gut Physx as much as possible
@@ -35,10 +38,11 @@ Optimization
 - Add pre-awake to def. Create array of objects to call pre-awake on at build time per scene
 - Unload scenes by disabling all objects in them and destroying just a few of the objects per frame
 
-Migrate to URP
-- gate color should be a global shader property, instead of hooking into OnWillRenderObject
-
 General
+- Level intro animation should use timeline instead of current system (use it to configure title card/music timing as well as camera)
+- Add Mods section to menu for managing asset bundles
+	- Figure out how to bundle assemblies for custom level/character code execution
+	- Ensure that in multiplayer bundles with custom code can optionally not be synced
 - Rumble controller on impact
 - Add character color options
 - Outline is very expensive on UI, especially the player time... (check none are left)
@@ -51,6 +55,7 @@ General
 - Add goals for players to achieve per level
 
 Replays
+- Serialize version of game/level/characters and show when the version is not comptabible
 - View replays up to current time in race when paused
 - Variable replay speed
 - Allow changing cameras (cinemachine, chase camera, players all at once, players single (cycle through), manual zoom/free camera)
@@ -73,10 +78,7 @@ Characters
 - paritcle motion trail behind racer engines (perhaps just other racers, helps see how they are moving when ahead)
 - Engines spark/flash/pulse on boost fail because not enough energy
 - (fatty, airbrake flaps!!!!, floating boosters fancy tech, robot, other race?, really abstract?)
-- Abilities (down plummet, downwards boost, teleport)
-
-AI
-- Investigate ML agents
+- Abilities (downwards boost, teleport)
 
 Levels
 - Alternate paths
@@ -85,14 +87,6 @@ Levels
 - Improve boost gate graphics (animate the rings) - particles/character effect/screen effect to make it obvious boost was gained
 - Wind zones
 
-Level Ideas (try to think of creative hazzards)
-- City
-- Sky
-- Desert (sandstorms)
-- Factory
-- Arctic (ice caves, falling ice)
-- Volcano (falling rocks, magma)
-
 ### Bugs and stuff ###
 black fade quad artifacts like crazy when app opens or alt-tabbing back to game window
 Track preview appears on top of black fade quad
@@ -100,13 +94,22 @@ Camera can clip with the gates, perhaps use a fading material when close...
 What to do if a joystick disconnects in menu or game?
 
 ### Long Term ###
+AI (ML agents?)
 Multiplayer
-Steam API
-Leaderboard
 Tutorial
+Leaderboard
 Level preview camera shots in menu
-Ghosting
+Ghosting (Race alongside replay)
 
+Level Ideas (try to think of creative hazards)
+- City
+- Sky
+- Desert (sandstorms)
+- Factory
+- Arctic (ice caves, falling ice)
+- Volcano (falling rocks, magma)
+
+### Review ###
 Ensure music is credited
 Update level preview images
 

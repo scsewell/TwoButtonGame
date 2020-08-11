@@ -1,0 +1,19 @@
+{
+    "name": "BoostBlasters.Levels.Elements",
+    "rootNamespace": "BoostBlasters.Levels.Elements",
+    "references": [
+        "Framework.Utils",
+        "Framework.Interpolation",
+        "BoostBlasters.Levels",
+        "BoostBlasters.Levels.Paths"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
