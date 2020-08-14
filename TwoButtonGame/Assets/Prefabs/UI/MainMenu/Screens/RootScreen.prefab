@@ -361,16 +361,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_primarySelection:
-    m_inputModulePrefab: {fileID: 8917968939599273587, guid: e4299256a9bb1fb40869b103ff0bd2af,
-      type: 3}
+    m_selectionRoot: {fileID: 1907654198860439134}
     m_defaultSelection: {fileID: 1055236741255758836}
+    m_remeberLastSelection: 1
   m_secondarySelection:
-    m_inputModulePrefab: {fileID: 8917968939599273587, guid: 758966314f11dd040a0968bc9e5f12cc,
-      type: 3}
+    m_selectionRoot: {fileID: 0}
     m_defaultSelection: {fileID: 0}
-  m_enableInteractionOnShow: 1
-  m_remeberLastSelection: 1
-  m_closeOnBack: 0
+    m_remeberLastSelection: 1
+  m_backMode: 0
   m_backMenu: {fileID: 0}
   m_playButton: {fileID: 1055236741255758836}
   m_tutorialButton: {fileID: 0}
@@ -509,11 +507,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3574c7f335aa06144aafde540cbf0b40, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_wrap: 1
   m_up: {fileID: 0}
   m_down: {fileID: 0}
   m_left: {fileID: 0}
   m_right: {fileID: 0}
+  m_wrap: 1
+  m_allowDisabled: 0
   m_horizontalSelect: {fileID: 0}
 --- !u!225 &4215623563826278681
 CanvasGroup:
@@ -2386,7 +2385,7 @@ PrefabInstance:
     - target: {fileID: 224770018698898070, guid: 06956c1122b518244bd4af89b0ce3b25,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 146.76001
+      value: 161.87
       objectReference: {fileID: 0}
     - target: {fileID: 224770018698898070, guid: 06956c1122b518244bd4af89b0ce3b25,
         type: 3}

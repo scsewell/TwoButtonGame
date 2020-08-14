@@ -62,6 +62,7 @@ namespace BoostBlasters.UI.MainMenus
         [Range(0f, 1f)]
         private float m_bobFrequency = 0.113f;
 
+
         private Option<Level> m_trackSelect;
         public Option<Level> TrackSelect => m_trackSelect;
 

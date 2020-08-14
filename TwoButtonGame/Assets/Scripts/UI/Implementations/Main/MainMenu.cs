@@ -18,9 +18,10 @@ namespace BoostBlasters.UI.MainMenus
     {
         [Header("Options")]
 
-        [SerializeField] private AssetBundleMusicReference m_music = null;
+        [SerializeField]
+        private AssetBundleMusicReference m_music = null;
 
-        [Header("Loading")]
+        [Header("Fading")]
 
         [SerializeField]
         private Image m_fade = null;
@@ -31,12 +32,14 @@ namespace BoostBlasters.UI.MainMenus
         [Range(0f, 5f)]
         private float m_fadeOutDuration = 2.5f;
 
+
         private bool m_leavingMenu = false;
         private float m_menuLoadTime;
         private float m_menuExitTime;
 
         public List<PlayerBaseInput> UnreservedInputs => new List<PlayerBaseInput>().Where(i => !ReservedInputs.Contains(i)).ToList();
         public List<PlayerBaseInput> ReservedInputs => Get<PlayerSelectMenu>().ActiveInputs;
+
 
         protected override void Start()
         {

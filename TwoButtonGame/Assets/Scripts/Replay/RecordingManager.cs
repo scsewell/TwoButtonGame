@@ -210,7 +210,7 @@ namespace BoostBlasters.Replays
 
         private static string GetReplayDir()
         {
-            return Path.Combine(FileIO.GetConfigDirectory(), FOLDER_NAME);
+            return Path.Combine(FileIO.ConfigDirectory, FOLDER_NAME);
         }
     }
 }

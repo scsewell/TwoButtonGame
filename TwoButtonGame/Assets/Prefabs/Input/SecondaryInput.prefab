@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 8917968939599273587}
   - component: {fileID: 5450944536213004347}
   m_Layer: 0
-  m_Name: InputPrimary
+  m_Name: SecondaryUIInput
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -26,8 +26,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5494606812980691559}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -1280, y: -720, z: 0}
-  m_LocalScale: {x: 1.3333334, y: 1.3333334, z: 1.3333334}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -49,12 +49,10 @@ MonoBehaviour:
   m_ActionsAsset: {fileID: -944628639613478452, guid: 8c055b25acaec8e4e8096ef2e78e8684,
     type: 3}
   m_PointAction: {fileID: 0}
-  m_MoveAction: {fileID: 3710738434707379630, guid: 8c055b25acaec8e4e8096ef2e78e8684,
+  m_MoveAction: {fileID: -5833146865259708103, guid: 8c055b25acaec8e4e8096ef2e78e8684,
     type: 3}
-  m_SubmitAction: {fileID: -7351496451830169288, guid: 8c055b25acaec8e4e8096ef2e78e8684,
-    type: 3}
-  m_CancelAction: {fileID: 2538523204493561115, guid: 8c055b25acaec8e4e8096ef2e78e8684,
-    type: 3}
+  m_SubmitAction: {fileID: 0}
+  m_CancelAction: {fileID: 0}
   m_LeftClickAction: {fileID: 0}
   m_MiddleClickAction: {fileID: 0}
   m_RightClickAction: {fileID: 0}

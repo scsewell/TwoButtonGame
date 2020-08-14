@@ -1,54 +1,75 @@
-﻿using UnityEngine;
-using Framework;
+﻿using System.Collections.Generic;
 
-public class InputManager : ComponentSingleton<InputManager>
+using UnityEngine;
+
+using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Users;
+
+namespace BoostBlasters.Input
 {
-    private PlayerBaseInput[] m_playerInputs =
+    public class InputManager : MonoBehaviour
     {
-        new PlayerJoystickInput(1),
-        new PlayerJoystickInput(2),
-        new PlayerJoystickInput(3),
-        new PlayerJoystickInput(4),
-        new PlayerKeyboardInput(
-            KeyCode.LeftArrow,
-            KeyCode.RightArrow,
-            KeyCode.UpArrow,
-            KeyCode.DownArrow,
-            KeyCode.UpArrow,
-            KeyCode.Return,
-            KeyCode.RightControl,
-            KeyCode.Delete
-        ),
-        new PlayerKeyboardInput(
-            KeyCode.A, 
-            KeyCode.D, 
-            KeyCode.W, 
-            KeyCode.S, 
-            KeyCode.W,
-            KeyCode.E, 
-            KeyCode.Q,
-            KeyCode.Escape
-        ),
-    };
+        private static readonly List<UserInput> m_userInputs = new List<UserInput>();
 
-    public PlayerBaseInput[] PlayerInputs
-    {
-        get { return m_playerInputs; }
-    }
+        /// <summary>
+        /// The global input source.
+        /// </summary>
+        public static GlobalInput GlobalInput { get; private set; }
 
-    public void Update()
-    {
-        foreach (PlayerBaseInput input in m_playerInputs)
+        /// <summary>
+        /// The inputs for all joined players.
+        /// </summary>
+        public static IReadOnlyList<UserInput> UserInputs => m_userInputs;
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void Init()
         {
-            input.Update();
+            m_userInputs.Clear();
+            GlobalInput = null;
         }
-    }
 
-    public void SetKeyboardMuting(InputMuting muting)
-    {
-        foreach (PlayerBaseInput input in m_playerInputs)
+
+        ///// <summary>
+        ///// An event invoked when a new input is enabled.
+        ///// </summary>
+        //public static event Action<BaseInput> InputAdded;
+
+        ///// <summary>
+        ///// An event invoked when an input is destroyed.
+        ///// </summary>
+        //public static event Action<BaseInput> InputRemoved;
+
+        //[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        //private static void Init()
+        //{
+        //    InputAdded = null;
+        //    InputRemoved = null;
+        //}
+
+        internal void AddInput(BaseInput input)
         {
-            input.SetMuting(muting);
+            switch (input)
+            {
+                case UserInput userInput:
+                    m_userInputs.Add(userInput);
+                    break;
+                case GlobalInput globalInput:
+                    GlobalInput = globalInput;
+                    break;
+            }
+        }
+
+        internal void RemoveInput(BaseInput input)
+        {
+            switch (input)
+            {
+                case UserInput userInput:
+                    m_userInputs.Remove(userInput);
+                    break;
+                case GlobalInput globalInput:
+                    GlobalInput = null;
+                    break;
+            }
         }
     }
 }

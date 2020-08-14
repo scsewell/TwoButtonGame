@@ -259,7 +259,7 @@ namespace BoostBlasters.Profiles
 
         private static string GetProfileDirectory()
         {
-            return Path.Combine(FileIO.GetConfigDirectory(), FOLDER_NAME);
+            return Path.Combine(FileIO.ConfigDirectory, FOLDER_NAME);
         }
     }
 }

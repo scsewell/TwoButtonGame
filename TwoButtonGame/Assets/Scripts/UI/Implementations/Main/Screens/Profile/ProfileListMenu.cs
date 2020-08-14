@@ -68,7 +68,9 @@ namespace BoostBlasters.UI.MainMenus
 
             for (var i = m_profilePanels.Count; i < profiles.Count; i++)
             {
-                m_profilePanels.Add(Instantiate(m_profilePanelPrefab, parent, false));
+                var button = Instantiate(m_profilePanelPrefab, parent, false);
+                button.gameObject.AddComponent<AutoScrollViewElement>();
+                m_profilePanels.Add(button);
             }
             for (var i = 0; i < m_profilePanels.Count; i++)
             {

@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 
+using BoostBlasters.Input;
+
 using UnityEngine;
-using UnityEngine.InputSystem.UI;
 
 namespace BoostBlasters.UI
 {
@@ -13,17 +14,6 @@ namespace BoostBlasters.UI
     [RequireComponent(typeof(SoundPlayer))]
     public abstract class MenuBase : MonoBehaviour
     {
-        [Header("Input")]
-
-        [SerializeField]
-        [Tooltip("The selection used for primary navigation and submit/cancel events.")]
-        private InputSystemUIInputModule m_primaryInputPrefab;
-
-        [SerializeField]
-        [Tooltip("The input modeule used for secondary navigation events (ex. L/R bumpers).")]
-        private InputSystemUIInputModule m_secondaryInputPrefab;
-
-
         private struct Transition
         {
             public enum Type
@@ -34,10 +24,10 @@ namespace BoostBlasters.UI
 
             public Type type;
             public MenuScreen screen;
+            public BaseInput input;
             public TransitionSound sound;
         }
 
-        private readonly List<MenuInput> m_inputs = new List<MenuInput>();
         private readonly List<MenuScreen> m_menuScreens = new List<MenuScreen>();
         private readonly Dictionary<Type, List<MenuScreen>> m_typeToScreens = new Dictionary<Type, List<MenuScreen>>();
         private readonly Dictionary<MenuScreen, Transition> m_transitions = new Dictionary<MenuScreen, Transition>();
@@ -61,11 +51,6 @@ namespace BoostBlasters.UI
         protected virtual void Awake()
         {
             Sound = GetComponent<SoundPlayer>();
-
-            // initialize the menu input
-            var primary = new Input(Instantiate(m_primaryInputPrefab, transform));
-            var secondary = new Input(Instantiate(m_secondaryInputPrefab, transform));
-            m_inputs.Add(new MenuInput(primary, secondary));
 
             // get all menu screens in the menu
             GetComponentsInChildren(true, m_menuScreens);
@@ -121,7 +106,7 @@ namespace BoostBlasters.UI
         {
             return m_typeToScreens.TryGetValue(typeof(TScreen), out var screens) ? screens[0] as TScreen : null;
         }
-       
+
         /// <summary>
         /// Gets all the <see cref="MenuScreen"/> instances in this menu.
         /// </summary>
@@ -153,21 +138,48 @@ namespace BoostBlasters.UI
         /// <summary>
         /// Show a menu screen.
         /// </summary>
+        /// <typeparam name="TScreen">The type of the screen to show.</typeparam>
+        /// <param name="input">The input to drive the menu interaction with.</param>
+        /// <param name="sound">The sound to play for the transition.</param>
+        public void Open<TScreen>(BaseInput input, TransitionSound sound) where TScreen : MenuScreen
+        {
+            Open(Get<TScreen>(), input, sound);
+        }
+
+        /// <summary>
+        /// Show a menu screen.
+        /// </summary>
         /// <param name="screen">The screen to show.</param>
         /// <param name="sound">The sound to play for the transition.</param>
         public void Open(MenuScreen screen, TransitionSound sound)
         {
+            Open(screen, InputManager.GlobalInput, sound);
+        }
+
+        /// <summary>
+        /// Show a menu screen.
+        /// </summary>
+        /// <param name="screen">The screen to show.</param>
+        /// <param name="input">The input to drive the menu interaction with.</param>
+        /// <param name="sound">The sound to play for the transition.</param>
+        public void Open(MenuScreen screen, BaseInput input, TransitionSound sound)
+        {
             if (screen != null)
             {
+                // only one menu screen can ever use the same input
                 foreach (var menu in m_menuScreens)
                 {
-                    menu.SetInput(null);
+                    if (menu.Input == input)
+                    {
+                        menu.SetInput(null);
+                    }
                 }
 
                 m_transitions[screen] = new Transition
                 {
                     type = Transition.Type.Open,
                     screen = screen,
+                    input = input,
                     sound = sound,
                 };
             }
@@ -262,7 +274,7 @@ namespace BoostBlasters.UI
             switch (transition.type)
             {
                 case Transition.Type.Open:
-                    screen.Show(m_inputs[0]);
+                    screen.Show(transition.input);
                     Shown?.Invoke(screen);
                     break;
                 case Transition.Type.Close:

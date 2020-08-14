@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using BoostBlasters.Input;
+
+using UnityEngine;
 
 namespace BoostBlasters.UI
 {
@@ -17,14 +19,6 @@ namespace BoostBlasters.UI
         [SerializeField]
         [Tooltip("The selection used for secondary navigation events (ex. L/R bumpers).")]
         private Selection m_secondarySelection;
-
-        [SerializeField]
-        [Tooltip("Enable selection and input for this menu screen automatically when it is shown.")]
-        private bool m_enableInteractionOnShow = true;
-
-        [SerializeField]
-        [Tooltip("Remeber the last selected elements when disabling interaction on this screen and select them again when interaction is next enabled.")]
-        private bool m_remeberLastSelection = false;
 
         [Header("Back")]
 
@@ -54,6 +48,11 @@ namespace BoostBlasters.UI
         public MenuBase Menu { get; private set; }
 
         /// <summary>
+        /// The input used to drive the interactions with this menu screen.
+        /// </summary>
+        public BaseInput Input { get; private set; }
+
+        /// <summary>
         /// The selection used for primary navigation and submit/cancel events.
         /// </summary>
         protected Selection PrimarySelection => m_primarySelection;
@@ -68,16 +67,6 @@ namespace BoostBlasters.UI
         protected Selection SecondarySelection => m_secondarySelection;
 
         /// <summary>
-        /// Remeber the last selected elements when disabling interaction on this screen and select them
-        /// again when interaction is next enabled.
-        /// </summary>
-        public bool RemeberLastSelection
-        {
-            get => m_remeberLastSelection;
-            set => m_remeberLastSelection = value;
-        }
-
-        /// <summary>
         /// Is this menu currently shown.
         /// </summary>
         public bool Visible
@@ -89,7 +78,7 @@ namespace BoostBlasters.UI
         /// <summary>
         /// Can this menu have a selection and receive input.
         /// </summary>
-        public bool Interactable => m_primarySelection.Enabled && m_secondarySelection.Enabled;
+        public bool Interactable => Input != null;
 
 
         protected virtual void Awake()
@@ -115,12 +104,9 @@ namespace BoostBlasters.UI
         /// <summary>
         /// Makes the menu visible.
         /// </summary>
-        public void Show(MenuInput input)
+        public void Show(BaseInput input)
         {
-            if (m_enableInteractionOnShow)
-            {
-                SetInput(input);
-            }
+            SetInput(input);
 
             if (!Visible)
             {
@@ -143,17 +129,26 @@ namespace BoostBlasters.UI
             }
         }
 
-        public void SetInput(MenuInput input)
+        /// <summary>
+        /// Sets the input used to drive interactions with this menu screen.
+        /// </summary>
+        /// <param name="input">The input to use.</param>
+        public void SetInput(BaseInput input)
         {
-            if (!Interactable && input != null)
+            if (Input != input)
             {
-                m_primarySelection.Enable(input.Primary);
-                m_secondarySelection.Enable(input.Secondary);
-            }
-            else if (Interactable && input == null)
-            {
-                m_primarySelection.Disable(m_remeberLastSelection);
-                m_secondarySelection.Disable(m_remeberLastSelection);
+                Input = input;
+
+                if (input != null)
+                {
+                    m_primarySelection.Enable(input.PrimaryEventSystem);
+                    m_secondarySelection.Enable(input.SecondaryEventSystem);
+                }
+                else
+                {
+                    m_primarySelection.Disable();
+                    m_secondarySelection.Disable();
+                }
             }
         }
 
@@ -206,26 +201,26 @@ namespace BoostBlasters.UI
         /// <summary>
         /// Called when the menu is initializing.
         /// </summary>
-        protected virtual void OnInitialize() {}
+        protected virtual void OnInitialize() { }
 
         /// <summary>
         /// Called after the menu becomes visible.
         /// </summary>
-        protected virtual void OnShow() {}
+        protected virtual void OnShow() { }
 
         /// <summary>
         /// Called after the menu becomes not visible.
         /// </summary>
-        protected virtual void OnHide() {}
+        protected virtual void OnHide() { }
 
         /// <summary>
         /// Called to update the menu logic.
         /// </summary>
-        protected virtual void OnUpdate() {}
+        protected virtual void OnUpdate() { }
 
         /// <summary>
         /// Called to update the menu visuals.
         /// </summary>
-        protected virtual void OnUpdateVisuals() {}
+        protected virtual void OnUpdateVisuals() { }
     }
 }

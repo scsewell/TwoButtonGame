@@ -86,7 +86,8 @@ namespace BoostBlasters.UI
             {
                 if (m_animator != null)
                 {
-                    m_animator.SetTrigger("Focused");
+                    m_animator.SetBool("Focused", true);
+                    m_animator.SetTrigger("Selected");
                 }
 
                 foreach (var device in InputSystem.devices)
@@ -183,12 +184,13 @@ namespace BoostBlasters.UI
 
             if (m_animator != null)
             {
+                m_animator.SetBool("Focused", false);
                 m_animator.SetTrigger("Selected");
             }
 
             // Wait before restoring input to prevent any key press events
             // from being picked up redundantly by the InputSystem.
-            await CoroutineUtils.Wait(1);
+            await CoroutineUtils.Wait(4);
 
             foreach (var device in m_disabledDevices)
             {

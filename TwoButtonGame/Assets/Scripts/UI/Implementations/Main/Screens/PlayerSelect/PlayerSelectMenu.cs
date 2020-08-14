@@ -21,6 +21,7 @@ namespace BoostBlasters.UI.MainMenus
         [SerializeField] private Image m_continueBanner = null;
         [SerializeField] private Control m_continueControls = null;
 
+
         private readonly List<PlayerSelectPanel> m_playerSelectPanels = new List<PlayerSelectPanel>();
         private bool m_canContine;
         private float m_continueTime;
@@ -36,6 +37,7 @@ namespace BoostBlasters.UI.MainMenus
         public List<Profile> PlayerProfiles => m_playerSelectPanels.Select(p => p.Profile).Where(p => p != null).ToList();
 
         public List<PlayerSelectPanel> ReadyPlayers => m_playerSelectPanels.Where(p => p.IsReady).ToList();
+
 
         protected override void Awake()
         {

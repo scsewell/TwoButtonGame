@@ -11,7 +11,6 @@ using Framework;
 using Framework.Interpolation;
 
 using UnityEngine;
-using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using UnityEngine.Scripting;
 
@@ -27,10 +26,6 @@ namespace BoostBlasters
         /// </summary>
         private static readonly ulong GC_SLICE_DURATION = 2 * 1000 * 1000;
 
-
-        [SerializeField]
-        [Tooltip("The input actions for the game.")]
-        private InputActionAsset m_inputActions = null;
 
         private RaceManager m_raceManagerPrefab = null;
 
@@ -48,13 +43,7 @@ namespace BoostBlasters
 
         private async void Start()
         {
-            // prepare input system
-            var miscActions = m_inputActions.FindActionMap("Misc", true);
-
-            var screenshotAction = miscActions.FindAction("Screenshot", true);
-            screenshotAction.performed += TakeScreenshot;
-            screenshotAction.Enable();
-
+            // we don't use the cursor
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = false;
 
@@ -188,13 +177,6 @@ namespace BoostBlasters
             AudioListener.pause = false;
 
             Time.timeScale = 1f;
-        }
-
-        private static void TakeScreenshot(InputAction.CallbackContext ctx)
-        {
-            var name = $"screenshot_{DateTime.Now:MM-dd-yy_H-mm-ss}.png";
-            ScreenCapture.CaptureScreenshot(name);
-            Debug.Log($"Saved screenshot \"{name}\"");
         }
     }
 }

@@ -13,7 +13,12 @@ namespace BoostBlasters
         public const int MAX_PROFILE_NAME_LENGTH = 20;
 
         /// <summary>
-        /// The maximum number of races supported.
+        /// The maximum number of local (splitscreen) players.
+        /// </summary>
+        public const int MAX_LOCAL_PLAYERS = 4;
+
+        /// <summary>
+        /// The maximum number of races supported in a race.
         /// </summary>
         public const int MAX_RACERS = 12;
 

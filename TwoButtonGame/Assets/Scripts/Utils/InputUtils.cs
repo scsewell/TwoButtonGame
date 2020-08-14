@@ -15,6 +15,12 @@ namespace BoostBlasters
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void Init()
         {
+            // reset the input system state
+            foreach (var device in InputSystem.devices)
+            {
+                InputSystem.EnableDevice(device);
+            }
+
             s_currentDevice = null;
 
             InputSystem.onDeviceChange -= OnDeviceChanged;

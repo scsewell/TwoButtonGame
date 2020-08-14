@@ -75,11 +75,11 @@ MonoBehaviour:
   m_primarySelection:
     m_selectionRoot: {fileID: 5238535081993024056}
     m_defaultSelection: {fileID: 3641606587716736775}
+    m_remeberLastSelection: 0
   m_secondarySelection:
     m_selectionRoot: {fileID: 0}
     m_defaultSelection: {fileID: 0}
-  m_enableInteractionOnShow: 1
-  m_remeberLastSelection: 0
+    m_remeberLastSelection: 0
   m_backMode: 0
   m_backMenu: {fileID: 0}
   m_promt: {fileID: 2900852137784459500}

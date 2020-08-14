@@ -114,6 +114,10 @@ Level Ideas (try to think of creative hazards)
 Ensure music is credited
 Update level preview images
 
+### Meta ###
+Register domain
+Create social
+
 ### Music Loop Times ###
 The Lift			7:27.467896
 Deep Haze			1:28.677811

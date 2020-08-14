@@ -75,11 +75,11 @@ MonoBehaviour:
   m_primarySelection:
     m_selectionRoot: {fileID: 8842779638449962591}
     m_defaultSelection: {fileID: 631325362615907570}
+    m_remeberLastSelection: 1
   m_secondarySelection:
     m_selectionRoot: {fileID: 0}
     m_defaultSelection: {fileID: 0}
-  m_enableInteractionOnShow: 1
-  m_remeberLastSelection: 1
+    m_remeberLastSelection: 1
   m_backMode: 2
   m_backMenu: {fileID: 0}
   m_profilePanelPrefab: {fileID: 1904570435050895781, guid: 36f23db2af947bd42bab55cf4b73da93,
@@ -720,11 +720,11 @@ MonoBehaviour:
   m_primarySelection:
     m_selectionRoot: {fileID: 2270300984616731432}
     m_defaultSelection: {fileID: 5763857740364383011}
+    m_remeberLastSelection: 1
   m_secondarySelection:
     m_selectionRoot: {fileID: 0}
     m_defaultSelection: {fileID: 0}
-  m_enableInteractionOnShow: 1
-  m_remeberLastSelection: 1
+    m_remeberLastSelection: 1
   m_backMode: 0
   m_backMenu: {fileID: 0}
   m_rename: {fileID: 5763857740364383011}
@@ -846,7 +846,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7613199253517822288}
   m_Layer: 5
-  m_Name: ProfilesMenu
+  m_Name: ProfileMenu
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1070,6 +1070,11 @@ PrefabInstance:
     - target: {fileID: 1909972013035922666, guid: a4a5005c2e154314c8fefa3f92a38d0e,
         type: 3}
       propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1909972013035922666, guid: a4a5005c2e154314c8fefa3f92a38d0e,
+        type: 3}
+      propertyPath: m_AnchorMin.y
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2176429654852319568, guid: a4a5005c2e154314c8fefa3f92a38d0e,
@@ -1872,7 +1877,7 @@ PrefabInstance:
     - target: {fileID: 224770018698898070, guid: 06956c1122b518244bd4af89b0ce3b25,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 232.805
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 224770018698898070, guid: 06956c1122b518244bd4af89b0ce3b25,
         type: 3}
@@ -2188,7 +2193,7 @@ PrefabInstance:
     - target: {fileID: 224770018698898070, guid: 06956c1122b518244bd4af89b0ce3b25,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 70.935
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 224770018698898070, guid: 06956c1122b518244bd4af89b0ce3b25,
         type: 3}
