@@ -92,7 +92,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &7545678647333769882
 RectTransform:
   m_ObjectHideFlags: 0
@@ -159,7 +159,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b98cc0a04079ef34390f766a8be67845, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_scrollMargin: 0.3
+  m_margin: 0.5
+  m_smoothing: 0
 --- !u!1 &726745287913368443
 GameObject:
   m_ObjectHideFlags: 0
@@ -218,9 +219,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_IgnoreLayout: 0
   m_MinWidth: -1
-  m_MinHeight: -1
+  m_MinHeight: 50
   m_PreferredWidth: -1
-  m_PreferredHeight: 50
+  m_PreferredHeight: -1
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
@@ -882,11 +883,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3574c7f335aa06144aafde540cbf0b40, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_wrap: 1
   m_up: {fileID: 0}
   m_down: {fileID: 0}
   m_left: {fileID: 0}
   m_right: {fileID: 0}
+  m_wrap: 1
+  m_allowDisabled: 0
   m_horizontalSelect: {fileID: 0}
 --- !u!1 &3454858113539053036
 GameObject:
@@ -1067,7 +1069,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Option A
+  m_text: Label
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 2d33e633a59cf0e438c477f9eb77cc3f, type: 2}
   m_sharedMaterial: {fileID: 81785360600659774, guid: 2d33e633a59cf0e438c477f9eb77cc3f,
@@ -1102,7 +1104,7 @@ MonoBehaviour:
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 0
-  m_HorizontalAlignment: 4
+  m_HorizontalAlignment: 1
   m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
@@ -1113,7 +1115,7 @@ MonoBehaviour:
   m_charWidthMaxAdj: 0
   m_enableWordWrapping: 1
   m_wordWrappingRatios: 0.4
-  m_overflowMode: 0
+  m_overflowMode: 1
   m_linkedTextComponent: {fileID: 0}
   parentLinkedComponent: {fileID: 0}
   m_enableKerning: 1

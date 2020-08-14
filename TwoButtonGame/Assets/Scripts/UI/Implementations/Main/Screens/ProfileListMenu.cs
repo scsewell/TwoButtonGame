@@ -13,136 +13,104 @@ namespace BoostBlasters.UI.MainMenus
 {
     public class ProfileListMenu : MenuScreen
     {
+        [Header("Prefabs")]
+
+        [SerializeField] private Button m_profilePanelPrefab = null;
+
         [Header("UI Elements")]
 
+        [SerializeField] private Button m_createProfile = null;
+        [SerializeField] private VerticalNavigationBuilder m_buttonsLayout = null;
         [SerializeField] private VerticalNavigationBuilder m_profilesLayout = null;
-        [SerializeField] private HorizontalNavigationBuilder m_pagesLayout = null;
-        [SerializeField] private GameObject m_pageDisplay = null;
-        [SerializeField] private TextMeshProUGUI m_pageText = null;
-        [SerializeField] private Image m_pageLeftArrow = null;
-        [SerializeField] private Image m_pageRightArrow = null;
 
 
-        private readonly List<ProfilePanel> m_profilePanels = new List<ProfilePanel>();
-        private readonly List<GameObject> m_pages = new List<GameObject>();
-        private int m_page;
-
-        private int PageCount => Mathf.CeilToInt((float)(1 + ProfileManager.Profiles.Count) / m_profilePanels.Count);
+        private readonly List<Button> m_profilePanels = new List<Button>();
 
 
         protected override void OnInitialize()
         {
-            GetComponentsInChildren(true, m_profilePanels);
+            m_createProfile.onClick.AddListener(() => CreateNewProfile());
 
             Menu.Shown += (m) =>
             {
-                if (m is RootMenu)
+                switch (m)
                 {
-                    m_page = 0;
+                    case RootMenu menu:
+                        PrimarySelection.SelectDefault();
+                        break;
                 }
             };
+
+            ProfileManager.ProfileRenamed += OnProfileChamged;
+            ProfileManager.ProfileDeleted += OnProfileChamged;
+        }
+
+        private void OnDestroy()
+        {
+            ProfileManager.ProfileRenamed -= OnProfileChamged;
+            ProfileManager.ProfileDeleted -= OnProfileChamged;
+        }
+
+        private void OnProfileChamged(Profile profile)
+        {
+            Refresh();
         }
 
         protected override void OnShow()
         {
-            CreatePages();
-
-            SecondarySelection.DefaultSelectionOverride = m_pages[m_page].gameObject;
+            Refresh();
         }
 
-        private void CreatePages()
+        private void Refresh()
         {
-            // the page selection operates on hidden tabs created for each page
-            var tabs = m_pagesLayout.transform;
+            var profiles = ProfileManager.Profiles;
+            var parent = m_profilesLayout.transform;
 
-            while (tabs.childCount < PageCount)
+            for (var i = m_profilePanels.Count; i < profiles.Count; i++)
             {
-                var page = tabs.childCount;
-
-                var go = new GameObject($"Page {page + 1}");
-                go.transform.SetParent(tabs, false);
-
-                go.AddComponent<LayoutElement>();
-                go.AddComponent<Selectable>();
-                go.AddComponent<SoundListener>();
-                go.AddComponent<NavigationHandler>();
-                go.AddComponent<Tab>().Selected += () => ChangePage(page);
-
-                m_pages.Add(go);
+                m_profilePanels.Add(Instantiate(m_profilePanelPrefab, parent, false));
             }
-
-            for (var i = 0; i < tabs.childCount; i++)
-            {
-                tabs.GetChild(i).gameObject.SetActive(i < PageCount);
-            }
-
-            m_pagesLayout.UpdateNavigation();
-
-            ViewPage(m_page);
-        }
-
-        private void ChangePage(int page)
-        {
-            ViewPage(page);
-            PrimarySelection.SelectDefault();
-        }
-
-        private void ViewPage(int page)
-        {
-            m_page = Mathf.Clamp(page, 0, PageCount - 1);
-
-            // Update the panels to reflect the profiles for this page. The first panel
-            // on the first page is used to add a new profile.
             for (var i = 0; i < m_profilePanels.Count; i++)
             {
                 var panel = m_profilePanels[i];
 
-                if (m_page == 0 && i == 0)
+                if (i < profiles.Count)
                 {
-                    panel.Init(ProfilePanel.Mode.AddNew, null, OnSelect);
+                    var profile = profiles[i];
+
+                    panel.onClick.RemoveAllListeners();
+                    panel.onClick.AddListener(() => SelectProfile(profile));
+                    panel.GetComponentInChildren<TMP_Text>().text = profile.Name;
+
+                    panel.gameObject.SetActive(true);
                 }
                 else
                 {
-                    var profiles = ProfileManager.Profiles;
-
-                    var index = (m_page * m_profilePanels.Count) + i - 1;
-                    var profile = index < profiles.Count ? profiles[index] : null;
-
-                    panel.Init(ProfilePanel.Mode.Profile, profile, OnSelect);
+                    panel.gameObject.SetActive(false);
                 }
             }
 
+            m_buttonsLayout.UpdateNavigation();
             m_profilesLayout.UpdateNavigation();
-
-            // Update the page display
-            var showPages = PageCount > 1;
-
-            if (showPages)
-            {
-                m_pageText.text = $"{m_page + 1}/{PageCount}";
-
-                m_pageLeftArrow.enabled = Interactable && m_page > 0;
-                m_pageRightArrow.enabled = Interactable && m_page < PageCount - 1;
-            }
-
-            m_pageDisplay.SetActive(showPages);
         }
 
-        private void OnSelect(ProfilePanel panel)
+        private void CreateNewProfile()
         {
-            switch (panel.CurrentMode)
+            void OnCreate(Profile profile)
             {
-                case ProfilePanel.Mode.AddNew:
+                if (profile != null)
                 {
-                    void OnCreate(Profile profile)
-                    {
-                        CreatePages();
-                    }
-
-                    Menu.Get<ProfileNameMenu>().CreateNew(OnCreate, this);
-                    break;
+                    Refresh();
+                    PrimarySelection.Current = m_profilePanels[m_profilePanels.Count - 1].gameObject;
                 }
             }
+
+            Menu.Get<ProfileNameMenu>().CreateNew(OnCreate, this);
+        }
+
+        private void SelectProfile(Profile profile)
+        {
+            Menu.Get<ProfileEditMenu>().Edit(profile, this);
         }
     }
 }

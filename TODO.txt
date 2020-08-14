@@ -44,11 +44,12 @@ General
 	- Figure out how to bundle assemblies for custom level/character code execution
 	- Ensure that in multiplayer bundles with custom code can optionally not be synced
 - Rumble controller on impact
+- Add preferred color to profile
 - Add character color options
 - Outline is very expensive on UI, especially the player time... (check none are left)
 - Difiiculy setting for levels - gate size differs based on difficulty (remove LevelConfig difficulty)
 - Show player names above heads (fade in when close)
-- Change down input from drag to hover? (might be much easier)
+- Change brake to more of a hover? (might be much easier, maybe use for beginner characters)
 - look around (right josystick, don't know about keyboard though...)
 - better guide to next waypoint (make waypoint color glow more obvious, improve direction arrow (racing line?), look at next gate button)
 - end of race stats menu (laps speeds, time in lead, etc)

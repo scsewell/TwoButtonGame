@@ -289,7 +289,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Enter Name...
+  m_text: Enter Text...
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 2d33e633a59cf0e438c477f9eb77cc3f, type: 2}
   m_sharedMaterial: {fileID: 81785360600659774, guid: 2d33e633a59cf0e438c477f9eb77cc3f,
@@ -388,6 +388,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7765729250152562859}
+  - component: {fileID: 2206461034423530445}
   - component: {fileID: 7859450716637775887}
   - component: {fileID: 6821673577054028191}
   - component: {fileID: 4869353002755809420}
@@ -420,6 +421,26 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 550, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &2206461034423530445
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6924709347493783122}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 306cc8c2b49d7114eaa3623786fc2126, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IgnoreLayout: 0
+  m_MinWidth: -1
+  m_MinHeight: 50
+  m_PreferredWidth: -1
+  m_PreferredHeight: -1
+  m_FlexibleWidth: -1
+  m_FlexibleHeight: -1
+  m_LayoutPriority: 1
 --- !u!114 &7859450716637775887
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -47,7 +47,7 @@ namespace BoostBlasters.UI.MainMenus
             m_onComplete = onComplete;
             m_returnToMenu = returnToMenu;
 
-            m_titleText.text = "Create New Profile";
+            m_titleText.text = "New Profile";
             m_nameField.text = string.Empty;
 
             Menu.Open(this, TransitionSound.Next);
@@ -81,7 +81,7 @@ namespace BoostBlasters.UI.MainMenus
 
         public override void Back()
         {
-            Complete(false);
+            Cancel();
         }
 
         private void Cancel()

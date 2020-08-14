@@ -70,7 +70,7 @@ namespace BoostBlasters.UI.MainMenus
 
         private MenuBase m_menu = null;
         private PlayerSelectMenu m_selectMenu = null;
-        private List<ProfilePanel> m_profilePanels = null;
+        private List<GameObject> m_profilePanels = null;
         private Camera m_previewCam = null;
         private RenderTexture m_previewTex = null;
         private Dictionary<Character, GameObject> m_configToPreview = null;
@@ -138,11 +138,11 @@ namespace BoostBlasters.UI.MainMenus
             m_playerNum = index;
 
             // create panels used for selecting from available player profiles
-            m_profilePanels = new List<ProfilePanel>();
+            m_profilePanels = new List<GameObject>();
 
             for (int i = 0; i < m_profilePanelCount; i++)
             {
-                m_profilePanels.Add(Instantiate(m_profileSelectPrefab, m_profileContent).AddComponent<ProfilePanel>());
+                m_profilePanels.Add(Instantiate(m_profileSelectPrefab, m_profileContent));
             }
 
             // create a camera for rendering the character preview
@@ -341,15 +341,15 @@ namespace BoostBlasters.UI.MainMenus
                 int profileIndex = i - 2 + m_profileWindow;
                 Profile profile = 0 <= profileIndex && profileIndex < profiles.Count ? profiles[profileIndex] : null;
 
-                ProfilePanel.Mode mode = ProfilePanel.Mode.Profile;
-                if (m_profileWindow + i == 0)
-                {
-                    mode = ProfilePanel.Mode.Guest;
-                }
-                else if (m_profileWindow + i == 1)
-                {
-                    mode = ProfilePanel.Mode.AddNew;
-                }
+                //ProfilePanel.Mode mode = ProfilePanel.Mode.Profile;
+                //if (m_profileWindow + i == 0)
+                //{
+                //    mode = ProfilePanel.Mode.Guest;
+                //}
+                //else if (m_profileWindow + i == 1)
+                //{
+                //    mode = ProfilePanel.Mode.AddNew;
+                //}
 
                 //m_profilePanels[i].SetProfile(profile, mode, null, null);
                 //m_profilePanels[i].UpdateGraphics((i + m_profileWindow) == SelectedProfile, m_selectMenu.PlayerProfiles.Contains(profile));

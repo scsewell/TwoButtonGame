@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -34,6 +35,16 @@ namespace BoostBlasters.Profiles
         /// </summary>
         public static IReadOnlyList<Profile> Profiles => m_profiles;
 
+        /// <summary>
+        /// An event invoked when a profile has been renamed.
+        /// </summary>
+        public static event Action<Profile> ProfileRenamed;
+
+        /// <summary>
+        /// An event invoked when a profile has been deleted.
+        /// </summary>
+        public static event Action<Profile> ProfileDeleted;
+
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void Init()
@@ -41,6 +52,9 @@ namespace BoostBlasters.Profiles
             m_tempProfiles.Clear();
             m_uniqueTempProfiles.Clear();
             m_profiles.Clear();
+
+            ProfileRenamed = delegate { };
+            ProfileDeleted = delegate { };
         }
 
         /// <summary>
@@ -163,10 +177,11 @@ namespace BoostBlasters.Profiles
 
             // we need to remove the profile file with the old name
             FileIO.DeleteFile(GetProfileFilePath(profile));
-
             profile.Name = name;
-
             SaveProfile(profile);
+
+            ProfileRenamed?.Invoke(profile);
+
             return true;
         }
 
@@ -187,6 +202,8 @@ namespace BoostBlasters.Profiles
             if (removedProfile)
             {
                 FileIO.DeleteFile(GetProfileFilePath(profile));
+
+                ProfileDeleted?.Invoke(profile);
 
                 Debug.Log($"Deleted profile \"{profile.Name}\"");
             }
