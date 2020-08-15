@@ -3,7 +3,7 @@ using Framework.Settings;
 
 using UnityEngine;
 
-namespace BoostBlasters.UI.MainMenus
+namespace BoostBlasters.UI.MainMenu
 {
     /// <summary>
     /// A UI widget which allows modifying a setting.

@@ -9,7 +9,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace BoostBlasters.UI.MainMenus
+namespace BoostBlasters.UI.MainMenu
 {
     public class SettingsMenu : MenuScreen
     {
@@ -25,7 +25,7 @@ namespace BoostBlasters.UI.MainMenus
 
         [SerializeField] private TMP_Text m_categoryTitle = null;
         [SerializeField] private TMP_Text m_description = null;
-        [SerializeField] private RectTransform m_categoryTabs = null;
+        [SerializeField] private HorizontalNavigationBuilder m_tabs = null;
         [SerializeField] private RectTransform m_settingsContent = null;
 
         [Header("Options")]
@@ -49,7 +49,7 @@ namespace BoostBlasters.UI.MainMenus
             foreach (var category in SettingManager.Instance.Catergories)
             {
                 // create a tab for the category
-                var tab = UIHelper.Create(m_tabPrefab, m_categoryTabs, category.name);
+                var tab = UIHelper.Create(m_tabPrefab, m_tabs.transform, category.name);
                 tab.Icon = category.Icon;
                 tab.Selected += () => SetCategory(category);
 
@@ -100,11 +100,8 @@ namespace BoostBlasters.UI.MainMenus
                     ApplyDefaults(category);
                 });
 
-                UIHelper.SetNavigationVertical(new NavConfig()
-                {
-                    parent = settingCategory,
-                    wrap = true,
-                });
+                var navigation = settingCategory.gameObject.AddComponent<VerticalNavigationBuilder>();
+                navigation.Wrap = true;
 
                 m_categoryToSettings.Add(category, settings);
 
@@ -112,13 +109,9 @@ namespace BoostBlasters.UI.MainMenus
                 settingCategory.gameObject.SetActive(false);
             }
 
-            var tabs = UIHelper.SetNavigationHorizontal(new NavConfig()
-            {
-                parent = m_categoryTabs,
-                wrap = true,
-            });
+            m_tabs.UpdateNavigation();
 
-            SecondarySelection.DefaultSelectionOverride = tabs[0].gameObject;
+            SecondarySelection.DefaultSelectionOverride = m_tabs.Selectables[0].gameObject;
         }
 
         protected override void OnHide()

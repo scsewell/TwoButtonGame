@@ -119,8 +119,9 @@ namespace BoostBlasters.UI
             }
             else
             {
-                // Even if we don't want to start editing the text when selected,
-                // we still need to do the base selectable selection behaviour.
+                // Even if we don't want to start editing the text when selected, we still need to do
+                // the base selectable selection behaviour. This lets us skip directly to the selectable
+                // base implementation while ignoring the InputField implementation.
                 if (s_OnSelect == null)
                 {
                     var method = typeof(Selectable).GetMethod(nameof(OnSelect), BindingFlags.Public | BindingFlags.Instance);

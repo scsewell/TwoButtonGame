@@ -9,7 +9,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace BoostBlasters.UI.MainMenus
+namespace BoostBlasters.UI.MainMenu
 {
     public class ProfileListMenu : MenuScreen
     {
@@ -40,23 +40,23 @@ namespace BoostBlasters.UI.MainMenus
                         break;
                 }
             };
-
-            ProfileManager.ProfileRenamed += OnProfileChamged;
-            ProfileManager.ProfileDeleted += OnProfileChamged;
         }
 
-        private void OnDestroy()
+        protected override void OnShow()
+        {
+            ProfileManager.ProfileRenamed += OnProfileChamged;
+            ProfileManager.ProfileDeleted += OnProfileChamged;
+
+            Refresh();
+        }
+
+        protected override void OnHide()
         {
             ProfileManager.ProfileRenamed -= OnProfileChamged;
             ProfileManager.ProfileDeleted -= OnProfileChamged;
         }
 
         private void OnProfileChamged(Profile profile)
-        {
-            Refresh();
-        }
-
-        protected override void OnShow()
         {
             Refresh();
         }

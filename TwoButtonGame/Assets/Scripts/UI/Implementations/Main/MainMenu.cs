@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-
-using BoostBlasters.Characters;
+﻿using BoostBlasters.Characters;
 using BoostBlasters.Profiles;
 using BoostBlasters.Races;
 using BoostBlasters.Replays;
@@ -12,7 +9,7 @@ using Framework.AssetBundles;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace BoostBlasters.UI.MainMenus
+namespace BoostBlasters.UI.MainMenu
 {
     public class MainMenu : MenuBase
     {
@@ -36,9 +33,6 @@ namespace BoostBlasters.UI.MainMenus
         private bool m_leavingMenu = false;
         private float m_menuLoadTime;
         private float m_menuExitTime;
-
-        public List<PlayerBaseInput> UnreservedInputs => new List<PlayerBaseInput>().Where(i => !ReservedInputs.Contains(i)).ToList();
-        public List<PlayerBaseInput> ReservedInputs => Get<PlayerSelectMenu>().ActiveInputs;
 
 
         protected override void Start()
@@ -86,36 +80,40 @@ namespace BoostBlasters.UI.MainMenus
             return Mathf.SmoothStep(fac, 1f, 0f);
         }
 
-        public void LaunchRace()
+        /// <summary>
+        /// Close the main menu scene and enter a race.
+        /// </summary>
+        /// <param name="raceParams">The configuration of the race.</param>
+        public void LaunchRace(RaceParameters raceParams)
         {
-            var playerSelect = Get<PlayerSelectMenu>();
-            var levelSelect = Get<LevelSelectMenu>();
+            //var playerSelect = Get<PlayerSelectMenu>();
+            //var levelSelect = Get<LevelSelectMenu>();
 
-            var playerCount = playerSelect.Configs.Count;
-            var aiCount = levelSelect.AICountSelect.Value;
+            //var playerCount = playerSelect.Configs.Count;
+            //var aiCount = levelSelect.AICountSelect.Value;
 
-            var racers = new RacerConfig[playerCount + aiCount];
+            //var racers = new RacerConfig[playerCount + aiCount];
 
-            for (var i = 0; i < racers.Length; i++)
-            {
-                if (i < playerCount)
-                {
-                    racers[i] = playerSelect.Configs[i];
-                }
-                else
-                {
-                    racers[i] = RacerConfig.CreateAI(
-                        CharacterManager.Characters.PickRandom(),
-                        ProfileManager.CreateTemporaryProfile($"AI {i + 1}", false)
-                    );
-                }
-            }
+            //for (var i = 0; i < racers.Length; i++)
+            //{
+            //    if (i < playerCount)
+            //    {
+            //        racers[i] = playerSelect.Configs[i];
+            //    }
+            //    else
+            //    {
+            //        racers[i] = RacerConfig.CreateAI(
+            //            CharacterManager.Characters.PickRandom(),
+            //            ProfileManager.CreateTemporaryProfile($"AI {i + 1}", false)
+            //        );
+            //    }
+            //}
 
-            var raceParams = new RaceParameters(
-                levelSelect.TrackSelect.Value,
-                levelSelect.LapSelect.Value,
-                racers
-            );
+            //var raceParams = new RaceParameters(
+            //    levelSelect.TrackSelect.Value,
+            //    levelSelect.LapSelect.Value,
+            //    racers
+            //);
 
             m_leavingMenu = true;
             m_menuExitTime = Time.unscaledTime;
@@ -128,12 +126,16 @@ namespace BoostBlasters.UI.MainMenus
             CloseAll(TransitionSound.Next);
         }
 
-        public async void LaunchReplay(RecordingInfo info)
+        /// <summary>
+        /// Close the main menu scene and enter a replay.
+        /// </summary>
+        /// <param name="replay">The configuration of the replay.</param>
+        public async void LaunchReplay(RecordingInfo replay)
         {
             m_leavingMenu = true;
             m_menuExitTime = Time.unscaledTime;
 
-            var recording = await RecordingManager.LoadReplayAsync(info);
+            var recording = await RecordingManager.LoadReplayAsync(replay);
 
             Main.Instance.LoadRace(recording, () =>
             {

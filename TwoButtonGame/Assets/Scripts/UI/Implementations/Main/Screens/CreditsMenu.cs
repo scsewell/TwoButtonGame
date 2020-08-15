@@ -1,4 +1,4 @@
-﻿namespace BoostBlasters.UI.MainMenus
+﻿namespace BoostBlasters.UI.MainMenu
 {
     public class CreditsMenu : MenuScreen
     {

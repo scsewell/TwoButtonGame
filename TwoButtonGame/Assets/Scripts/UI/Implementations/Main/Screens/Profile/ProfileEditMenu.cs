@@ -7,7 +7,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace BoostBlasters.UI.MainMenus
+namespace BoostBlasters.UI.MainMenu
 {
     public class ProfileEditMenu : MenuScreen
     {

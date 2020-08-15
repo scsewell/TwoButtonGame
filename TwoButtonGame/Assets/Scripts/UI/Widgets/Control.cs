@@ -32,6 +32,10 @@ namespace BoostBlasters.UI
         [Tooltip("The text element used to display the control name.")]
         private TMP_Text m_description = null;
 
+        [SerializeField]
+        [Tooltip("The transform the control sprites are parented under.")]
+        private RectTransform m_content = null;
+
         [Header("Options")]
 
         [SerializeField]
@@ -68,6 +72,7 @@ namespace BoostBlasters.UI
             set => m_filter = value;
         }
 
+
         private class ControlInfo
         {
             private readonly List<InputControlScheme> m_schemes;
@@ -95,6 +100,7 @@ namespace BoostBlasters.UI
         private InputControlScheme? m_currentScheme = null;
         private readonly List<Image> m_images = new List<Image>();
         private readonly Dictionary<Sprite, List<ControlInfo>> m_spriteToControls = new Dictionary<Sprite, List<ControlInfo>>();
+
 
         /// <summary>
         /// The action to show the controls for.
@@ -204,7 +210,7 @@ namespace BoostBlasters.UI
                 }
                 else
                 {
-                    var go = UIHelper.Create(transform).gameObject;
+                    var go = UIHelper.Create(m_content).gameObject;
 
                     go.AddComponent<LayoutElement>();
                     go.AddComponent<CanvasRenderer>();

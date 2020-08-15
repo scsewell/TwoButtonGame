@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 using TMPro;
 
-namespace BoostBlasters.UI.MainMenus
+namespace BoostBlasters.UI.MainMenu
 {
     public class ConfirmMenu : MenuScreen
     {

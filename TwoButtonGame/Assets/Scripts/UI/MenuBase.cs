@@ -31,6 +31,7 @@ namespace BoostBlasters.UI
         private readonly List<MenuScreen> m_menuScreens = new List<MenuScreen>();
         private readonly Dictionary<Type, List<MenuScreen>> m_typeToScreens = new Dictionary<Type, List<MenuScreen>>();
         private readonly Dictionary<MenuScreen, Transition> m_transitions = new Dictionary<MenuScreen, Transition>();
+        private readonly List<MenuScreen> m_tansitionedScreens = new List<MenuScreen>();
 
         /// <summary>
         /// The sound player for the menu.
@@ -79,7 +80,7 @@ namespace BoostBlasters.UI
 
         protected virtual void Update()
         {
-            FlushTransitions();
+            FlushTransitions(Transition.Type.Open);
             Sound.FlushSoundQueue();
 
             foreach (var menu in m_menuScreens)
@@ -90,6 +91,8 @@ namespace BoostBlasters.UI
 
         protected virtual void LateUpdate()
         {
+            FlushTransitions(Transition.Type.Close);
+
             foreach (var menu in m_menuScreens)
             {
                 menu.UpdateVisuals();
@@ -246,25 +249,23 @@ namespace BoostBlasters.UI
             }
         }
 
-        private void FlushTransitions()
+        private void FlushTransitions(Transition.Type type)
         {
-            // hide all menus before showing new ones
+            m_tansitionedScreens.Clear();
+
             foreach (var transition in m_transitions)
             {
-                if (transition.Value.type == Transition.Type.Close)
+                if (transition.Value.type == type)
                 {
                     DoTransition(transition.Value);
-                }
-            }
-            foreach (var transition in m_transitions)
-            {
-                if (transition.Value.type == Transition.Type.Open)
-                {
-                    DoTransition(transition.Value);
+                    m_tansitionedScreens.Add(transition.Key);
                 }
             }
 
-            m_transitions.Clear();
+            foreach (var screen in m_tansitionedScreens)
+            {
+                m_transitions.Remove(screen);
+            }
         }
 
         private void DoTransition(Transition transition)
@@ -278,7 +279,7 @@ namespace BoostBlasters.UI
                     Shown?.Invoke(screen);
                     break;
                 case Transition.Type.Close:
-                    transition.screen.Hide();
+                    screen.Hide();
                     Hidden?.Invoke(screen);
                     break;
             }

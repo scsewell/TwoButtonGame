@@ -8,7 +8,7 @@ using Framework.UI;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace BoostBlasters.UI.MainMenus
+namespace BoostBlasters.UI.MainMenu
 {
     public class ReplayMenu : MenuScreen
     {
@@ -43,25 +43,25 @@ namespace BoostBlasters.UI.MainMenus
 
         protected override void OnInitialize()
         {
-            m_backButton.onClick.AddListener(() => Menu.SwitchTo<RootMenu>(TransitionSound.Back));
+            //m_backButton.onClick.AddListener(() => Menu.SwitchTo<RootMenu>(TransitionSound.Back));
 
-            m_infos = new List<RecordingInfo>();
-            m_replayPanels = new List<ReplayPanel>();
+            //m_infos = new List<RecordingInfo>();
+            //m_replayPanels = new List<ReplayPanel>();
 
-            for (var i = 0; i < m_panelCount; i++)
-            {
-                m_replayPanels.Add(Instantiate(m_selectPanelPrefab, m_replayListContent).AddComponent<ReplayPanel>());
-            }
+            //for (var i = 0; i < m_panelCount; i++)
+            //{
+            //    m_replayPanels.Add(Instantiate(m_selectPanelPrefab, m_replayListContent).AddComponent<ReplayPanel>());
+            //}
 
-            m_playerResults = new List<PlayerResultPanel>();
+            //m_playerResults = new List<PlayerResultPanel>();
 
-            var resultsTemplate = m_resultsContent.GetComponentInChildren<PlayerResultPanel>();
-            m_playerResults.Add(resultsTemplate);
+            //var resultsTemplate = m_resultsContent.GetComponentInChildren<PlayerResultPanel>();
+            //m_playerResults.Add(resultsTemplate);
 
-            for (var i = 0; i < Consts.MAX_RACERS - 1; i++)
-            {
-                m_playerResults.Add(Instantiate(resultsTemplate, m_resultsContent));
-            }
+            //for (var i = 0; i < Consts.MAX_RACERS - 1; i++)
+            //{
+            //    m_playerResults.Add(Instantiate(resultsTemplate, m_resultsContent));
+            //}
         }
 
         //protected override void OnResetMenu(bool fullReset)
@@ -162,12 +162,12 @@ namespace BoostBlasters.UI.MainMenus
 
             if (m_replayPanels[0].isActiveAndEnabled)
             {
-                PrimarySelection.DefaultSelectionOverride = UIHelper.SetNavigationVertical(new NavConfig()
-                {
-                    parent = m_replayListContent,
-                    down = m_backButton,
-                }
-                ).First().gameObject;
+                //PrimarySelection.DefaultSelectionOverride = UIHelper.SetNavigationVertical(new NavConfig()
+                //{
+                //    parent = m_replayListContent,
+                //    down = m_backButton,
+                //}
+                //).First().gameObject;
             }
             else
             {

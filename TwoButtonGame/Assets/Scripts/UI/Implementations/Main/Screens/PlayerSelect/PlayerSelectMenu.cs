@@ -1,130 +1,115 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
+using BoostBlasters.Input;
+using BoostBlasters.Races;
+
 using UnityEngine;
 using UnityEngine.UI;
 
-using BoostBlasters.Profiles;
-using BoostBlasters.Races;
-
-namespace BoostBlasters.UI.MainMenus
+namespace BoostBlasters.UI.MainMenu
 {
     public class PlayerSelectMenu : MenuScreen
     {
-        private static readonly List<int> s_playerPanelIndices = new List<int>();
-
-
         [Header("UI Elements")]
 
-        [SerializeField] private RectTransform m_playerSelectContent = null;
         [SerializeField] private GameObject m_continueBar = null;
         [SerializeField] private Image m_continueBanner = null;
         [SerializeField] private Control m_continueControls = null;
 
 
-        private readonly List<PlayerSelectPanel> m_playerSelectPanels = new List<PlayerSelectPanel>();
+        private readonly List<PlayerSelectPanel> m_panels = new List<PlayerSelectPanel>();
         private bool m_canContine;
         private float m_continueTime;
         private Color m_bannerCol;
 
-        public List<PlayerBaseInput> ActiveInputs => m_playerSelectPanels.Select(p => p.Input).Where(i => i != null).ToList();
-
-        /// <summary>
-        /// The configurations of ready players.
-        /// </summary>
-        public List<RacerConfig> Configs => ReadyPlayers.Select(p => p.Config).ToList();
-
-        public List<Profile> PlayerProfiles => m_playerSelectPanels.Select(p => p.Profile).Where(p => p != null).ToList();
-
-        public List<PlayerSelectPanel> ReadyPlayers => m_playerSelectPanels.Where(p => p.IsReady).ToList();
-
-
-        protected override void Awake()
-        {
-            base.Awake();
-
-            // WHy not INitMenu?
-            m_playerSelectContent.GetComponentsInChildren(true, m_playerSelectPanels);
-        }
 
         protected override void OnInitialize()
         {
-            for (int i = 0; i < 4; i++)
-            {
-                m_playerSelectPanels[i].Init(this, i);
-            }
+            GetComponentsInChildren(true, m_panels);
 
             m_bannerCol = m_continueBanner.color;
+        }
 
-            RaceParameters lastRace = Main.Instance.LastRaceParams;
-            if (lastRace != null)
+        public void Open(RaceParameters raceParams, TransitionSound sound)
+        {
+            Menu.SwitchTo(this, sound);
+
+            foreach (var panel in m_panels)
             {
-                for (int i = 0; i < s_playerPanelIndices.Count; i++)
-                {
-                    int index = s_playerPanelIndices[i];
-                    m_playerSelectPanels[index].FromConfig(lastRace.Racers[i]);
-                }
+                panel.Open(raceParams);
             }
         }
-        
-        protected override void OnHide()
+
+        protected override void OnShow()
         {
-            m_playerSelectPanels.ForEach(p => p.SetCameraActive(false));
+            InputManager.UserAdded += OnUserAdded;
+            InputManager.UserRemoved += OnUserRemoved;
+
+            InputManager.JoiningEnabled = true;
+
+            m_canContine = false;
+            m_continueTime = 0;
         }
 
-        //protected override void OnResetMenu(bool fullReset)
-        //{
-        //    m_playerSelectPanels.ForEach(p => p.ResetState(fullReset));
-        //    m_canContine = false;
-        //    m_continueTime = 0;
-        //}
+        protected override void OnHide()
+        {
+            InputManager.UserAdded -= OnUserAdded;
+            InputManager.UserRemoved -= OnUserRemoved;
+
+            InputManager.JoiningEnabled = false;
+        }
+
+        private void OnUserAdded(UserInput user)
+        {
+            var index = user.Player.playerIndex;
+            var panel = m_panels[index];
+
+            panel.AssignUser(user);
+        }
+
+        private void OnUserRemoved(UserInput user)
+        {
+            var index = user.Player.playerIndex;
+            var panel = m_panels[index];
+
+            panel.Leave();
+        }
 
         public override void Back()
         {
-            //if (Input.GetKeyDown(KeyCode.Escape))
-            //{
-            //    base.Back();
-            //}
+            base.Back();
+
+            foreach (var panel in m_panels)
+            {
+                panel.Leave();
+                panel.Close();
+            }
         }
 
         protected override void OnUpdate()
         {
-            s_playerPanelIndices.Clear();
+            //var canContinue = m_playerSelectPanels.All(p => p.CanContinue) && ReadyPlayers.Count > 0;
+            //if (m_canContine != canContinue)
+            //{
+            //    m_canContine = canContinue;
+            //    m_continueTime = Time.unscaledTime;
+            //}
+            //else if (m_canContine)
+            //{
+            //    m_continueControls.UpdateUI("Continue", (Menu as MainMenu).ReservedInputs.SelectMany(i => i.SpriteAccept).ToList());
 
-            for (int i = 0; i < 4; i++)
-            {
-                PlayerSelectPanel panel = m_playerSelectPanels[i];
-                panel.UpdatePanel();
-
-                if (panel.IsReady)
-                {
-                    s_playerPanelIndices.Add(i);
-                }
-            }
-            
-            bool canContinue = m_playerSelectPanels.All(p => p.CanContinue) && ReadyPlayers.Count > 0;
-            if (m_canContine != canContinue)
-            {
-                m_canContine = canContinue;
-                m_continueTime = Time.unscaledTime;
-            }
-            else if (m_canContine)
-            {
-                m_continueControls.UpdateUI("Continue", (Menu as MainMenu).ReservedInputs.SelectMany(i => i.SpriteAccept).ToList());
-
-                if (m_playerSelectPanels.Any(p => p.Continue))
-                {
-                    Menu.SwitchTo<LevelSelectMenu>(TransitionSound.Next);
-                }
-            }
+            //    if (m_playerSelectPanels.Any(p => p.Continue))
+            //    {
+            //        Menu.SwitchTo<LevelSelectMenu>(TransitionSound.Next);
+            //    }
+            //}
         }
 
         protected override void OnUpdateVisuals()
         {
             m_continueBar.SetActive(m_canContine);
             m_continueBanner.color = Color.Lerp(Color.white, m_bannerCol, (Time.unscaledTime - m_continueTime) / 0.5f);
-
-            m_playerSelectPanels.ForEach(p => p.UpdateGraphics(Menu as MainMenu));
         }
     }
 }

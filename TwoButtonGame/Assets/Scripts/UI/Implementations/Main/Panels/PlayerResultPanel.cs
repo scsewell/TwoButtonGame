@@ -5,7 +5,7 @@ using BoostBlasters.Profiles;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace BoostBlasters.UI.MainMenus
+namespace BoostBlasters.UI.MainMenu
 {
     public class PlayerResultPanel : MonoBehaviour
     {

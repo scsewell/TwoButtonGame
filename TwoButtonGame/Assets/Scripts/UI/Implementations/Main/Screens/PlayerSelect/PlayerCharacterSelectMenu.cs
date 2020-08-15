@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 using BoostBlasters.Profiles;
 
-namespace BoostBlasters.UI.MainMenus
+namespace BoostBlasters.UI.MainMenu
 {
     public class PlayerCharacterSelectMenu : MenuScreen
     {

@@ -20,11 +20,11 @@ namespace BoostBlasters.UI.RaceMenus
             m_quitButton.onClick.AddListener(() => Quit());
 
             
-            UIHelper.SetNavigationVertical(new NavConfig()
-            {
-                parent = m_resumeButton.transform.parent,
-                allowDisabled = true,
-            });
+            //UIHelper.SetNavigationVertical(new NavConfig()
+            //{
+            //    parent = m_resumeButton.transform.parent,
+            //    allowDisabled = true,
+            //});
         }
 
         private void Resume()

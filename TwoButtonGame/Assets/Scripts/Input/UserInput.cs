@@ -11,7 +11,7 @@ namespace BoostBlasters.Input
     /// </summary>
     public class UserInput : BaseInput
     {
-        private static readonly Dictionary<Mode, string> m_maps =
+        private static readonly Dictionary<Mode, string> s_maps =
             Enum.GetValues(typeof(Mode)).Cast<Mode>()
             .ToDictionary(n => n, n => n.ToString());
 
@@ -34,8 +34,10 @@ namespace BoostBlasters.Input
             UI,
         }
 
-
-        private PlayerInput m_input;
+        /// <summary>
+        /// The player input backing this user.
+        /// </summary>
+        public PlayerInput Player { get; private set; }
 
         /// <summary>
         /// The mode determining what inputs are currently enabled for this user.
@@ -47,9 +49,9 @@ namespace BoostBlasters.Input
         {
             transform.SetParent(PlayerInputManager.instance.transform, false);
 
-            m_input = GetComponent<PlayerInput>();
-            m_primaryInput.actionsAsset = m_input.actions;
-            m_secondaryInput.actionsAsset = m_input.actions;
+            Player = GetComponent<PlayerInput>();
+            m_primaryInput.actionsAsset = Player.actions;
+            m_secondaryInput.actionsAsset = Player.actions;
 
             SetMode(Mode.UI);
 
@@ -66,16 +68,24 @@ namespace BoostBlasters.Input
             {
                 if (map == Mode.None)
                 {
-                    m_input.DeactivateInput();
+                    Player.DeactivateInput();
                 }
                 else
                 {
-                    m_input.ActivateInput();
-                    m_input.SwitchCurrentActionMap(m_maps[map]);
+                    Player.ActivateInput();
+                    Player.SwitchCurrentActionMap(s_maps[map]);
                 }
 
                 ActiveMode = map;
             }
+        }
+
+        /// <summary>
+        /// Unjoins this user.
+        /// </summary>
+        public void Leave()
+        {
+            Destroy(gameObject);
         }
     }
 }

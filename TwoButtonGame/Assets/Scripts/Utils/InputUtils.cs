@@ -23,14 +23,14 @@ namespace BoostBlasters
 
             s_currentDevice = null;
 
-            InputSystem.onDeviceChange -= OnDeviceChanged;
-            InputSystem.onDeviceChange += OnDeviceChanged;
+            InputSystem.onDeviceChange -= OnDeviceChange;
+            InputSystem.onDeviceChange += OnDeviceChange;
 
             InputSystem.onAfterUpdate -= OnUpdate;
             InputSystem.onAfterUpdate += OnUpdate;
         }
 
-        private static void OnDeviceChanged(InputDevice device, InputDeviceChange change)
+        private static void OnDeviceChange(InputDevice device, InputDeviceChange change)
         {
             switch (change)
             {

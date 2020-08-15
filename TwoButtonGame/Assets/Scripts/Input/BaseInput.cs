@@ -37,6 +37,11 @@ namespace BoostBlasters.Input
 
         protected virtual void OnDisable()
         {
+            // Deselect UI stuff that is currently selected, or else they
+            // will still behave as if they are selected.
+            PrimaryEventSystem.SetSelectedGameObject(null);
+            SecondaryEventSystem.SetSelectedGameObject(null);
+
             var manager = GetComponentInParent<InputManager>();
             if (manager != null)
             {

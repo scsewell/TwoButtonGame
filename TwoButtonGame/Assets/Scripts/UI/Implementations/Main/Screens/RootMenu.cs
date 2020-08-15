@@ -3,7 +3,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace BoostBlasters.UI.MainMenus
+namespace BoostBlasters.UI.MainMenu
 {
     public class RootMenu : MenuScreen
     {
@@ -36,7 +36,7 @@ namespace BoostBlasters.UI.MainMenus
             // show the start menu if the game was just launched
             m_animator.Play(m_showStartMenu ? "Start" : "Main");
 
-            m_playButton.onClick.AddListener(() => Menu.SwitchTo<PlayerSelectMenu>(TransitionSound.Next));
+            m_playButton.onClick.AddListener(() => Menu.Get<PlayerSelectMenu>().Open(null, TransitionSound.Next));
             m_profilesButton.onClick.AddListener(() => Menu.SwitchTo<ProfileListMenu>(TransitionSound.Next));
             m_replaysButton.onClick.AddListener(() => Menu.SwitchTo<ReplayMenu>(TransitionSound.Next));
             m_settingsButton.onClick.AddListener(() => Menu.SwitchTo<SettingsMenu>(TransitionSound.Next));

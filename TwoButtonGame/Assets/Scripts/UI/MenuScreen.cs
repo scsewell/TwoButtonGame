@@ -1,9 +1,14 @@
-﻿using BoostBlasters.Input;
+﻿using System.Collections.Generic;
+
+using BoostBlasters.Input;
 
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace BoostBlasters.UI
 {
+    using BaseInput = Input.BaseInput;
+
     /// <summary>
     /// A component that manages a menu screen the user can interact with.
     /// </summary>
@@ -83,6 +88,8 @@ namespace BoostBlasters.UI
 
         protected virtual void Awake()
         {
+            InputManager.UserRemoved += OnUserRemoved;
+
             m_canvas = GetComponent<Canvas>();
             m_canvas.enabled = false;
 
@@ -90,6 +97,19 @@ namespace BoostBlasters.UI
 
             m_primarySelection.SelectDefault();
             m_secondarySelection.SelectDefault();
+        }
+
+        protected virtual void OnDestroy()
+        {
+            InputManager.UserRemoved -= OnUserRemoved;
+        }
+
+        private void OnUserRemoved(UserInput user)
+        {
+            if (Input == user)
+            {
+                SetInput(null);
+            }
         }
 
         /// <summary>

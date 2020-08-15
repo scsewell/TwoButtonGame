@@ -1,74 +1,112 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 using UnityEngine;
-
 using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.Users;
 
 namespace BoostBlasters.Input
 {
+    /// <summary>
+    /// A class responsible for managing player input.
+    /// </summary>
     public class InputManager : MonoBehaviour
     {
-        private static readonly List<UserInput> m_userInputs = new List<UserInput>();
+        /// <summary>
+        /// The global input source whose actions are performed using any enabled device.
+        /// </summary>
+        public static bool JoiningEnabled
+        {
+            get => PlayerInputManager.instance.joiningEnabled;
+            set
+            {
+                if (value)
+                {
+                    PlayerInputManager.instance.EnableJoining();
+                }
+                else
+                {
+                    PlayerInputManager.instance.DisableJoining();
+                }
+            }
+        }
+
+        private static readonly List<UserInput> m_users = new List<UserInput>();
 
         /// <summary>
-        /// The global input source.
+        /// The global input source whose actions are performed using any enabled device.
         /// </summary>
         public static GlobalInput GlobalInput { get; private set; }
 
         /// <summary>
-        /// The inputs for all joined players.
+        /// An event invoked when a new user input is enabled.
         /// </summary>
-        public static IReadOnlyList<UserInput> UserInputs => m_userInputs;
+        public static event Action<UserInput> UserAdded;
+
+        /// <summary>
+        /// An event invoked when a user input is destroyed.
+        /// </summary>
+        public static event Action<UserInput> UserRemoved;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void Init()
         {
-            m_userInputs.Clear();
+            m_users.Clear();
             GlobalInput = null;
+
+            UserAdded = null;
+            UserRemoved = null;
         }
 
 
-        ///// <summary>
-        ///// An event invoked when a new input is enabled.
-        ///// </summary>
-        //public static event Action<BaseInput> InputAdded;
+        /// <summary>
+        /// The input sources whose actions are performed by a specific player.
+        /// </summary>
+        public static IReadOnlyList<UserInput> Users => m_users;
 
-        ///// <summary>
-        ///// An event invoked when an input is destroyed.
-        ///// </summary>
-        //public static event Action<BaseInput> InputRemoved;
-
-        //[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        //private static void Init()
-        //{
-        //    InputAdded = null;
-        //    InputRemoved = null;
-        //}
 
         internal void AddInput(BaseInput input)
         {
+            if (input == null)
+            {
+                throw new ArgumentNullException(nameof(input));
+            }
+
             switch (input)
             {
                 case UserInput userInput:
-                    m_userInputs.Add(userInput);
+                {
+                    m_users.Add(userInput);
+                    UserAdded?.Invoke(userInput);
                     break;
+                }
                 case GlobalInput globalInput:
+                {
                     GlobalInput = globalInput;
                     break;
+                }
             }
         }
 
         internal void RemoveInput(BaseInput input)
         {
+            if (input == null)
+            {
+                throw new ArgumentNullException(nameof(input));
+            }
+
             switch (input)
             {
                 case UserInput userInput:
-                    m_userInputs.Remove(userInput);
+                {
+                    m_users.Remove(userInput);
+                    UserRemoved?.Invoke(userInput);
                     break;
+                }
                 case GlobalInput globalInput:
+                {
                     GlobalInput = null;
                     break;
+                }
             }
         }
     }

@@ -11,13 +11,13 @@ using BoostBlasters.Profiles;
 using BoostBlasters.Levels;
 using BoostBlasters.Races;
 
-namespace BoostBlasters.UI.MainMenus
+namespace BoostBlasters.UI.MainMenu
 {
     public class LevelSelectMenu : MenuScreen
     {
         [Header("Prefabs")]
 
-        [SerializeField] private Navigable m_optionPrefab = null;
+        //[SerializeField] private Navigable m_optionPrefab = null;
         [SerializeField] private GameObject m_levelPreviewCameraPrefab = null;
 
         [Header("UI Elements")]
@@ -72,7 +72,7 @@ namespace BoostBlasters.UI.MainMenus
         private Option<int> m_aiCountSelect;
         public Option<int> AICountSelect => m_aiCountSelect;
 
-        private List<Navigable> m_options;
+        //private List<Navigable> m_options;
         private List<PlayerResultPanel> m_playerResults;
         private Transform m_camPivot;
         private Camera m_previewCam;
@@ -94,29 +94,29 @@ namespace BoostBlasters.UI.MainMenus
 
         protected override void OnInitialize()
         {
-            m_startRaceButton.onClick.AddListener(() => ((MainMenu)Menu).LaunchRace());
+            //m_startRaceButton.onClick.AddListener(() => ((MainMenu)Menu).LaunchRace());
             m_backButton.onClick.AddListener(() => Back());
             
-            m_options = new List<Navigable>();
-            m_trackSelect   = new Option<Level>(m_options, m_optionPrefab, m_optionContent, "Track", LevelManager.Levels, OnLevelChange);
-            m_lapSelect     = new Option<int>(m_options, m_optionPrefab, m_optionContent, "Laps", Enumerable.Range(1, m_maxLapCount).ToArray(), null);
-            m_aiCountSelect = new Option<int>(m_options, m_optionPrefab, m_optionContent, "AI Racers", Enumerable.Range(0, Consts.MAX_RACERS + 1).ToArray(), null);
+           // m_options = new List<Navigable>();
+           // m_trackSelect   = new Option<Level>(m_options, m_optionPrefab, m_optionContent, "Track", LevelManager.Levels, OnLevelChange);
+            //m_lapSelect     = new Option<int>(m_options, m_optionPrefab, m_optionContent, "Laps", Enumerable.Range(1, m_maxLapCount).ToArray(), null);
+            //m_aiCountSelect = new Option<int>(m_options, m_optionPrefab, m_optionContent, "AI Racers", Enumerable.Range(0, Consts.MAX_RACERS + 1).ToArray(), null);
 
             RaceParameters lastRace = Main.Instance.LastRaceParams;
             if (lastRace != null)
             {
-                m_trackSelect.SetValue(lastRace.Level);
-                m_lapSelect.SetValue(lastRace.Laps);
-                m_aiCountSelect.SetValue(lastRace.AICount);
+                //m_trackSelect.SetValue(lastRace.Level);
+                //m_lapSelect.SetValue(lastRace.Laps);
+               // m_aiCountSelect.SetValue(lastRace.AICount);
             }
             
-            UIHelper.SetNavigationVertical(new NavConfig() 
-            { 
-                parent = m_optionContent, 
-                down = m_startRaceButton,
-            });
+            //UIHelper.SetNavigationVertical(new NavConfig() 
+            //{ 
+            //    parent = m_optionContent, 
+            //    down = m_startRaceButton,
+            //});
 
-            PrimarySelection.DefaultSelectionOverride = m_trackSelect.Selectable.gameObject;
+            //PrimarySelection.DefaultSelectionOverride = m_trackSelect.Selectable.gameObject;
 
             m_playerResults = new List<PlayerResultPanel>();
             PlayerResultPanel resultsTemplate = m_resultsContent.GetComponentInChildren<PlayerResultPanel>();
@@ -202,27 +202,27 @@ namespace BoostBlasters.UI.MainMenus
 
         protected override void OnUpdateVisuals()
         {
-            m_options.ForEach(o => o.UpdateGraphics());
+           // m_options.ForEach(o => o.UpdateGraphics());
 
-            Level level = m_trackSelect.Value;
-            m_levelPreview.sprite = level.Preview;
+            //Level level = m_trackSelect.Value;
+            //m_levelPreview.sprite = level.Preview;
 
             m_levelHighlight.color = new Color(1f, 1f, 1f, Mathf.Lerp(m_levelHighlight.color.a, 0f, Time.unscaledDeltaTime / 0.035f));
 
-            LevelInfo info = m_levelInfo[level];
+            //LevelInfo info = m_levelInfo[level];
 
-            List<LevelInfo.Results> results = info.results.Where(r => r.result.LapTimes.Count == m_lapSelect.Value).ToList();
-            for (int i = 0; i < m_playerResults.Count; i++)
-            {
-                if (i < results.Count)
-                {
-                    m_playerResults[i].SetResults(results[i].profile, results[i].result, i + 1);
-                }
-                else
-                {
-                    m_playerResults[i].SetResults(null, null, i + 1);
-                }
-            }
+            //List<LevelInfo.Results> results = info.results.Where(r => r.result.LapTimes.Count == m_lapSelect.Value).ToList();
+            //for (int i = 0; i < m_playerResults.Count; i++)
+            //{
+            //    if (i < results.Count)
+            //    {
+            //        m_playerResults[i].SetResults(results[i].profile, results[i].result, i + 1);
+            //    }
+            //    else
+            //    {
+            //        m_playerResults[i].SetResults(null, null, i + 1);
+            //    }
+            //}
 
             if (m_previewCam.enabled)
             {
@@ -241,7 +241,7 @@ namespace BoostBlasters.UI.MainMenus
 
                 foreach (var i in m_levelInfo.Values)
                 {
-                    i.preview3d.SetActive(i.preview3d == info.preview3d);
+                   // i.preview3d.SetActive(i.preview3d == info.preview3d);
                 }
             }
         }
@@ -254,28 +254,28 @@ namespace BoostBlasters.UI.MainMenus
 
         public class Option<T>
         {
-            private Navigable m_navigable;
-            public Selectable Selectable => m_navigable.GetComponentInChildren<Selectable>();
+            //private Navigable m_navigable;
+            //public Selectable Selectable => m_navigable.GetComponentInChildren<Selectable>();
 
-            private T[] m_values;
-            public T Value => m_values[m_navigable.Index];
+            //private T[] m_values;
+            //public T Value => m_values[m_navigable.Index];
 
-            public Option(List<Navigable> options, Navigable prefab, Transform parent, string name, T[] values, Action onChange)
-            {
-                m_values = values;
-                m_navigable = Instantiate(prefab, parent).Init(name, m_values.Length - 1, (i) => (0 <= i && i < m_values.Length) ? m_values[i].ToString() : string.Empty, onChange);
-                options.Add(m_navigable);
-            }
+            //public Option(List<Navigable> options, Navigable prefab, Transform parent, string name, T[] values, Action onChange)
+            //{
+            //    m_values = values;
+            //    m_navigable = Instantiate(prefab, parent).Init(name, m_values.Length - 1, (i) => (0 <= i && i < m_values.Length) ? m_values[i].ToString() : string.Empty, onChange);
+            //    options.Add(m_navigable);
+            //}
 
-            public void SetValue(T value)
-            {
-                m_navigable.Index = Array.IndexOf(m_values, value);
-            }
+            //public void SetValue(T value)
+            //{
+            //    m_navigable.Index = Array.IndexOf(m_values, value);
+            //}
 
-            public void SetMaxIndex(int maxIndex)
-            {
-                m_navigable.SetMaxIndex(maxIndex);
-            }
+            //public void SetMaxIndex(int maxIndex)
+            //{
+            //    m_navigable.SetMaxIndex(maxIndex);
+            //}
         }
     }
 }

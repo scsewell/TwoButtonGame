@@ -1,4 +1,6 @@
-﻿using UnityEngine.InputSystem;
+﻿using System.Linq;
+
+using UnityEngine.InputSystem;
 
 namespace BoostBlasters.Input
 {
@@ -7,12 +9,67 @@ namespace BoostBlasters.Input
     /// </summary>
     public class GlobalInput : BaseInput
     {
+        private InputActionAsset m_actions;
+
+
+        private void Awake()
+        {
+            InputManager.UserAdded += OnUserAdded;
+            InputManager.UserRemoved += OnUserRemoved;
+
+            InputSystem.onDeviceChange += OnDeviceChange;
+        }
+
+        private void OnDestroy()
+        {
+            InputManager.UserAdded -= OnUserAdded;
+            InputManager.UserRemoved -= OnUserRemoved;
+
+            InputSystem.onDeviceChange -= OnDeviceChange;
+        }
+
         protected override void OnEnable()
         {
-            m_primaryInput.actionsAsset = CloneActions(m_primaryInput.actionsAsset);
-            m_secondaryInput.actionsAsset = CloneActions(m_secondaryInput.actionsAsset);
+            m_actions = CloneActions(m_primaryInput.actionsAsset);
+
+            m_primaryInput.actionsAsset = m_actions;
+            m_secondaryInput.actionsAsset = m_actions;
+
+            m_actions.devices = InputSystem.devices;
 
             base.OnEnable();
+        }
+
+        private void OnDeviceChange(InputDevice device, InputDeviceChange change)
+        {
+            switch (change)
+            {
+                case InputDeviceChange.Added:
+                case InputDeviceChange.Destroyed:
+                case InputDeviceChange.Reconnected:
+                case InputDeviceChange.Disconnected:
+                {
+                    UpdateDevices();
+                    break;
+                }
+            }
+        }
+
+        private void OnUserAdded(UserInput user)
+        {
+            UpdateDevices();
+        }
+
+        private void OnUserRemoved(UserInput user)
+        {
+            UpdateDevices();
+        }
+
+        private void UpdateDevices()
+        {
+            m_actions.devices = InputSystem.devices
+                .Where(d => !InputManager.Users.Any(user => user.Player.devices.Contains(d)))
+                .ToArray();
         }
 
         private InputActionAsset CloneActions(InputActionAsset actions)
