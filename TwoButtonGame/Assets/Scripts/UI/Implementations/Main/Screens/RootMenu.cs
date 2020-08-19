@@ -1,4 +1,6 @@
-﻿using TMPro;
+﻿using BoostBlasters.Input;
+
+using TMPro;
 
 using UnityEngine;
 using UnityEngine.UI;

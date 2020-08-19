@@ -10,10 +10,12 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
+using BoostBlasters.Input;
+
 namespace BoostBlasters.UI
 {
     /// <summary>
-    /// A UI widget that displays a control prompt.
+    /// A UI widget that displays a control hint.
     /// </summary>
     public class Control : MonoBehaviour
     {
@@ -42,6 +44,13 @@ namespace BoostBlasters.UI
         [Tooltip("The action to show the controls for.")]
         private InputActionReference m_defaultAction = null;
 
+        [SerializeField]
+        [Tooltip("The filter that determines which controls are shown for the assigned action. " +
+            "Use \"None\" to show every control for the action. " +
+            "Use \"ControlScheme\" to only show controls for a single control scheme (by default the last scheme that gave input).")]
+        private FilterMode m_filter = FilterMode.ControlScheme;
+
+
         /// <summary>
         /// The filters that determines which controls are shown for the assigned action. 
         /// </summary>
@@ -56,22 +65,6 @@ namespace BoostBlasters.UI
             /// </summary>
             ControlScheme,
         }
-
-        [SerializeField]
-        [Tooltip("The filter that determines which controls are shown for the assigned action. " +
-            "Use \"None\" to show every control for the action. " +
-            "Use \"ControlScheme\" to only show controls for a single control scheme (by default the last scheme that gave input).")]
-        private FilterMode m_filter = FilterMode.ControlScheme;
-
-        /// <summary>
-        /// The filter that determines which controls are shown for the assigned action.
-        /// </summary>
-        public FilterMode Filter
-        {
-            get => m_filter;
-            set => m_filter = value;
-        }
-
 
         private class ControlInfo
         {
@@ -95,17 +88,71 @@ namespace BoostBlasters.UI
             }
         }
 
-        private InputAction m_action = null;
-        private InputActionMap m_map = null;
-        private InputControlScheme? m_currentScheme = null;
-        private readonly List<Image> m_images = new List<Image>();
-        private readonly Dictionary<Sprite, List<ControlInfo>> m_spriteToControls = new Dictionary<Sprite, List<ControlInfo>>();
+        private class ControlImage
+        {
+            private readonly RectTransform m_rect;
+            private readonly LayoutElement m_layout;
+            private readonly Image m_image;
+            private List<ControlInfo> m_controls;
+            private float m_aspect;
 
+            public IReadOnlyList<ControlInfo> Controls => m_controls;
+
+            public ControlImage(Transform parent)
+            {
+                m_rect = UIHelper.Create(parent);
+                var go = m_rect.gameObject;
+
+                m_layout = go.AddComponent<LayoutElement>();
+
+                m_image = go.AddComponent<Image>();
+                m_image.preserveAspect = true;
+            }
+
+            public void Enable(Sprite sprite, List<ControlInfo> controls)
+            {
+                m_image.name = sprite.name;
+                m_image.sprite = sprite;
+
+                m_aspect = sprite.rect.width / sprite.rect.height;
+
+                m_controls = controls;
+            }
+
+            public void Disable()
+            {
+                m_image.name = "Unused";
+                m_image.sprite = null;
+                m_image.gameObject.SetActive(false);
+
+                m_controls = null;
+            }
+
+            public void SetVisible(bool show)
+            {
+                if (show)
+                {
+                    var height = m_rect.rect.height;
+                    m_layout.preferredHeight = height;
+                    m_layout.preferredWidth = height * m_aspect;
+                }
+
+                m_image.gameObject.SetActive(show);
+            }
+        }
+
+        private readonly List<ControlImage> m_images = new List<ControlImage>();
+        private MenuScreen m_menu = null;
+
+        private InputActionReference m_action = null;
+        private InputActionAsset m_actionAsset = null;
+        private InputControlScheme? m_currentScheme = null;
+        private BaseInput m_inputOverride = null;
 
         /// <summary>
         /// The action to show the controls for.
         /// </summary>
-        public InputAction Action
+        public InputActionReference Action
         {
             get => m_action;
             set
@@ -119,32 +166,116 @@ namespace BoostBlasters.UI
         }
 
         /// <summary>
-        /// Overrides the control scheme to filter by when using the
+        /// The filter that determines which controls are shown for the assigned action.
+        /// </summary>
+        public FilterMode Filter
+        {
+            get => m_filter;
+            set => m_filter = value;
+        }
+
+        /// <summary>
+        /// Overrides the input from which the current control scheme is shown when using the
         /// <see cref="FilterMode.ControlScheme"/> filter.
         /// </summary>
-        /// <remarks>
-        /// If null, the input scheme that last gave input is used.
-        /// </remarks>
-        public InputControlScheme? SchemeOverride { get; set; } = null;
+        public BaseInput InputOverride
+        {
+            get => m_inputOverride;
+            set
+            {
+                if (m_inputOverride != value)
+                {
+                    m_inputOverride = value;
+
+                    if (value)
+                    {
+                        if (m_menu != null)
+                        {
+                            m_menu.InputChanged -= OnInputChanged;
+                        }
+                        OnInputChanged(value);
+                    }
+                    else
+                    {
+                        if (m_menu != null)
+                        {
+                            m_menu.InputChanged += OnInputChanged;
+                            OnInputChanged(m_menu.Input);
+                        }
+                        else
+                        {
+                            OnInputChanged(InputManager.GlobalInput);
+                        }
+                    }
+                }
+            }
+        }
 
 
         private void Awake()
         {
             m_action = m_defaultAction;
+            m_menu = GetComponentInParent<MenuScreen>();
+
+            if (m_menu != null)
+            {
+                m_menu.InputChanged += OnInputChanged;
+            }
+
+            // TODO: REVIEW should global input scheme always be tracked? might catch a few issues...
+
+            // Don't use the menu input to start or else the default control scheme will not be initialzied
+            // until after the screen has been opened.
+            OnInputChanged(InputManager.GlobalInput);
+        }
+
+        private void OnDestroy()
+        {
+            if (m_menu != null)
+            {
+                m_menu.InputChanged -= OnInputChanged;
+            }
         }
 
         private void OnEnable()
         {
-            Initialize();
-
             InputSystem.onDeviceChange += OnDeviceChanged;
+
+            Initialize();
         }
 
         private void OnDisable()
         {
             InputSystem.onDeviceChange -= OnDeviceChanged;
+        }
 
-            SetActionMap(null);
+        private void OnInputChanged(BaseInput input)
+        {
+            switch (input)
+            {
+                case UserInput userInput:
+                {
+                    // When a user is assigned, we know that the control scheme
+                    // never changes from the one paried to the user.
+                    SetActionAsset(null);
+                    m_currentScheme = userInput.Player.user.controlScheme;
+                    break;
+                }
+                case GlobalInput globalInput:
+                {
+                    // Listen for all actions and set the current control scheme
+                    // to be the one used to perform the most recent action.
+                    var asset = input.Actions.asset;
+                    SetActionAsset(asset);
+
+                    var schemes = asset.controlSchemes;
+                    if (m_currentScheme == null && schemes.Count > 0)
+                    {
+                        m_currentScheme = asset.controlSchemes[0];
+                    }
+                    break;
+                }
+            }
         }
 
         private void OnDeviceChanged(InputDevice device, InputDeviceChange change)
@@ -162,75 +293,99 @@ namespace BoostBlasters.UI
 
         private void Initialize()
         {
-            m_spriteToControls.Clear();
+            var spriteToControls = new Dictionary<Sprite, List<ControlInfo>>();
 
-            if (m_action == null)
-            {
-                SetActionMap(null);
-            }
-            else
-            {
-                SetActionMap(m_action.actionMap);
+            var action = m_action != null ? m_action.action : null;
 
+            if (action != null)
+            {
                 // display the action name
                 if (m_description != null)
                 {
-                    m_description.text = m_action.name;
+                    m_description.text = action.name;
                 }
 
                 // find the set of unique sprites needed to represent the controls
-                for (var i = 0; i < m_action.controls.Count; i++)
+                foreach (var control in action.controls)
                 {
-                    var control = m_action.controls[i];
                     var sprite = GetSprite(control);
 
-                    if (!m_spriteToControls.TryGetValue(sprite, out var controls))
+                    if (!spriteToControls.TryGetValue(sprite, out var controls))
                     {
                         controls = new List<ControlInfo>();
-                        m_spriteToControls.Add(sprite, controls);
+                        spriteToControls.Add(sprite, controls);
                     }
 
                     var schemes = new List<InputControlScheme>();
-                    m_action.TryGetControlSchemes(control, schemes);
+                    action.TryGetControlSchemes(control, schemes);
 
                     controls.Add(new ControlInfo(schemes));
                 }
             }
 
             // configure the image to show the required sprites
-            var imageIndex = 0;
-
-            foreach (var spriteControls in m_spriteToControls)
+            var i = 0;
+            foreach (var sprite in spriteToControls)
             {
-                // if this sprite is distinct create an image to display it
-                Image image;
-                if (imageIndex < m_images.Count)
+                if (i < m_images.Count)
                 {
-                    image = m_images[imageIndex];
+                    m_images[i].Enable(sprite.Key, sprite.Value);
                 }
                 else
                 {
-                    var go = UIHelper.Create(m_content).gameObject;
-
-                    go.AddComponent<LayoutElement>();
-                    go.AddComponent<CanvasRenderer>();
-                    image = go.AddComponent<Image>();
-
+                    var image = new ControlImage(m_content);
+                    image.Enable(sprite.Key, sprite.Value);
                     m_images.Add(image);
                 }
 
-                var sprite = spriteControls.Key;
+                i++;
+            }
 
-                image.name = sprite.name;
-                image.sprite = sprite;
-                image.preserveAspect = true;
+            // hide unused images
+            for (; i < m_images.Count; i++)
+            {
+                m_images[i].Disable();
+            }
+        }
 
-                imageIndex++;
+        private void LateUpdate()
+        {
+            var action = m_action != null ? m_action.action : null;
+
+            // only show images that correspond to an active control
+            foreach (var image in m_images)
+            {
+                var visible = false;
+
+                if (image.Controls != null)
+                {
+                    foreach (var control in image.Controls)
+                    {
+                        var active = action != null;
+
+                        switch (m_filter)
+                        {
+                            case FilterMode.ControlScheme:
+                            {
+                                active &= m_currentScheme.HasValue ? control.UsesScheme(m_currentScheme.Value) : false;
+                                break;
+                            }
+                        }
+
+                        if (active)
+                        {
+                            visible = true;
+                            break;
+                        }
+                    }
+                }
+
+                image.SetVisible(visible);
             }
         }
 
         /// <summary>
-        /// Sets if this control panel is visible.
+        /// Sets if this control hint is visible.
         /// </summary>
         /// <param name="active">True to enable the control panel, false to disable.</param>
         public void SetActive(bool active)
@@ -238,106 +393,35 @@ namespace BoostBlasters.UI
             gameObject.SetActive(active);
         }
 
-        public void UpdateUI(string descrption, List<Sprite> sprites)
+        private void SetActionAsset(InputActionAsset asset)
         {
-        }
-
-        private void LateUpdate()
-        {
-            if (m_action == null)
+            if (m_actionAsset != asset)
             {
-                return;
-            }
-
-            // only show images that correspond to an active control
-            for (var i = 0; i < m_images.Count; i++)
-            {
-                var image = m_images[i];
-                var sprite = image.sprite;
-
-                var showImage = false;
-
-                if (sprite != null && m_spriteToControls.TryGetValue(sprite, out var controls))
+                if (m_actionAsset != null)
                 {
-                    foreach (var control in controls)
+                    for (var i = 0; i < m_actionAsset.actionMaps.Count; i++)
                     {
-                        bool active;
-                        switch (m_filter)
-                        {
-                            case FilterMode.None:
-                            {
-                                active = true;
-                                break;
-                            }
-                            case FilterMode.ControlScheme:
-                            {
-                                if (SchemeOverride.HasValue)
-                                {
-                                    active = control.UsesScheme(SchemeOverride.Value);
-                                }
-                                else if (m_currentScheme.HasValue)
-                                {
-                                    active = control.UsesScheme(m_currentScheme.Value);
-                                }
-                                else
-                                {
-                                    active = false;
-                                }
-                                break;
-                            }
-                            default:
-                                throw new NotImplementedException();
-                        }
+                        var map = m_actionAsset.actionMaps[i];
 
-                        if (active)
+                        for (var j = 0; j < map.actions.Count; j++)
                         {
-                            showImage = true;
-                            break;
+                            map.actions[j].performed -= OnActionPerformed;
                         }
                     }
                 }
 
-                if (showImage)
+                m_actionAsset = asset;
+
+                if (m_actionAsset != null)
                 {
-                    var layout = image.GetComponent<LayoutElement>();
-
-                    layout.preferredHeight = GetComponent<RectTransform>().rect.height;
-                    layout.preferredWidth = layout.preferredHeight * (sprite.rect.width / sprite.rect.height);
-                }
-
-                image.gameObject.SetActive(showImage);
-            }
-        }
-
-        private void SetActionMap(InputActionMap map)
-        {
-            if (m_map != map)
-            {
-                if (m_map != null)
-                {
-                    var actions = m_map.actions;
-
-                    for (var i = 0; i < actions.Count; i++)
+                    for (var i = 0; i < m_actionAsset.actionMaps.Count; i++)
                     {
-                        actions[i].performed -= OnActionPerformed;
-                    }
-                }
+                        var map = m_actionAsset.actionMaps[i];
 
-                m_map = map;
-                m_currentScheme = null;
-
-                if (m_map != null)
-                {
-                    var actions = m_map.actions;
-
-                    for (var i = 0; i < actions.Count; i++)
-                    {
-                        actions[i].performed += OnActionPerformed;
-                    }
-
-                    if (m_map.controlSchemes.Count > 0)
-                    {
-                        m_currentScheme = m_map.controlSchemes[0];
+                        for (var j = 0; j < map.actions.Count; j++)
+                        {
+                            map.actions[j].performed += OnActionPerformed;
+                        }
                     }
                 }
             }

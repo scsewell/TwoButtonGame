@@ -1,14 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
 
 using BoostBlasters.Input;
 
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 namespace BoostBlasters.UI
 {
-    using BaseInput = Input.BaseInput;
-
     /// <summary>
     /// A component that manages a menu screen the user can interact with.
     /// </summary>
@@ -58,6 +55,16 @@ namespace BoostBlasters.UI
         public BaseInput Input { get; private set; }
 
         /// <summary>
+        /// Can this menu have a selection and receive input.
+        /// </summary>
+        public bool Interactable => Input != null;
+
+        /// <summary>
+        /// An event invoked when the input for this screen has changed.
+        /// </summary>
+        public event Action<BaseInput> InputChanged;
+
+        /// <summary>
         /// The selection used for primary navigation and submit/cancel events.
         /// </summary>
         protected Selection PrimarySelection => m_primarySelection;
@@ -79,11 +86,6 @@ namespace BoostBlasters.UI
             get => m_canvas.enabled;
             set => m_canvas.enabled = value;
         }
-
-        /// <summary>
-        /// Can this menu have a selection and receive input.
-        /// </summary>
-        public bool Interactable => Input != null;
 
 
         protected virtual void Awake()
@@ -169,6 +171,8 @@ namespace BoostBlasters.UI
                     m_primarySelection.Disable();
                     m_secondarySelection.Disable();
                 }
+
+                InputChanged?.Invoke(Input);
             }
         }
 

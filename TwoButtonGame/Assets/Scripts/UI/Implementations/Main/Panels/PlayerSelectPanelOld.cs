@@ -389,26 +389,26 @@ namespace BoostBlasters.UI.MainMenu
                     //m_controls1.UpdateUI("Back", menu.UnreservedInputs.SelectMany(i => i.SpriteCancel).ToList());
                     break;
                 case State.Profile:
-                    m_controls3.SetActive(true);
-                    m_controls3.UpdateUI("Next Profile", m_input.SpriteDownUp);
-                    m_controls2.SetActive(true);
-                    m_controls2.UpdateUI("Accept", m_input.SpriteAccept);
-                    m_controls1.SetActive(true);
-                    m_controls1.UpdateUI("Leave", m_input.SpriteCancel);
+                    //m_controls3.SetActive(true);
+                    //m_controls3.UpdateUI("Next Profile", m_input.SpriteDownUp);
+                    //m_controls2.SetActive(true);
+                    //m_controls2.UpdateUI("Accept", m_input.SpriteAccept);
+                    //m_controls1.SetActive(true);
+                    //m_controls1.UpdateUI("Leave", m_input.SpriteCancel);
                     break;
                 case State.Select:
-                    m_controls3.SetActive(true);
-                    m_controls3.UpdateUI("Next Character", m_input.SpriteLeftRight);
-                    m_controls2.SetActive(true);
-                    m_controls2.UpdateUI("Accept", m_input.SpriteAccept);
-                    m_controls1.SetActive(true);
-                    m_controls1.UpdateUI("Back", m_input.SpriteCancel);
+                    //m_controls3.SetActive(true);
+                    //m_controls3.UpdateUI("Next Character", m_input.SpriteLeftRight);
+                    //m_controls2.SetActive(true);
+                    //m_controls2.UpdateUI("Accept", m_input.SpriteAccept);
+                    //m_controls1.SetActive(true);
+                    //m_controls1.UpdateUI("Back", m_input.SpriteCancel);
                     break;
                 case State.Ready:
-                    m_controls3.SetActive(false);
-                    m_controls2.SetActive(false);
-                    m_controls1.SetActive(true);
-                    m_controls1.UpdateUI("Cancel", m_input.SpriteCancel);
+                    //m_controls3.SetActive(false);
+                    //m_controls2.SetActive(false);
+                    //m_controls1.SetActive(true);
+                    //m_controls1.UpdateUI("Cancel", m_input.SpriteCancel);
                     break;
             }
 

@@ -5,13 +5,14 @@ using UnityEngine.InputSystem;
 namespace BoostBlasters.Input
 {
     /// <summary>
-    /// The input for actions which can be triggered by any player.
+    /// The input which is the combined inputs of all players.
     /// </summary>
+    /// <remarks>
+    /// This is useful for cases where all users should be able to
+    /// control the same thing (ex. Main Menu UI).
+    /// </remarks>
     public class GlobalInput : BaseInput
     {
-        private InputActionAsset m_actions;
-
-
         private void Awake()
         {
             InputManager.UserAdded += OnUserAdded;
@@ -30,14 +31,9 @@ namespace BoostBlasters.Input
 
         protected override void OnEnable()
         {
-            m_actions = CloneActions(m_primaryInput.actionsAsset);
-
-            m_primaryInput.actionsAsset = m_actions;
-            m_secondaryInput.actionsAsset = m_actions;
-
-            m_actions.devices = InputSystem.devices;
-
             base.OnEnable();
+
+            //Actions.asset.devices = InputSystem.devices;
         }
 
         private void OnDeviceChange(InputDevice device, InputDeviceChange change)
@@ -67,25 +63,10 @@ namespace BoostBlasters.Input
 
         private void UpdateDevices()
         {
-            m_actions.devices = InputSystem.devices
-                .Where(d => !InputManager.Users.Any(user => user.Player.devices.Contains(d)))
-                .ToArray();
-        }
-
-        private InputActionAsset CloneActions(InputActionAsset actions)
-        {
-            var newActions = Instantiate(actions);
-
-            for (var actionMap = 0; actionMap < actions.actionMaps.Count; actionMap++)
-            {
-                for (var binding = 0; binding < actions.actionMaps[actionMap].bindings.Count; binding++)
-                {
-                    var inputBinding = actions.actionMaps[actionMap].bindings[binding];
-                    newActions.actionMaps[actionMap].ApplyBindingOverride(binding, inputBinding);
-                }
-            }
-
-            return newActions;
+            // only use device that are not paired to a specific user
+            //Actions.asset.devices = InputSystem.devices
+            //    .Where(d => !InputManager.Users.Any(user => user.Player.devices.Contains(d)))
+            //    .ToArray();
         }
     }
 }

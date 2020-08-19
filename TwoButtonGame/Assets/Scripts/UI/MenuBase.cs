@@ -81,7 +81,6 @@ namespace BoostBlasters.UI
         protected virtual void Update()
         {
             FlushTransitions(Transition.Type.Open);
-            Sound.FlushSoundQueue();
 
             foreach (var menu in m_menuScreens)
             {
@@ -92,6 +91,7 @@ namespace BoostBlasters.UI
         protected virtual void LateUpdate()
         {
             FlushTransitions(Transition.Type.Close);
+            Sound.FlushSoundQueue();
 
             foreach (var menu in m_menuScreens)
             {

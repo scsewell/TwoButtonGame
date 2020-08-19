@@ -133,7 +133,7 @@ namespace BoostBlasters.UI.RaceMenus
                 SetIntroCardPos(m_cardLower, inTime, 0.1f, outTime, 0.1f);
                 SetIntroCardPos(m_cardBottom, inTime, 0.3f, outTime, 0.0f);
 
-                m_skipControls.UpdateUI("Skip", ActiveInputs.SelectMany(i => i.SpriteAccept).ToList());
+                //m_skipControls.UpdateUI("Skip", ActiveInputs.SelectMany(i => i.SpriteAccept).ToList());
 
                 //if (ActiveScreen == null)
                 {

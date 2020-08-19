@@ -13,26 +13,25 @@ namespace BoostBlasters.UI
     /// </remarks>
     public class SoundPlayer : MonoBehaviour
     {
-        /// <summary>
-        /// How many frames the sounds are delayed to ensure that low priority
-        /// sounds are not played near a higher priority sound.
-        /// </summary>
-        private const int FRAME_BUFFER_COUNT = 1;
-
-
         [SerializeField]
         [Tooltip("The asset that configures which sounds are used for UI events in the menu.")]
         private MenuSoundConfig m_config = null;
+
+        [SerializeField]
+        [Tooltip("How long in seconds sounds are delayed to ensure that low priority sounds are not played near a higher priority sound.")]
+        [Range(0f, 0.1f)]
+        private float m_bufferTime = 0.035f;
+
 
         private struct SoundClip
         {
             public AudioClip clip;
             public float volume;
             public int priority;
-            public int frameCount;
+            public float time;
         }
 
-        private readonly List<SoundClip> m_audioBuffer = new List<SoundClip>();
+        private readonly List<SoundClip> m_buffer = new List<SoundClip>();
 
 
         /// <summary>
@@ -40,36 +39,19 @@ namespace BoostBlasters.UI
         /// </summary>
         public void FlushSoundQueue()
         {
-            if (m_audioBuffer.Count > 0)
+            for (var i = 0; i < m_buffer.Count;)
             {
-                // sort by decending proprity
-                m_audioBuffer.Sort((x, y) => -x.priority.CompareTo(y.priority));
+                var sound = m_buffer[i];
+                var delta = Time.unscaledTime - sound.time;
 
-                // Remove all clips with lower priority than the highest proprity sound
-                // and play sounds if they are the highest priority sounds in the last 
-                // few frames.
-                var highestPrority = m_audioBuffer[0].priority;
-
-                for (var i = 0; i < m_audioBuffer.Count;)
+                if (delta < m_bufferTime)
                 {
-                    var clip = m_audioBuffer[i];
-
-                    if (clip.priority < highestPrority)
-                    {
-                        m_audioBuffer.RemoveRange(i, m_audioBuffer.Count - i);
-                        break;
-                    }
-                    else if (clip.frameCount == FRAME_BUFFER_COUNT)
-                    {
-                        AudioManager.Instance.PlaySound(clip.clip, clip.volume, true);
-                        m_audioBuffer.RemoveAt(i);
-                    }
-                    else
-                    {
-                        clip.frameCount++;
-                        m_audioBuffer[i] = clip;
-                        i++;
-                    }
+                    i++;
+                }
+                else
+                {
+                    AudioManager.Instance.PlaySound(sound.clip, sound.volume, true);
+                    m_buffer.RemoveAt(i);
                 }
             }
         }
@@ -111,16 +93,50 @@ namespace BoostBlasters.UI
 
         private void PlaySound(MenuSoundConfig.Config config, float volume, int priority)
         {
-            if (config != null && config.Clip != null)
+            if (config == null || config.Clip == null)
             {
-                m_audioBuffer.Add(new SoundClip
-                {
-                    clip = config.Clip,
-                    volume = config.Volume * volume,
-                    priority = priority,
-                    frameCount = 0,
-                });
+                return;
             }
+
+            // low priority sounds are not played when there are higher priority sounds
+            if (m_buffer.Count > 0)
+            {
+                var sound = m_buffer[0];
+
+                if (sound.priority > priority)
+                {
+                    return;
+                }
+                else if (sound.priority < priority)
+                {
+                    m_buffer.Clear();
+                }
+            }
+
+            // Don't play duplicates of the same clip, but ensure the loudest requested
+            // volume for the clip is used.
+            var vol = config.Volume * volume;
+
+            for (var i = 0; i < m_buffer.Count; i++)
+            {
+                var sound = m_buffer[i];
+
+                if (sound.clip == config.Clip)
+                {
+                    sound.volume = Mathf.Max(sound.volume, vol);
+                    m_buffer[i] = sound;
+                    return;
+                }
+            }
+
+            // if the clip is unique, queue it to be played
+            m_buffer.Add(new SoundClip
+            {
+                clip = config.Clip,
+                volume = vol,
+                priority = priority,
+                time = Time.unscaledTime,
+            });
         }
     }
 }

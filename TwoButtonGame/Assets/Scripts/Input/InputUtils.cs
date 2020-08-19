@@ -2,8 +2,9 @@
 
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Users;
 
-namespace BoostBlasters
+namespace BoostBlasters.Input
 {
     /// <summary>
     /// Utility methods for handling input.
@@ -15,11 +16,11 @@ namespace BoostBlasters
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void Init()
         {
-            // reset the input system state
             foreach (var device in InputSystem.devices)
             {
                 InputSystem.EnableDevice(device);
             }
+            InputUser.listenForUnpairedDeviceActivity = 0;
 
             s_currentDevice = null;
 
@@ -82,12 +83,10 @@ namespace BoostBlasters
                         {
                             continue;
                         }
-
                         if (control.children.Count > 0)
                         {
                             continue;
                         }
-
                         if (control.IsActuated(0.5f))
                         {
                             return true;
@@ -139,10 +138,10 @@ namespace BoostBlasters
         /// <param name="control">The control to get the control scheme for.</param>
         /// <param name="controlScheme">The returned control scheme, or default if no matching scheme
         /// for the control was found.</param>
-        /// <returns>True if the control is valid for this action, false otherwise.</returns>
+        /// <returns>True if the control is valid for this action and a control scheme match was found, false otherwise.</returns>
         public static bool TryGetControlScheme(this InputAction action, InputControl control, out InputControlScheme controlScheme)
         {
-            if (action.TryGetControlBinding(control, out var binding))
+            if (action.TryGetControlBinding(control, out var binding) && binding.groups != null)
             {
                 var schemes = action.actionMap.controlSchemes;
 
@@ -161,9 +160,8 @@ namespace BoostBlasters
             return false;
         }
 
-
         /// <summary>
-        /// Gets the <see cref="InputControlScheme"/> that a given control belongs to.
+        /// Gets all the <see cref="InputControlScheme"/> that a given control belongs to.
         /// </summary>
         /// <param name="action">The action the control is for.</param>
         /// <param name="control">The control to get the control scheme for.</param>
@@ -175,6 +173,11 @@ namespace BoostBlasters
 
             if (action.TryGetControlBinding(control, out var binding))
             {
+                if (binding.groups == null)
+                {
+                    return true;
+                }
+
                 var schemes = action.actionMap.controlSchemes;
 
                 for (var i = 0; i < schemes.Count; i++)

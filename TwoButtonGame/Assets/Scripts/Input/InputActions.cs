@@ -1,4 +1,4 @@
-// GENERATED AUTOMATICALLY FROM 'Assets/Configs/Input/PlayerInputActions.inputactions'
+// GENERATED AUTOMATICALLY FROM 'Assets/Configs/Input/InputActions.inputactions'
 
 using System;
 using System.Collections;
@@ -6,15 +6,15 @@ using System.Collections.Generic;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Utilities;
 
-namespace BoostBlasters
+namespace BoostBlasters.Input
 {
-    public class @PlayerInputActions : IInputActionCollection, IDisposable
+    public class @InputActions : IInputActionCollection, IDisposable
     {
         public InputActionAsset asset { get; }
-        public @PlayerInputActions()
+        public @InputActions()
         {
             asset = InputActionAsset.FromJson(@"{
-    ""name"": ""PlayerInputActions"",
+    ""name"": ""InputActions"",
     ""maps"": [
         {
             ""name"": ""Player"",
@@ -267,7 +267,7 @@ namespace BoostBlasters
                     ""name"": ""Back"",
                     ""type"": ""Button"",
                     ""id"": ""a407a32d-b7b7-4ce8-8e2f-04a338422ad9"",
-                    ""expectedControlType"": """",
+                    ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """"
                 }
@@ -345,7 +345,7 @@ namespace BoostBlasters
                     ""path"": ""<Keyboard>/escape"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": """",
+                    ""groups"": ""WASD"",
                     ""action"": ""Back"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -582,6 +582,55 @@ namespace BoostBlasters
                     ""isPartOfComposite"": true
                 }
             ]
+        },
+        {
+            ""name"": ""Misc"",
+            ""id"": ""3f28c561-a33b-4d48-9bfc-b73cc9687427"",
+            ""actions"": [
+                {
+                    ""name"": ""Join"",
+                    ""type"": ""Button"",
+                    ""id"": ""a398cea1-c7e4-4961-af72-ba52839de701"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""697f5a60-2c1c-48c0-a69c-ad350bbeeec5"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Controller"",
+                    ""action"": ""Join"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""466a9491-1ed9-4d2c-b11e-b89528f5b5e7"",
+                    ""path"": ""<Keyboard>/leftShift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""WASD"",
+                    ""action"": ""Join"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b3ac44ae-0c47-454c-a299-ffd05f829771"",
+                    ""path"": ""<Keyboard>/enter"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Arrows"",
+                    ""action"": ""Join"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": [
@@ -631,6 +680,9 @@ namespace BoostBlasters
             m_UI_SwitchCategory = m_UI.FindAction("Switch Category", throwIfNotFound: true);
             m_UI_Accept = m_UI.FindAction("Accept", throwIfNotFound: true);
             m_UI_Back = m_UI.FindAction("Back", throwIfNotFound: true);
+            // Misc
+            m_Misc = asset.FindActionMap("Misc", throwIfNotFound: true);
+            m_Misc_Join = m_Misc.FindAction("Join", throwIfNotFound: true);
         }
 
         public void Dispose()
@@ -685,8 +737,8 @@ namespace BoostBlasters
         private readonly InputAction m_Player_OpenMenu;
         public struct PlayerActions
         {
-            private @PlayerInputActions m_Wrapper;
-            public PlayerActions(@PlayerInputActions wrapper) { m_Wrapper = wrapper; }
+            private @InputActions m_Wrapper;
+            public PlayerActions(@InputActions wrapper) { m_Wrapper = wrapper; }
             public InputAction @Move => m_Wrapper.m_Player_Move;
             public InputAction @Boost => m_Wrapper.m_Player_Boost;
             public InputAction @OpenMenu => m_Wrapper.m_Player_OpenMenu;
@@ -735,8 +787,8 @@ namespace BoostBlasters
         private readonly InputAction m_UI_Back;
         public struct UIActions
         {
-            private @PlayerInputActions m_Wrapper;
-            public UIActions(@PlayerInputActions wrapper) { m_Wrapper = wrapper; }
+            private @InputActions m_Wrapper;
+            public UIActions(@InputActions wrapper) { m_Wrapper = wrapper; }
             public InputAction @Navigate => m_Wrapper.m_UI_Navigate;
             public InputAction @SwitchCategory => m_Wrapper.m_UI_SwitchCategory;
             public InputAction @Accept => m_Wrapper.m_UI_Accept;
@@ -782,6 +834,39 @@ namespace BoostBlasters
             }
         }
         public UIActions @UI => new UIActions(this);
+
+        // Misc
+        private readonly InputActionMap m_Misc;
+        private IMiscActions m_MiscActionsCallbackInterface;
+        private readonly InputAction m_Misc_Join;
+        public struct MiscActions
+        {
+            private @InputActions m_Wrapper;
+            public MiscActions(@InputActions wrapper) { m_Wrapper = wrapper; }
+            public InputAction @Join => m_Wrapper.m_Misc_Join;
+            public InputActionMap Get() { return m_Wrapper.m_Misc; }
+            public void Enable() { Get().Enable(); }
+            public void Disable() { Get().Disable(); }
+            public bool enabled => Get().enabled;
+            public static implicit operator InputActionMap(MiscActions set) { return set.Get(); }
+            public void SetCallbacks(IMiscActions instance)
+            {
+                if (m_Wrapper.m_MiscActionsCallbackInterface != null)
+                {
+                    @Join.started -= m_Wrapper.m_MiscActionsCallbackInterface.OnJoin;
+                    @Join.performed -= m_Wrapper.m_MiscActionsCallbackInterface.OnJoin;
+                    @Join.canceled -= m_Wrapper.m_MiscActionsCallbackInterface.OnJoin;
+                }
+                m_Wrapper.m_MiscActionsCallbackInterface = instance;
+                if (instance != null)
+                {
+                    @Join.started += instance.OnJoin;
+                    @Join.performed += instance.OnJoin;
+                    @Join.canceled += instance.OnJoin;
+                }
+            }
+        }
+        public MiscActions @Misc => new MiscActions(this);
         private int m_ControllerSchemeIndex = -1;
         public InputControlScheme ControllerScheme
         {
@@ -821,6 +906,10 @@ namespace BoostBlasters
             void OnSwitchCategory(InputAction.CallbackContext context);
             void OnAccept(InputAction.CallbackContext context);
             void OnBack(InputAction.CallbackContext context);
+        }
+        public interface IMiscActions
+        {
+            void OnJoin(InputAction.CallbackContext context);
         }
     }
 }

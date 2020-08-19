@@ -45,6 +45,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c2fa9f53305cb545a3544f56d674150, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_joinAction: {fileID: -2265520106117839378, guid: 8c055b25acaec8e4e8096ef2e78e8684,
+    type: 3}
 --- !u!114 &5026680915141612538
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -60,7 +62,7 @@ MonoBehaviour:
   m_NotificationBehavior: 3
   m_MaxPlayerCount: 4
   m_AllowJoining: 0
-  m_JoinBehavior: 1
+  m_JoinBehavior: 2
   m_PlayerJoinedEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -76,24 +78,8 @@ MonoBehaviour:
       m_Id: fea3590c-acb6-4c50-ba83-1121919f79c4
       m_Processors: 
       m_Interactions: 
-      m_SingletonActionBindings:
-      - m_Name: 
-        m_Id: 181d5dcc-7033-4622-bcaf-fe01b982bf00
-        m_Path: <Gamepad>/start
-        m_Interactions: 
-        m_Processors: 
-        m_Groups: 
-        m_Action: Join
-        m_Flags: 0
-      - m_Name: 
-        m_Id: 45ad93e2-bb42-45d4-927b-0318884943fa
-        m_Path: <Keyboard>/enter
-        m_Interactions: 
-        m_Processors: 
-        m_Groups: 
-        m_Action: Join
-        m_Flags: 0
-    m_Reference: {fileID: -3323794279833605423, guid: 8c055b25acaec8e4e8096ef2e78e8684,
+      m_SingletonActionBindings: []
+    m_Reference: {fileID: -8693442601196075965, guid: 203bad3da3a22e14fab3599be6645ae5,
       type: 3}
   m_PlayerPrefab: {fileID: 4889338934041079912, guid: 8a1c10ad9c951fa4fa78cf4c95b19c5a,
     type: 3}
@@ -151,6 +137,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1c09026dac4c78d43a065fad69f583d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_inputActions: {fileID: -944628639613478452, guid: 8c055b25acaec8e4e8096ef2e78e8684,
+    type: 3}
   m_primaryInput: {fileID: 8722849826495461330}
   m_secondaryInput: {fileID: 6737908443430659795}
 --- !u!1001 &202437905453345185

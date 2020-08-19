@@ -4,7 +4,7 @@ using UnityEngine.InputSystem.UI;
 namespace BoostBlasters.Input
 {
     /// <summary>
-    /// The base class for input sources that can be used by the UI.
+    /// A class that owns a set of action maps used for game input.
     /// </summary>
     public class BaseInput : MonoBehaviour
     {
@@ -17,21 +17,40 @@ namespace BoostBlasters.Input
         protected InputSystemUIInputModule m_secondaryInput;
 
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// The event system used to generate primary navigation events used by the UI.
+        /// </summary>
         public MultiplayerEventSystem PrimaryEventSystem { get; private set; }
-        /// <inheritdoc/>
+
+        /// <summary>
+        /// The event system used to generate secondary navigation events used by the UI.
+        /// </summary>
+        /// <remarks>
+        /// This is used for meus that have multiple selected elements, such as menu tabs
+        /// that the user can switch between indepentantly of the main selection.
+        /// </remarks>
         public MultiplayerEventSystem SecondaryEventSystem { get; private set; }
+
+        /// <summary>
+        /// The actions owned by this input source.
+        /// </summary>
+        public InputActions Actions { get; private set; }
 
 
         protected virtual void OnEnable()
         {
+            Actions = new InputActions();
+
+            m_primaryInput.actionsAsset = Actions.asset;
+            m_secondaryInput.actionsAsset = Actions.asset;
+
             PrimaryEventSystem = m_primaryInput.GetComponent<MultiplayerEventSystem>();
             SecondaryEventSystem = m_secondaryInput.GetComponent<MultiplayerEventSystem>();
 
             var manager = GetComponentInParent<InputManager>();
             if (manager != null)
             {
-                manager.AddInput(this);
+                manager.RegisterInput(this);
             }
         }
 
@@ -45,8 +64,11 @@ namespace BoostBlasters.Input
             var manager = GetComponentInParent<InputManager>();
             if (manager != null)
             {
-                manager.RemoveInput(this);
+                manager.DeregisterInput(this);
             }
+
+            Actions.Dispose();
+            Actions = null;
         }
     }
 }

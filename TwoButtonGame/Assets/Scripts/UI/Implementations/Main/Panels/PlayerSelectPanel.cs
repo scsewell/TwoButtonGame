@@ -53,7 +53,7 @@ namespace BoostBlasters.UI.MainMenu
         /// <summary>
         /// Assigns a user to the panel.
         /// </summary>
-        /// <param name="user">The user to associate with the panel.</param>
+        /// <param name="user">The user to associate with the panel. Cannot be null.</param>
         public void AssignUser(UserInput user)
         {
             if (user == null)

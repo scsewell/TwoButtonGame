@@ -1,5 +1,5 @@
 {
-    "name": "PlayerInputActions",
+    "name": "InputActions",
     "maps": [
         {
             "name": "Player",
@@ -252,7 +252,7 @@
                     "name": "Back",
                     "type": "Button",
                     "id": "a407a32d-b7b7-4ce8-8e2f-04a338422ad9",
-                    "expectedControlType": "",
+                    "expectedControlType": "Button",
                     "processors": "",
                     "interactions": ""
                 }
@@ -330,7 +330,7 @@
                     "path": "<Keyboard>/escape",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": "WASD",
                     "action": "Back",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -565,6 +565,55 @@
                     "action": "Switch Category",
                     "isComposite": false,
                     "isPartOfComposite": true
+                }
+            ]
+        },
+        {
+            "name": "Misc",
+            "id": "3f28c561-a33b-4d48-9bfc-b73cc9687427",
+            "actions": [
+                {
+                    "name": "Join",
+                    "type": "Button",
+                    "id": "a398cea1-c7e4-4961-af72-ba52839de701",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "697f5a60-2c1c-48c0-a69c-ad350bbeeec5",
+                    "path": "<Gamepad>/buttonSouth",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Controller",
+                    "action": "Join",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "466a9491-1ed9-4d2c-b11e-b89528f5b5e7",
+                    "path": "<Keyboard>/leftShift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "WASD",
+                    "action": "Join",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "b3ac44ae-0c47-454c-a299-ffd05f829771",
+                    "path": "<Keyboard>/enter",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Arrows",
+                    "action": "Join",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         }

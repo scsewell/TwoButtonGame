@@ -13,6 +13,7 @@ namespace BoostBlasters.UI.MainMenu
     {
         [Header("UI Elements")]
 
+        [SerializeField] private Selectable m_cancel = null;
         [SerializeField] private GameObject m_continueBar = null;
         [SerializeField] private Image m_continueBanner = null;
         [SerializeField] private Control m_continueControls = null;
@@ -46,7 +47,7 @@ namespace BoostBlasters.UI.MainMenu
             InputManager.UserAdded += OnUserAdded;
             InputManager.UserRemoved += OnUserRemoved;
 
-            InputManager.JoiningEnabled = true;
+            InputManager.ListenForJoiningUsers++;
 
             m_canContine = false;
             m_continueTime = 0;
@@ -57,7 +58,7 @@ namespace BoostBlasters.UI.MainMenu
             InputManager.UserAdded -= OnUserAdded;
             InputManager.UserRemoved -= OnUserRemoved;
 
-            InputManager.JoiningEnabled = false;
+            InputManager.ListenForJoiningUsers--;
         }
 
         private void OnUserAdded(UserInput user)
@@ -89,6 +90,8 @@ namespace BoostBlasters.UI.MainMenu
 
         protected override void OnUpdate()
         {
+            m_cancel.interactable = m_panels.All(p => p.User == null);
+
             //var canContinue = m_playerSelectPanels.All(p => p.CanContinue) && ReadyPlayers.Count > 0;
             //if (m_canContine != canContinue)
             //{
