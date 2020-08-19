@@ -2,7 +2,6 @@
 
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.Users;
 
 namespace BoostBlasters.Input
 {
@@ -20,7 +19,6 @@ namespace BoostBlasters.Input
             {
                 InputSystem.EnableDevice(device);
             }
-            InputUser.listenForUnpairedDeviceActivity = 0;
 
             s_currentDevice = null;
 

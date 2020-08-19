@@ -90,8 +90,6 @@ namespace BoostBlasters.UI
 
         protected virtual void Awake()
         {
-            InputManager.UserRemoved += OnUserRemoved;
-
             m_canvas = GetComponent<Canvas>();
             m_canvas.enabled = false;
 
@@ -99,11 +97,15 @@ namespace BoostBlasters.UI
 
             m_primarySelection.SelectDefault();
             m_secondarySelection.SelectDefault();
+
+            InputManager.UserRemoved += OnUserRemoved;
         }
 
         protected virtual void OnDestroy()
         {
             InputManager.UserRemoved -= OnUserRemoved;
+
+            OnHide();
         }
 
         private void OnUserRemoved(UserInput user)

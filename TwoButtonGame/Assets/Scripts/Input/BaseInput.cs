@@ -37,7 +37,7 @@ namespace BoostBlasters.Input
         public InputActions Actions { get; private set; }
 
 
-        protected virtual void OnEnable()
+        protected virtual void Awake()
         {
             Actions = new InputActions();
 
@@ -46,7 +46,10 @@ namespace BoostBlasters.Input
 
             PrimaryEventSystem = m_primaryInput.GetComponent<MultiplayerEventSystem>();
             SecondaryEventSystem = m_secondaryInput.GetComponent<MultiplayerEventSystem>();
+        }
 
+        protected virtual void Start()
+        {
             var manager = GetComponentInParent<InputManager>();
             if (manager != null)
             {
@@ -54,7 +57,7 @@ namespace BoostBlasters.Input
             }
         }
 
-        protected virtual void OnDisable()
+        protected virtual void OnDestroy()
         {
             // Deselect UI stuff that is currently selected, or else they
             // will still behave as if they are selected.

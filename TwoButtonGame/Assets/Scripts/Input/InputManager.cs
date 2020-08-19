@@ -5,7 +5,6 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
 using UnityEngine.InputSystem.LowLevel;
-using UnityEngine.InputSystem.Users;
 
 namespace BoostBlasters.Input
 {
@@ -45,7 +44,8 @@ namespace BoostBlasters.Input
             s_joinCandidates.Clear();
             s_joinAction = null;
             s_listenForJoiningUsers = 0;
-            InputUser.onUnpairedDeviceUsed -= OnUnpairedDeviceUsed;
+            InputSystem.onEvent -= OnEvent;
+            InputSystem.onAfterUpdate -= OnAfterUpdate;
 
             s_users.Clear();
             GlobalInput = null;
@@ -151,9 +151,7 @@ namespace BoostBlasters.Input
             PlayerInputManager.instance.joinBehavior = PlayerJoinBehavior.JoinPlayersManually;
             PlayerInputManager.instance.EnableJoining();
 
-            InputUser.listenForUnpairedDeviceActivity++;
-            InputUser.onUnpairedDeviceUsed += OnUnpairedDeviceUsed;
-
+            InputSystem.onEvent += OnEvent;
             InputSystem.onAfterUpdate += OnAfterUpdate;
         }
 
@@ -161,25 +159,71 @@ namespace BoostBlasters.Input
         {
             PlayerInputManager.instance.DisableJoining();
 
-            InputUser.listenForUnpairedDeviceActivity--;
-            InputUser.onUnpairedDeviceUsed -= OnUnpairedDeviceUsed;
-
+            InputSystem.onEvent -= OnEvent;
             InputSystem.onAfterUpdate -= OnAfterUpdate;
         }
 
-        private static void OnUnpairedDeviceUsed(InputControl control, InputEventPtr eventPtr)
+        private static unsafe void OnEvent(InputEventPtr eventPtr, InputDevice device)
         {
-            // This event is triggered during InputSystem.onEvent, which occurs before all the
-            // control state has been processed and updated, so we queue controls to be checked 
+            Debug.Assert(s_listenForJoiningUsers != 0, "This should only be called while listening for joining users!");
+
+            // onEvent occurs before all the control state has been processed and updated,
+            // so we find controls we might want to join using and queue them to be checked
             // after the input system has updated.
-            if (control is ButtonControl)
+
+            if (!eventPtr.IsA<StateEvent>() && !eventPtr.IsA<DeltaStateEvent>())
             {
-                s_joinCandidates.Add(control);
+                return;
+            }
+
+            var controls = device.allControls;
+            for (var i = 0; i < controls.Count; ++i)
+            {
+                var control = controls[i];
+
+                if (control.noisy || control.synthetic)
+                {
+                    continue;
+                }
+
+                // ignore non-leaf controls
+                if (control.children.Count > 0)
+                {
+                    continue;
+                }
+
+                // ignore controls that aren't part of the event
+                var statePtr = control.GetStatePtrFromStateEvent(eventPtr);
+                if (statePtr == null)
+                {
+                    continue;
+                }
+
+                // Check for default state. Cheaper check than magnitude evaluation
+                // which may involve several virtual method calls.
+                if (control.CheckStateIsAtDefault(statePtr))
+                {
+                    continue;
+                }
+
+                // We already know the control has moved away from its default state
+                // so in case it does not support magnitudes, we assume that the
+                // control has changed value, too.
+                var magnitude = control.EvaluateMagnitude(statePtr);
+                if (magnitude > 0 || magnitude == -1)
+                {
+                    if (control is ButtonControl)
+                    {
+                        s_joinCandidates.Add(control);
+                    }
+                }
             }
         }
 
         private static void OnAfterUpdate()
         {
+            Debug.Assert(s_listenForJoiningUsers != 0, "This should only be called while listening for joining users!");
+
             for (var i = 0; i < s_joinCandidates.Count; i++)
             {
                 var control = s_joinCandidates[i];
@@ -190,12 +234,32 @@ namespace BoostBlasters.Input
                     continue;
                 }
 
-                // pair to the control scheme that the control belongs to
-                if (s_joinAction.action.TryGetControlScheme(control, out var scheme))
+                // we need a control scheme to pair
+                if (!s_joinAction.action.TryGetControlScheme(control, out var scheme))
                 {
-                    PlayerInputManager.instance.JoinPlayer(-1, -1, scheme.name, control.device);
-                    break;
+                    continue;
                 }
+
+                // do not consider a device/control scheme combo already in use
+                var alreadyUsed = false;
+
+                foreach (var user in Users)
+                {
+                    if (user.Matches(control.device, scheme))
+                    {
+                        alreadyUsed = true;
+                        break;
+                    }
+                }
+
+                if (alreadyUsed)
+                {
+                    continue;
+                }
+
+                // create a new player input paired to this device and control scheme
+                PlayerInputManager.instance.JoinPlayer(-1, -1, scheme.name, control.device);
+                break;
             }
 
             s_joinCandidates.Clear();

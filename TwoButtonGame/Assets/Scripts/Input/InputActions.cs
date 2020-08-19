@@ -345,15 +345,15 @@ namespace BoostBlasters.Input
                     ""path"": ""<Keyboard>/escape"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": ""WASD"",
+                    ""groups"": ""Global"",
                     ""action"": ""Back"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
                 {
                     ""name"": """",
-                    ""id"": ""dba1d27f-e544-4b58-b347-0adf4f81b8c9"",
-                    ""path"": ""<Gamepad>/leftStick"",
+                    ""id"": ""a89831f2-5638-4167-9049-0c2eae00c982"",
+                    ""path"": ""<Gamepad>/dpad"",
                     ""interactions"": """",
                     ""processors"": ""StickDeadzone"",
                     ""groups"": ""Controller"",
@@ -363,8 +363,8 @@ namespace BoostBlasters.Input
                 },
                 {
                     ""name"": """",
-                    ""id"": ""a89831f2-5638-4167-9049-0c2eae00c982"",
-                    ""path"": ""<Gamepad>/dpad"",
+                    ""id"": ""dba1d27f-e544-4b58-b347-0adf4f81b8c9"",
+                    ""path"": ""<Gamepad>/leftStick"",
                     ""interactions"": """",
                     ""processors"": ""StickDeadzone"",
                     ""groups"": ""Controller"",
@@ -666,6 +666,17 @@ namespace BoostBlasters.Input
                     ""isOR"": false
                 }
             ]
+        },
+        {
+            ""name"": ""Global"",
+            ""bindingGroup"": ""Global"",
+            ""devices"": [
+                {
+                    ""devicePath"": ""<Keyboard>"",
+                    ""isOptional"": false,
+                    ""isOR"": false
+                }
+            ]
         }
     ]
 }");
@@ -892,6 +903,15 @@ namespace BoostBlasters.Input
             {
                 if (m_ArrowsSchemeIndex == -1) m_ArrowsSchemeIndex = asset.FindControlSchemeIndex("Arrows");
                 return asset.controlSchemes[m_ArrowsSchemeIndex];
+            }
+        }
+        private int m_GlobalSchemeIndex = -1;
+        public InputControlScheme GlobalScheme
+        {
+            get
+            {
+                if (m_GlobalSchemeIndex == -1) m_GlobalSchemeIndex = asset.FindControlSchemeIndex("Global");
+                return asset.controlSchemes[m_GlobalSchemeIndex];
             }
         }
         public interface IPlayerActions

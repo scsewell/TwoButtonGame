@@ -258,7 +258,7 @@ namespace BoostBlasters.UI
                     // When a user is assigned, we know that the control scheme
                     // never changes from the one paried to the user.
                     SetActionAsset(null);
-                    m_currentScheme = userInput.Player.user.controlScheme;
+                    m_currentScheme = userInput.ControlScheme;
                     break;
                 }
                 case GlobalInput globalInput:
