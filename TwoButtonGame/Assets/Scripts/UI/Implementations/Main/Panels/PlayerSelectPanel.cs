@@ -33,7 +33,7 @@ namespace BoostBlasters.UI.MainMenu
         }
 
         /// <summary>
-        /// Opens the panel.
+        /// Displays the panel.
         /// </summary>
         /// <param name="raceParams">The configuration to initialize from, or null to reset.</param>
         public void Open(RaceParameters raceParams)

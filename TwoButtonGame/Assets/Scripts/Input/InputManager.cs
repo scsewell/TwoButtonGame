@@ -148,8 +148,15 @@ namespace BoostBlasters.Input
                 throw new InvalidOperationException("Can't pair devices until a join action has been assigned.");
             }
 
-            PlayerInputManager.instance.joinBehavior = PlayerJoinBehavior.JoinPlayersManually;
-            PlayerInputManager.instance.EnableJoining();
+            if (PlayerInputManager.instance != null)
+            {
+                PlayerInputManager.instance.joinBehavior = PlayerJoinBehavior.JoinPlayersManually;
+                PlayerInputManager.instance.EnableJoining();
+            }
+            else
+            {
+                Debug.LogError($"{nameof(PlayerInputManager)} is null!");
+            }
 
             InputSystem.onEvent += OnEvent;
             InputSystem.onAfterUpdate += OnAfterUpdate;
@@ -157,7 +164,10 @@ namespace BoostBlasters.Input
 
         private static void DisableJoining()
         {
-            PlayerInputManager.instance.DisableJoining();
+            if (PlayerInputManager.instance != null)
+            {
+                PlayerInputManager.instance.DisableJoining();
+            }
 
             InputSystem.onEvent -= OnEvent;
             InputSystem.onAfterUpdate -= OnAfterUpdate;

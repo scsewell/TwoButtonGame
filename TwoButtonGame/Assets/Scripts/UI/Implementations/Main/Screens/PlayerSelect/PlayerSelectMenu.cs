@@ -14,7 +14,6 @@ namespace BoostBlasters.UI.MainMenu
     {
         [Header("UI Elements")]
 
-        [SerializeField] private Selectable m_cancel = null;
         [SerializeField] private GameObject m_continueBar = null;
         [SerializeField] private Image m_continueBanner = null;
         [SerializeField] private Control m_continueControls = null;
@@ -90,8 +89,6 @@ namespace BoostBlasters.UI.MainMenu
 
         protected override void OnUpdate()
         {
-            m_cancel.interactable = false;
-
             //var canContinue = m_playerSelectPanels.All(p => p.CanContinue) && ReadyPlayers.Count > 0;
             //if (m_canContine != canContinue)
             //{
