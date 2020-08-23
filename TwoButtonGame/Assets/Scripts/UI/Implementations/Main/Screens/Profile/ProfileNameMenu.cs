@@ -1,5 +1,6 @@
 ﻿using System;
 
+using BoostBlasters.Input;
 using BoostBlasters.Profiles;
 
 using TMPro;
@@ -22,7 +23,6 @@ namespace BoostBlasters.UI.MainMenu
         private Profile m_profile = null;
         private bool m_isNew = false;
         private Action<Profile> m_onComplete = null;
-        private MenuScreen m_returnToMenu = null;
 
 
         protected override void OnInitialize()
@@ -37,20 +37,18 @@ namespace BoostBlasters.UI.MainMenu
         /// Creates a new profile and ask the user to input a name.
         /// </summary>
         /// <param name="onComplete">The action to take when a name is entered.
+        /// <param name="input">The input to drive the menu interaction with.</param>
         /// The returned profile is null if the rename was cancelled.</param>
-        /// <param name="returnToMenu">The menu to go back to when finished.</param>
-        public void CreateNew(Action<Profile> onComplete, MenuScreen returnToMenu)
+        public void CreateNew(Action<Profile> onComplete, BaseInput input = null)
         {
             m_profile = ProfileManager.CreateProfile();
             m_isNew = true;
-            m_returnToMenu = returnToMenu;
             m_onComplete = onComplete;
-            m_returnToMenu = returnToMenu;
 
             m_titleText.text = "New Profile";
             m_nameField.text = string.Empty;
 
-            Menu.Open(this, TransitionSound.Next);
+            Open(input);
         }
 
         /// <summary>
@@ -59,19 +57,29 @@ namespace BoostBlasters.UI.MainMenu
         /// <param name="profile">The profile to rename.
         /// <param name="onComplete">The action to take when a name is entered.
         /// The returned profile is null if the rename was cancelled.</param>
-        /// <param name="returnToMenu">The menu to go back to when finished.</param>
+        /// <param name="input">The input to drive the menu interaction with.</param>
         /// <exception cref="ArgumentNullException">Thrown if <paramref name="profile"/> is null.</exception>
-        public void Rename(Profile profile, Action<Profile> onComplete, MenuScreen returnToMenu)
+        public void Rename(Profile profile, Action<Profile> onComplete, BaseInput input = null)
         {
             m_profile = profile ?? throw new ArgumentNullException(nameof(profile));
             m_isNew = false;
             m_onComplete = onComplete;
-            m_returnToMenu = returnToMenu;
 
             m_titleText.text = "Rename Profile";
             m_nameField.text = profile.Name;
 
-            Menu.Open(this, TransitionSound.Next);
+            Open(input);
+        }
+
+        private void Open(BaseInput input)
+        {
+            if (input == null)
+            {
+                input = InputManager.Global;
+            }
+
+            InputManager.Solo = input;
+            Menu.Open(this, input, TransitionSound.Next);
         }
 
         protected override void OnShow()
@@ -111,10 +119,8 @@ namespace BoostBlasters.UI.MainMenu
                 ProfileManager.DeleteProfile(m_profile);
             }
 
-            var sound = success ? TransitionSound.Next : TransitionSound.Back;
-
-            Menu.Close(this, sound);
-            Menu.Open(m_returnToMenu, sound);
+            InputManager.Solo = null;
+            Menu.Close(this, success ? TransitionSound.Next : TransitionSound.Back);
 
             m_onComplete?.Invoke(success ? m_profile : null);
         }

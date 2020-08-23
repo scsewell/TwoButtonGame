@@ -65,16 +65,19 @@ namespace BoostBlasters.UI.MainMenu
         {
             void OnRename(Profile profile)
             {
+                Menu.Open(this, TransitionSound.None);
                 Refresh();
             }
 
-            Menu.Get<ProfileNameMenu>().Rename(m_profile, OnRename, this);
+            Menu.Get<ProfileNameMenu>().Rename(m_profile, OnRename);
         }
 
         private void Delete()
         {
             void OnDelete(bool accept)
             {
+                Menu.Open(this, TransitionSound.None);
+
                 if (accept)
                 {
                     ProfileManager.DeleteProfile(m_profile);
@@ -83,7 +86,7 @@ namespace BoostBlasters.UI.MainMenu
             }
 
             var message = $"Are you sure you want to delete profile \"{m_profile.Name}\"?";
-            Menu.Get<ConfirmMenu>().ConfirmAction(message, OnDelete, this);
+            Menu.Get<ConfirmMenu>().ConfirmAction(message, OnDelete);
         }
     }
 }

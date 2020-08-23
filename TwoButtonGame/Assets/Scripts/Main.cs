@@ -43,6 +43,10 @@ namespace BoostBlasters
 
         private async void Start()
         {
+            // TEMPORARY FIX!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Unity is spamming event system warnings every frame :(
+            var logger = Debug.unityLogger;
+            logger.filterLogType = LogType.Assert;
+
             // we don't use the cursor
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = false;

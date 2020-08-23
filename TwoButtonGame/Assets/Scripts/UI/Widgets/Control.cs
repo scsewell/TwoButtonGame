@@ -204,7 +204,7 @@ namespace BoostBlasters.UI
                         }
                         else
                         {
-                            OnInputChanged(InputManager.GlobalInput);
+                            OnInputChanged(InputManager.Global);
                         }
                     }
                 }
@@ -226,7 +226,7 @@ namespace BoostBlasters.UI
 
             // Don't use the menu input to start or else the default control scheme will not be initialzied
             // until after the screen has been opened.
-            OnInputChanged(InputManager.GlobalInput);
+            OnInputChanged(InputManager.Global);
         }
 
         private void OnDestroy()

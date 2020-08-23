@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 using BoostBlasters.Profiles;
 
@@ -28,13 +29,18 @@ namespace BoostBlasters.UI.MainMenu
         private readonly List<Button> m_profilePanels = new List<Button>();
         private PlayerSelectPanel m_panel;
 
+        /// <summary>
+        /// An event invoked once the user has selected a profile.
+        /// </summary>
+        public event Action<Profile> ProfileSelected;
+
 
         protected override void OnInitialize()
         {
             m_panel = GetComponentInParent<PlayerSelectPanel>();
 
+            m_guestProfile.onClick.AddListener(() => UseGuestProfile());
             m_createProfile.onClick.AddListener(() => CreateNewProfile());
-            m_guestProfile.onClick.AddListener(() => CreateNewProfile());
 
             Menu.Shown += (m) =>
             {
@@ -104,23 +110,32 @@ namespace BoostBlasters.UI.MainMenu
             m_profilesLayout.UpdateNavigation();
         }
 
+        private void UseGuestProfile()
+        {
+            var profile = ProfileManager.CreateTemporaryProfile("Guest", true);
+            SelectProfile(profile);
+        }
+
         private void CreateNewProfile()
         {
+            var input = Input;
+
             void OnCreate(Profile profile)
             {
+                Menu.Open(this, input, TransitionSound.None);
+
                 if (profile != null)
                 {
-                    Refresh();
-                    PrimarySelection.Current = m_profilePanels[m_profilePanels.Count - 1].gameObject;
+                    SelectProfile(profile);
                 }
             }
 
-            //Menu.Get<ProfileNameMenu>().CreateNew(OnCreate, this);
+            Menu.Get<ProfileNameMenu>().CreateNew(OnCreate, input);
         }
 
         private void SelectProfile(Profile profile)
         {
-            //Menu.Get<ProfileEditMenu>().Edit(profile, this);
+            ProfileSelected?.Invoke(profile);
         }
     }
 }

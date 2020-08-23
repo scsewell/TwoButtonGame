@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 using TMPro;
+using BoostBlasters.Input;
 
 namespace BoostBlasters.UI.MainMenu
 {
@@ -17,7 +18,6 @@ namespace BoostBlasters.UI.MainMenu
 
 
         private Action<bool> m_onResponse = null;
-        private MenuScreen m_returnToMenu = null;
 
 
         protected override void OnInitialize()
@@ -31,14 +31,19 @@ namespace BoostBlasters.UI.MainMenu
         /// </summary>
         /// <param name="message">The message shown to the user.</param>
         /// <param name="onResponse">The action to complete using the received response.</param>
-        /// <param name="returnToMenu">The menu to open once the reponse is received.</param>
-        public void ConfirmAction(string message, Action<bool> onResponse, MenuScreen returnToMenu)
+        /// <param name="input">The input to drive the menu interaction with.</param>
+        public void ConfirmAction(string message, Action<bool> onResponse, BaseInput input = null)
         {
-            Menu.Open(this, TransitionSound.Next);
-
             m_promt.text = message;
             m_onResponse = onResponse;
-            m_returnToMenu = returnToMenu;
+
+            if (input == null)
+            {
+                input = InputManager.Global;
+            }
+
+            InputManager.Solo = input;
+            Menu.Open(this, input, TransitionSound.Next);
         }
 
         public override void Back()
@@ -60,8 +65,8 @@ namespace BoostBlasters.UI.MainMenu
         {
             var sound = accept ? TransitionSound.Next : TransitionSound.Back;
 
+            InputManager.Solo = null;
             Menu.Close(this, sound);
-            Menu.Open(m_returnToMenu, sound);
 
             m_onResponse?.Invoke(accept);
         }

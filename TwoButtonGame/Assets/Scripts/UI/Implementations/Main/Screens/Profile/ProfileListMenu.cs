@@ -100,6 +100,8 @@ namespace BoostBlasters.UI.MainMenu
         {
             void OnCreate(Profile profile)
             {
+                Menu.Open(this, TransitionSound.None);
+
                 if (profile != null)
                 {
                     Refresh();
@@ -107,7 +109,7 @@ namespace BoostBlasters.UI.MainMenu
                 }
             }
 
-            Menu.Get<ProfileNameMenu>().CreateNew(OnCreate, this);
+            Menu.Get<ProfileNameMenu>().CreateNew(OnCreate);
         }
 
         private void SelectProfile(Profile profile)

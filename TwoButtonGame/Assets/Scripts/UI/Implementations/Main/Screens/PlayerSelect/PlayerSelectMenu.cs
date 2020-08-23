@@ -21,6 +21,7 @@ namespace BoostBlasters.UI.MainMenu
 
         private readonly List<PlayerSelectPanel> m_panels = new List<PlayerSelectPanel>();
         private readonly List<InputActionMap> m_backActions = new List<InputActionMap>();
+        private bool m_inputEnabled;
 
 
         protected override void OnInitialize()
@@ -42,20 +43,12 @@ namespace BoostBlasters.UI.MainMenu
         {
             InputManager.UserAdded += OnUserAdded;
             InputManager.UserRemoved += OnUserRemoved;
-
-            InputManager.ListenForJoiningUsers++;
-
-            CreateBackActions();
         }
 
         protected override void OnHide()
         {
             InputManager.UserAdded -= OnUserAdded;
             InputManager.UserRemoved -= OnUserRemoved;
-
-            InputManager.ListenForJoiningUsers--;
-
-            DestroyBackActions();
         }
 
         private void OnUserAdded(UserInput user)
@@ -82,13 +75,22 @@ namespace BoostBlasters.UI.MainMenu
 
             foreach (var panel in m_panels)
             {
-                panel.Leave();
                 panel.Close();
             }
         }
 
         protected override void OnUpdate()
         {
+            // when global input is enabled, player joining and going back should be active 
+            if (Input != null && Input.Actions.UI.enabled)
+            {
+                EnableInput();
+            }
+            else
+            {
+                DisableInput();
+            }
+
             //var canContinue = m_playerSelectPanels.All(p => p.CanContinue) && ReadyPlayers.Count > 0;
             //if (m_canContine != canContinue)
             //{
@@ -112,8 +114,41 @@ namespace BoostBlasters.UI.MainMenu
             //m_continueBanner.color = Color.Lerp(Color.white, m_bannerCol, (Time.unscaledTime - m_continueTime) / 0.5f);
         }
 
+        private void EnableInput()
+        {
+            if (m_inputEnabled)
+            {
+                return;
+            }
+
+            m_inputEnabled = true;
+
+            InputManager.ListenForJoiningUsers++;
+            CreateBackActions();
+        }
+
+        private void DisableInput()
+        {
+            if (!m_inputEnabled)
+            {
+                return;
+            }
+
+            m_inputEnabled = false;
+
+            InputManager.ListenForJoiningUsers--;
+            DestroyBackActions();
+        }
+
         private void CreateBackActions()
         {
+            if (!m_inputEnabled)
+            {
+                return;
+            }
+
+            DestroyBackActions();
+
             // This is the one menu screen in the game where the global input and user input both
             // need to be active simultaniously (user input to do their character selection, and global
             // input is used by unpaired devices/control schemes to back out of the whole menu). Since the
@@ -124,9 +159,7 @@ namespace BoostBlasters.UI.MainMenu
             //
             // To work around this, we need to create a temporary back action for all unassigned device/control
             // schemes. A bit gross, but at least it contains the workaround to this one file.
-            DestroyBackActions();
-
-            var actions = InputManager.GlobalInput.Actions;
+            var actions = InputManager.Global.Actions;
             var users = InputManager.Users;
             var back = actions.UI.Back;
 

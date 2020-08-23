@@ -1,13 +1,11 @@
-﻿using System;
-
-using BoostBlasters.Input;
+﻿using BoostBlasters.Input;
+using BoostBlasters.Profiles;
 using BoostBlasters.Races;
 
 using UnityEngine;
 
 namespace BoostBlasters.UI.MainMenu
 {
-    [Serializable]
     public class PlayerSelectPanel : MonoBehaviour
     {
         [SerializeField] private PlayerJoinMenu m_joinMenu = null;
@@ -16,20 +14,19 @@ namespace BoostBlasters.UI.MainMenu
 
 
         private MenuBase m_menu;
+        private UserInput m_user;
+        private Profile m_profile;
 
         public PlayerJoinMenu JoinMenu => m_joinMenu;
         public PlayerProfileSelectMenu ProfileMenu => m_profileMenu;
         public PlayerCharacterSelectMenu CharacterMenu => m_characterMenu;
 
-        /// <summary>
-        /// The user bound to this panel.
-        /// </summary>
-        public UserInput User { get; private set; }
-
 
         private void Awake()
         {
             m_menu = GetComponentInParent<MenuBase>();
+
+            m_profileMenu.ProfileSelected += OnProfileSelected;
         }
 
         /// <summary>
@@ -40,13 +37,15 @@ namespace BoostBlasters.UI.MainMenu
         {
             if (raceParams == null)
             {
-                User = null;
+                m_user = null;
+                m_profile = null;
                 m_menu.Open(m_joinMenu, null, TransitionSound.None);
             }
             else
             {
-                //User = 
-                //m_menu.Open(m_characterMenu, User, TransitionSound.None);
+                //m_user = 
+                //m_profile =
+                //m_menu.Open(m_characterMenu, m_user, TransitionSound.None);
             }
         }
 
@@ -61,16 +60,16 @@ namespace BoostBlasters.UI.MainMenu
                 Debug.LogError($"Cannot assign a null user to panel {name}!");
                 return;
             }
-            if (User != null)
+            if (m_user != null)
             {
                 Debug.LogError($"A user is already assigned to panel {name}!");
                 return;
             }
 
-            User = user;
+            m_user = user;
 
             m_menu.Close(m_joinMenu, TransitionSound.Next);
-            m_menu.Open(m_profileMenu, User, TransitionSound.Next);
+            m_menu.Open(m_profileMenu, m_user, TransitionSound.Next);
         }
 
         /// <summary>
@@ -78,10 +77,10 @@ namespace BoostBlasters.UI.MainMenu
         /// </summary>
         public void Leave()
         {
-            if (User != null)
+            if (m_user != null)
             {
-                User.Leave();
-                User = null;
+                m_user.Leave();
+                m_user = null;
             }
 
             m_menu.Open(m_joinMenu, null, TransitionSound.Back);
@@ -94,9 +93,23 @@ namespace BoostBlasters.UI.MainMenu
         /// </summary>
         public void Close()
         {
+            if (m_user != null)
+            {
+                m_user.Leave();
+                m_user = null;
+            }
+
             m_menu.Close(m_joinMenu, TransitionSound.Back);
             m_menu.Close(m_profileMenu, TransitionSound.Back);
             m_menu.Close(m_characterMenu, TransitionSound.Back);
+        }
+
+        private void OnProfileSelected(Profile profile)
+        {
+            m_profile = profile;
+
+            m_menu.Close(m_profileMenu, TransitionSound.Next);
+            m_menu.Open(m_characterMenu, m_user, TransitionSound.Next);
         }
     }
 }

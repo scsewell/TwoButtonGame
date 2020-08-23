@@ -14,14 +14,21 @@ namespace BoostBlasters.Input
     public class InputManager : MonoBehaviour
     {
         private static readonly List<InputControl> s_joinCandidates = new List<InputControl>();
+        private static readonly List<BaseInput> s_all = new List<BaseInput>();
         private static readonly List<UserInput> s_users = new List<UserInput>();
+        private static BaseInput s_solo;
         private static InputActionReference s_joinAction;
         private static int s_listenForJoiningUsers;
 
         /// <summary>
+        /// All input sources registered to the manager.
+        /// </summary>
+        public static IReadOnlyList<BaseInput> All => s_all;
+
+        /// <summary>
         /// The global input source whose actions are performed using any enabled device.
         /// </summary>
-        public static GlobalInput GlobalInput { get; private set; }
+        public static GlobalInput Global { get; private set; }
 
         /// <summary>
         /// The input sources whose actions are performed by a specific player.
@@ -47,8 +54,10 @@ namespace BoostBlasters.Input
             InputSystem.onEvent -= OnEvent;
             InputSystem.onAfterUpdate -= OnAfterUpdate;
 
+            s_all.Clear();
             s_users.Clear();
-            GlobalInput = null;
+            Global = null;
+            s_solo = null;
 
             UserAdded = null;
             UserRemoved = null;
@@ -95,12 +104,51 @@ namespace BoostBlasters.Input
             }
         }
 
+        /// <summary>
+        /// When not null, the only enabled input.
+        /// </summary>
+        /// <remarks>
+        /// Assiging an input will disable all other inputs until set back to null.
+        /// </remarks>
+        public static BaseInput Solo
+        {
+            get => s_solo;
+            set
+            {
+                if (s_solo != value)
+                {
+                    if (s_solo != null)
+                    {
+                        foreach (var input in All)
+                        {
+                            input.Actions.Enable();
+                        }
+                    }
+
+                    s_solo = value;
+
+                    if (s_solo != null)
+                    {
+                        foreach (var input in All)
+                        {
+                            if (input != value)
+                            {
+                                input.Actions.Disable();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         internal void RegisterInput(BaseInput input)
         {
             if (input == null)
             {
                 throw new ArgumentNullException(nameof(input));
             }
+
+            s_all.Add(input);
 
             switch (input)
             {
@@ -112,7 +160,7 @@ namespace BoostBlasters.Input
                 }
                 case GlobalInput globalInput:
                 {
-                    GlobalInput = globalInput;
+                    Global = globalInput;
                     break;
                 }
             }
@@ -125,6 +173,8 @@ namespace BoostBlasters.Input
                 throw new ArgumentNullException(nameof(input));
             }
 
+            s_all.Remove(input);
+
             switch (input)
             {
                 case UserInput userInput:
@@ -135,7 +185,7 @@ namespace BoostBlasters.Input
                 }
                 case GlobalInput globalInput:
                 {
-                    GlobalInput = null;
+                    Global = null;
                     break;
                 }
             }

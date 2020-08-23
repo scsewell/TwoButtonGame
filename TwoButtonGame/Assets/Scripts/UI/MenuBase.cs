@@ -156,7 +156,7 @@ namespace BoostBlasters.UI
         /// <param name="sound">The sound to play for the transition.</param>
         public void Open(MenuScreen screen, TransitionSound sound)
         {
-            Open(screen, InputManager.GlobalInput, sound);
+            Open(screen, InputManager.Global, sound);
         }
 
         /// <summary>
