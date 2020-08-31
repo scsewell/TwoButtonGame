@@ -36,14 +36,19 @@ namespace BoostBlasters.Profiles
         public static IReadOnlyList<Profile> Profiles => m_profiles;
 
         /// <summary>
+        /// An event invoked when a profile has been added.
+        /// </summary>
+        public static event Action<Profile> Added;
+
+        /// <summary>
         /// An event invoked when a profile has been renamed.
         /// </summary>
-        public static event Action<Profile> ProfileRenamed;
+        public static event Action<Profile> Renamed;
 
         /// <summary>
         /// An event invoked when a profile has been deleted.
         /// </summary>
-        public static event Action<Profile> ProfileDeleted;
+        public static event Action<Profile> Deleted;
 
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
@@ -53,8 +58,8 @@ namespace BoostBlasters.Profiles
             m_uniqueTempProfiles.Clear();
             m_profiles.Clear();
 
-            ProfileRenamed = delegate { };
-            ProfileDeleted = delegate { };
+            Renamed = delegate { };
+            Deleted = delegate { };
         }
 
         /// <summary>
@@ -148,6 +153,8 @@ namespace BoostBlasters.Profiles
             m_profiles.Add(profile);
 
             SaveProfile(profile);
+
+            Added?.Invoke(profile);
             return profile;
         }
 
@@ -180,8 +187,7 @@ namespace BoostBlasters.Profiles
             profile.Name = name;
             SaveProfile(profile);
 
-            ProfileRenamed?.Invoke(profile);
-
+            Renamed?.Invoke(profile);
             return true;
         }
 
@@ -203,7 +209,7 @@ namespace BoostBlasters.Profiles
             {
                 FileIO.DeleteFile(GetProfileFilePath(profile));
 
-                ProfileDeleted?.Invoke(profile);
+                Deleted?.Invoke(profile);
 
                 Debug.Log($"Deleted profile \"{profile.Name}\"");
             }

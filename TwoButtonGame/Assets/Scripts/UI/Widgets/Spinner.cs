@@ -20,6 +20,7 @@ namespace BoostBlasters.UI
 
         private Selectable m_selectable = null;
         private SoundPlayer m_sound = null;
+        private int m_index = -1;
 
         /// <inheritdoc/>
         public string Label
@@ -34,7 +35,7 @@ namespace BoostBlasters.UI
         /// <inheritdoc/>
         public string Value
         {
-            get => m_valueText.text;
+            get => Options[m_index];
             set
             {
                 // get the index of the value in the options array
@@ -55,18 +56,30 @@ namespace BoostBlasters.UI
                 }
                 else
                 {
-                    Debug.LogError($"Spinner \"{name}\" does not have value \"{value}\" as an option!");
+                    Debug.LogError($"Value \"{value}\" is not a valid option for spinner \"{name}\"!");
                 }
             }
         }
 
         /// <inheritdoc/>
-        public event Action<string> ValueChanged;
+        public int Index
+        {
+            get => m_index;
+            set
+            {
+                if (value >= 0 && value < Options.Length)
+                {
+                    SelectIndex(value);
+                }
+                else
+                {
+                    Debug.LogError($"Index {value} is not valid for spinner \"{name}\"!");
+                }
+            }
+        }
 
-        /// <summary>
-        /// The index of the currently selected value in the options array.
-        /// </summary>
-        protected int CurrentIndex { get; private set; } = -1;
+        /// <inheritdoc/>
+        public event Action<int> ValueChanged;
 
 
         protected virtual void Awake()
@@ -94,17 +107,17 @@ namespace BoostBlasters.UI
             // allow wrapping if this is not a repeat navigation input
             if (UIUtils.GetRepeatCount(eventData.currentInputModule) == 0)
             {
-                return (CurrentIndex + offset + Options.Length) % Options.Length;
+                return (m_index + offset + Options.Length) % Options.Length;
             }
             else
             {
-                return Mathf.Clamp(CurrentIndex + offset, 0, Options.Length - 1);
+                return Mathf.Clamp(m_index + offset, 0, Options.Length - 1);
             }
         }
 
         private void NavigateToIndex(int newIndex)
         {
-            if (CurrentIndex != newIndex)
+            if (m_index != newIndex)
             {
                 SelectIndex(newIndex);
                 m_sound.PlaySelectSound();
@@ -113,12 +126,16 @@ namespace BoostBlasters.UI
 
         private void SelectIndex(int newIndex)
         {
-            if (CurrentIndex != newIndex)
+            if (m_index != newIndex)
             {
-                CurrentIndex = newIndex;
-                m_valueText.text = Options[newIndex];
+                m_index = newIndex;
 
-                ValueChanged?.Invoke(Value);
+                if (m_valueText != null)
+                {
+                    m_valueText.text = Options[newIndex];
+                }
+
+                ValueChanged?.Invoke(newIndex);
             }
         }
     }

@@ -18,13 +18,18 @@ namespace BoostBlasters.UI
         string[] Options { get; set; }
 
         /// <summary>
-        /// The currently selected value.
+        /// The currently selected optoin.
         /// </summary>
         string Value { get; set; }
 
         /// <summary>
-        /// An event triggered when the user changes the value.
+        /// The index of the selected option.
         /// </summary>
-        event Action<string> ValueChanged;
+        int Index { get; set; }
+
+        /// <summary>
+        /// An event triggered when the value is changed that provides the index of the selected option.
+        /// </summary>
+        event Action<int> ValueChanged;
     }
 }

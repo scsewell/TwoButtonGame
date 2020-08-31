@@ -32,6 +32,7 @@ namespace BoostBlasters.UI.MainMenu
         /// <summary>
         /// Opens a profile for editing.
         /// </summary>
+        /// <param name="profile">The profile to edit.</param>
         /// <param name="returnToMenu">The menu to go back to when finished.</param>
         public void Edit(Profile profile, MenuScreen returnToMenu)
         {

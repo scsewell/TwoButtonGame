@@ -61,9 +61,9 @@ namespace BoostBlasters.UI.MainMenu
             m_selector.Value = Setting.SerializedValue;
         }
 
-        private void Apply(string value)
+        private void Apply(int index)
         {
-            Setting.SetSerializedValue(value);
+            Setting.SetSerializedValue(m_selector.Value);
         }
     }
 }

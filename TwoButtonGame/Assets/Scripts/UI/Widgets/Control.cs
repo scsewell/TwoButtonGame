@@ -223,6 +223,7 @@ namespace BoostBlasters.UI
             }
 
             // TODO: REVIEW should global input scheme always be tracked? might catch a few issues...
+            // The last control scheme will not correct until actuated, since we only listen to actions after awake
 
             // Don't use the menu input to start or else the default control scheme will not be initialzied
             // until after the screen has been opened.

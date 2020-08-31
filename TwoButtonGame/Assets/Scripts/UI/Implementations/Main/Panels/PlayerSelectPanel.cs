@@ -1,4 +1,5 @@
-﻿using BoostBlasters.Input;
+﻿using BoostBlasters.Characters;
+using BoostBlasters.Input;
 using BoostBlasters.Profiles;
 using BoostBlasters.Races;
 
@@ -16,6 +17,7 @@ namespace BoostBlasters.UI.MainMenu
         private MenuBase m_menu;
         private UserInput m_user;
         private Profile m_profile;
+        private Character m_character;
 
         public PlayerJoinMenu JoinMenu => m_joinMenu;
         public PlayerProfileSelectMenu ProfileMenu => m_profileMenu;
@@ -27,6 +29,7 @@ namespace BoostBlasters.UI.MainMenu
             m_menu = GetComponentInParent<MenuBase>();
 
             m_profileMenu.ProfileSelected += OnProfileSelected;
+            m_characterMenu.CharacterSelected += OnCharacterSelected;
         }
 
         /// <summary>
@@ -50,10 +53,22 @@ namespace BoostBlasters.UI.MainMenu
         }
 
         /// <summary>
+        /// Close the menus under this panel.
+        /// </summary>
+        public void Close()
+        {
+            ResetPanel();
+
+            m_menu.Close(m_joinMenu, TransitionSound.Back);
+            m_menu.Close(m_profileMenu, TransitionSound.Back);
+            m_menu.Close(m_characterMenu, TransitionSound.Back);
+        }
+
+        /// <summary>
         /// Assigns a user to the panel.
         /// </summary>
         /// <param name="user">The user to associate with the panel. Cannot be null.</param>
-        public void AssignUser(UserInput user)
+        public void JoinUser(UserInput user)
         {
             if (user == null)
             {
@@ -67,21 +82,18 @@ namespace BoostBlasters.UI.MainMenu
             }
 
             m_user = user;
+            m_profileMenu.SetProfile(m_profile);
 
             m_menu.Close(m_joinMenu, TransitionSound.Next);
             m_menu.Open(m_profileMenu, m_user, TransitionSound.Next);
         }
 
         /// <summary>
-        /// Clear the user assigned to this panel.
+        /// Backs out to the join menu.
         /// </summary>
         public void Leave()
         {
-            if (m_user != null)
-            {
-                m_user.Leave();
-                m_user = null;
-            }
+            ResetPanel();
 
             m_menu.Open(m_joinMenu, null, TransitionSound.Back);
             m_menu.Close(m_profileMenu, TransitionSound.Back);
@@ -89,27 +101,49 @@ namespace BoostBlasters.UI.MainMenu
         }
 
         /// <summary>
-        /// Close the menus under this panel.
+        /// Backs out to the join menu.
         /// </summary>
-        public void Close()
+        public void BackToProfile()
         {
+            m_profileMenu.SetProfile(m_profile);
+
+            m_menu.Open(m_profileMenu, m_user, TransitionSound.Next);
+            m_menu.Close(m_characterMenu, TransitionSound.Back);
+        }
+
+        private void ResetPanel()
+        {
+            m_character = null;
+
+            if (m_profile != null)
+            {
+                if (m_profile.IsTemporary)
+                {
+                    ProfileManager.ReleaseTemporaryProfile(m_profile);
+                }
+                m_profile = null;
+            }
+
             if (m_user != null)
             {
                 m_user.Leave();
                 m_user = null;
             }
-
-            m_menu.Close(m_joinMenu, TransitionSound.Back);
-            m_menu.Close(m_profileMenu, TransitionSound.Back);
-            m_menu.Close(m_characterMenu, TransitionSound.Back);
         }
 
         private void OnProfileSelected(Profile profile)
         {
             m_profile = profile;
 
+            m_characterMenu.SetCharacter(m_character);
+
             m_menu.Close(m_profileMenu, TransitionSound.Next);
             m_menu.Open(m_characterMenu, m_user, TransitionSound.Next);
+        }
+
+        private void OnCharacterSelected(Character character)
+        {
+            m_character = character;
         }
     }
 }

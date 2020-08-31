@@ -72,25 +72,41 @@ namespace BoostBlasters.UI
                 }
                 else
                 {
-                    Debug.LogError($"Dropdown \"{name}\" does not have value \"{value}\" as an option!");
+                    Debug.LogError($"Value \"{value}\" is not valid for dropdown \"{name}\"!");
                 }
             }
         }
 
         /// <inheritdoc/>
-        public event Action<string> ValueChanged;
+        public int Index
+        {
+            get => m_dropdown.value;
+            set
+            {
+                if (value >= 0 && value < Options.Length)
+                {
+                    m_dropdown.value = value;
+                }
+                else
+                {
+                    Debug.LogError($"Index {value} is not valid for dropdown \"{name}\"!");
+                }
+            }
+        }
+
+        /// <inheritdoc/>
+        public event Action<int> ValueChanged;
 
 
         private void Awake()
         {
             m_dropdown = GetComponent<TMP_Dropdown>();
-
             m_dropdown.onValueChanged.AddListener(SelectIndex);
         }
 
         private void SelectIndex(int newIndex)
         {
-            ValueChanged?.Invoke(Value);
+            ValueChanged?.Invoke(newIndex);
         }
     }
 }

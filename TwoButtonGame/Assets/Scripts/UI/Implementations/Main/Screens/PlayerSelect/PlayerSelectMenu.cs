@@ -55,7 +55,7 @@ namespace BoostBlasters.UI.MainMenu
         {
             var panel = m_panels[user.PlayerIndex];
 
-            panel.AssignUser(user);
+            panel.JoinUser(user);
 
             CreateBackActions();
         }

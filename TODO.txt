@@ -7,10 +7,6 @@ Short Term
 - New Input sytstem (remove old Input system and framework controls)
 - Character/Level version numbering (builtin charactesr and levels should match core game version)
 
-- Custom logo intro (add setting / command line option to skip in settings)
-- Make shnazzy outline for character select, with integrated name plate at botton, profile plate at top
-	Arrows would be added to the character plate instead
-
 Steam API
 - Integrate in framework
 - Setup deployment pipeline
@@ -19,16 +15,18 @@ Steam API
 Migrate to URP
 - gate color should be a global shader property, instead of hooking into OnWillRenderObject
 
+- Custom logo intro (add setting / command line option to skip in settings)
+- Make shnazzy outline for character select, with integrated name plate at botton, profile plate at top
+	Arrows would be added to the character plate instead
+
 ECS/Unity Physics
 - Make sure to gut Physx as much as possible
 - Any math transformation of inputs must be done in burst compiled code... otherwise determinism will not work
 - Ensure physics update order is deterministic
-
 - Framwork interpolation system for ecs
 - Framwork volume system for ecs
 
 Optimization
-- Add profiling markers at useful locations
 - Racer movement probably can be optimized
 - Gate engine is very expensive for many objects
 - UI code creates quite a bit of garbage
@@ -43,10 +41,8 @@ General
 - Add Mods section to menu for managing asset bundles
 	- Figure out how to bundle assemblies for custom level/character code execution
 	- Ensure that in multiplayer bundles with custom code can optionally not be synced
-- Rumble controller on impact
 - Add preferred color to profile
 - Add character color options
-- Outline is very expensive on UI, especially the player time... (check none are left)
 - Difiiculy setting for levels - gate size differs based on difficulty (remove LevelConfig difficulty)
 - Show player names above heads (fade in when close)
 - Change brake to more of a hover? (might be much easier, maybe use for beginner characters)
