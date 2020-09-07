@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 
+using BoostBlasters.Input;
+
+using Framework;
 using Framework.UI;
 
 using TMPro;
@@ -9,8 +12,6 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
-
-using BoostBlasters.Input;
 
 namespace BoostBlasters.UI
 {
@@ -45,11 +46,38 @@ namespace BoostBlasters.UI
         private InputActionReference m_defaultAction = null;
 
         [SerializeField]
+        [Tooltip("If the action is a composite, this determines which controls in the composite are shown.")]
+        [EnumFlags]
+        private CompositeMode m_composite = CompositeMode.All;
+
+        /// <summary>
+        /// The different parts of a composite control.
+        /// </summary>
+        [Flags]
+        public enum CompositeMode
+        {
+            None = 0,
+
+            Positive = (1 << 0),
+            Negative = (1 << 1),
+
+            Up = (1 << 2),
+            Down = (1 << 3),
+            Left = (1 << 4),
+            Right = (1 << 5),
+
+            All = ~0,
+        }
+
+        [SerializeField]
+        [Tooltip("Only show the sprite for the first available control.")]
+        private bool m_firstOnly = false;
+
+        [SerializeField]
         [Tooltip("The filter that determines which controls are shown for the assigned action. " +
             "Use \"None\" to show every control for the action. " +
             "Use \"ControlScheme\" to only show controls for a single control scheme (by default the last scheme that gave input).")]
         private FilterMode m_filter = FilterMode.ControlScheme;
-
 
         /// <summary>
         /// The filters that determines which controls are shown for the assigned action. 
@@ -69,10 +97,23 @@ namespace BoostBlasters.UI
         private class ControlInfo
         {
             private readonly List<InputControlScheme> m_schemes;
+            private readonly CompositeMode m_composite;
 
-            public ControlInfo(List<InputControlScheme> schemes)
+            public InputBinding? CompositeParent { get; }
+
+            public ControlInfo(
+                CompositeMode composite,
+                InputBinding? compositeParent,
+                List<InputControlScheme> schemes)
             {
                 m_schemes = schemes;
+                m_composite = composite;
+                CompositeParent = compositeParent;
+            }
+
+            public bool FilterComposite(CompositeMode mode)
+            {
+                return m_composite == CompositeMode.None || mode.Contains(m_composite);
             }
 
             public bool UsesScheme(InputControlScheme scheme)
@@ -93,10 +134,9 @@ namespace BoostBlasters.UI
             private readonly RectTransform m_rect;
             private readonly LayoutElement m_layout;
             private readonly Image m_image;
-            private List<ControlInfo> m_controls;
             private float m_aspect;
 
-            public IReadOnlyList<ControlInfo> Controls => m_controls;
+            public List<ControlInfo> Controls { get; private set; }
 
             public ControlImage(Transform parent)
             {
@@ -116,7 +156,7 @@ namespace BoostBlasters.UI
 
                 m_aspect = sprite.rect.width / sprite.rect.height;
 
-                m_controls = controls;
+                Controls = controls;
             }
 
             public void Disable()
@@ -125,7 +165,7 @@ namespace BoostBlasters.UI
                 m_image.sprite = null;
                 m_image.gameObject.SetActive(false);
 
-                m_controls = null;
+                Controls = null;
             }
 
             public void SetVisible(bool show)
@@ -148,6 +188,7 @@ namespace BoostBlasters.UI
         private InputActionAsset m_actionAsset = null;
         private InputControlScheme? m_currentScheme = null;
         private BaseInput m_inputOverride = null;
+        private bool m_isDirty;
 
         /// <summary>
         /// The action to show the controls for.
@@ -160,9 +201,34 @@ namespace BoostBlasters.UI
                 if (m_action != value)
                 {
                     m_action = value;
-                    Initialize();
+                    m_isDirty = true;
                 }
             }
+        }
+
+        /// <summary>
+        /// If the action is a composite, this determines which controls in the composite are shown.
+        /// </summary>
+        public CompositeMode Composite
+        {
+            get => m_composite;
+            set
+            {
+                if (m_composite != value)
+                {
+                    m_composite = value;
+                    m_isDirty = true;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Only show the sprite for the first available control.
+        /// </summary>
+        public bool FirstOnly
+        {
+            get => m_firstOnly;
+            set => m_firstOnly = value;
         }
 
         /// <summary>
@@ -187,7 +253,7 @@ namespace BoostBlasters.UI
                 {
                     m_inputOverride = value;
 
-                    if (value)
+                    if (value != null)
                     {
                         if (m_menu != null)
                         {
@@ -242,7 +308,7 @@ namespace BoostBlasters.UI
         {
             InputSystem.onDeviceChange += OnDeviceChanged;
 
-            Initialize();
+            m_isDirty = true;
         }
 
         private void OnDisable()
@@ -287,16 +353,91 @@ namespace BoostBlasters.UI
                 case InputDeviceChange.Destroyed:
                 case InputDeviceChange.Reconnected:
                 case InputDeviceChange.Disconnected:
-                    Initialize();
+                    m_isDirty = true;
                     break;
             }
         }
 
-        private void Initialize()
+        private void LateUpdate()
+        {
+            var action = m_action != null ? m_action.action : null;
+
+            // create the images for all controls that may be shown for the current action
+            if (m_isDirty)
+            {
+                Initialize(action);
+                m_isDirty = false;
+            }
+
+            // set which images are visible based on the current options and control states
+            var foundFirst = false;
+            var firstIsComposite = false;
+            var compositeParent = default(InputBinding);
+
+            foreach (var image in m_images)
+            {
+                var visible = false;
+
+                if (action != null && image.Controls != null)
+                {
+                    foreach (var control in image.Controls)
+                    {
+                        // if the first shown control is a composite, only show the parts of that composite
+                        if (m_firstOnly && foundFirst && (!firstIsComposite || !(control.CompositeParent.HasValue && control.CompositeParent.Value == compositeParent)))
+                        {
+                            continue;
+                        }
+
+                        // only show controls for parts of a composite that we want to show
+                        if (!control.FilterComposite(m_composite))
+                        {
+                            continue;
+                        }
+
+                        switch (m_filter)
+                        {
+                            case FilterMode.ControlScheme:
+                            {
+                                if (!m_currentScheme.HasValue || !control.UsesScheme(m_currentScheme.Value))
+                                {
+                                    continue;
+                                }
+                                break;
+                            }
+                        }
+
+                        visible = true;
+
+                        if (m_firstOnly && !foundFirst)
+                        {
+                            if (control.CompositeParent.HasValue)
+                            {
+                                firstIsComposite = true;
+                                compositeParent = control.CompositeParent.Value;
+                            }
+                            foundFirst = true;
+                        }
+
+                        break;
+                    }
+                }
+
+                image.SetVisible(visible);
+            }
+        }
+
+        /// <summary>
+        /// Sets if this control hint is visible.
+        /// </summary>
+        /// <param name="active">True to enable the control panel, false to disable.</param>
+        public void SetActive(bool active)
+        {
+            gameObject.SetActive(active);
+        }
+
+        private void Initialize(InputAction action)
         {
             var spriteToControls = new Dictionary<Sprite, List<ControlInfo>>();
-
-            var action = m_action != null ? m_action.action : null;
 
             if (action != null)
             {
@@ -306,10 +447,21 @@ namespace BoostBlasters.UI
                     m_description.text = action.name;
                 }
 
-                // find the set of unique sprites needed to represent the controls
+                // find the set of unique sprites needed to represent the available controls
                 foreach (var control in action.controls)
                 {
-                    var sprite = GetSprite(control);
+                    if (!action.TryGetControlBinding(control, out var binding))
+                    {
+                        continue;
+                    }
+
+                    var path = GetPath(action, binding, control);
+                    var sprite = GetSprite(path, control.device);
+
+                    if (sprite == null)
+                    {
+                        continue;
+                    }
 
                     if (!spriteToControls.TryGetValue(sprite, out var controls))
                     {
@@ -317,10 +469,13 @@ namespace BoostBlasters.UI
                         spriteToControls.Add(sprite, controls);
                     }
 
+                    var composite = GetComposite(binding);
+                    var compositeParent = action.GetCompositeFromPart(binding);
+
                     var schemes = new List<InputControlScheme>();
                     action.TryGetControlSchemes(control, schemes);
 
-                    controls.Add(new ControlInfo(schemes));
+                    controls.Add(new ControlInfo(composite, compositeParent, schemes));
                 }
             }
 
@@ -347,51 +502,6 @@ namespace BoostBlasters.UI
             {
                 m_images[i].Disable();
             }
-        }
-
-        private void LateUpdate()
-        {
-            var action = m_action != null ? m_action.action : null;
-
-            // only show images that correspond to an active control
-            foreach (var image in m_images)
-            {
-                var visible = false;
-
-                if (image.Controls != null)
-                {
-                    foreach (var control in image.Controls)
-                    {
-                        var active = action != null;
-
-                        switch (m_filter)
-                        {
-                            case FilterMode.ControlScheme:
-                            {
-                                active &= m_currentScheme.HasValue ? control.UsesScheme(m_currentScheme.Value) : false;
-                                break;
-                            }
-                        }
-
-                        if (active)
-                        {
-                            visible = true;
-                            break;
-                        }
-                    }
-                }
-
-                image.SetVisible(visible);
-            }
-        }
-
-        /// <summary>
-        /// Sets if this control hint is visible.
-        /// </summary>
-        /// <param name="active">True to enable the control panel, false to disable.</param>
-        public void SetActive(bool active)
-        {
-            gameObject.SetActive(active);
         }
 
         private void SetActionAsset(InputActionAsset asset)
@@ -437,21 +547,80 @@ namespace BoostBlasters.UI
                 return;
             }
 
-            if (context.action.TryGetControlScheme(control, out var scheme))
+            if (context.action.TryGetControlScheme(control, out var scheme) && scheme.name != "Global")
             {
                 m_currentScheme = scheme;
             }
         }
 
-        private static Sprite GetSprite(InputControl control)
+        private static CompositeMode GetComposite(InputBinding binding)
         {
-            if (control == null)
+            if (binding.isPartOfComposite)
             {
-                return null;
+                switch (binding.name)
+                {
+                    case "positive":
+                        return CompositeMode.Positive;
+                    case "negative":
+                        return CompositeMode.Negative;
+                    case "up":
+                        return CompositeMode.Up;
+                    case "down":
+                        return CompositeMode.Down;
+                    case "left":
+                        return CompositeMode.Left;
+                    case "right":
+                        return CompositeMode.Right;
+                }
+            }
+            return CompositeMode.None;
+        }
+
+        private string GetPath(InputAction action, InputBinding binding, InputControl control)
+        {
+            var path = control.path;
+
+            if (action.type == InputActionType.Value && !binding.isPartOfComposite)
+            {
+                switch (action.expectedControlType)
+                {
+                    case "Dpad":
+                    case "Stick":
+                    case "Vector2":
+                    {
+                        switch (m_composite)
+                        {
+                            case CompositeMode.Up | CompositeMode.Down:
+                                path += "-y";
+                                break;
+                            case CompositeMode.Left | CompositeMode.Right:
+                                path += "-x";
+                                break;
+                            case CompositeMode.Up:
+                                path += "-up";
+                                break;
+                            case CompositeMode.Down:
+                                path += "-down";
+                                break;
+                            case CompositeMode.Left:
+                                path += "-left";
+                                break;
+                            case CompositeMode.Right:
+                                path += "-right";
+                                break;
+                        }
+                        break;
+                    }
+                }
             }
 
+            return path;
+        }
+
+        private static Sprite GetSprite(string controlPath, InputDevice device)
+        {
             // check if we have cached the sprite for this control
-            if (s_pathToSprite.TryGetValue(control.path, out var sprite))
+            if (s_pathToSprite.TryGetValue(controlPath, out var sprite))
             {
                 return sprite;
             }
@@ -462,7 +631,7 @@ namespace BoostBlasters.UI
             // general device class (ie Gamepad).
 
             // there is a leading slash we should remove
-            var path = control.path.Substring(1);
+            var path = controlPath.Substring(1);
 
             // we have one sprite sheet per device class
             var sheet = path.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
@@ -475,14 +644,14 @@ namespace BoostBlasters.UI
             if (sprite == null)
             {
                 // try the loading the sprite using the appropriate class of device
-                sheet = control.device.description.deviceClass;
+                sheet = device.description.deviceClass;
 
                 // The device class seems to be null for at least some gamepads.
                 // We should try to find out what device class is suitable ourselves
                 // in these cases.
                 if (string.IsNullOrEmpty(sheet))
                 {
-                    switch (control.device)
+                    switch (device)
                     {
                         case Gamepad gamepad:
                             sheet = nameof(Gamepad);
@@ -498,7 +667,7 @@ namespace BoostBlasters.UI
                 Debug.LogError($"Unable to find sprite for control \"{path}\"!");
             }
 
-            s_pathToSprite.Add(control.path, sprite);
+            s_pathToSprite.Add(controlPath, sprite);
             return sprite;
         }
 

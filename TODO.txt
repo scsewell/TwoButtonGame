@@ -7,6 +7,8 @@ Short Term
 - New Input sytstem (remove old Input system and framework controls)
 - Character/Level version numbering (builtin charactesr and levels should match core game version)
 
+Scriptable build pipeline
+
 Steam API
 - Integrate in framework
 - Setup deployment pipeline

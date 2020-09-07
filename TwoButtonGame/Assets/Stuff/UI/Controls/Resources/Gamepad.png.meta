@@ -49,7 +49,7 @@ TextureImporter:
     second: dpad-y
   - first:
       213: -1608516449206780913
-    second: dpad-up
+    second: leftStick-up
   - first:
       213: -8149072550352959931
     second: dpad-left
@@ -59,6 +59,42 @@ TextureImporter:
   - first:
       213: -5028428831207286487
     second: dpad-right
+  - first:
+      213: 3010545066548787259
+    second: leftStick-x
+  - first:
+      213: -593473098034397275
+    second: leftStick-left
+  - first:
+      213: 5460966239662064417
+    second: leftStick-down
+  - first:
+      213: 3469896971266324137
+    second: leftStick-right
+  - first:
+      213: -968314268243115131
+    second: rightStick-x
+  - first:
+      213: -767661064213656786
+    second: rightStick-up
+  - first:
+      213: 767157065374223402
+    second: rightStick-left
+  - first:
+      213: -4949890210831902138
+    second: rightStick-down
+  - first:
+      213: -5507825512128849274
+    second: rightStick-right
+  - first:
+      213: -293591861220682677
+    second: leftStick-y
+  - first:
+      213: 2174823589308321489
+    second: rightStick-y
+  - first:
+      213: -4807707727288669980
+    second: dpad-up
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -188,9 +224,9 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 5
-        y: 259
-        width: 119
-        height: 121
+        y: 515
+        width: 120
+        height: 120
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -208,10 +244,10 @@ TextureImporter:
       name: buttonEast
       rect:
         serializedVersion: 2
-        x: 134
-        y: 259
-        width: 119
-        height: 121
+        x: 133
+        y: 515
+        width: 120
+        height: 120
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -229,10 +265,10 @@ TextureImporter:
       name: buttonNorth
       rect:
         serializedVersion: 2
-        x: 261
-        y: 259
-        width: 120
-        height: 121
+        x: 260
+        y: 515
+        width: 121
+        height: 120
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -251,9 +287,9 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 388
-        y: 259
+        y: 515
         width: 120
-        height: 121
+        height: 120
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -271,9 +307,9 @@ TextureImporter:
       name: start
       rect:
         serializedVersion: 2
-        x: 526
-        y: 269
-        width: 100
+        x: 525
+        y: 525
+        width: 102
         height: 101
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
@@ -293,7 +329,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 653
-        y: 269
+        y: 525
         width: 101
         height: 101
       alignment: 0
@@ -313,10 +349,10 @@ TextureImporter:
       name: leftStick
       rect:
         serializedVersion: 2
-        x: 771
-        y: 260
-        width: 119
-        height: 119
+        x: 0
+        y: 128
+        width: 128
+        height: 128
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -334,10 +370,10 @@ TextureImporter:
       name: rightStick
       rect:
         serializedVersion: 2
-        x: 899
-        y: 260
-        width: 119
-        height: 119
+        x: 0
+        y: 0
+        width: 128
+        height: 128
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -355,10 +391,10 @@ TextureImporter:
       name: leftShoulder
       rect:
         serializedVersion: 2
-        x: 7
-        y: 159
-        width: 118
-        height: 65
+        x: 6
+        y: 414
+        width: 119
+        height: 66
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -376,10 +412,10 @@ TextureImporter:
       name: rightShoulder
       rect:
         serializedVersion: 2
-        x: 134
-        y: 159
-        width: 118
-        height: 65
+        x: 133
+        y: 414
+        width: 119
+        height: 66
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -398,9 +434,9 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 260
-        y: 129
-        width: 119
-        height: 125
+        y: 385
+        width: 120
+        height: 126
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -418,10 +454,10 @@ TextureImporter:
       name: rightTrigger
       rect:
         serializedVersion: 2
-        x: 390
-        y: 130
-        width: 119
-        height: 125
+        x: 389
+        y: 385
+        width: 120
+        height: 126
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -439,10 +475,10 @@ TextureImporter:
       name: dpad
       rect:
         serializedVersion: 2
-        x: 4
-        y: 3
-        width: 123
-        height: 123
+        x: 0
+        y: 256
+        width: 128
+        height: 128
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -460,10 +496,10 @@ TextureImporter:
       name: dpad-x
       rect:
         serializedVersion: 2
-        x: 131
-        y: 3
-        width: 123
-        height: 123
+        x: 128
+        y: 256
+        width: 128
+        height: 128
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -481,10 +517,10 @@ TextureImporter:
       name: dpad-y
       rect:
         serializedVersion: 2
-        x: 259
-        y: 3
-        width: 123
-        height: 123
+        x: 256
+        y: 256
+        width: 128
+        height: 128
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -499,13 +535,13 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: dpad-up
+      name: leftStick-up
       rect:
         serializedVersion: 2
-        x: 387
-        y: 3
-        width: 123
-        height: 123
+        x: 384
+        y: 128
+        width: 128
+        height: 128
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -523,10 +559,10 @@ TextureImporter:
       name: dpad-left
       rect:
         serializedVersion: 2
-        x: 514
-        y: 3
-        width: 123
-        height: 123
+        x: 512
+        y: 256
+        width: 128
+        height: 128
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -544,10 +580,10 @@ TextureImporter:
       name: dpad-down
       rect:
         serializedVersion: 2
-        x: 642
-        y: 3
-        width: 123
-        height: 123
+        x: 640
+        y: 256
+        width: 128
+        height: 128
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -565,10 +601,10 @@ TextureImporter:
       name: dpad-right
       rect:
         serializedVersion: 2
-        x: 770
-        y: 3
-        width: 123
-        height: 123
+        x: 768
+        y: 256
+        width: 128
+        height: 128
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -578,6 +614,258 @@ TextureImporter:
       bones: []
       spriteID: 33029f1629f07eb42a5c4a5a60ff66c8
       internalID: -5028428831207286487
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: leftStick-x
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 128
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b38f1f799ca97c920800000000000000
+      internalID: 3010545066548787259
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: leftStick-left
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 128
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5afb8e79c5f83c7f0800000000000000
+      internalID: -593473098034397275
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: leftStick-down
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 128
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 123457d8cdf39cb40800000000000000
+      internalID: 5460966239662064417
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: leftStick-right
+      rect:
+        serializedVersion: 2
+        x: 768
+        y: 128
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9a6788b39ec872030800000000000000
+      internalID: 3469896971266324137
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rightStick-x
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 0
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5834d6aad4bdf82f0800000000000000
+      internalID: -968314268243115131
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rightStick-up
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 0
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e2b85af4458b855f0800000000000000
+      internalID: -767661064213656786
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rightStick-left
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 0
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a2ccf80594d75aa00800000000000000
+      internalID: 767157065374223402
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rightStick-down
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 0
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 64a5e2234157e4bb0800000000000000
+      internalID: -4949890210831902138
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rightStick-right
+      rect:
+        serializedVersion: 2
+        x: 768
+        y: 0
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 68ad9b0e0e54093b0800000000000000
+      internalID: -5507825512128849274
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: leftStick-y
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 128
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b44defaf1c3fcebf0800000000000000
+      internalID: -293591861220682677
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rightStick-y
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 1
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1deccd128868e2e10800000000000000
+      internalID: 2174823589308321489
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dpad-up
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 256
+        width: 128
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4e8ee0b5b47974db0800000000000000
+      internalID: -4807707727288669980
       vertices: []
       indices: 
       edges: []

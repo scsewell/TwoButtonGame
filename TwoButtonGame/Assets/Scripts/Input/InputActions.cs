@@ -395,9 +395,9 @@ namespace BoostBlasters.Input
                     ""isPartOfComposite"": true
                 },
                 {
-                    ""name"": ""left"",
-                    ""id"": ""fca5ffd1-f905-4fa5-9ce3-edc6a8caf723"",
-                    ""path"": ""<Keyboard>/a"",
+                    ""name"": ""down"",
+                    ""id"": ""8ec3bf2a-3ea3-45d5-8652-8ccd49d1ad4f"",
+                    ""path"": ""<Keyboard>/s"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""WASD"",
@@ -406,9 +406,9 @@ namespace BoostBlasters.Input
                     ""isPartOfComposite"": true
                 },
                 {
-                    ""name"": ""down"",
-                    ""id"": ""8ec3bf2a-3ea3-45d5-8652-8ccd49d1ad4f"",
-                    ""path"": ""<Keyboard>/s"",
+                    ""name"": ""left"",
+                    ""id"": ""fca5ffd1-f905-4fa5-9ce3-edc6a8caf723"",
+                    ""path"": ""<Keyboard>/a"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""WASD"",
@@ -450,9 +450,9 @@ namespace BoostBlasters.Input
                     ""isPartOfComposite"": true
                 },
                 {
-                    ""name"": ""left"",
-                    ""id"": ""0be14d13-1af4-419b-9842-0cbcad165b1c"",
-                    ""path"": ""<Keyboard>/leftArrow"",
+                    ""name"": ""down"",
+                    ""id"": ""12d25a71-67a0-4752-8f19-169fa3ed97ce"",
+                    ""path"": ""<Keyboard>/downArrow"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Arrows"",
@@ -461,9 +461,9 @@ namespace BoostBlasters.Input
                     ""isPartOfComposite"": true
                 },
                 {
-                    ""name"": ""down"",
-                    ""id"": ""12d25a71-67a0-4752-8f19-169fa3ed97ce"",
-                    ""path"": ""<Keyboard>/downArrow"",
+                    ""name"": ""left"",
+                    ""id"": ""0be14d13-1af4-419b-9842-0cbcad165b1c"",
+                    ""path"": ""<Keyboard>/leftArrow"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Arrows"",

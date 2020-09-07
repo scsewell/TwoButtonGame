@@ -193,5 +193,56 @@ namespace BoostBlasters.Input
 
             return false;
         }
+
+        /// <summary>
+        /// Gets the parent composite <see cref="InputBinding"/> that a part of composite binding belongs to.
+        /// </summary>
+        /// <param name="action">The action to get the binding from.</param>
+        /// <param name="part">A part of composite binding to get the parent compsite binding of.</param>
+        /// <param name="composite">The returned composite binding, or default if no suitable binding was found.</param>
+        /// <returns>True if the parent bindings was found, false otherwise.</returns>
+        public static bool TryGetCompositeFromPart(this InputAction action, InputBinding part, out InputBinding composite)
+        {
+            if (part.isPartOfComposite)
+            {
+                var hasLastComposite = false;
+                var lastComposite = default(InputBinding);
+                var bindings = action.bindings;
+
+                for (var i = 0; i < bindings.Count; i++)
+                {
+                    var binding = bindings[i];
+
+                    if (binding == part)
+                    {
+                        composite = lastComposite;
+                        return hasLastComposite;
+                    }
+                    if (binding.isComposite)
+                    {
+                        lastComposite = binding;
+                        hasLastComposite = true;
+                    }
+                }
+            }
+
+            composite = default;
+            return false;
+        }
+
+        /// <summary>
+        /// Gets the parent composite <see cref="InputBinding"/> that a part of composite binding belongs to.
+        /// </summary>
+        /// <param name="action">The action to get the binding from.</param>
+        /// <param name="part">A part of composite binding to get the parent compsite binding of.</param>
+        /// <returns>The returned composite binding, or null if no suitable binding was found.</returns>
+        public static InputBinding? GetCompositeFromPart(this InputAction action, InputBinding part)
+        {
+            if (action.TryGetCompositeFromPart(part, out var binding))
+            {
+                return binding;
+            }
+            return null;
+        }
     }
 }
