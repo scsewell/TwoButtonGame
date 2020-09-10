@@ -58,8 +58,9 @@ namespace BoostBlasters.Profiles
             m_uniqueTempProfiles.Clear();
             m_profiles.Clear();
 
-            Renamed = delegate { };
-            Deleted = delegate { };
+            Added = delegate {};
+            Renamed = delegate {};
+            Deleted = delegate {};
         }
 
         /// <summary>

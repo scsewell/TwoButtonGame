@@ -101,10 +101,10 @@ namespace BoostBlasters.Replays
             Params = raceParams;
             Results = results;
 
-            m_keyframes = new List<Keyframe>[raceParams.RacerCount];
-            m_inputs = new List<Inputs>[raceParams.RacerCount];
+            m_keyframes = new List<Keyframe>[raceParams.Racers.Length];
+            m_inputs = new List<Inputs>[raceParams.Racers.Length];
 
-            for (var i = 0; i < raceParams.RacerCount; i++)
+            for (var i = 0; i < raceParams.Racers.Length; i++)
             {
                 m_keyframes[i] = new List<Keyframe>();
                 m_inputs[i] = new List<Inputs>();
@@ -129,8 +129,8 @@ namespace BoostBlasters.Replays
             writer.Write(Params.Level.Guid);
             writer.Write(Params.Laps);
 
-            writer.Write(Params.RacerCount);
-            for (var i = 0; i < Params.RacerCount; i++)
+            writer.Write(Params.Racers.Length);
+            for (var i = 0; i < Params.Racers.Length; i++)
             {
                 var racer = Params.Racers[i];
 
@@ -144,7 +144,7 @@ namespace BoostBlasters.Replays
             // write recording contents
             using (var bodyWriter = new DataWriter())
             {
-                for (var i = 0; i < Params.RacerCount; i++)
+                for (var i = 0; i < Params.Racers.Length; i++)
                 {
                     var keyframes = m_keyframes[i].ToArray();
                     bodyWriter.Write(keyframes.Length);
@@ -180,7 +180,7 @@ namespace BoostBlasters.Replays
                 var name = reader.ReadString();
                 var profile = ProfileManager.CreateTemporaryProfile(name, false);
 
-                racers[i] = RacerConfig.CreateReplay(character, profile);
+                racers[i] = new ReplayRacerConfig(character, profile);
                 Results[i] = new RaceResult(reader);
             }
 
@@ -197,10 +197,10 @@ namespace BoostBlasters.Replays
 
             using (var bodyReader = new DataReader(body))
             {
-                m_keyframes = new List<Keyframe>[Params.RacerCount];
-                m_inputs = new List<Inputs>[Params.RacerCount];
+                m_keyframes = new List<Keyframe>[Params.Racers.Length];
+                m_inputs = new List<Inputs>[Params.Racers.Length];
 
-                for (var i = 0; i < Params.RacerCount; i++)
+                for (var i = 0; i < Params.Racers.Length; i++)
                 {
                     m_keyframes[i] = bodyReader.Read<Keyframe>(bodyReader.Read<int>()).ToList();
                     m_inputs[i] = bodyReader.Read<Inputs>(bodyReader.Read<int>()).ToList();
@@ -215,7 +215,7 @@ namespace BoostBlasters.Replays
         /// <param name="racers">The racers to record the state of.</param>
         public void Record(int fixedFrame, List<Racer> racers)
         {
-            for (var i = 0; i < Params.RacerCount; i++)
+            for (var i = 0; i < Params.Racers.Length; i++)
             {
                 var racer = racers[i];
 
@@ -242,7 +242,7 @@ namespace BoostBlasters.Replays
             var isKeyframe = fixedFrame % FRAMES_PER_KEYFRAME == 0;
             var keyframeIndex = fixedFrame / FRAMES_PER_KEYFRAME;
 
-            for (var i = 0; i < Params.RacerCount; i++)
+            for (var i = 0; i < Params.Racers.Length; i++)
             {
                 var racer = racers[i];
 

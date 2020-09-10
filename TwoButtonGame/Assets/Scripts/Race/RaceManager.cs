@@ -101,7 +101,7 @@ namespace BoostBlasters.Races
 
         public float CountdownTime => (m_raceStartTime - Time.time) / m_countdownScale;
 
-        public int RacerCount => m_raceParams.RacerCount;
+        public int RacerCount => m_raceParams.Racers.Length;
 
         private enum State
         {
@@ -228,16 +228,16 @@ namespace BoostBlasters.Races
                 racer.Init(i, config);
 
                 // add a splitscreen if needed
-                if (i < m_raceParams.PlayerCount)
-                {
-                    RacerCamera camera = Instantiate(m_racerCameraPrefab).Init(racer, m_raceParams.PlayerCount);
-                    camera.MainCam.enabled = false;
-                    m_cameras.Add(camera);
+                //if (i < m_raceParams.PlayerCount)
+                //{
+                //    RacerCamera camera = Instantiate(m_racerCameraPrefab).Init(racer, m_raceParams.PlayerCount);
+                //    camera.MainCam.enabled = false;
+                //    m_cameras.Add(camera);
 
-                    PlayerUI ui = Instantiate(m_playerUIPrefab);
-                    m_raceMenu.AddPlayerUI(ui);
-                    ui.Init(racer, config.Input, camera, m_raceParams.PlayerCount);
-                }
+                //    PlayerUI ui = Instantiate(m_playerUIPrefab);
+                //    m_raceMenu.AddPlayerUI(ui);
+                //    ui.Init(racer, config.Input, camera, m_raceParams.PlayerCount);
+                //}
             }
         }
 

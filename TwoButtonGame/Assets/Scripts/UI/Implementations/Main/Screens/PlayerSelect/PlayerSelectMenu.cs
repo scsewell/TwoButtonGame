@@ -10,6 +10,9 @@ using UnityEngine.InputSystem;
 
 namespace BoostBlasters.UI.MainMenu
 {
+    /// <summary>
+    /// The menu screen used to select and configure local players.
+    /// </summary>
     public class PlayerSelectMenu : MenuScreen
     {
         [Header("UI Elements")]
@@ -22,20 +25,38 @@ namespace BoostBlasters.UI.MainMenu
         private readonly List<PlayerSelectPanel> m_panels = new List<PlayerSelectPanel>();
         private readonly List<InputActionMap> m_backActions = new List<InputActionMap>();
         private bool m_inputEnabled;
+        private bool m_canContine;
+        private Color m_bannerColor;
+        private float m_readyTime;
 
 
         protected override void OnInitialize()
         {
+            m_bannerColor = m_continueBanner.color;
+
             GetComponentsInChildren(true, m_panels);
+
+            foreach (var panel in m_panels)
+            {
+                panel.CanContinueChanged += OnCanContinueChanged;
+                panel.Continue += OnContinue;
+            }
         }
 
+        /// <summary>
+        /// Opens this menu screen.
+        /// </summary>
+        /// <param name="raceParams">The configuration to initialize from, or null to reset.</param>
+        /// <param name="sound">The menu transition sound to play.</param>
         public void Open(RaceParameters raceParams, TransitionSound sound)
         {
             Menu.SwitchTo(this, sound);
 
-            foreach (var panel in m_panels)
+            var players = raceParams?.Racers.OfType<PlayerRacerConfig>().ToArray();
+
+            for (var i = 0; i < m_panels.Count; i++)
             {
-                panel.Open(raceParams);
+                m_panels[i].Open(players != null && i < players.Length ? players[i] : null);
             }
         }
 
@@ -49,6 +70,8 @@ namespace BoostBlasters.UI.MainMenu
         {
             InputManager.UserAdded -= OnUserAdded;
             InputManager.UserRemoved -= OnUserRemoved;
+
+            DisableInput();
         }
 
         private void OnUserAdded(UserInput user)
@@ -67,6 +90,27 @@ namespace BoostBlasters.UI.MainMenu
             panel.Leave();
 
             CreateBackActions();
+        }
+
+        private void OnCanContinueChanged()
+        {
+            m_canContine = m_panels.Any(p => p.Ready) && m_panels.All(p => p.CanContinue);
+
+            m_continueBar.SetActive(m_canContine);
+            m_readyTime = Time.unscaledTime;
+        }
+
+        private void OnContinue()
+        {
+            if (m_canContine)
+            {
+                //Menu.Get<LevelSelectMenu>().Open();
+
+                foreach (var panel in m_panels)
+                {
+                    //panel.Close();
+                }
+            }
         }
 
         public override void Back()
@@ -90,28 +134,11 @@ namespace BoostBlasters.UI.MainMenu
             {
                 DisableInput();
             }
-
-            //var canContinue = m_playerSelectPanels.All(p => p.CanContinue) && ReadyPlayers.Count > 0;
-            //if (m_canContine != canContinue)
-            //{
-            //    m_canContine = canContinue;
-            //    m_continueTime = Time.unscaledTime;
-            //}
-            //else if (m_canContine)
-            //{
-            //    m_continueControls.UpdateUI("Continue", (Menu as MainMenu).ReservedInputs.SelectMany(i => i.SpriteAccept).ToList());
-
-            //    if (m_playerSelectPanels.Any(p => p.Continue))
-            //    {
-            //        Menu.SwitchTo<LevelSelectMenu>(TransitionSound.Next);
-            //    }
-            //}
         }
 
         protected override void OnUpdateVisuals()
         {
-            m_continueBar.SetActive(false);
-            //m_continueBanner.color = Color.Lerp(Color.white, m_bannerCol, (Time.unscaledTime - m_continueTime) / 0.5f);
+            m_continueBanner.color = Color.Lerp(Color.white, m_bannerColor, (Time.unscaledTime - m_readyTime) / 0.5f);
         }
 
         private void EnableInput()

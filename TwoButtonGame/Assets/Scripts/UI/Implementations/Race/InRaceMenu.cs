@@ -70,16 +70,16 @@ namespace BoostBlasters.UI.RaceMenus
 
         public InRaceMenu Init(RaceParameters raceParameters)
         {
-            ActiveInputs = raceParameters.Racers.Where(r => r.Type == RacerType.Player).Select(r => r.Input).ToList();
+            //ActiveInputs = raceParameters.Racers.Where(r => r.Type == RacerType.Player).Select(r => r.Input).ToList();
 
             m_playerUIs = new List<PlayerUI>();
 
             CanvasScaler scaler = m_playerUIParent.GetComponent<CanvasScaler>();
-            Rect splitscreen = RacerCamera.GetSplitscreen(0, raceParameters.PlayerCount);
-            scaler.referenceResolution = new Vector2(
-                scaler.referenceResolution.x / splitscreen.width,
-                scaler.referenceResolution.y / splitscreen.height
-            );
+            //Rect splitscreen = RacerCamera.GetSplitscreen(0, raceParameters.PlayerCount);
+            //scaler.referenceResolution = new Vector2(
+            //    scaler.referenceResolution.x / splitscreen.width,
+            //    scaler.referenceResolution.y / splitscreen.height
+            //);
 
             m_trackName.text = raceParameters.Level.Name;
             SetMusicTitle(raceParameters.Level);

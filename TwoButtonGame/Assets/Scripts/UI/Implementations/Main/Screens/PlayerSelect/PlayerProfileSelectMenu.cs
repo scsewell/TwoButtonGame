@@ -45,10 +45,10 @@ namespace BoostBlasters.UI.MainMenu
         }
 
         /// <summary>
-        /// Sets the selected profile.
+        /// Sets the menu state.
         /// </summary>
         /// <param name="profile">The profile to select, or null to reset the selection.</param>
-        public void SetProfile(Profile profile)
+        public void Set(Profile profile)
         {
             Refresh();
 

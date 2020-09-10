@@ -5,7 +5,6 @@ using BoostBlasters.Characters;
 using BoostBlasters.Levels;
 using BoostBlasters.Profiles;
 using BoostBlasters.Races;
-using BoostBlasters.Replays;
 
 using Framework;
 using Framework.Interpolation;
@@ -17,7 +16,7 @@ using UnityEngine.Scripting;
 namespace BoostBlasters
 {
     /// <summary>
-    /// Manages the update loop and core game state.
+    /// Manages initialization, scene transitions, and the update loop.
     /// </summary>
     public class Main : ComponentSingleton<Main>
     {
@@ -30,15 +29,11 @@ namespace BoostBlasters
         private RaceManager m_raceManagerPrefab = null;
 
         public RaceManager RaceManager { get; private set; }
-        public RaceParameters LastRaceParams { get; private set; }
-        public RaceType LastRaceType { get; private set; }
 
-        public enum RaceType
-        {
-            Race,
-            Replay,
-            None,
-        }
+        /// <summary>
+        /// The configuration of the last race started.
+        /// </summary>
+        public RaceParameters LastRaceParams { get; private set; }
 
 
         private async void Start()
@@ -69,8 +64,6 @@ namespace BoostBlasters
             await Task.WhenAll(loadProfiles, loadCharacters, loadlevels);
 
             // load the main menu
-            LastRaceType = RaceType.None;
-
             LoadMainMenu();
         }
 
@@ -118,12 +111,11 @@ namespace BoostBlasters
         /// <summary>
         /// Starts a race.
         /// </summary>
-        /// <param name="raceParams">The race configuration.</param>
+        /// <param name="raceParams">The configuration of the race.</param>
         /// <param name="doLoad">A function which is true when the actual scene transition
         /// should be allowed to occur.</param>
         public async void LoadRace(RaceParameters raceParams, Func<bool> doLoad = null)
         {
-            LastRaceType = RaceType.Race;
             LastRaceParams = raceParams;
 
             var scene = await raceParams.Level.Scene.GetAsync();
@@ -132,25 +124,6 @@ namespace BoostBlasters
 
             RaceManager = Instantiate(m_raceManagerPrefab);
             RaceManager.LoadRace(raceParams);
-        }
-
-        /// <summary>
-        /// Starts a replay.
-        /// </summary>
-        /// <param name="recording">The replay to view.</param>
-        /// <param name="doLoad">A function which is true when the actual scene transition
-        /// should be allowed to occur.</param>
-        public async void LoadRace(Recording recording, Func<bool> doLoad = null)
-        {
-            LastRaceType = RaceType.Replay;
-            LastRaceParams = null;
-
-            var scene = await recording.Params.Level.Scene.GetAsync();
-            var op = SceneManager.LoadSceneAsync(scene);
-            await LoadScene(op, doLoad);
-
-            RaceManager = Instantiate(m_raceManagerPrefab);
-            RaceManager.LoadReplay(recording);
         }
 
         private async Task LoadScene(AsyncOperation op, Func<bool> doLoad)

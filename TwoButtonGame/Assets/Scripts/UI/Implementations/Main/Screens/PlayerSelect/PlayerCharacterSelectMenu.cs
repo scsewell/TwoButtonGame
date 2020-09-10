@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using BoostBlasters.Characters;
+using BoostBlasters.Profiles;
 
 using Framework;
 
@@ -26,10 +27,10 @@ namespace BoostBlasters.UI.MainMenu
         [SerializeField] private Image m_background = null;
         [SerializeField] private RawImage m_previewImage = null;
         [SerializeField] private Image m_highlight = null;
-        [SerializeField] private Image m_speed = null;
-        [SerializeField] private Image m_agility = null;
         [SerializeField] private TextMeshProUGUI m_description = null;
         [SerializeField] private TextMeshProUGUI m_readyText = null;
+        [SerializeField] private Button m_continue = null;
+        [SerializeField] private Control[] m_hideWhenReady;
 
         [Header("Options")]
 
@@ -47,8 +48,6 @@ namespace BoostBlasters.UI.MainMenu
         [SerializeField]
         [Range(0f, 180f)]
         private float m_rotateSpeed = 30.0f;
-        [SerializeField]
-        private Gradient m_ratingGradient = null;
 
 
         private PlayerSelectPanel m_panel;
@@ -57,12 +56,23 @@ namespace BoostBlasters.UI.MainMenu
         private Dictionary<Character, GameObject> m_configToPreview = null;
         private List<GameObject> m_previewObjects = null;
         private GameObject m_currentPreview = null;
-        private float m_selectTime = 0f;
+        private float m_selectTime;
+        private bool m_ready;
 
         /// <summary>
         /// An event invoked once the user has selected a character.
         /// </summary>
         public event Action<Character> CharacterSelected;
+
+        /// <summary>
+        /// An event invoked once the user changes their readyness.
+        /// </summary>
+        public event Action<bool> ReadyChanged;
+
+        /// <summary>
+        /// An event invoked once the user want to continue to the next menu screen.
+        /// </summary>
+        public event Action Continue;
 
 
         protected override void OnInitialize()
@@ -110,15 +120,22 @@ namespace BoostBlasters.UI.MainMenu
             m_characterSpinner.ValueChanged += PreviewCharacter;
 
             m_characterSpinner.GetComponent<Button>().onClick.AddListener(SelectCharacter);
+
+            // configure the continue button
+            m_continue.onClick.AddListener(() => Continue?.Invoke());
         }
 
         /// <summary>
-        /// Sets the selected character.
+        /// Sets the menu state.
         /// </summary>
         /// <param name="character">The character to select, or null to select the first character.</param>
-        public void SetCharacter(Character character)
+        public void Set(Profile profile, Character character, bool ready)
         {
+            m_playerName.text = profile.Name;
             m_characterSpinner.Index = character != null ? Array.IndexOf(CharacterManager.Characters, character) : 0;
+            SetReady(ready);
+
+            m_selectTime = float.MinValue;
         }
 
         protected override void OnShow()
@@ -140,12 +157,20 @@ namespace BoostBlasters.UI.MainMenu
 
         public override void Back()
         {
-            m_panel.BackToProfile();
+            if (m_ready)
+            {
+                SetReady(false);
+            }
+            else
+            {
+                m_panel.BackToProfile();
+            }
         }
 
         protected override void OnUpdateVisuals()
         {
             var playerColor = Color.Lerp(Consts.GetRacerColor(m_panel.transform.GetSiblingIndex()), Color.white, 0.35f);
+            m_playerName.color = playerColor;
 
             // configure the preview camera
             CreateTexture();
@@ -157,7 +182,7 @@ namespace BoostBlasters.UI.MainMenu
             m_currentPreview.transform.Rotate(0, rotSpeed * Time.unscaledDeltaTime, 0, Space.Self);
 
             // fade out the highlight
-            m_highlight.color = new Color(1f, 1f, 1f, MathUtils.Damp(m_highlight.color.a, 0f, 0.00000001, Time.unscaledDeltaTime));
+            m_highlight.color = new Color(1f, 1f, 1f, Mathf.Lerp(0.035f, 0f, timeSinceSelect / 0.125f));
         }
 
         private void PreviewCharacter(int index)
@@ -165,12 +190,7 @@ namespace BoostBlasters.UI.MainMenu
             var character = CharacterManager.Characters[index];
 
             m_selectTime = Time.unscaledTime;
-            m_highlight.color = new Color(1f, 1f, 1f, 0.15f);
-
-            var meta = character.Meta;
-            //SetRating(m_speed, meta.SpeedRating);
-            //SetRating(m_agility, meta.AgilityRating);
-            m_description.text = meta.Description;
+            m_description.text = character.Meta.Description;
 
             if (m_configToPreview.TryGetValue(character, out m_currentPreview))
             {
@@ -186,6 +206,27 @@ namespace BoostBlasters.UI.MainMenu
         {
             var character = CharacterManager.Characters[m_characterSpinner.Index];
             CharacterSelected?.Invoke(character);
+
+            SetReady(true);
+        }
+
+        private void SetReady(bool ready)
+        {
+            PrimarySelection.Current = ready ? m_continue.gameObject : m_characterSpinner.gameObject;
+
+            m_description.enabled = !ready;
+            foreach (var control in m_hideWhenReady)
+            {
+                control.SetActive(!ready);
+            }
+
+            m_readyText.enabled = ready;
+
+            if (m_ready != ready)
+            {
+                m_ready = ready;
+                ReadyChanged?.Invoke(ready);
+            }
         }
 
         private void CreateTexture()

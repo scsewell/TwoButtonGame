@@ -18,7 +18,6 @@ namespace BoostBlasters.UI
     {
         private Selectable m_selectable = null;
         private SoundPlayer m_player = null;
-        private CancelHandler m_cancelHandler = null;
 
         private SoundPlayer Player
         {
@@ -35,7 +34,6 @@ namespace BoostBlasters.UI
         private void Awake()
         {
             m_selectable = GetComponent<Selectable>();
-            m_cancelHandler = GetComponent<CancelHandler>();
         }
 
         public void OnPointerEnter(PointerEventData e)
@@ -88,8 +86,7 @@ namespace BoostBlasters.UI
 
         public void OnCancel(BaseEventData eventData)
         {
-            // if there is custom cancel behaviour, we should not play a sound
-            if (m_selectable.IsInteractable() && m_cancelHandler == null)
+            if (m_selectable.IsInteractable())
             {
                 Player.PlayCancelSound();
             }

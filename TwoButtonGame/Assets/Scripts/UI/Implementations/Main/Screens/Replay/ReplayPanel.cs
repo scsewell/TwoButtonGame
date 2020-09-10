@@ -53,7 +53,7 @@ namespace BoostBlasters.UI.MainMenu
 
         private void OnClick()
         {
-            GetComponentInParent<MainMenu>().LaunchReplay(m_info);
+            //GetComponentInParent<MainMenu>().LaunchReplay(m_info);
         }
     }
 }

@@ -118,19 +118,19 @@ namespace BoostBlasters.Races.Racers
             Color = Consts.GetRacerColor(racerNum);
             Config = config;
 
-            switch (config.Type)
-            {
-                case RacerType.Player:
-                    m_inputProvider = new PlayerInputProvider(config.Input);
-                    break;
-                case RacerType.AI:
-                    m_inputProvider = new AIInputProvider(this);
-                    break;
-                case RacerType.Replay:
-                    break;
-                default:
-                    throw new ArgumentException("Unsupported racer config type", nameof(config));
-            }
+            //switch (config.Type)
+            //{
+            //    case RacerType.Player:
+            //        m_inputProvider = new PlayerInputProvider(config.Input);
+            //        break;
+            //    case RacerType.AI:
+            //        m_inputProvider = new AIInputProvider(this);
+            //        break;
+            //    case RacerType.Replay:
+            //        break;
+            //    default:
+            //        throw new ArgumentException("Unsupported racer config type", nameof(config));
+            //}
 
             //RaceResult = new RaceResult();
 
@@ -208,21 +208,21 @@ namespace BoostBlasters.Races.Racers
                 }
 
                 // only play gate progression sounds if a local player
-                if (Config.Type == RacerType.Player)
-                {
-                    if (finished)
-                    {
-                        AudioManager.Instance.PlaySound(m_finishSound, m_finishVolume);
-                    }
-                    else if (completedLap)
-                    {
-                        AudioManager.Instance.PlaySound(m_lapCompleteSound, m_lapCompleteVolume);
-                    }
-                    else
-                    {
-                        AudioManager.Instance.PlaySound(m_gateCompleteSound, m_gateCompleteVolume);
-                    }
-                }
+                //if (Config.Type == RacerType.Player)
+                //{
+                //    if (finished)
+                //    {
+                //        AudioManager.Instance.PlaySound(m_finishSound, m_finishVolume);
+                //    }
+                //    else if (completedLap)
+                //    {
+                //        AudioManager.Instance.PlaySound(m_lapCompleteSound, m_lapCompleteVolume);
+                //    }
+                //    else
+                //    {
+                //        AudioManager.Instance.PlaySound(m_gateCompleteSound, m_gateCompleteVolume);
+                //    }
+                //}
             }
             m_lastPos = transform.position;
         }

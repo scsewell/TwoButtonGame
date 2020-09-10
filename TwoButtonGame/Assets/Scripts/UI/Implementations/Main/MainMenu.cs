@@ -1,5 +1,4 @@
 ﻿using BoostBlasters.Races;
-using BoostBlasters.Replays;
 
 using Framework.AssetBundles;
 
@@ -36,18 +35,18 @@ namespace BoostBlasters.UI.MainMenu
         {
             base.Start();
 
-            switch (Main.Instance.LastRaceType)
-            {
-                case Main.RaceType.Race:
-                    SwitchTo<LevelSelectMenu>(TransitionSound.None);
-                    break;
-                case Main.RaceType.Replay:
-                    SwitchTo<ReplayMenu>(TransitionSound.None);
-                    break;
-                default:
-                    SwitchTo<RootMenu>(TransitionSound.None);
-                    break;
-            }
+            //switch (Main.Instance.LastRaceType)
+            //{
+            //    case Main.RaceType.Race:
+            //        SwitchTo<LevelSelectMenu>(TransitionSound.None);
+            //        break;
+            //    case Main.RaceType.Replay:
+            //        SwitchTo<ReplayMenu>(TransitionSound.None);
+            //        break;
+            //    default:
+            //        break;
+            //}
+            SwitchTo<RootMenu>(TransitionSound.None);
 
             m_fade.color = Color.black;
             m_menuLoadTime = Time.unscaledTime;
@@ -83,58 +82,10 @@ namespace BoostBlasters.UI.MainMenu
         /// <param name="raceParams">The configuration of the race.</param>
         public void LaunchRace(RaceParameters raceParams)
         {
-            //var playerSelect = Get<PlayerSelectMenu>();
-            //var levelSelect = Get<LevelSelectMenu>();
-
-            //var playerCount = playerSelect.Configs.Count;
-            //var aiCount = levelSelect.AICountSelect.Value;
-
-            //var racers = new RacerConfig[playerCount + aiCount];
-
-            //for (var i = 0; i < racers.Length; i++)
-            //{
-            //    if (i < playerCount)
-            //    {
-            //        racers[i] = playerSelect.Configs[i];
-            //    }
-            //    else
-            //    {
-            //        racers[i] = RacerConfig.CreateAI(
-            //            CharacterManager.Characters.PickRandom(),
-            //            ProfileManager.CreateTemporaryProfile($"AI {i + 1}", false)
-            //        );
-            //    }
-            //}
-
-            //var raceParams = new RaceParameters(
-            //    levelSelect.TrackSelect.Value,
-            //    levelSelect.LapSelect.Value,
-            //    racers
-            //);
-
             m_leavingMenu = true;
             m_menuExitTime = Time.unscaledTime;
 
             Main.Instance.LoadRace(raceParams, () =>
-            {
-                return GetFadeFactor() >= 0.99f;
-            });
-
-            CloseAll(TransitionSound.Next);
-        }
-
-        /// <summary>
-        /// Close the main menu scene and enter a replay.
-        /// </summary>
-        /// <param name="replay">The configuration of the replay.</param>
-        public async void LaunchReplay(RecordingInfo replay)
-        {
-            m_leavingMenu = true;
-            m_menuExitTime = Time.unscaledTime;
-
-            var recording = await RecordingManager.LoadReplayAsync(replay);
-
-            Main.Instance.LoadRace(recording, () =>
             {
                 return GetFadeFactor() >= 0.99f;
             });
