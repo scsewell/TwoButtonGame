@@ -17,20 +17,23 @@ namespace BoostBlasters.UI.MainMenu
 
 
         private MenuBase m_menu;
-        private UserInput m_user;
         private Profile m_profile;
         private Character m_character;
-        private bool m_ready;
+
+        /// <summary>
+        /// The user assigned to this panel.
+        /// </summary>
+        public UserInput User { get; private set; }
 
         /// <summary>
         /// Has this user finished character selection.
         /// </summary>
-        public bool Ready => m_ready;
+        public bool Ready { get; private set; }
 
         /// <summary>
         /// Is the user ready, or is there no user assigned.
         /// </summary>
-        public bool CanContinue => m_ready || m_user == null;
+        public bool CanContinue => Ready || User == null;
 
         /// <summary>
         /// An event invoked when <see cref="CanContinue"/> has changed.
@@ -49,7 +52,7 @@ namespace BoostBlasters.UI.MainMenu
 
             m_profileMenu.ProfileSelected += OnProfileSelected;
             m_characterMenu.CharacterSelected += OnCharacterSelected;
-            m_characterMenu.ReadyChanged += SetReady;
+            m_characterMenu.ReadyChanged += OnReadyChanged;
             m_characterMenu.Continue += Continue;
         }
 
@@ -67,13 +70,15 @@ namespace BoostBlasters.UI.MainMenu
             }
             else
             {
-                SetUser(racerConfig.Input);
+                User = racerConfig.Input;
                 m_profile = racerConfig.Profile;
                 m_character = racerConfig.Character;
-                SetReady(true);
+                Ready = true;
 
-                m_characterMenu.Set(m_profile, m_character, m_ready);
-                m_menu.Open(m_characterMenu, m_user, TransitionSound.None);
+                m_characterMenu.Set(m_profile, m_character, Ready);
+                m_menu.Open(m_characterMenu, User, TransitionSound.None);
+
+                CanContinueChanged?.Invoke();
             }
         }
 
@@ -83,7 +88,7 @@ namespace BoostBlasters.UI.MainMenu
         /// <returns>A new config instance, or null if the player is not ready.</returns>
         public PlayerRacerConfig GetConfig()
         {
-            return m_ready ? new PlayerRacerConfig(m_character, m_profile, m_user) : null;
+            return Ready ? new PlayerRacerConfig(m_character, m_profile, UnityEngine.Random.ColorHSV(), User) : null;
         }
 
         /// <summary>
@@ -109,17 +114,17 @@ namespace BoostBlasters.UI.MainMenu
                 Debug.LogError($"Cannot assign a null user to panel {name}!");
                 return;
             }
-            if (m_user != null)
+            if (User != null)
             {
                 Debug.LogError($"A user is already assigned to panel {name}!");
                 return;
             }
 
-            SetUser(user);
+            User = user;
             m_profileMenu.Set(m_profile);
 
             m_menu.Close(m_joinMenu, TransitionSound.Next);
-            m_menu.Open(m_profileMenu, m_user, TransitionSound.Next);
+            m_menu.Open(m_profileMenu, User, TransitionSound.Next);
 
             CanContinueChanged?.Invoke();
         }
@@ -146,22 +151,24 @@ namespace BoostBlasters.UI.MainMenu
                 ProfileManager.ReleaseTemporaryProfile(m_profile);
                 m_profile = null;
             }
-            SetReady(false);
+            Ready = false;
 
             m_profileMenu.Set(m_profile);
 
-            m_menu.Open(m_profileMenu, m_user, TransitionSound.Back);
+            m_menu.Open(m_profileMenu, User, TransitionSound.Back);
             m_menu.Close(m_characterMenu, TransitionSound.Back);
+
+            CanContinueChanged?.Invoke();
         }
 
         private void OnProfileSelected(Profile profile)
         {
             m_profile = profile;
 
-            m_characterMenu.Set(m_profile, m_character, m_ready);
+            m_characterMenu.Set(m_profile, m_character, Ready);
 
             m_menu.Close(m_profileMenu, TransitionSound.Next);
-            m_menu.Open(m_characterMenu, m_user, TransitionSound.Next);
+            m_menu.Open(m_characterMenu, User, TransitionSound.Next);
         }
 
         private void OnCharacterSelected(Character character)
@@ -169,12 +176,18 @@ namespace BoostBlasters.UI.MainMenu
             m_character = character;
         }
 
+        private void OnReadyChanged(bool ready)
+        {
+            Ready = ready;
+            CanContinueChanged?.Invoke();
+        }
+
         private void ResetPanel()
         {
-            if (m_user != null)
+            if (User != null)
             {
-                m_user.Leave();
-                SetUser(null);
+                User.Leave();
+                User = null;
             }
 
             if (m_profile != null)
@@ -186,19 +199,9 @@ namespace BoostBlasters.UI.MainMenu
                 m_profile = null;
             }
 
+            Ready = false;
             m_character = null;
-            SetReady(false);
-        }
 
-        private void SetUser(UserInput user)
-        {
-            m_user = user;
-            CanContinueChanged?.Invoke();
-        }
-
-        private void SetReady(bool ready)
-        {
-            m_ready = ready;
             CanContinueChanged?.Invoke();
         }
     }

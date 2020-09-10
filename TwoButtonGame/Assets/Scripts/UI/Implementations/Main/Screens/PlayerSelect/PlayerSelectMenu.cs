@@ -98,6 +98,11 @@ namespace BoostBlasters.UI.MainMenu
 
             m_continueBar.SetActive(m_canContine);
             m_readyTime = Time.unscaledTime;
+
+            m_continueControls.InputOverrides = m_panels
+                .Where(p => p.Ready)
+                .Select(p => p.User)
+                .ToArray();
         }
 
         private void OnContinue()

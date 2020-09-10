@@ -76,7 +76,7 @@ namespace BoostBlasters.UI
         [SerializeField]
         [Tooltip("The filter that determines which controls are shown for the assigned action. " +
             "Use \"None\" to show every control for the action. " +
-            "Use \"ControlScheme\" to only show controls for a single control scheme (by default the last scheme that gave input).")]
+            "Use \"ControlScheme\" to only show controls for the last used control scheme, or the schemes set in the input overrides.")]
         private FilterMode m_filter = FilterMode.ControlScheme;
 
         /// <summary>
@@ -89,14 +89,14 @@ namespace BoostBlasters.UI
             /// </summary>
             None,
             /// <summary>
-            /// Only show controls for a single control scheme (by default the last scheme that gave input).
+            /// Only show controls for the last used control scheme, or the schemes set in the input overrides.
             /// </summary>
             ControlScheme,
         }
 
         private class ControlInfo
         {
-            private readonly List<InputControlScheme> m_schemes;
+            private readonly HashSet<string> m_schemes;
             private readonly CompositeMode m_composite;
 
             public InputBinding? CompositeParent { get; }
@@ -106,7 +106,7 @@ namespace BoostBlasters.UI
                 InputBinding? compositeParent,
                 List<InputControlScheme> schemes)
             {
-                m_schemes = schemes;
+                m_schemes = new HashSet<string>(schemes.Select(s => s.name));
                 m_composite = composite;
                 CompositeParent = compositeParent;
             }
@@ -116,11 +116,11 @@ namespace BoostBlasters.UI
                 return m_composite == CompositeMode.None || mode.Contains(m_composite);
             }
 
-            public bool UsesScheme(InputControlScheme scheme)
+            public bool UsesAnyScheme(InputControlScheme[] schemes)
             {
-                for (var i = 0; i < m_schemes.Count; i++)
+                for (var i = 0; i < schemes.Length; i++)
                 {
-                    if (m_schemes[i] == scheme)
+                    if (m_schemes.Contains(schemes[i].name))
                     {
                         return true;
                     }
@@ -185,9 +185,9 @@ namespace BoostBlasters.UI
         private MenuScreen m_menu = null;
 
         private InputActionReference m_action = null;
+        private UserInput[] m_inputOverrides = null;
+        private InputControlScheme[] m_currentSchemes = null;
         private InputActionAsset m_actionAsset = null;
-        private InputControlScheme? m_currentScheme = null;
-        private BaseInput m_inputOverride = null;
         private bool m_isDirty;
 
         /// <summary>
@@ -244,39 +244,43 @@ namespace BoostBlasters.UI
         /// Overrides the input from which the current control scheme is shown when using the
         /// <see cref="FilterMode.ControlScheme"/> filter.
         /// </summary>
-        public BaseInput InputOverride
+        public UserInput[] InputOverrides
         {
-            get => m_inputOverride;
+            get => m_inputOverrides;
             set
             {
-                if (m_inputOverride != value)
+                if (m_inputOverrides != value)
                 {
-                    m_inputOverride = value;
+                    m_inputOverrides = value;
 
                     if (value != null)
                     {
                         if (m_menu != null)
                         {
-                            m_menu.InputChanged -= OnInputChanged;
+                            m_menu.InputChanged -= OnMenuInputChanged;
                         }
-                        OnInputChanged(value);
+
+                        SetActionAsset(null);
+
+                        m_currentSchemes = m_inputOverrides
+                            .Select(u => u.ControlScheme)
+                            .ToArray();
                     }
                     else
                     {
                         if (m_menu != null)
                         {
-                            m_menu.InputChanged += OnInputChanged;
-                            OnInputChanged(m_menu.Input);
+                            m_menu.InputChanged += OnMenuInputChanged;
+                            OnMenuInputChanged(m_menu.Input);
                         }
                         else
                         {
-                            OnInputChanged(InputManager.Global);
+                            OnMenuInputChanged(InputManager.Global);
                         }
                     }
                 }
             }
         }
-
 
         private void Awake()
         {
@@ -285,7 +289,7 @@ namespace BoostBlasters.UI
 
             if (m_menu != null)
             {
-                m_menu.InputChanged += OnInputChanged;
+                m_menu.InputChanged += OnMenuInputChanged;
             }
 
             // TODO: REVIEW should global input scheme always be tracked? might catch a few issues...
@@ -293,14 +297,14 @@ namespace BoostBlasters.UI
 
             // Don't use the menu input to start or else the default control scheme will not be initialzied
             // until after the screen has been opened.
-            OnInputChanged(InputManager.Global);
+            OnMenuInputChanged(InputManager.Global);
         }
 
         private void OnDestroy()
         {
             if (m_menu != null)
             {
-                m_menu.InputChanged -= OnInputChanged;
+                m_menu.InputChanged -= OnMenuInputChanged;
             }
         }
 
@@ -316,7 +320,7 @@ namespace BoostBlasters.UI
             InputSystem.onDeviceChange -= OnDeviceChanged;
         }
 
-        private void OnInputChanged(BaseInput input)
+        private void OnMenuInputChanged(BaseInput input)
         {
             switch (input)
             {
@@ -325,20 +329,30 @@ namespace BoostBlasters.UI
                     // When a user is assigned, we know that the control scheme
                     // never changes from the one paried to the user.
                     SetActionAsset(null);
-                    m_currentScheme = userInput.ControlScheme;
+
+                    m_currentSchemes = new[]
+                    {
+                        userInput.ControlScheme,
+                    };
                     break;
                 }
                 case GlobalInput globalInput:
                 {
                     // Listen for all actions and set the current control scheme
                     // to be the one used to perform the most recent action.
-                    var asset = input.Actions.asset;
+                    var asset = globalInput.Actions.asset;
                     SetActionAsset(asset);
 
-                    var schemes = asset.controlSchemes;
-                    if (m_currentScheme == null && schemes.Count > 0)
+                    if (m_currentSchemes == null)
                     {
-                        m_currentScheme = asset.controlSchemes[0];
+                        m_currentSchemes = new[]
+                        {
+                            asset.controlSchemes[0],
+                        };
+                    }
+                    else if (m_currentSchemes.Length != 1)
+                    {
+                        Array.Resize(ref m_currentSchemes, 1);
                     }
                     break;
                 }
@@ -358,7 +372,7 @@ namespace BoostBlasters.UI
             }
         }
 
-        private void LateUpdate()
+        private void Update()
         {
             var action = m_action != null ? m_action.action : null;
 
@@ -398,7 +412,7 @@ namespace BoostBlasters.UI
                         {
                             case FilterMode.ControlScheme:
                             {
-                                if (!m_currentScheme.HasValue || !control.UsesScheme(m_currentScheme.Value))
+                                if (!control.UsesAnyScheme(m_currentSchemes))
                                 {
                                     continue;
                                 }
@@ -549,7 +563,7 @@ namespace BoostBlasters.UI
 
             if (context.action.TryGetControlScheme(control, out var scheme) && scheme.name != "Global")
             {
-                m_currentScheme = scheme;
+                m_currentSchemes[0] = scheme;
             }
         }
 

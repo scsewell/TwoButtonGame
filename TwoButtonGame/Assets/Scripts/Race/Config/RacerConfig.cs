@@ -3,6 +3,8 @@
 using BoostBlasters.Characters;
 using BoostBlasters.Profiles;
 
+using UnityEngine;
+
 namespace BoostBlasters.Races
 {
     /// <summary>
@@ -11,7 +13,7 @@ namespace BoostBlasters.Races
     public abstract class RacerConfig
     {
         /// <summary>
-        /// The character used by this racer.
+        /// The character used by the racer.
         /// </summary>
         public Character Character { get; }
 
@@ -21,11 +23,17 @@ namespace BoostBlasters.Races
         public Profile Profile { get; }
 
         /// <summary>
+        /// The color associated with the racer.
+        /// </summary>
+        public Color Color { get; }
+
+        /// <summary>
         /// Creates a new <see cref="RacerConfig"/> instance.
         /// </summary>
-        /// <param name="character">The character used by this racer. Cannot be null.</param>
+        /// <param name="character">The character used by the racer. Cannot be null.</param>
         /// <param name="profile">The profile used by the racer. Cannot be null.</param>
-        public RacerConfig(Character character, Profile profile)
+        /// <param name="color">The color associated with the racer.</param>
+        protected RacerConfig(Character character, Profile profile, Color color)
         {
             if (character == null)
             {

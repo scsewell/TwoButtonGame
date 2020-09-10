@@ -1,6 +1,8 @@
 ﻿using BoostBlasters.Characters;
 using BoostBlasters.Profiles;
 
+using UnityEngine;
+
 namespace BoostBlasters.Races
 {
     /// <summary>
@@ -13,7 +15,8 @@ namespace BoostBlasters.Races
         /// </summary>
         /// <param name="character">The character used by this racer. Cannot be null.</param>
         /// <param name="profile">The profile used by the replay. Cannot be null.</param>
-        public ReplayRacerConfig(Character character, Profile profile) : base(character, profile)
+        /// <param name="color">The color associated with the racer.</param>
+        public ReplayRacerConfig(Character character, Profile profile, Color color) : base(character, profile, color)
         {
         }
     }

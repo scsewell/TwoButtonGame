@@ -1,7 +1,10 @@
-﻿using BoostBlasters.Characters;
-using BoostBlasters.Profiles;
+﻿using System;
+
+using BoostBlasters.Characters;
 using BoostBlasters.Input;
-using System;
+using BoostBlasters.Profiles;
+
+using UnityEngine;
 
 namespace BoostBlasters.Races
 {
@@ -20,8 +23,9 @@ namespace BoostBlasters.Races
         /// </summary>
         /// <param name="character">The character used by this racer. Cannot be null.</param>
         /// <param name="profile">The profile used by the player. Cannot be null.</param>
+        /// <param name="color">The color associated with the racer.</param>
         /// <param name="input">The input for this player. Cannot be null.</param>
-        public PlayerRacerConfig(Character character, Profile profile, UserInput input) : base(character, profile)
+        public PlayerRacerConfig(Character character, Profile profile, Color color, UserInput input) : base(character, profile, color)
         {
             if (input == null)
             {
