@@ -55,8 +55,6 @@ namespace BoostBlasters.UI.RaceMenus
         public GameMenuRoot Root { get; private set; }
         public GameMenuFinished Finish { get; private set; }
 
-        public List<PlayerBaseInput> ActiveInputs { get; private set; }
-
         private List<PlayerUI> m_playerUIs = null;
         private float m_finishTime = 0f;
 

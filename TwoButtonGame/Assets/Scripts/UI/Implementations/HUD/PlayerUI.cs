@@ -171,7 +171,6 @@ namespace BoostBlasters.UI.RaceMenus
         private float m_energyFailTime = 0f;
 
         private Racer m_racer = null;
-        private PlayerBaseInput m_input = null;
         private RacerCamera m_camera = null;
         private RaceManager m_raceManager = null;
 
@@ -182,10 +181,9 @@ namespace BoostBlasters.UI.RaceMenus
             m_arrow = Instantiate(m_arrowPrefab);
         }
 
-        public PlayerUI Init(Racer racer, PlayerBaseInput input, RacerCamera cam, int humanCount)
+        public PlayerUI Init(Racer racer, RacerCamera cam, int humanCount)
         {
             m_racer = racer;
-            m_input = input;
             m_camera = cam;
 
             m_raceManager = Main.Instance.RaceManager;
@@ -204,7 +202,7 @@ namespace BoostBlasters.UI.RaceMenus
             m_playerText.text = racer.Config.Profile.Name;
             m_playerText.color = Color.Lerp(racer.Color, Color.white, 0.35f);
 
-            m_energyButton.sprite = input.SpriteBoost.First();
+            //m_energyButton.sprite = input.SpriteBoost.First();
 
             m_racer.EnergyGained += Player_EnergyGained;
             m_racer.EnergyUseFailed += Player_EnergyUseFailed;
