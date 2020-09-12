@@ -453,6 +453,11 @@ PrefabInstance:
       propertyPath: m_SizeDelta.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 269630072936926470, guid: 68d3751f5a28749459db6aff64998716,
+        type: 3}
+      propertyPath: m_composite
+      value: 12
+      objectReference: {fileID: 0}
     - target: {fileID: 279493889395993199, guid: 68d3751f5a28749459db6aff64998716,
         type: 3}
       propertyPath: m_AnchorMin.y
@@ -1023,7 +1028,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_selectionGroup
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 3060950357109873335}
     - target: {fileID: 6111760110816193828, guid: a4a5005c2e154314c8fefa3f92a38d0e,
         type: 3}
       propertyPath: m_AnchorMax.y

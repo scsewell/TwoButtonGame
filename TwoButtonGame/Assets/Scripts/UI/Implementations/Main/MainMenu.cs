@@ -35,18 +35,16 @@ namespace BoostBlasters.UI.MainMenu
         {
             base.Start();
 
-            //switch (Main.Instance.LastRaceType)
-            //{
-            //    case Main.RaceType.Race:
-            //        SwitchTo<LevelSelectMenu>(TransitionSound.None);
-            //        break;
-            //    case Main.RaceType.Replay:
-            //        SwitchTo<ReplayMenu>(TransitionSound.None);
-            //        break;
-            //    default:
-            //        break;
-            //}
-            SwitchTo<RootMenu>(TransitionSound.None);
+            var raceParams = Main.Instance.LastRaceParams;
+
+            if (raceParams != null)
+            {
+                Get<LevelSelectMenu>().Open(raceParams, TransitionSound.None);
+            }
+            else
+            {
+                SwitchTo<RootMenu>(TransitionSound.None);
+            }
 
             m_fade.color = Color.black;
             m_menuLoadTime = Time.unscaledTime;

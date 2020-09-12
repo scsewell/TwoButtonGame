@@ -44,18 +44,18 @@ namespace BoostBlasters.UI.MainMenu
 
         protected override void OnShow()
         {
-            ProfileManager.Added += OnProfileChamged;
-            ProfileManager.Renamed += OnProfileChamged;
-            ProfileManager.Deleted += OnProfileChamged;
+            Profile.Added += OnProfileChamged;
+            Profile.Renamed += OnProfileChamged;
+            Profile.Deleted += OnProfileChamged;
 
             Refresh();
         }
 
         protected override void OnHide()
         {
-            ProfileManager.Added += OnProfileChamged;
-            ProfileManager.Renamed -= OnProfileChamged;
-            ProfileManager.Deleted -= OnProfileChamged;
+            Profile.Added += OnProfileChamged;
+            Profile.Renamed -= OnProfileChamged;
+            Profile.Deleted -= OnProfileChamged;
         }
 
         private void OnProfileChamged(Profile profile)
@@ -65,7 +65,7 @@ namespace BoostBlasters.UI.MainMenu
 
         private void Refresh()
         {
-            m_profiles.Refresh(ProfileManager.Profiles);
+            m_profiles.Refresh(Profile.AllProfiles);
         }
 
         private void CreateNewProfile()

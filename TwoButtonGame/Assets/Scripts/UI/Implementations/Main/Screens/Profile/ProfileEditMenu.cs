@@ -81,7 +81,7 @@ namespace BoostBlasters.UI.MainMenu
 
                 if (accept)
                 {
-                    ProfileManager.DeleteProfile(m_profile);
+                    m_profile.Delete();
                     Back();
                 }
             }

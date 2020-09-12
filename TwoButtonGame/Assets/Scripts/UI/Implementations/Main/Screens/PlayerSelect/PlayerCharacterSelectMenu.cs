@@ -5,8 +5,6 @@ using System.Linq;
 using BoostBlasters.Characters;
 using BoostBlasters.Profiles;
 
-using Framework;
-
 using TMPro;
 
 using UnityEngine;
@@ -125,25 +123,23 @@ namespace BoostBlasters.UI.MainMenu
             m_continue.onClick.AddListener(() => Continue?.Invoke());
         }
 
-        /// <summary>
-        /// Sets the menu state.
-        /// </summary>
-        /// <param name="character">The character to select, or null to select the first character.</param>
-        public void Set(Profile profile, Character character, bool ready)
+        public void Set(IProfile profile, Character character, bool ready)
         {
             m_playerName.text = profile.Name;
+            m_playerName.color = Color.Lerp(Color.white, profile.Color, 0.65f);
+            m_camera.backgroundColor = Color.Lerp(m_bgColor, profile.Color, m_bgColorFac);
+
             m_characterSpinner.Index = character != null ? Array.IndexOf(CharacterManager.Characters, character) : 0;
             SetReady(ready);
-
-            m_selectTime = float.MinValue;
         }
 
         protected override void OnShow()
         {
+            PreviewCharacter(m_characterSpinner.Index);
+
             m_camera.enabled = true;
             m_highlight.color = new Color(1f, 1f, 1f, 0f);
-
-            PreviewCharacter(m_characterSpinner.Index);
+            m_selectTime = float.MinValue;
         }
 
         protected override void OnHide()
@@ -169,12 +165,8 @@ namespace BoostBlasters.UI.MainMenu
 
         protected override void OnUpdateVisuals()
         {
-            var playerColor = Color.Lerp(Consts.GetRacerColor(m_panel.transform.GetSiblingIndex()), Color.white, 0.35f);
-            m_playerName.color = playerColor;
-
             // configure the preview camera
             CreateTexture();
-            m_camera.backgroundColor = Color.Lerp(m_bgColor, playerColor, m_bgColorFac);
 
             // rotate the character preview
             var timeSinceSelect = Time.unscaledTime - m_selectTime;

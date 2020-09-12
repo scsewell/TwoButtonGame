@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 using BoostBlasters.Profiles;
 
@@ -24,19 +26,29 @@ namespace BoostBlasters.UI.MainMenu
 
 
         private PlayerSelectPanel m_panel;
-        private ItemList<Profile> m_profiles;
+        private List<PlayerSelectPanel> m_otherPanels;
+        private ItemList<IProfile> m_profiles;
 
         /// <summary>
         /// An event invoked once the user has selected a profile.
         /// </summary>
-        public event Action<Profile> ProfileSelected;
+        public event Action<IProfile> ProfileSelected;
 
 
         protected override void OnInitialize()
         {
             m_panel = GetComponentInParent<PlayerSelectPanel>();
 
-            m_profiles = new ItemList<Profile>(m_profilesLayout, m_profilePanelPrefab, (p) => p.Name);
+            m_otherPanels = m_panel.transform.parent.GetComponentsInChildren<PlayerSelectPanel>(true)
+                .Where(p => p != m_panel)
+                .ToList();
+
+            foreach (var panel in m_otherPanels)
+            {
+                panel.ProfileChanged += Refresh;
+            }
+
+            m_profiles = new ItemList<IProfile>(m_profilesLayout, m_profilePanelPrefab, (p) => p.Name);
             m_profiles.PreLayoutUpdate += () => m_buttonsLayout.UpdateNavigation();
             m_profiles.Submit += SelectProfile;
 
@@ -48,11 +60,11 @@ namespace BoostBlasters.UI.MainMenu
         /// Sets the menu state.
         /// </summary>
         /// <param name="profile">The profile to select, or null to reset the selection.</param>
-        public void Set(Profile profile)
+        public void Set(IProfile profile)
         {
             Refresh();
 
-            if (profile != null && m_profiles.TryGetItem(profile, out var item))
+            if (m_profiles.TryGetItem(profile, out var item))
             {
                 PrimarySelection.Current = item.gameObject;
             }
@@ -64,18 +76,18 @@ namespace BoostBlasters.UI.MainMenu
 
         protected override void OnShow()
         {
-            ProfileManager.Added += OnProfileChamged;
-            ProfileManager.Renamed += OnProfileChamged;
-            ProfileManager.Deleted += OnProfileChamged;
+            Profile.Added += OnProfileChamged;
+            Profile.Renamed += OnProfileChamged;
+            Profile.Deleted += OnProfileChamged;
 
             Refresh();
         }
 
         protected override void OnHide()
         {
-            ProfileManager.Added -= OnProfileChamged;
-            ProfileManager.Renamed -= OnProfileChamged;
-            ProfileManager.Deleted -= OnProfileChamged;
+            Profile.Added -= OnProfileChamged;
+            Profile.Renamed -= OnProfileChamged;
+            Profile.Deleted -= OnProfileChamged;
         }
 
         public override void Back()
@@ -90,12 +102,16 @@ namespace BoostBlasters.UI.MainMenu
 
         private void Refresh()
         {
-            m_profiles.Refresh(ProfileManager.Profiles);
+            // Only allow selecting profiles not used by another user
+            m_profiles.Refresh(Profile.AllProfiles, (profile, item) =>
+            {
+                item.interactable = !m_otherPanels.Any(panel => panel.Profile == profile);
+            });
         }
 
         private void UseGuestProfile()
         {
-            var profile = ProfileManager.CreateTemporaryProfile("Guest", true);
+            var profile = new GuestProfile();
             SelectProfile(profile);
         }
 
@@ -116,7 +132,7 @@ namespace BoostBlasters.UI.MainMenu
             Menu.Get<ProfileNameMenu>().CreateNew(OnCreate, input);
         }
 
-        private void SelectProfile(Profile profile)
+        private void SelectProfile(IProfile profile)
         {
             ProfileSelected?.Invoke(profile);
         }

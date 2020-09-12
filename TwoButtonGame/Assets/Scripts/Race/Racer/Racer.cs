@@ -115,7 +115,7 @@ namespace BoostBlasters.Races.Racers
         public Racer Init(int racerNum, RacerConfig config)
         {
             RacerNum = racerNum;
-            Color = Consts.GetRacerColor(racerNum);
+            Color = config.Profile.Color;
             Config = config;
 
             //switch (config.Type)

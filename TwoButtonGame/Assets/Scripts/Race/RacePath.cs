@@ -105,7 +105,7 @@ namespace BoostBlasters.Races
                     continue;
                 }
 
-                Gizmos.color = Consts.GetRacerColor(i);
+                Gizmos.color = Color.green;
 
                 Gizmos.matrix = spawn.localToWorldMatrix;
                 Gizmos.DrawWireCube(Vector3.zero, new Vector3(1.5f, 2, 1.5f));

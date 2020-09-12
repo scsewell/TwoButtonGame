@@ -61,5 +61,10 @@ namespace BoostBlasters.Input
         {
             return Device == device && ControlScheme == scheme;
         }
+
+        public override string ToString()
+        {
+            return $"{Device.name}-{ControlScheme.name}";
+        }
     }
 }

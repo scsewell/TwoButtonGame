@@ -46,10 +46,7 @@ namespace BoostBlasters.UI
 
         public void OnSelect(BaseEventData e)
         {
-            if (m_selectable.IsInteractable())
-            {
-                Player.PlaySelectSound();
-            }
+            Player.PlaySelectSound();
         }
 
         public void OnPointerExit(PointerEventData e)
@@ -62,10 +59,7 @@ namespace BoostBlasters.UI
 
         public void OnDeselect(BaseEventData e)
         {
-            if (m_selectable.IsInteractable())
-            {
-                Player.PlayDeselectSound();
-            }
+            Player.PlayDeselectSound();
         }
 
         public void OnPointerClick(PointerEventData e)
@@ -86,10 +80,7 @@ namespace BoostBlasters.UI
 
         public void OnCancel(BaseEventData eventData)
         {
-            if (m_selectable.IsInteractable())
-            {
-                Player.PlayCancelSound();
-            }
+            Player.PlayCancelSound();
         }
 
         public void OnDrag(PointerEventData e)

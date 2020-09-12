@@ -12,14 +12,12 @@ Scriptable build pipeline
 Steam API
 - Integrate in framework
 - Setup deployment pipeline
-- Abstract profile as needed
+- Abstract profile as needed (create local profile from steam account info)
 
 Migrate to URP
 - gate color should be a global shader property, instead of hooking into OnWillRenderObject
 
 - Custom logo intro (add setting / command line option to skip in settings)
-- Make shnazzy outline for character select, with integrated name plate at botton, profile plate at top
-	Arrows would be added to the character plate instead
 
 ECS/Unity Physics
 - Make sure to gut Physx as much as possible
@@ -52,6 +50,7 @@ General
 - better guide to next waypoint (make waypoint color glow more obvious, improve direction arrow (racing line?), look at next gate button)
 - end of race stats menu (laps speeds, time in lead, etc)
 - Add goals for players to achieve per level
+- Censoring for player names (add config file that users can modify)
 
 Replays
 - Serialize version of game/level/characters and show when the version is not comptabible

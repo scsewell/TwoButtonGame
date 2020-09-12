@@ -21,6 +21,7 @@ namespace BoostBlasters.UI
         private readonly Func<T, string> m_getText;
         private readonly List<Button> m_items = new List<Button>();
         private readonly Dictionary<T, Button> m_valueToItem = new Dictionary<T, Button>();
+        private readonly Dictionary<Button, T> m_itemToValue = new Dictionary<Button, T>();
 
         /// <summary>
         /// An event invoked just prior to rebuilding the layout for the items.
@@ -64,15 +65,41 @@ namespace BoostBlasters.UI
         /// <returns>True if an item was returned; false otherwise.</returns>
         public bool TryGetItem(T value, out Button item)
         {
+            if (value == null)
+            {
+                item = null;
+                return false;
+            }
             return m_valueToItem.TryGetValue(value, out item);
+        }
+
+        /// <summary>
+        /// Gets the value assigned to an item panel.
+        /// </summary>
+        /// <param name="item">The item panel to get the value for.</param>
+        /// <param name="value">The value assigned to the panel, or default if none was found.</param>
+        /// <returns>True if an item was returned; false otherwise.</returns>
+        public bool TryGetValue(Button item, out T value)
+        {
+            if (item == null)
+            {
+                value = default;
+                return false;
+            }
+            return m_itemToValue.TryGetValue(item, out value);
         }
 
         /// <summary>
         /// Creates and updates the item panels to match the provided list of values.
         /// </summary>
         /// <param name="values">The values to show in the list.</param>
-        public void Refresh(IReadOnlyList<T> values)
+        /// <param name="onConfigure">A callback used to do extra configuration
+        /// for each item.</param>
+        public void Refresh(IReadOnlyList<T> values, Action<T, Button> onConfigure = null)
         {
+            m_valueToItem.Clear();
+            m_itemToValue.Clear();
+
             for (var i = m_items.Count; i < values.Count; i++)
             {
                 var button = GameObject.Instantiate(m_itemPrefab, m_parent.transform, false);
@@ -83,17 +110,23 @@ namespace BoostBlasters.UI
             {
                 var item = m_items[i];
 
-                item.gameObject.SetActive(i < values.Count);
-
-                if (item.gameObject.activeSelf)
+                if (i >= values.Count)
                 {
-                    var value = values[i];
-                    m_valueToItem[value] = item;
-
-                    item.onClick.RemoveAllListeners();
-                    item.onClick.AddListener(() => Submit?.Invoke(value));
-                    item.GetComponentInChildren<TMP_Text>().text = m_getText(value);
+                    item.gameObject.SetActive(false);
+                    continue;
                 }
+
+                item.gameObject.SetActive(true);
+
+                var value = values[i];
+                m_valueToItem[value] = item;
+                m_itemToValue[item] = value;
+
+                item.onClick.RemoveAllListeners();
+                item.onClick.AddListener(() => Submit?.Invoke(value));
+                item.GetComponentInChildren<TMP_Text>().text = m_getText(value);
+
+                onConfigure?.Invoke(value, item);
             }
 
             PreLayoutUpdate?.Invoke();

@@ -2,6 +2,8 @@
 
 using BoostBlasters.Input;
 
+using Framework;
+
 using UnityEngine;
 
 namespace BoostBlasters.UI
@@ -165,8 +167,7 @@ namespace BoostBlasters.UI
 
                 if (input != null)
                 {
-                    m_primarySelection.Enable(input.PrimaryEventSystem);
-                    m_secondarySelection.Enable(input.SecondaryEventSystem);
+                    EnableInputDelayed();
                 }
                 else
                 {
@@ -176,6 +177,16 @@ namespace BoostBlasters.UI
 
                 InputChanged?.Invoke(Input);
             }
+        }
+
+        private async void EnableInputDelayed()
+        {
+            // Wait to ensure no input from the previous menu
+            // carries over to affect this menu screen.
+            await CoroutineUtils.Wait(2);
+
+            m_primarySelection.Enable(Input.PrimaryEventSystem);
+            m_secondarySelection.Enable(Input.SecondaryEventSystem);
         }
 
         /// <summary>

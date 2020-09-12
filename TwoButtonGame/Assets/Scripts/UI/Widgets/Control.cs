@@ -372,7 +372,7 @@ namespace BoostBlasters.UI
             }
         }
 
-        private void Update()
+        private void LateUpdate()
         {
             var action = m_action != null ? m_action.action : null;
 

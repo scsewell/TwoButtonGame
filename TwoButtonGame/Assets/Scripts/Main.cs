@@ -53,7 +53,7 @@ namespace BoostBlasters
             Application.backgroundLoadingPriority = ThreadPriority.Normal;
 
             // start loading operations
-            var loadProfiles = ProfileManager.LoadProfilesAsync();
+            var loadProfiles = Profile.LoadProfilesAsync();
             var loadCharacters = CharacterManager.LoadCharactersAsync();
             var loadlevels = LevelManager.LoadLevelsAsync();
             var loadRaceManager = Resources.LoadAsync<RaceManager>("RaceManager");

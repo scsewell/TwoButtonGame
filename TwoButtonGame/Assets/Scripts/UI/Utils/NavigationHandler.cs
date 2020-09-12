@@ -25,11 +25,6 @@ namespace BoostBlasters.UI
 
         public void OnMove(AxisEventData eventData)
         {
-            if (!m_selectable.IsInteractable())
-            {
-                return;
-            }
-
             // figure out what selectable we should navigate to
             Selectable toSelect = null;
 

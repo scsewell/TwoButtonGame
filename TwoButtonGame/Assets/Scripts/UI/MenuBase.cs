@@ -178,6 +178,7 @@ namespace BoostBlasters.UI
                     }
                 }
 
+                //Debug.LogError(screen);
                 m_transitions[screen] = new Transition
                 {
                     type = Transition.Type.Open,

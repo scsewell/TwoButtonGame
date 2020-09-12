@@ -22,6 +22,7 @@ namespace BoostBlasters.UI.MainMenu
         [SerializeField] private Control m_continueControls = null;
 
 
+        private RaceParameters m_raceParams;
         private readonly List<PlayerSelectPanel> m_panels = new List<PlayerSelectPanel>();
         private readonly List<InputActionMap> m_backActions = new List<InputActionMap>();
         private bool m_inputEnabled;
@@ -46,18 +47,38 @@ namespace BoostBlasters.UI.MainMenu
         /// <summary>
         /// Opens this menu screen.
         /// </summary>
-        /// <param name="raceParams">The configuration to initialize from, or null to reset.</param>
+        /// <param name="sound">The menu transition sound to play.</param>
+        public void Open(TransitionSound sound)
+        {
+            Menu.SwitchTo(this, sound);
+
+            for (var i = 0; i < m_panels.Count; i++)
+            {
+                m_panels[i].Open(null);
+            }
+
+            m_raceParams = null;
+        }
+
+        /// <summary>
+        /// Opens this menu screen.
+        /// </summary>
+        /// <param name="raceParams">The configuration to initialize from. Cannot be null</param>
         /// <param name="sound">The menu transition sound to play.</param>
         public void Open(RaceParameters raceParams, TransitionSound sound)
         {
             Menu.SwitchTo(this, sound);
 
-            var players = raceParams?.Racers.OfType<PlayerRacerConfig>().ToArray();
+            var players = raceParams.Racers
+                .OfType<PlayerRacerConfig>()
+                .ToArray();
 
             for (var i = 0; i < m_panels.Count; i++)
             {
-                m_panels[i].Open(players != null && i < players.Length ? players[i] : null);
+                m_panels[i].Open(i < players.Length ? players[i] : null);
             }
+
+            m_raceParams = raceParams;
         }
 
         protected override void OnShow()
@@ -76,18 +97,24 @@ namespace BoostBlasters.UI.MainMenu
 
         private void OnUserAdded(UserInput user)
         {
-            var panel = m_panels[user.PlayerIndex];
+            var panel = m_panels.First(p => p.User == null);
 
-            panel.JoinUser(user);
+            if (panel != null)
+            {
+                panel.JoinUser(user);
+            }
 
             CreateBackActions();
         }
 
         private void OnUserRemoved(UserInput user)
         {
-            var panel = m_panels[user.PlayerIndex];
+            var panel = m_panels.FirstOrDefault(p => p.User == user);
 
-            panel.Leave();
+            if (panel != null)
+            {
+                panel.Leave();
+            }
 
             CreateBackActions();
         }
@@ -109,11 +136,39 @@ namespace BoostBlasters.UI.MainMenu
         {
             if (m_canContine)
             {
-                //Menu.Get<LevelSelectMenu>().Open();
+                var players = m_panels
+                    .Where(p => p.Ready)
+                    .Select(p => p.GetConfig())
+                    .ToArray();
+
+                var levelSelect = Menu.Get<LevelSelectMenu>();
+
+                if (m_raceParams == null)
+                {
+                    levelSelect.Open(players, TransitionSound.Next);
+                }
+                else
+                {
+                    var otherRacers = m_raceParams.Racers
+                        .Where(racer => !(racer is PlayerRacerConfig))
+                        .ToArray();
+
+                    var racers = players
+                        .Union(otherRacers)
+                        .ToArray();
+
+                    var raceParams = new RaceParameters(
+                        m_raceParams.Level,
+                        m_raceParams.Laps,
+                        racers
+                    );
+
+                    levelSelect.Open(raceParams, TransitionSound.Next);
+                }
 
                 foreach (var panel in m_panels)
                 {
-                    //panel.Close();
+                    panel.Close();
                 }
             }
         }
@@ -124,6 +179,7 @@ namespace BoostBlasters.UI.MainMenu
 
             foreach (var panel in m_panels)
             {
+                panel.Leave();
                 panel.Close();
             }
         }

@@ -178,9 +178,9 @@ namespace BoostBlasters.Replays
 
                 var guid = reader.Read<Guid>();
                 var name = reader.ReadString();
-                var profile = ProfileManager.CreateTemporaryProfile(name, false);
+                //var profile = ProfileManager.CreateTemporaryProfile(name, false);
 
-                racers[i] = new ReplayRacerConfig(character, profile, UnityEngine.Random.ColorHSV());
+                //racers[i] = new ReplayRacerConfig(character, profile);
                 Results[i] = new RaceResult(reader);
             }
 

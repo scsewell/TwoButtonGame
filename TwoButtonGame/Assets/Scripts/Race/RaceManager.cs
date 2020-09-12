@@ -437,7 +437,7 @@ namespace BoostBlasters.Races
             {
                 foreach (Racer racer in m_racers)
                 {
-                    racer.Config.Profile.AddRaceResult(m_raceParams.Level, racer.RaceResult);
+                    //racer.Config.Profile.AddRaceResult(m_raceParams.Level, racer.RaceResult);
                     m_savedResults = true;
                 }
             }

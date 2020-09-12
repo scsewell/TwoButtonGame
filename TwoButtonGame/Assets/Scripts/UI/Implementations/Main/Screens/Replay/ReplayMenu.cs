@@ -116,14 +116,14 @@ namespace BoostBlasters.UI.MainMenu
 
                 for (var i = 0; i < m_playerResults.Count; i++)
                 {
-                    if (i < results.Length)
-                    {
-                        m_playerResults[i].SetResults(info.RaceParams.Racers[i].Profile, results[i]);
-                    }
-                    else
-                    {
-                        m_playerResults[i].SetResults(null, null);
-                    }
+                    //if (i < results.Length)
+                    //{
+                    //    m_playerResults[i].SetResults(info.RaceParams.Racers[i].Profile, results[i]);
+                    //}
+                    //else
+                    //{
+                    //    m_playerResults[i].SetResults(null, null);
+                    //}
                 }
             }
         }

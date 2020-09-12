@@ -19,6 +19,12 @@ namespace BoostBlasters.UI.MainMenu
         [SerializeField] private Button m_cancelButton = null;
         [SerializeField] private Button m_acceptButton = null;
 
+        [Header("Options")]
+
+        [SerializeField]
+        [Tooltip("The default profile name to use for new profiles.")]
+        private string m_defaultName = "DefaultName";
+
 
         private Profile m_profile = null;
         private bool m_isNew = false;
@@ -30,7 +36,7 @@ namespace BoostBlasters.UI.MainMenu
             m_cancelButton.onClick.AddListener(() => Cancel());
             m_acceptButton.onClick.AddListener(() => Accept());
 
-            m_nameField.characterLimit = Consts.MAX_PROFILE_NAME_LENGTH;
+            m_nameField.characterLimit = ProfileConsts.MAX_NAME_LENGTH;
         }
 
         /// <summary>
@@ -41,12 +47,12 @@ namespace BoostBlasters.UI.MainMenu
         /// The returned profile is null if the rename was cancelled.</param>
         public void CreateNew(Action<Profile> onComplete, BaseInput input = null)
         {
-            m_profile = ProfileManager.CreateProfile();
+            m_profile = new Profile(m_defaultName);
             m_isNew = true;
             m_onComplete = onComplete;
 
             m_titleText.text = "New Profile";
-            m_nameField.text = string.Empty;
+            m_nameField.text = m_profile.Name;
 
             Open(input);
         }
@@ -66,7 +72,7 @@ namespace BoostBlasters.UI.MainMenu
             m_onComplete = onComplete;
 
             m_titleText.text = "Rename Profile";
-            m_nameField.text = profile.Name;
+            m_nameField.text = m_profile.Name;
 
             Open(input);
         }
@@ -103,7 +109,7 @@ namespace BoostBlasters.UI.MainMenu
 
             if (trimmed.Length > 0)
             {
-                ProfileManager.RenameProfile(m_profile, trimmed);
+                m_profile.Rename(trimmed);
                 Complete(true);
             }
             else
@@ -116,7 +122,7 @@ namespace BoostBlasters.UI.MainMenu
         {
             if (!success && m_isNew)
             {
-                ProfileManager.DeleteProfile(m_profile);
+                m_profile.Delete();
             }
 
             InputManager.Solo = null;

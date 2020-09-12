@@ -465,7 +465,7 @@ MonoBehaviour:
   - {fileID: 2321410679767671759}
   m_resolutionScale: 1
   m_bgColor: {r: 0.078431375, g: 0.07058824, b: 0.078431375, a: 1}
-  m_bgColorFac: 0.065
+  m_bgColorFac: 0.05
   m_rotateWait: 2
   m_rotateSpeed: 0
 --- !u!1 &4705498505041850101

@@ -21,10 +21,7 @@ namespace BoostBlasters.UI
 
         public void OnCancel(BaseEventData eventData)
         {
-            if (m_selectable.IsInteractable())
-            {
-                m_screen.Back();
-            }
+            m_screen.Back();
         }
     }
 }

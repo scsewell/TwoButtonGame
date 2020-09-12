@@ -2,14 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 
+using BoostBlasters.Characters;
+using BoostBlasters.Levels;
+using BoostBlasters.Profiles;
+using BoostBlasters.Races;
+
+using Framework;
+
+using TMPro;
+
 using UnityEngine;
 using UnityEngine.UI;
-
-using Framework.UI;
-
-using BoostBlasters.Profiles;
-using BoostBlasters.Levels;
-using BoostBlasters.Races;
 
 namespace BoostBlasters.UI.MainMenu
 {
@@ -17,23 +20,24 @@ namespace BoostBlasters.UI.MainMenu
     {
         [Header("Prefabs")]
 
-        //[SerializeField] private Navigable m_optionPrefab = null;
         [SerializeField] private GameObject m_levelPreviewCameraPrefab = null;
 
         [Header("UI Elements")]
 
-        [SerializeField] private RectTransform m_optionContent = null;
-        [SerializeField] private Button m_startRaceButton = null;
-        [SerializeField] private Button m_backButton = null;
-        [SerializeField] private RectTransform m_resultsContent = null;
+        [SerializeField] private Spinner m_level = null;
+        [SerializeField] private Spinner m_lapCount = null;
+        [SerializeField] private Spinner m_aiCount = null;
+        [SerializeField] private Button m_startRace = null;
+        [SerializeField] private TextMeshProUGUI m_levelTitle = null;
         [SerializeField] private Image m_levelPreview = null;
         [SerializeField] private Image m_levelHighlight = null;
         [SerializeField] private RectTransform m_track3dPreview = null;
+        [SerializeField] private RectTransform m_resultsContent = null;
 
         [Header("Options")]
 
         [SerializeField]
-        [Range(1, 10)]
+        [Range(1, Consts.MAX_LAP_COUNT)]
         private int m_maxLapCount = 5;
         [SerializeField]
         [Range(1, 10)]
@@ -63,19 +67,11 @@ namespace BoostBlasters.UI.MainMenu
         private float m_bobFrequency = 0.113f;
 
 
-        private Option<Level> m_trackSelect;
-        public Option<Level> TrackSelect => m_trackSelect;
-
-        private Option<int> m_lapSelect;
-        public Option<int> LapSelect => m_lapSelect;
-
-        private Option<int> m_aiCountSelect;
-        public Option<int> AICountSelect => m_aiCountSelect;
-
-        //private List<Navigable> m_options;
+        private PlayerRacerConfig[] m_players;
         private List<PlayerResultPanel> m_playerResults;
         private Transform m_camPivot;
-        private Camera m_previewCam;
+        private Camera m_camera;
+        private float m_levelSelectTime;
 
         public class LevelInfo
         {
@@ -94,59 +90,42 @@ namespace BoostBlasters.UI.MainMenu
 
         protected override void OnInitialize()
         {
-            //m_startRaceButton.onClick.AddListener(() => ((MainMenu)Menu).LaunchRace());
-            m_backButton.onClick.AddListener(() => Back());
-            
-           // m_options = new List<Navigable>();
-           // m_trackSelect   = new Option<Level>(m_options, m_optionPrefab, m_optionContent, "Track", LevelManager.Levels, OnLevelChange);
-            //m_lapSelect     = new Option<int>(m_options, m_optionPrefab, m_optionContent, "Laps", Enumerable.Range(1, m_maxLapCount).ToArray(), null);
-            //m_aiCountSelect = new Option<int>(m_options, m_optionPrefab, m_optionContent, "AI Racers", Enumerable.Range(0, Consts.MAX_RACERS + 1).ToArray(), null);
+            m_level.Options = LevelManager.Levels.Select(level => level.Name).ToArray();
+            m_level.ValueChanged += OnLevelChange;
 
-            RaceParameters lastRace = Main.Instance.LastRaceParams;
-            if (lastRace != null)
-            {
-                //m_trackSelect.SetValue(lastRace.Level);
-                //m_lapSelect.SetValue(lastRace.Laps);
-               // m_aiCountSelect.SetValue(lastRace.AICount);
-            }
-            
-            //UIHelper.SetNavigationVertical(new NavConfig() 
-            //{ 
-            //    parent = m_optionContent, 
-            //    down = m_startRaceButton,
-            //});
+            m_lapCount.Options = Enumerable.Range(1, m_maxLapCount).Select(i => i.ToString()).ToArray();
 
-            //PrimarySelection.DefaultSelectionOverride = m_trackSelect.Selectable.gameObject;
+            m_startRace.onClick.AddListener(StartRace);
 
             m_playerResults = new List<PlayerResultPanel>();
-            PlayerResultPanel resultsTemplate = m_resultsContent.GetComponentInChildren<PlayerResultPanel>();
+            var resultsTemplate = m_resultsContent.GetComponentInChildren<PlayerResultPanel>();
             m_playerResults.Add(resultsTemplate);
 
-            for (int i = 0; i < m_topScoreCount - 1; i++)
+            for (var i = 0; i < m_topScoreCount - 1; i++)
             {
                 m_playerResults.Add(Instantiate(resultsTemplate, m_resultsContent));
             }
 
             // create the camera used to preview the selected level
             m_camPivot = Instantiate(m_levelPreviewCameraPrefab).transform;
-            m_previewCam = m_camPivot.GetComponentInChildren<Camera>();
-            m_previewCam.cullingMask = 1;
+            m_camera = m_camPivot.GetComponentInChildren<Camera>();
+            m_camera.cullingMask = 1;
 
             // load the level configurations
             m_levelInfo.Clear();
 
-            foreach (Level level in LevelManager.Levels)
+            foreach (var level in LevelManager.Levels)
             {
-                GameObject preview3d = new GameObject($"LevelPreview {level.Name}");
+                var preview3d = new GameObject($"LevelPreview {level.Name}");
                 if (level.Preview3d != null)
                 {
                     Instantiate(level.Preview3d, preview3d.transform);
                 }
 
-                List<LevelInfo.Results> results = new List<LevelInfo.Results>();
-                foreach (Profile profile in ProfileManager.Profiles)
+                var results = new List<LevelInfo.Results>();
+                foreach (var profile in Profile.AllProfiles)
                 {
-                    foreach (RaceResult result in profile.GetRaceResults(level))
+                    foreach (var result in profile.GetRaceResults(level))
                     {
                         results.Add(new LevelInfo.Results()
                         {
@@ -165,35 +144,64 @@ namespace BoostBlasters.UI.MainMenu
             }
         }
 
+        /// <summary>
+        /// Opens this menu screen.
+        /// </summary>
+        /// <param name="players">The players in the race. Cannot be null.</param>
+        /// <param name="sound">The menu transition sound to play.</param>
+        public void Open(PlayerRacerConfig[] players, TransitionSound sound)
+        {
+            Menu.SwitchTo(this, sound);
+
+            m_players = players;
+
+            m_aiCount.Options = Enumerable.Range(0, (Consts.MAX_RACERS - m_players.Length) + 1)
+                .Select(i => i.ToString())
+                .ToArray();
+
+            m_level.Index = 0;
+            m_lapCount.Index = m_defaultLapCount - 1;
+            m_aiCount.Index = 0;
+        }
+
+        /// <summary>
+        /// Opens this menu screen.
+        /// </summary>
+        /// <param name="raceParams">The configuration to initialize from. Cannot be null.</param>
+        /// <param name="sound">The menu transition sound to play.</param>
+        public void Open(RaceParameters raceParams, TransitionSound sound)
+        {
+            Menu.SwitchTo(this, sound);
+
+            m_players = raceParams.Racers
+                .OfType<PlayerRacerConfig>()
+                .ToArray();
+
+            m_aiCount.Options = Enumerable.Range(0, Consts.MAX_RACERS - m_players.Length)
+                .Select(i => i.ToString())
+                .ToArray();
+
+            m_level.Index = Array.IndexOf(LevelManager.Levels, raceParams.Level);
+            m_lapCount.Index = raceParams.Laps - 1;
+            m_aiCount.Index = raceParams.Racers.OfType<AIRacerConfig>().Count();
+        }
+
         protected override void OnShow()
         {
-            if (m_previewCam != null)
-            {
-                m_previewCam.enabled = true;
-            }
+            OnLevelChange(m_level.Index);
+
+            m_camera.enabled = true;
+            m_levelHighlight.color = new Color(1f, 1f, 1f, 0f);
+            m_levelSelectTime = float.MinValue;
         }
 
         protected override void OnHide()
         {
-            if (m_previewCam != null)
+            if (m_camera != null)
             {
-                m_previewCam.enabled = false;
+                m_camera.enabled = false;
             }
         }
-
-        //protected override void OnResetMenu(bool fullReset)
-        //{
-        //    m_aiCountSelect.SetMaxIndex(Consts.MAX_RACERS - ((MainMenu)Menu).ReservedInputs.Count);
-
-        //    if (fullReset)
-        //    {
-        //        m_trackSelect.SetValue(LevelManager.Levels.FirstOrDefault());
-        //        m_lapSelect.SetValue(m_defaultLapCount);
-        //        m_aiCountSelect.SetValue(m_defaultAICount);
-        //    }
-
-        //    m_levelHighlight.color = new Color(1, 1, 1, 0);
-        //}
 
         protected override void OnUpdate()
         {
@@ -202,12 +210,44 @@ namespace BoostBlasters.UI.MainMenu
 
         protected override void OnUpdateVisuals()
         {
-           // m_options.ForEach(o => o.UpdateGraphics());
+            // fade out the highlight
+            m_levelHighlight.color = new Color(1f, 1f, 1f, Mathf.Lerp(0.035f, 0f, (Time.unscaledTime - m_levelSelectTime) / 0.125f));
 
-            //Level level = m_trackSelect.Value;
-            //m_levelPreview.sprite = level.Preview;
+            // position the 3d preview camera
+            m_camera.transform.localPosition = m_previewCamPos + (Vector3.up * m_bobHeight * Mathf.Sin(Time.unscaledTime * m_bobFrequency * (2f * Mathf.PI)));
+            m_camera.transform.rotation = Quaternion.LookRotation((Vector3.up * m_lookHeight) - m_camera.transform.position);
 
-            m_levelHighlight.color = new Color(1f, 1f, 1f, Mathf.Lerp(m_levelHighlight.color.a, 0f, Time.unscaledDeltaTime / 0.035f));
+            var corners = new Vector3[4];
+            m_track3dPreview.GetWorldCorners(corners);
+
+            for (var i = 0; i < corners.Length; i++)
+            {
+                corners[i] = Camera.main.WorldToViewportPoint(corners[i]);
+            }
+            var size = corners[2] - corners[0];
+            m_camera.rect = new Rect(corners[0].x, corners[0].y, size.x, size.y);
+
+            foreach (var i in m_levelInfo.Values)
+            {
+                // i.preview3d.SetActive(i.preview3d == info.preview3d);
+            }
+        }
+
+        public override void Back()
+        {
+            Menu.Get<PlayerSelectMenu>().Open(CreateRaceParams(), TransitionSound.Back);
+        }
+
+        private void OnLevelChange(int index)
+        {
+            m_levelHighlight.color = new Color(1f, 1f, 1f, 0.35f);
+            m_camPivot.rotation = Quaternion.identity;
+
+            var level = LevelManager.Levels[index];
+
+            m_levelSelectTime = Time.unscaledTime;
+            m_levelTitle.text = level.Name;
+            m_levelPreview.sprite = level.Preview;
 
             //LevelInfo info = m_levelInfo[level];
 
@@ -223,59 +263,32 @@ namespace BoostBlasters.UI.MainMenu
             //        m_playerResults[i].SetResults(null, null, i + 1);
             //    }
             //}
+        }
 
-            if (m_previewCam.enabled)
+        private void StartRace()
+        {
+            (Menu as MainMenu).LaunchRace(CreateRaceParams());
+        }
+
+        private RaceParameters CreateRaceParams()
+        {
+            var level = LevelManager.Levels[m_level.Index];
+            var laps = m_lapCount.Index + 1;
+
+            var aiRacers = new List<RacerConfig>();
+            for (var i = 0; i < m_aiCount.Index; i++)
             {
-                m_previewCam.transform.localPosition = m_previewCamPos + (Vector3.up * m_bobHeight * Mathf.Sin(Time.unscaledTime * m_bobFrequency * (2f * Mathf.PI)));
-                m_previewCam.transform.rotation = Quaternion.LookRotation((Vector3.up * m_lookHeight) - m_previewCam.transform.position);
+                var character = CharacterManager.Characters.PickRandom();
+                var profile = new AIProfile("AI ");
 
-                Vector3[] corners = new Vector3[4];
-                m_track3dPreview.GetWorldCorners(corners);
-
-                for (int i = 0; i < corners.Length; i++)
-                {
-                    corners[i] = Camera.main.WorldToViewportPoint(corners[i]);
-                }
-                Vector3 size = corners[2] - corners[0];
-                m_previewCam.rect = new Rect(corners[0].x, corners[0].y, size.x, size.y);
-
-                foreach (var i in m_levelInfo.Values)
-                {
-                   // i.preview3d.SetActive(i.preview3d == info.preview3d);
-                }
+                aiRacers.Add(new AIRacerConfig(character, profile));
             }
-        }
 
-        private void OnLevelChange()
-        {
-            m_levelHighlight.color = new Color(1f, 1f, 1f, 0.35f);
-            m_camPivot.rotation = Quaternion.identity;
-        }
+            var racers = m_players
+                .Union(aiRacers)
+                .ToArray();
 
-        public class Option<T>
-        {
-            //private Navigable m_navigable;
-            //public Selectable Selectable => m_navigable.GetComponentInChildren<Selectable>();
-
-            //private T[] m_values;
-            //public T Value => m_values[m_navigable.Index];
-
-            //public Option(List<Navigable> options, Navigable prefab, Transform parent, string name, T[] values, Action onChange)
-            //{
-            //    m_values = values;
-            //    m_navigable = Instantiate(prefab, parent).Init(name, m_values.Length - 1, (i) => (0 <= i && i < m_values.Length) ? m_values[i].ToString() : string.Empty, onChange);
-            //    options.Add(m_navigable);
-            //}
-
-            //public void SetValue(T value)
-            //{
-            //    m_navigable.Index = Array.IndexOf(m_values, value);
-            //}
-
-            //public void SetMaxIndex(int maxIndex)
-            //{
-            //    m_navigable.SetMaxIndex(maxIndex);
-            //}
+            return new RaceParameters(level, laps, racers);
         }
     }
 }

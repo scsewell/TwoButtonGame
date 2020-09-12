@@ -9,6 +9,9 @@ using UnityEngine;
 
 namespace BoostBlasters.UI.MainMenu
 {
+    /// <summary>
+    /// A component that manages the menus used a single user to prepare for a race.
+    /// </summary>
     public class PlayerSelectPanel : MonoBehaviour
     {
         [SerializeField] private PlayerJoinMenu m_joinMenu = null;
@@ -17,13 +20,21 @@ namespace BoostBlasters.UI.MainMenu
 
 
         private MenuBase m_menu;
-        private Profile m_profile;
-        private Character m_character;
 
         /// <summary>
         /// The user assigned to this panel.
         /// </summary>
         public UserInput User { get; private set; }
+
+        /// <summary>
+        /// The profile selected by the user.
+        /// </summary>
+        public IProfile Profile { get; private set; }
+
+        /// <summary>
+        /// The character selected by the user.
+        /// </summary>
+        public Character Character { get; private set; }
 
         /// <summary>
         /// Has this user finished character selection.
@@ -34,6 +45,11 @@ namespace BoostBlasters.UI.MainMenu
         /// Is the user ready, or is there no user assigned.
         /// </summary>
         public bool CanContinue => Ready || User == null;
+
+        /// <summary>
+        /// An event invoked when <see cref="Profile"/> has changed.
+        /// </summary>
+        public event Action ProfileChanged;
 
         /// <summary>
         /// An event invoked when <see cref="CanContinue"/> has changed.
@@ -53,31 +69,33 @@ namespace BoostBlasters.UI.MainMenu
             m_profileMenu.ProfileSelected += OnProfileSelected;
             m_characterMenu.CharacterSelected += OnCharacterSelected;
             m_characterMenu.ReadyChanged += OnReadyChanged;
-            m_characterMenu.Continue += Continue;
+            m_characterMenu.Continue += OnContinue;
         }
-
+        
         /// <summary>
         /// Displays the panel.
         /// </summary>
         /// <param name="racerConfig">The configuration to initialize from, or null to reset.</param>
         public void Open(PlayerRacerConfig racerConfig)
         {
+            ResetPanel(true);
+
             if (racerConfig == null)
             {
-                ResetPanel();
-
                 m_menu.Open(m_joinMenu, null, TransitionSound.None);
             }
             else
             {
                 User = racerConfig.Input;
-                m_profile = racerConfig.Profile;
-                m_character = racerConfig.Character;
+                Profile = racerConfig.Profile;
+                Character = racerConfig.Character;
                 Ready = true;
 
-                m_characterMenu.Set(m_profile, m_character, Ready);
+                m_characterMenu.Set(Profile, Character, Ready);
+
                 m_menu.Open(m_characterMenu, User, TransitionSound.None);
 
+                ProfileChanged?.Invoke();
                 CanContinueChanged?.Invoke();
             }
         }
@@ -88,7 +106,7 @@ namespace BoostBlasters.UI.MainMenu
         /// <returns>A new config instance, or null if the player is not ready.</returns>
         public PlayerRacerConfig GetConfig()
         {
-            return Ready ? new PlayerRacerConfig(m_character, m_profile, UnityEngine.Random.ColorHSV(), User) : null;
+            return Ready ? new PlayerRacerConfig(Character, Profile, User) : null;
         }
 
         /// <summary>
@@ -96,7 +114,7 @@ namespace BoostBlasters.UI.MainMenu
         /// </summary>
         public void Close()
         {
-            ResetPanel();
+            ResetPanel(false);
 
             m_menu.Close(m_joinMenu, TransitionSound.Back);
             m_menu.Close(m_profileMenu, TransitionSound.Back);
@@ -121,7 +139,7 @@ namespace BoostBlasters.UI.MainMenu
             }
 
             User = user;
-            m_profileMenu.Set(m_profile);
+            m_profileMenu.Set(Profile);
 
             m_menu.Close(m_joinMenu, TransitionSound.Next);
             m_menu.Open(m_profileMenu, User, TransitionSound.Next);
@@ -130,11 +148,16 @@ namespace BoostBlasters.UI.MainMenu
         }
 
         /// <summary>
-        /// Backs out to the profile select menu.
+        /// Backs out to the join menu.
         /// </summary>
         public void Leave()
         {
-            ResetPanel();
+            if (User != null)
+            {
+                User.Leave();
+            }
+
+            ResetPanel(true);
 
             m_menu.Open(m_joinMenu, null, TransitionSound.Back);
             m_menu.Close(m_profileMenu, TransitionSound.Back);
@@ -146,14 +169,11 @@ namespace BoostBlasters.UI.MainMenu
         /// </summary>
         public void BackToProfile()
         {
-            if (m_profile.IsTemporary)
-            {
-                ProfileManager.ReleaseTemporaryProfile(m_profile);
-                m_profile = null;
-            }
             Ready = false;
 
-            m_profileMenu.Set(m_profile);
+            m_profileMenu.Set(Profile);
+
+            ResetProfile(true);
 
             m_menu.Open(m_profileMenu, User, TransitionSound.Back);
             m_menu.Close(m_characterMenu, TransitionSound.Back);
@@ -161,19 +181,21 @@ namespace BoostBlasters.UI.MainMenu
             CanContinueChanged?.Invoke();
         }
 
-        private void OnProfileSelected(Profile profile)
+        private void OnProfileSelected(IProfile profile)
         {
-            m_profile = profile;
+            Profile = profile;
 
-            m_characterMenu.Set(m_profile, m_character, Ready);
+            m_characterMenu.Set(Profile, Character, Ready);
 
             m_menu.Close(m_profileMenu, TransitionSound.Next);
             m_menu.Open(m_characterMenu, User, TransitionSound.Next);
+
+            ProfileChanged?.Invoke();
         }
 
         private void OnCharacterSelected(Character character)
         {
-            m_character = character;
+            Character = character;
         }
 
         private void OnReadyChanged(bool ready)
@@ -182,27 +204,32 @@ namespace BoostBlasters.UI.MainMenu
             CanContinueChanged?.Invoke();
         }
 
-        private void ResetPanel()
+        private void OnContinue()
         {
-            if (User != null)
-            {
-                User.Leave();
-                User = null;
-            }
+            Continue?.Invoke();
+        }
 
-            if (m_profile != null)
-            {
-                if (m_profile.IsTemporary)
-                {
-                    ProfileManager.ReleaseTemporaryProfile(m_profile);
-                }
-                m_profile = null;
-            }
-
+        private void ResetPanel(bool releaseProfile)
+        {
+            User = null;
+            ResetProfile(releaseProfile);
+            Character = null;
             Ready = false;
-            m_character = null;
 
             CanContinueChanged?.Invoke();
+        }
+
+        private void ResetProfile(bool releaseProfile)
+        {
+            if (Profile != null)
+            {
+                if (releaseProfile && Profile is GuestProfile guestProfile)
+                {
+                    guestProfile.Release();
+                }
+                Profile = null;
+                ProfileChanged?.Invoke();
+            }
         }
     }
 }
