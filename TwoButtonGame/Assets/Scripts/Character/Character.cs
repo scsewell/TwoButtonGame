@@ -80,7 +80,7 @@ namespace BoostBlasters.Characters
 
         [SerializeField]
         [Tooltip("The character description.")]
-        private MetaConfig m_meta;
+        private MetaConfig m_meta = null;
 
         /// <summary>
         /// The character description.
@@ -114,7 +114,7 @@ namespace BoostBlasters.Characters
 
         [SerializeField]
         [Tooltip("The character graphics.")]
-        private GraphicsConfig m_graphics;
+        private GraphicsConfig m_graphics = null;
 
         /// <summary>
         /// The character graphics.
@@ -209,7 +209,7 @@ namespace BoostBlasters.Characters
 
         [SerializeField]
         [Tooltip("The character graphics.")]
-        private PhysicsConfig m_physics;
+        private PhysicsConfig m_physics = null;
 
         /// <summary>
         /// The character physics.
@@ -245,7 +245,7 @@ namespace BoostBlasters.Characters
 
         [SerializeField]
         [Tooltip("The character energy pool.")]
-        private EnergyConfig m_energy;
+        private EnergyConfig m_energy = null;
 
         /// <summary>
         /// The character energy pool.
@@ -292,7 +292,7 @@ namespace BoostBlasters.Characters
 
         [SerializeField]
         [Tooltip("The character boost properties.")]
-        private BoostConfig m_boost;
+        private BoostConfig m_boost = null;
 
         /// <summary>
         /// The character energy pool.

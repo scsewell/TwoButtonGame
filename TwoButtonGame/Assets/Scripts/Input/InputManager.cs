@@ -66,7 +66,7 @@ namespace BoostBlasters.Input
 
         [SerializeField]
         [Tooltip("The action which must be performed by an unpaired device to add a new user.")]
-        private InputActionReference m_joinAction;
+        private InputActionReference m_joinAction = null;
 
         private void OnEnable()
         {

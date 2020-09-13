@@ -34,10 +34,10 @@ namespace BoostBlasters.UI.MainMenu
         private List<CategoryDefaults> m_defaultSettings = null;
 
         [Serializable]
-        private struct CategoryDefaults
+        private class CategoryDefaults
         {
-            public SettingCategory category;
-            public SettingPresetGroup preset;
+            public SettingCategory category = null;
+            public SettingPresetGroup preset = null;
         }
 
         private readonly Dictionary<SettingCategory, List<SettingPanel>> m_categoryToSettings = new Dictionary<SettingCategory, List<SettingPanel>>();

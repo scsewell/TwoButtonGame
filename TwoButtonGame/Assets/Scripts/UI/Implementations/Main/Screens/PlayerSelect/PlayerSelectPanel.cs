@@ -112,13 +112,14 @@ namespace BoostBlasters.UI.MainMenu
         /// <summary>
         /// Close the menus under this panel.
         /// </summary>
-        public void Close()
+        /// <param name="sound">The menu transition sound to play.</param>
+        public void Close(TransitionSound sound)
         {
             ResetPanel(false);
 
-            m_menu.Close(m_joinMenu, TransitionSound.Back);
-            m_menu.Close(m_profileMenu, TransitionSound.Back);
-            m_menu.Close(m_characterMenu, TransitionSound.Back);
+            m_menu.Close(m_joinMenu, sound);
+            m_menu.Close(m_profileMenu, sound);
+            m_menu.Close(m_characterMenu, sound);
         }
 
         /// <summary>

@@ -22,13 +22,12 @@ namespace BoostBlasters.UI.MainMenu
 
         [SerializeField] private TextMeshProUGUI m_playerName = null;
         [SerializeField] private Spinner m_characterSpinner = null;
-        [SerializeField] private Image m_background = null;
         [SerializeField] private RawImage m_previewImage = null;
         [SerializeField] private Image m_highlight = null;
         [SerializeField] private TextMeshProUGUI m_description = null;
         [SerializeField] private TextMeshProUGUI m_readyText = null;
         [SerializeField] private Button m_continue = null;
-        [SerializeField] private Control[] m_hideWhenReady;
+        [SerializeField] private Control[] m_hideWhenReady = null;
 
         [Header("Options")]
 

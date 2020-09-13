@@ -168,7 +168,7 @@ namespace BoostBlasters.UI.MainMenu
 
                 foreach (var panel in m_panels)
                 {
-                    panel.Close();
+                    panel.Close(TransitionSound.None);
                 }
             }
         }
@@ -180,7 +180,7 @@ namespace BoostBlasters.UI.MainMenu
             foreach (var panel in m_panels)
             {
                 panel.Leave();
-                panel.Close();
+                panel.Close(TransitionSound.Back);
             }
         }
 

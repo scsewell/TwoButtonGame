@@ -21,7 +21,6 @@ namespace BoostBlasters.UI.MainMenu
         [Header("UI Elements")]
 
         [SerializeField] private Button m_playButton = null;
-        [SerializeField] private Button m_tutorialButton = null;
         [SerializeField] private Button m_profilesButton = null;
         [SerializeField] private Button m_replaysButton = null;
         [SerializeField] private Button m_settingsButton = null;

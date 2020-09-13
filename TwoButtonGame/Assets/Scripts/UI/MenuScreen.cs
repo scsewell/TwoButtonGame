@@ -18,11 +18,11 @@ namespace BoostBlasters.UI
 
         [SerializeField]
         [Tooltip("The primary selection configuration.")]
-        private Selection m_primarySelection;
+        private Selection m_primarySelection = null;
 
         [SerializeField]
         [Tooltip("The selection used for secondary navigation events (ex. L/R bumpers).")]
-        private Selection m_secondarySelection;
+        private Selection m_secondarySelection = null;
 
         [Header("Back")]
 
@@ -183,7 +183,7 @@ namespace BoostBlasters.UI
         {
             // Wait to ensure no input from the previous menu
             // carries over to affect this menu screen.
-            await CoroutineUtils.Wait(2);
+            await CoroutineUtils.Wait(1);
 
             m_primarySelection.Enable(Input.PrimaryEventSystem);
             m_secondarySelection.Enable(Input.SecondaryEventSystem);
