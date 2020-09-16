@@ -22,7 +22,7 @@ namespace BoostBlasters
         /// <summary>
         /// Builds the main executable and the asset bundles.
         /// </summary>
-        [MenuItem("BoostBlasters/Build All _F5", priority = 100)]
+        [MenuItem("BoostBlasters/Build All", priority = 100)]
         public static void DoBuild()
         {
             var buildPlayerOptions = new BuildPlayerOptions
@@ -39,7 +39,7 @@ namespace BoostBlasters
         /// <summary>
         /// Builds only the asset bundles.
         /// </summary>
-        [MenuItem("BoostBlasters/Build Bundles _F6", priority = 105)]
+        [MenuItem("BoostBlasters/Build Bundles", priority = 105)]
         public static void DoBuildBundles()
         {
             BuildBundles(false);
@@ -48,7 +48,7 @@ namespace BoostBlasters
         /// <summary>
         /// Builds the main executable and the asset bundles, then lanches the executable.
         /// </summary>
-        [MenuItem("BoostBlasters/Build All + Run _F7", priority = 110)]
+        [MenuItem("BoostBlasters/Build All + Run", priority = 110)]
         public static void DoBuildRun()
         {
             var buildPlayerOptions = new BuildPlayerOptions

@@ -16,3 +16,5 @@ MonoBehaviour:
   m_description: Match the framerate to the monitor frame rate to avoid tearing.
   m_displayMode: 15
   m_defaultValue: On
+  m_onlyModifiableIf: []
+  m_onlyVisibleIf: []

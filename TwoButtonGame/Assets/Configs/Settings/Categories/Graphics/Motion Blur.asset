@@ -16,3 +16,5 @@ MonoBehaviour:
   m_description: Adds motion blur to the camera.
   m_displayMode: 15
   m_defaultValue: On
+  m_onlyModifiableIf: []
+  m_onlyVisibleIf: []

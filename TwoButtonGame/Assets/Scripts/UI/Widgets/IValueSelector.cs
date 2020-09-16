@@ -28,6 +28,11 @@ namespace BoostBlasters.UI
         int Index { get; set; }
 
         /// <summary>
+        /// Is the value able to be changed by the user.
+        /// </summary>
+        bool Modifiable { get; set; }
+
+        /// <summary>
         /// An event triggered when the value is changed that provides the index of the selected option.
         /// </summary>
         event Action<int> ValueChanged;

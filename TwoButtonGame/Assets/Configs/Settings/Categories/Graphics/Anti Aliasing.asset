@@ -13,15 +13,19 @@ MonoBehaviour:
   m_Name: Anti Aliasing
   m_EditorClassIdentifier: 
   m_category: {fileID: 11400000, guid: ee6120dbec47e3e47b890ee586045878, type: 2}
-  m_description: Smooths the edges of objects.
-  m_displayMode: 15
-  m_defaultValue: High
-  m_enumType: BoostBlasters.AntiAliasingQuality, Assembly-CSharp, Version=0.0.0.0,
-    Culture=neutral, PublicKeyToken=null
+  m_description: The anti-aliasing technique used to smooth the edges of objects.
+  m_displayMode: 10
+  m_defaultValue: SMAA
+  m_onlyModifiableIf: []
+  m_onlyVisibleIf: []
+  m_enumType: BoostBlasters.AntiAliasingMode, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+    PublicKeyToken=null
   m_values:
   - enumName: Off
     displayName: Off
-  - enumName: Low
-    displayName: Low
-  - enumName: High
-    displayName: High
+  - enumName: FXAA
+    displayName: FXAA
+  - enumName: SMAA
+    displayName: SMAA
+  - enumName: MSAA
+    displayName: MSAA

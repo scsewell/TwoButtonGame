@@ -16,6 +16,8 @@ MonoBehaviour:
   m_description: The sound effect volume.
   m_displayMode: 20
   m_defaultValue: 100
+  m_onlyModifiableIf: []
+  m_onlyVisibleIf: []
   m_range:
     m_min: 0
     m_max: 100

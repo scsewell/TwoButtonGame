@@ -32,9 +32,6 @@ namespace BoostBlasters.UI.MainMenu
         [Header("Options")]
 
         [SerializeField]
-        [Range(0.25f, 1f)]
-        private float m_resolutionScale = 1.0f;
-        [SerializeField]
         private Color m_bgColor = new Color(0.05f, 0.05f, 0.05f);
         [SerializeField]
         [Range(0f, 1f)]
@@ -49,7 +46,7 @@ namespace BoostBlasters.UI.MainMenu
 
         private PlayerSelectPanel m_panel;
         private Camera m_camera = null;
-        private RenderTexture m_texture = null;
+        private CameraSettings m_cameraSettings = null;
         private Dictionary<Character, GameObject> m_configToPreview = null;
         private List<GameObject> m_previewObjects = null;
         private GameObject m_currentPreview = null;
@@ -91,6 +88,9 @@ namespace BoostBlasters.UI.MainMenu
 
             m_camera = previewRig.GetComponentInChildren<Camera>();
             m_camera.cullingMask = (1 << previewLayer);
+
+            m_cameraSettings = previewRig.GetComponentInChildren<CameraSettings>();
+            m_cameraSettings.RenderTextureChanged += OnRenderTextureChanged;
 
             // load all the character models
             m_configToPreview = new Dictionary<Character, GameObject>();
@@ -147,7 +147,6 @@ namespace BoostBlasters.UI.MainMenu
             {
                 m_camera.enabled = false;
             }
-            FreeTexture();
         }
 
         public override void Back()
@@ -165,7 +164,7 @@ namespace BoostBlasters.UI.MainMenu
         protected override void OnUpdateVisuals()
         {
             // configure the preview camera
-            CreateTexture();
+            m_cameraSettings.Resolution = Vector2Int.RoundToInt(m_previewImage.rectTransform.rect.size);
 
             // rotate the character preview
             var timeSinceSelect = Time.unscaledTime - m_selectTime;
@@ -220,35 +219,12 @@ namespace BoostBlasters.UI.MainMenu
             }
         }
 
-        private void CreateTexture()
+        private void OnRenderTextureChanged(RenderTexture texture)
         {
-            var rect = m_previewImage.GetComponent<RectTransform>();
-
-            var width = Mathf.RoundToInt(m_resolutionScale * rect.rect.width);
-            var height = Mathf.RoundToInt(m_resolutionScale * rect.rect.height);
-
-            if (m_texture == null || width != m_texture.width || height != m_texture.height)
+            if (m_previewImage != null)
             {
-                FreeTexture();
-
-                m_texture = new RenderTexture(width, height, 24);
-                m_camera.targetTexture = m_texture;
-                m_previewImage.texture = m_texture;
+                m_previewImage.texture = texture;
             }
-        }
-
-        private void FreeTexture()
-        {
-            if (m_texture != null)
-            {
-                m_texture.Release();
-                m_texture = null;
-            }
-            if (m_camera != null)
-            {
-                m_camera.targetTexture = null;
-            }
-            m_previewImage.texture = null;
         }
     }
 }

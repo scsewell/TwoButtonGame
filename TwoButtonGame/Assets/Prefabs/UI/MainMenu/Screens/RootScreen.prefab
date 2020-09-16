@@ -371,7 +371,6 @@ MonoBehaviour:
   m_backMode: 0
   m_backMenu: {fileID: 0}
   m_playButton: {fileID: 1055236741255758836}
-  m_tutorialButton: {fileID: 0}
   m_profilesButton: {fileID: 1212516692809203356}
   m_replaysButton: {fileID: 5365791182750527418}
   m_settingsButton: {fileID: 2563279455968739616}
@@ -924,7 +923,7 @@ PrefabInstance:
     - target: {fileID: 2545665881273416656, guid: ce29f03be8393dc40b89d34f0851699b,
         type: 3}
       propertyPath: m_Name
-      value: TitledFrame
+      value: Letterbox
       objectReference: {fileID: 0}
     - target: {fileID: 3022006258302944493, guid: ce29f03be8393dc40b89d34f0851699b,
         type: 3}

@@ -101,7 +101,7 @@ GameObject:
   - component: {fileID: 3720086210381958781}
   - component: {fileID: 7210299140834613059}
   m_Layer: 5
-  m_Name: TitledFrame
+  m_Name: Letterbox
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

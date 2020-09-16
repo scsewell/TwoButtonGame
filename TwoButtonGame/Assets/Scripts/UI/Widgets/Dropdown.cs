@@ -95,6 +95,13 @@ namespace BoostBlasters.UI
         }
 
         /// <inheritdoc/>
+        public bool Modifiable
+        {
+            get => m_dropdown.interactable;
+            set => m_dropdown.interactable = value;
+        }
+
+        /// <inheritdoc/>
         public event Action<int> ValueChanged;
 
 

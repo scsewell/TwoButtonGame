@@ -26,7 +26,7 @@ namespace BoostBlasters
                 Mathf.Cos(Mathf.Deg2Rad * m_angle),
                 Mathf.Sin(Mathf.Deg2Rad * m_angle)
             );
-            m_renderer.material.SetTextureOffset("_MainTex", m_offset);
+            m_renderer.material.mainTextureOffset = m_offset;
         }
     }
 }

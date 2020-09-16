@@ -45,7 +45,7 @@ namespace BoostBlasters
         /// <summary>
         /// Starts the game in play mode after building asset bundles.
         /// </summary>
-        [MenuItem("BoostBlasters/Bundles + Play _F4", priority = 12)]
+        [MenuItem("BoostBlasters/Bundles + Play", priority = 12)]
         public static void DoPlayBundles()
         {
             Build.BuildBundles(true);

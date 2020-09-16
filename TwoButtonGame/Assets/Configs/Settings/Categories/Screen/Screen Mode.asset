@@ -16,6 +16,8 @@ MonoBehaviour:
   m_description: The windowing mode to use.
   m_displayMode: 10
   m_defaultValue: Fullscreen Window
+  m_onlyModifiableIf: []
+  m_onlyVisibleIf: []
   m_enumType: UnityEngine.FullScreenMode, UnityEngine.CoreModule, Version=0.0.0.0,
     Culture=neutral, PublicKeyToken=null
   m_values:

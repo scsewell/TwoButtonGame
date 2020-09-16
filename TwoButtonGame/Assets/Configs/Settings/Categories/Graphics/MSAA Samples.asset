@@ -10,24 +10,23 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b2a688a8aec9d944685ee38deb1051c9, type: 3}
-  m_Name: Shadow Quality
+  m_Name: MSAA Samples
   m_EditorClassIdentifier: 
   m_category: {fileID: 11400000, guid: ee6120dbec47e3e47b890ee586045878, type: 2}
-  m_description: The quality and distance of dynamic shadow effects.
+  m_description: The number of MSAA samples to use. Larger sample counts give better
+    results for a significant performance cost.
   m_displayMode: 15
-  m_defaultValue: High
+  m_defaultValue: 4x
   m_onlyModifiableIf: []
-  m_onlyVisibleIf: []
-  m_enumType: BoostBlasters.ShadowQuality, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+  m_onlyVisibleIf:
+  - m_setting: {fileID: 11400000, guid: 6b0575c7e699671458f61dd184b7792f, type: 2}
+    m_value: MSAA
+  m_enumType: BoostBlasters.MsaaSamples, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
     PublicKeyToken=null
   m_values:
-  - enumName: Off
-    displayName: Off
-  - enumName: Low
-    displayName: Low
-  - enumName: Medium
-    displayName: Medium
-  - enumName: High
-    displayName: High
-  - enumName: Ultra
-    displayName: Ultra
+  - enumName: Sample2
+    displayName: 2x
+  - enumName: Sample4
+    displayName: 4x
+  - enumName: Sample8
+    displayName: 8x

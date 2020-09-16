@@ -16,3 +16,5 @@ MonoBehaviour:
   m_description: The screen resolution.
   m_displayMode: 10
   m_defaultValue: 3840 x 2160
+  m_onlyModifiableIf: []
+  m_onlyVisibleIf: []

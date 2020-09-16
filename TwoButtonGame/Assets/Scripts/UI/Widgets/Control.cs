@@ -132,14 +132,29 @@ namespace BoostBlasters.UI
         private class ControlImage
         {
             private readonly RectTransform m_rect;
+            private readonly RectTransform m_parent;
             private readonly LayoutElement m_layout;
             private readonly Image m_image;
             private float m_aspect;
+            private bool m_visible;
 
             public List<ControlInfo> Controls { get; private set; }
 
+            public bool Visible
+            {
+                get => m_visible;
+                set
+                {
+                    if (m_visible != value)
+                    {
+                        SetVisible(value);
+                    }
+                }
+            }
+
             public ControlImage(Transform parent)
             {
+                m_parent = parent as RectTransform;
                 m_rect = UIHelper.Create(parent);
                 var go = m_rect.gameObject;
 
@@ -147,37 +162,43 @@ namespace BoostBlasters.UI
 
                 m_image = go.AddComponent<Image>();
                 m_image.preserveAspect = true;
+
+                SetVisible(false);
             }
 
             public void Enable(Sprite sprite, List<ControlInfo> controls)
             {
+                Controls = controls;
+
                 m_image.name = sprite.name;
                 m_image.sprite = sprite;
 
                 m_aspect = sprite.rect.width / sprite.rect.height;
-
-                Controls = controls;
             }
 
             public void Disable()
             {
+                Controls = null;
+
                 m_image.name = "Unused";
                 m_image.sprite = null;
                 m_image.gameObject.SetActive(false);
 
-                Controls = null;
+                SetVisible(false);
             }
 
-            public void SetVisible(bool show)
+            private void SetVisible(bool visible)
             {
-                if (show)
+                m_visible = visible;
+
+                if (visible)
                 {
-                    var height = m_rect.rect.height;
+                    var height = m_parent.rect.height;
                     m_layout.preferredHeight = height;
                     m_layout.preferredWidth = height * m_aspect;
                 }
 
-                m_image.gameObject.SetActive(show);
+                m_image.gameObject.SetActive(visible);
             }
         }
 
@@ -436,7 +457,7 @@ namespace BoostBlasters.UI
                     }
                 }
 
-                image.SetVisible(visible);
+                image.Visible = visible;
             }
         }
 

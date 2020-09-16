@@ -2,20 +2,20 @@
 
 Short Term
 
+- Add attribution field to music, place attribution text file beside each music asset
 - Text Mesh Pro
 - Check font licenses
-- New Input sytstem (remove old Input system and framework controls)
 - Character/Level version numbering (builtin charactesr and levels should match core game version)
 
 Scriptable build pipeline
+
+Migrate to URP
+- gate color should be a global shader property, instead of hooking into OnWillRenderObject
 
 Steam API
 - Integrate in framework
 - Setup deployment pipeline
 - Abstract profile as needed (create local profile from steam account info)
-
-Migrate to URP
-- gate color should be a global shader property, instead of hooking into OnWillRenderObject
 
 - Custom logo intro (add setting / command line option to skip in settings)
 
@@ -95,7 +95,7 @@ What to do if a joystick disconnects in menu or game?
 AI (ML agents?)
 Multiplayer
 Tutorial
-Leaderboard
+Leaderboard (Steam has support, can implement regional boards, but is vulnerable to cheated values. Might be better to implement a custom server that can do basic validation...)
 Level preview camera shots in menu
 Ghosting (Race alongside replay)
 
@@ -116,7 +116,7 @@ Register domain
 Create social
 
 ### Music Loop Times ###
-The Lift			7:27.467896
+The Lift			7:27.467896 (6:29.147040 when 15% faster)
 Deep Haze			1:28.677811
 Corruption			7:00.017059
 Eighties Action		2:39.558456

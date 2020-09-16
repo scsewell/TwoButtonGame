@@ -1,5 +1,6 @@
 ﻿using Framework;
 using Framework.Settings;
+using Framework.UI;
 
 using UnityEngine;
 
@@ -11,6 +12,7 @@ namespace BoostBlasters.UI.MainMenu
     public class SettingPanel : MonoBehaviour
     {
         private IValueSelector m_selector = null;
+        private VerticalNavigationBuilder m_navigation = null;
 
         /// <summary>
         /// The setting controlled by this panel.
@@ -27,11 +29,18 @@ namespace BoostBlasters.UI.MainMenu
         private void OnDestroy()
         {
             m_selector.ValueChanged -= Apply;
+
+            Setting.ModifiabilityChanged -= OnModifiabilityChanged;
+            Setting.VisibilityChanged -= OnVisiblityChanged;
         }
 
-        public SettingPanel Init(Setting setting)
+        public SettingPanel Init(Setting setting, VerticalNavigationBuilder navigation)
         {
             Setting = setting;
+            m_navigation = navigation;
+
+            Setting.ModifiabilityChanged += OnModifiabilityChanged;
+            Setting.VisibilityChanged += OnVisiblityChanged;
 
             m_selector.Label = setting.name;
             m_selector.Options = setting.DisplayValues;
@@ -49,6 +58,8 @@ namespace BoostBlasters.UI.MainMenu
             }
 
             LoadValue();
+            OnVisiblityChanged(Setting.IsVisible);
+            OnModifiabilityChanged(Setting.IsModifiable);
 
             return this;
         }
@@ -64,6 +75,18 @@ namespace BoostBlasters.UI.MainMenu
         private void Apply(int index)
         {
             Setting.SetSerializedValue(m_selector.Value);
+        }
+
+        private void OnModifiabilityChanged(bool modifiable)
+        {
+            m_selector.Modifiable = modifiable;
+            m_navigation.UpdateNavigation();
+        }
+
+        private void OnVisiblityChanged(bool visible)
+        {
+            gameObject.SetActive(visible);
+            m_navigation.UpdateNavigation();
         }
     }
 }

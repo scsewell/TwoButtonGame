@@ -57,14 +57,17 @@ namespace BoostBlasters.UI.MainMenu
                 var settingCategory = UIHelper.Create(m_settingsContent, category.name);
 
                 var layout = settingCategory.gameObject.AddComponent<VerticalLayoutGroup>();
-
                 layout.spacing = 4f;
                 layout.childControlWidth = true;
                 layout.childControlHeight = true;
                 layout.childForceExpandWidth = true;
 
+                var navigation = settingCategory.gameObject.AddComponent<VerticalNavigationBuilder>();
+                navigation.Wrap = true;
+
                 // create the settings list
                 var settings = new List<SettingPanel>();
+                m_categoryToSettings.Add(category, settings);
 
                 foreach (var setting in SettingManager.Instance.GetSettings(category))
                 {
@@ -72,6 +75,8 @@ namespace BoostBlasters.UI.MainMenu
 
                     switch (setting.DisplayMode)
                     {
+                        case SettingDisplayMode.Hidden:
+                            continue;
                         case SettingDisplayMode.Dropdown:
                             go = UIHelper.Create(m_dropdownPrefab, settingCategory, setting.name).gameObject;
                             break;
@@ -86,7 +91,7 @@ namespace BoostBlasters.UI.MainMenu
                             continue;
                     }
 
-                    var panel = go.AddComponent<SettingPanel>().Init(setting);
+                    var panel = go.AddComponent<SettingPanel>().Init(setting, navigation);
                     settings.Add(panel);
                 }
 
@@ -100,10 +105,8 @@ namespace BoostBlasters.UI.MainMenu
                     ApplyDefaults(category);
                 });
 
-                var navigation = settingCategory.gameObject.AddComponent<VerticalNavigationBuilder>();
-                navigation.Wrap = true;
-
-                m_categoryToSettings.Add(category, settings);
+                // configure navigation beteen the setting panels
+                navigation.UpdateNavigation();
 
                 // hide the settings until the category tab is selected
                 settingCategory.gameObject.SetActive(false);
