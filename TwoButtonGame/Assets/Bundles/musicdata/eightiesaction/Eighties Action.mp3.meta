@@ -1,7 +1,5 @@
 fileFormatVersion: 2
-guid: 8cc4737725aff574b941ed927bd54b23
-timeCreated: 1508307637
-licenseType: Free
+guid: 11a7e63f0b9b95943b6a55a93fc2743b
 AudioImporter:
   externalObjects: {}
   serializedVersion: 6
@@ -10,7 +8,7 @@ AudioImporter:
     sampleRateSetting: 0
     sampleRateOverride: 44100
     compressionFormat: 1
-    quality: 1
+    quality: 0.5
     conversionMode: 0
   platformSettingOverrides:
     13:
@@ -27,5 +25,5 @@ AudioImporter:
   ambisonic: 0
   3D: 1
   userData: 
-  assetBundleName: 
+  assetBundleName: musicdata/eightiesaction
   assetBundleVariant: 

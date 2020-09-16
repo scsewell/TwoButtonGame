@@ -97,8 +97,6 @@ namespace BoostBlasters
 
         private void LateUpdate()
         {
-            m_antiAliasing.Value = Time.time % 1f > 0.5f ? AntiAliasingMode.SMAA : AntiAliasingMode.FXAA;
-
             if (m_camera.enabled)
             {
                 CreateTextureIfNeeded();

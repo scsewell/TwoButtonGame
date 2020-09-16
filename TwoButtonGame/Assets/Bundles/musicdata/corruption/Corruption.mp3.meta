@@ -1,7 +1,5 @@
 fileFormatVersion: 2
-guid: 8513b7ce574dff94fbf4c4d34bb917b6
-timeCreated: 1508312798
-licenseType: Free
+guid: 0ad9cec93309b0a48acb1423abf10576
 AudioImporter:
   externalObjects: {}
   serializedVersion: 6
@@ -10,7 +8,7 @@ AudioImporter:
     sampleRateSetting: 0
     sampleRateOverride: 44100
     compressionFormat: 1
-    quality: 1
+    quality: 0.5
     conversionMode: 0
   platformSettingOverrides:
     13:
@@ -27,5 +25,5 @@ AudioImporter:
   ambisonic: 0
   3D: 1
   userData: 
-  assetBundleName: 
+  assetBundleName: musicdata/corruption
   assetBundleVariant: 

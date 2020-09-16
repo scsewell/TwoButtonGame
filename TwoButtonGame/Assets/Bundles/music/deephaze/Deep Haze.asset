@@ -12,9 +12,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a6fe8ff27f0e7f4cb9d1c951be8a099, type: 3}
   m_Name: Deep Haze
   m_EditorClassIdentifier: 
-  m_track: {fileID: 8300000, guid: 8513b7ce574dff94fbf4c4d34bb917b6, type: 3}
+  m_track:
+    m_bundleName: musicdata/deephaze
+    m_assetGuid: b2f7044e0703fb24c97bdf3fb40d81aa
+    m_assetName: Deep Haze
+    m_asset: {fileID: 0}
   m_name: Deep Haze
   m_artist: Kevin Macleod
+  m_attribution: 'Deep Haze by Kevin MacLeod
+
+    Link: https://incompetech.filmmusic.io/song/3633-deep-haze
+
+    License:
+    http://creativecommons.org/licenses/by/4.0/'
   m_loop: 2
   m_minutes: 1
   m_seconds: 28.677811

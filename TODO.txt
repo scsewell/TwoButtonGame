@@ -2,7 +2,6 @@
 
 Short Term
 
-- Add attribution field to music, place attribution text file beside each music asset
 - Text Mesh Pro
 - Check font licenses
 - Character/Level version numbering (builtin charactesr and levels should match core game version)

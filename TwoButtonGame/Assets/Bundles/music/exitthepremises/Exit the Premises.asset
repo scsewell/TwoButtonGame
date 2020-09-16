@@ -12,9 +12,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a6fe8ff27f0e7f4cb9d1c951be8a099, type: 3}
   m_Name: Exit the Premises
   m_EditorClassIdentifier: 
-  m_track: {fileID: 8300000, guid: 1c9c38a6c92eac145b017b3ce42f7163, type: 3}
+  m_track:
+    m_bundleName: musicdata/exitthepremises
+    m_assetGuid: ee121c2842de576489b2c18830464024
+    m_assetName: Exit the Premises
+    m_asset: {fileID: 0}
   m_name: Exit the Premises
   m_artist: Kevin Macleod
+  m_attribution: 'Exit the Premises by Kevin MacLeod
+
+    Link: https://incompetech.filmmusic.io/song/3728-exit-the-premises
+
+    License:
+    http://creativecommons.org/licenses/by/4.0/'
   m_loop: 2
   m_minutes: 3
   m_seconds: 24.419144

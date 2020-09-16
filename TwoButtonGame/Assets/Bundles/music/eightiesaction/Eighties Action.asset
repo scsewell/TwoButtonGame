@@ -12,9 +12,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a6fe8ff27f0e7f4cb9d1c951be8a099, type: 3}
   m_Name: Eighties Action
   m_EditorClassIdentifier: 
-  m_track: {fileID: 8300000, guid: 3677196c75becb7449416e5a29604cf4, type: 3}
+  m_track:
+    m_bundleName: musicdata/eightiesaction
+    m_assetGuid: 11a7e63f0b9b95943b6a55a93fc2743b
+    m_assetName: Eighties Action
+    m_asset: {fileID: 0}
   m_name: Eighties Action
   m_artist: Kevin Macleod
+  m_attribution: 'Eighties Action by Kevin MacLeod
+
+    Link: https://incompetech.filmmusic.io/song/3703-eighties-action
+
+    License:
+    http://creativecommons.org/licenses/by/4.0/'
   m_loop: 2
   m_minutes: 2
   m_seconds: 39.558456
