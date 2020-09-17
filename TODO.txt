@@ -107,7 +107,6 @@ Level Ideas (try to think of creative hazards)
 - Volcano (falling rocks, magma)
 
 ### Review ###
-Ensure music is credited
 Update level preview images
 
 ### Meta ###

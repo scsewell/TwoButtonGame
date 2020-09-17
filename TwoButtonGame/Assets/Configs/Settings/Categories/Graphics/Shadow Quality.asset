@@ -18,8 +18,8 @@ MonoBehaviour:
   m_defaultValue: High
   m_onlyModifiableIf: []
   m_onlyVisibleIf: []
-  m_enumType: BoostBlasters.ShadowQuality, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
-    PublicKeyToken=null
+  m_enumType: BoostBlasters.ShadowQuality, BoostBlasters.Utils, Version=0.0.0.0,
+    Culture=neutral, PublicKeyToken=null
   m_values:
   - enumName: Off
     displayName: Off

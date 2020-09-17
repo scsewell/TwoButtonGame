@@ -43,9 +43,18 @@ namespace BoostBlasters
         }
 
         /// <summary>
+        /// Builds the asset bundles for the editor play mode.
+        /// </summary>
+        [MenuItem("BoostBlasters/Build Editor Bundles", priority = 11)]
+        public static void BuildEditorBundles()
+        {
+            Build.BuildBundles(true);
+        }
+
+        /// <summary>
         /// Starts the game in play mode after building asset bundles.
         /// </summary>
-        [MenuItem("BoostBlasters/Bundles + Play", priority = 12)]
+        [MenuItem("BoostBlasters/Build Editor Bundles + Play", priority = 12)]
         public static void DoPlayBundles()
         {
             Build.BuildBundles(true);

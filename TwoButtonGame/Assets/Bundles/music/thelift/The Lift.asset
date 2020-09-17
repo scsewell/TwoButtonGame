@@ -15,7 +15,7 @@ MonoBehaviour:
   m_track:
     m_bundleName: musicdata/thelift
     m_assetGuid: 02e81dc6976396944a92a010c88b39f5
-    m_assetName: The Lift
+    m_assetName: Assets/Bundles/musicdata/thelift/The Lift.mp3
     m_asset: {fileID: 0}
   m_name: The Lift
   m_artist: Kevin Macleod

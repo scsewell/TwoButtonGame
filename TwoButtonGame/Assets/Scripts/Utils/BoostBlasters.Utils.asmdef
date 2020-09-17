@@ -1,11 +1,14 @@
 {
-    "name": "BoostBlasters.Levels",
-    "rootNamespace": "BoostBlasters.Levels",
+    "name": "BoostBlasters.Utils",
+    "rootNamespace": "BoostBlasters.Utils",
     "references": [
+        "GUID:75469ad4d38634e559750d17036d5f7c",
+        "GUID:df380645f10b7bc4b97d4f5eb6303d95",
+        "GUID:15fc0a57446b3144c949da3e2b9737a9",
+        "GUID:dfd573705fb2c044fbae5a8c915b12d6",
         "GUID:b06f75a97055fbc4fb17f72ecfb1de49",
-        "GUID:795a52fa1992d9a439d5433342c7f9aa",
         "GUID:3fbce8ef6896a5c4f90051df422d46f6",
-        "GUID:59b6a21ed4c24fa49ad99de78867f51a"
+        "GUID:b373efb24488eb449bf53bfa4c7d29c6"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

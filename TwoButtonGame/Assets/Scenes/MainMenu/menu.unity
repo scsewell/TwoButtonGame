@@ -14155,7 +14155,7 @@ PrefabInstance:
     - target: {fileID: 9198506943673393992, guid: 8b2b74513f9338b4990b577eae63d7ab,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 2526.0542
+      value: 2524.1914
       objectReference: {fileID: 0}
     - target: {fileID: 9198506943673393992, guid: 8b2b74513f9338b4990b577eae63d7ab,
         type: 3}
@@ -14553,7 +14553,7 @@ MonoBehaviour:
   m_music:
     m_bundleName: music/deephaze
     m_assetGuid: 5239cfe6696550e459e781113015c0d0
-    m_assetName: Deep Haze
+    m_assetName: Assets/Bundles/music/deephaze/Deep Haze.asset
     m_asset: {fileID: 0}
   m_fade: {fileID: 869442102}
   m_fadeInDuration: 0.35
@@ -15142,7 +15142,7 @@ PrefabInstance:
     - target: {fileID: 4122958866990886032, guid: c1ce6a04439161e4893c12942ab9963f,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 2526.0542
+      value: 2524.1914
       objectReference: {fileID: 0}
     - target: {fileID: 4122958866990886032, guid: c1ce6a04439161e4893c12942ab9963f,
         type: 3}
@@ -17159,7 +17159,7 @@ PrefabInstance:
     - target: {fileID: 4413275882346808432, guid: 22ff81f707cf22542b8b5efe1e2ee69c,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 2526.0542
+      value: 2524.1914
       objectReference: {fileID: 0}
     - target: {fileID: 4413275882346808432, guid: 22ff81f707cf22542b8b5efe1e2ee69c,
         type: 3}
@@ -17388,7 +17388,7 @@ PrefabInstance:
     - target: {fileID: 1884166480854278677, guid: 0b6436f5d47c4de4481cf782d18a236b,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 700
       objectReference: {fileID: 0}
     - target: {fileID: 1884166480854278677, guid: 0b6436f5d47c4de4481cf782d18a236b,
         type: 3}
@@ -17962,7 +17962,7 @@ PrefabInstance:
     - target: {fileID: 6845678824176427113, guid: b59c30c5b204bc6469e098136f2e16a7,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 700
       objectReference: {fileID: 0}
     - target: {fileID: 6845678824176427113, guid: b59c30c5b204bc6469e098136f2e16a7,
         type: 3}
@@ -18161,7 +18161,7 @@ PrefabInstance:
     - target: {fileID: 487261280207723239, guid: 78678e483f231f34ca9ecf95bb6106a2,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 2526.0542
+      value: 2524.1914
       objectReference: {fileID: 0}
     - target: {fileID: 487261280207723239, guid: 78678e483f231f34ca9ecf95bb6106a2,
         type: 3}
@@ -18316,7 +18316,7 @@ PrefabInstance:
     - target: {fileID: 1529686544470065630, guid: 78678e483f231f34ca9ecf95bb6106a2,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 2526.0542
+      value: 2524.1914
       objectReference: {fileID: 0}
     - target: {fileID: 1529686544470065630, guid: 78678e483f231f34ca9ecf95bb6106a2,
         type: 3}
@@ -19531,7 +19531,7 @@ PrefabInstance:
     - target: {fileID: 7060696819646411466, guid: 78678e483f231f34ca9ecf95bb6106a2,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -12.5
+      value: -12.500061
       objectReference: {fileID: 0}
     - target: {fileID: 7200161431210085791, guid: 78678e483f231f34ca9ecf95bb6106a2,
         type: 3}

@@ -15,7 +15,7 @@ MonoBehaviour:
   m_track:
     m_bundleName: musicdata/corruption
     m_assetGuid: 0ad9cec93309b0a48acb1423abf10576
-    m_assetName: Corruption
+    m_assetName: Assets/Bundles/musicdata/corruption/Corruption.mp3
     m_asset: {fileID: 0}
   m_name: Corruption
   m_artist: Kevin Macleod

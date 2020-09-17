@@ -1,13 +1,15 @@
 {
-    "name": "BoostBlasters.Levels",
-    "rootNamespace": "BoostBlasters.Levels",
+    "name": "BoostBlasters.Utils.Editor",
+    "rootNamespace": "BoostBlasters.Utils.Editor",
     "references": [
+        "GUID:5c1ff9bd975acec488150743d53a93ca",
+        "GUID:c5ecc461727906345a35491a0440694f",
         "GUID:b06f75a97055fbc4fb17f72ecfb1de49",
-        "GUID:795a52fa1992d9a439d5433342c7f9aa",
-        "GUID:3fbce8ef6896a5c4f90051df422d46f6",
         "GUID:59b6a21ed4c24fa49ad99de78867f51a"
     ],
-    "includePlatforms": [],
+    "includePlatforms": [
+        "Editor"
+    ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,

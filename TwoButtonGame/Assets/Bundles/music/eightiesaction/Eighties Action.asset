@@ -15,7 +15,7 @@ MonoBehaviour:
   m_track:
     m_bundleName: musicdata/eightiesaction
     m_assetGuid: 11a7e63f0b9b95943b6a55a93fc2743b
-    m_assetName: Eighties Action
+    m_assetName: Assets/Bundles/musicdata/eightiesaction/Eighties Action.mp3
     m_asset: {fileID: 0}
   m_name: Eighties Action
   m_artist: Kevin Macleod

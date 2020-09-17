@@ -58,7 +58,7 @@ namespace BoostBlasters.UI.MainMenu
 
         private async void CreateMusicAttributions()
         {
-            var allMusic = await AssetBundleManager.LoadAssetsAsync<Music>("music");
+            var allMusic = await AssetBundleManager.LoadAssetsAsync<Music>(Bundles.MUSIC);
 
             foreach (var music in allMusic)
             {

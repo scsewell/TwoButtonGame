@@ -15,7 +15,7 @@ MonoBehaviour:
   m_track:
     m_bundleName: musicdata/harmfulorfatal
     m_assetGuid: 4c0960e6bf298d240b26d3e1bc1209fa
-    m_assetName: Harmful or Fatal
+    m_assetName: Assets/Bundles/musicdata/harmfulorfatal/Harmful or Fatal.mp3
     m_asset: {fileID: 0}
   m_name: Harmful or Fatal
   m_artist: Kevin Macleod

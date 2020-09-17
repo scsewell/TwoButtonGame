@@ -15,7 +15,7 @@ MonoBehaviour:
   m_track:
     m_bundleName: musicdata/exitthepremises
     m_assetGuid: ee121c2842de576489b2c18830464024
-    m_assetName: Exit the Premises
+    m_assetName: Assets/Bundles/musicdata/exitthepremises/Exit the Premises.mp3
     m_asset: {fileID: 0}
   m_name: Exit the Premises
   m_artist: Kevin Macleod

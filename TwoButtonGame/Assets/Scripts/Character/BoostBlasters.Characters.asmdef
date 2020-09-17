@@ -3,7 +3,8 @@
     "rootNamespace": "BoostBlasters.Characters",
     "references": [
         "Framework.Utils",
-        "Framework.AssetBundles"
+        "Framework.AssetBundles",
+        "BoostBlasters.Utils"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

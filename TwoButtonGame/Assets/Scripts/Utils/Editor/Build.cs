@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 
 using Framework;
 
@@ -6,6 +7,8 @@ using UnityEditor;
 using UnityEditor.Build.Reporting;
 
 using UnityEngine;
+using UnityEditor.Build.Pipeline;
+using System.Linq;
 
 namespace BoostBlasters
 {
@@ -14,20 +17,32 @@ namespace BoostBlasters
     /// </summary>
     public class Build
     {
-        private static string BuildPath => $"{Application.dataPath}/../../Build/{Application.version}";
-
         private static string ProductName => Application.productName.Replace(" ", "");
         private static string ExecutableName => $"{ProductName}.exe";
+
+        private static string BuildDir => $"{Application.dataPath}/../../Build/{Application.version}";
+        private static string BundleDir => $"{BuildDir}/{ProductName}_Data/Bundles/";
+
+        private static string EditorBundleDir => $"{Application.dataPath}/../Bundles/";
+
+        /// <summary>
+        /// Builds only the asset bundles.
+        /// </summary>
+        [MenuItem("BoostBlasters/Build Bundles", priority = 105)]
+        public static void BuildBundles()
+        {
+            BuildBundles(false);
+        }
 
         /// <summary>
         /// Builds the main executable and the asset bundles.
         /// </summary>
         [MenuItem("BoostBlasters/Build All", priority = 100)]
-        public static void DoBuild()
+        public static void BuildAll()
         {
             var buildPlayerOptions = new BuildPlayerOptions
             {
-                locationPathName = $"{BuildPath}/{ExecutableName}",
+                locationPathName = $"{BuildDir}/{ExecutableName}",
                 target = EditorUserBuildSettings.activeBuildTarget,
                 options = BuildOptions.None
             };
@@ -37,23 +52,14 @@ namespace BoostBlasters
         }
 
         /// <summary>
-        /// Builds only the asset bundles.
-        /// </summary>
-        [MenuItem("BoostBlasters/Build Bundles", priority = 105)]
-        public static void DoBuildBundles()
-        {
-            BuildBundles(false);
-        }
-
-        /// <summary>
         /// Builds the main executable and the asset bundles, then lanches the executable.
         /// </summary>
         [MenuItem("BoostBlasters/Build All + Run", priority = 110)]
-        public static void DoBuildRun()
+        public static void BuildAllAndRun()
         {
             var buildPlayerOptions = new BuildPlayerOptions
             {
-                locationPathName = $"{BuildPath}/{ExecutableName}",
+                locationPathName = $"{BuildDir}/{ExecutableName}",
                 target = EditorUserBuildSettings.activeBuildTarget,
                 options = BuildOptions.None
             };
@@ -95,6 +101,32 @@ namespace BoostBlasters
             }
         }
 
+        private class CustomBuildParameters : BundleBuildParameters
+        {
+            public CustomBuildParameters(BuildTarget target, BuildTargetGroup group, string outputFolder) :
+                base(target, group, outputFolder)
+            {
+            }
+
+            public override BuildCompression GetCompressionForIdentifier(string identifier)
+            {
+                var bundleRoot = identifier
+                    .Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries)
+                    .First();
+
+                switch (bundleRoot)
+                {
+                    case Bundles.CHARACTERS:
+                    case Bundles.LEVELS:
+                    case Bundles.LEVEL_SCENES:
+                    case Bundles.MUSIC:
+                    case Bundles.MUSIC_DATA:
+                        return BuildCompression.Uncompressed;
+                }
+                return BuildCompression.Uncompressed;
+            }
+        }
+
         /// <summary>
         /// Builds the game asset bundles.
         /// </summary>
@@ -102,20 +134,24 @@ namespace BoostBlasters
         /// <param name="cleanBuild">If true, cleans the bundle directories before building the new bundles.</param>
         public static void BuildBundles(bool isEditor, bool cleanBuild = true)
         {
-            // get the build path
-            string path;
+            var path = isEditor ? EditorBundleDir : BundleDir;
 
-            if (isEditor)
-            {
-                path = $"{Application.dataPath}/../Bundles/";
-            }
-            else
-            {
-                path = $"{BuildPath}/{ProductName}_Data/Bundles/";
-            }
+            // get the content to build
+            var bundles = UnityEditor.Build.Content.ContentBuildInterface.GenerateAssetBundleBuilds();
+            var buildContent = new BundleBuildContent(bundles);
 
-            // create a clean folder for the asset bundles
-            if (Directory.Exists(path))
+            // configure the build parameters
+            var buildParams = new CustomBuildParameters(
+                EditorUserBuildSettings.activeBuildTarget,
+                EditorUserBuildSettings.selectedBuildTargetGroup,
+                path)
+            {
+                BundleCompression = BuildCompression.Uncompressed,
+                UseCache = !cleanBuild,
+            };
+
+            // create or clean folder for the asset bundles
+            if (cleanBuild && Directory.Exists(path))
             {
                 Debug.Log("Clearing asset bundle directory...");
 
@@ -127,33 +163,20 @@ namespace BoostBlasters
             // build the asset bundles
             Debug.Log("Building asset bundles...");
 
-            var options =
-                BuildAssetBundleOptions.StrictMode |
-                BuildAssetBundleOptions.DisableLoadAssetByFileNameWithExtension;
+            var exitCode = ContentPipeline.BuildAssetBundles(buildParams, buildContent, out var results);
 
-            if (cleanBuild)
+            if (exitCode < 0)
             {
-                options |= BuildAssetBundleOptions.ForceRebuildAssetBundle;
-            }
-
-            var manifest = BuildPipeline.BuildAssetBundles(
-                path,
-                options,
-                EditorUserBuildSettings.activeBuildTarget
-            );
-
-            if (manifest == null)
-            {
-                Debug.LogError("Failed to build asset bundles!");
+                Debug.LogError($"Failed to build asset bundles with code: {exitCode}!");
                 return;
             }
 
             // verify that there are no unexpected dependencies between asset bundles
-            foreach (var bundle in manifest.GetAllAssetBundles())
+            foreach (var bundle in results.BundleInfos)
             {
-                foreach (var dependency in manifest.GetAllDependencies(bundle))
+                foreach (var dependency in bundle.Value.Dependencies)
                 {
-                    Debug.LogError($"Asset bundle \"{bundle}\" has dependancy \"{dependency}\"! Asset bundles are expected to have no dependencies.");
+                    Debug.LogError($"Asset bundle \"{bundle.Key}\" has dependancy \"{dependency}\"! Asset bundles are expected to have no dependencies.");
                 }
             }
 

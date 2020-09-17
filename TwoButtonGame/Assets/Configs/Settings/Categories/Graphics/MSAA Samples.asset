@@ -21,7 +21,7 @@ MonoBehaviour:
   m_onlyVisibleIf:
   - m_setting: {fileID: 11400000, guid: 6b0575c7e699671458f61dd184b7792f, type: 2}
     m_value: MSAA
-  m_enumType: BoostBlasters.MsaaSamples, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+  m_enumType: BoostBlasters.MsaaSamples, BoostBlasters.Utils, Version=0.0.0.0, Culture=neutral,
     PublicKeyToken=null
   m_values:
   - enumName: Sample2

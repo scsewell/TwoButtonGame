@@ -38,7 +38,7 @@ namespace BoostBlasters.Levels
         /// </summary>
         public static async Task LoadLevelsAsync()
         {
-            var levels = await AssetBundleManager.LoadAssetsAsync<Level>("level", "level");
+            var levels = await AssetBundleManager.LoadAssetsAsync<Level>(Bundles.LEVELS);
 
             // sort and assign the results
             Levels = levels.OrderBy(c => c.SortOrder).ToArray();

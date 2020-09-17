@@ -18,8 +18,8 @@ MonoBehaviour:
   m_defaultValue: SMAA
   m_onlyModifiableIf: []
   m_onlyVisibleIf: []
-  m_enumType: BoostBlasters.AntiAliasingMode, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
-    PublicKeyToken=null
+  m_enumType: BoostBlasters.AntiAliasingMode, BoostBlasters.Utils, Version=0.0.0.0,
+    Culture=neutral, PublicKeyToken=null
   m_values:
   - enumName: Off
     displayName: Off
