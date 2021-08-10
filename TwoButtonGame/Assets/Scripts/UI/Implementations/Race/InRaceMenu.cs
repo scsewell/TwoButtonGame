@@ -121,15 +121,15 @@ namespace BoostBlasters.UI.RaceMenus
 
             RaceManager raceManager = Main.Instance.RaceManager;
 
-            m_titleCardMenu.enabled = Time.time <= raceManager.TimeIntroEnd;
+            //m_titleCardMenu.enabled = Time.time <= raceManager.TimeIntroEnd;
             if (m_titleCardMenu.enabled)
             {
-                float inTime = raceManager.TimeRaceLoad + m_slideInWait;
-                float outTime = Mathf.Min(raceManager.TimeRaceLoad + raceManager.TimeIntroDuration - m_slideOutTime, raceManager.TimeIntroSkip);
+                //float inTime = raceManager.TimeRaceLoad + m_slideInWait;
+                //float outTime = Mathf.Min(raceManager.TimeRaceLoad + raceManager.TimeIntroDuration - m_slideOutTime, raceManager.TimeIntroSkip);
 
-                SetIntroCardPos(m_cardUpper, inTime, 0.0f, outTime, 0.2f);
-                SetIntroCardPos(m_cardLower, inTime, 0.1f, outTime, 0.1f);
-                SetIntroCardPos(m_cardBottom, inTime, 0.3f, outTime, 0.0f);
+                //SetIntroCardPos(m_cardUpper, inTime, 0.0f, outTime, 0.2f);
+                //SetIntroCardPos(m_cardLower, inTime, 0.1f, outTime, 0.1f);
+                //SetIntroCardPos(m_cardBottom, inTime, 0.3f, outTime, 0.0f);
 
                 //m_skipControls.UpdateUI("Skip", ActiveInputs.SelectMany(i => i.SpriteAccept).ToList());
 
@@ -189,7 +189,7 @@ namespace BoostBlasters.UI.RaceMenus
 
         public void LateUpdateUI()
         {
-            m_fade.color = new Color(0f, 0f, 0f, Main.Instance.RaceManager.GetFadeFactor(false));
+            //m_fade.color = new Color(0f, 0f, 0f, Main.Instance.RaceManager.GetFadeFactor(false));
         }
 
         private void SetIntroCardPos(CanvasGroup card, float inTime, float inOffset, float outTime, float outOffset)

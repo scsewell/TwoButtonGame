@@ -21,14 +21,14 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Level2_MAT
-  m_Shader: {fileID: 4800000, guid: 933532a4fcc9baf4fa0491de14d08ed7, type: 3}
+  m_Shader: {fileID: -6465566751694194690, guid: ed625082601740b40a1a92789a7d868c,
+    type: 3}
   m_ShaderKeywords: _NORMALMAP _OCCLUSIONMAP _SPECULAR_SETUP
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: 2000
-  stringTagMap:
-    RenderType: Opaque
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
   disabledShaderPasses: []
   m_SavedProperties:
     serializedVersion: 3
@@ -89,11 +89,36 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _SampleTexture2D_1008dc08b4b8488694cecf337e0cd451_Texture_1:
+        m_Texture: {fileID: 2800000, guid: 716738174f00b554dbc6c0215faeb068, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SampleTexture2D_202c1e46ce0d4df9b8051bef17ffbc7f_Texture_1:
+        m_Texture: {fileID: 2800000, guid: 6ce3c9a6a684bdc43a53161b17e1c337, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SampleTexture2D_85108eb2c89d40f181e0d8b286adb2cd_Texture_1:
+        m_Texture: {fileID: 2800000, guid: 055ed75abe843e7488ea5bbac48f29b0, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SampleTexture2D_940ad6b226ea43f1b7cd07c066730191_Texture_1:
+        m_Texture: {fileID: 2800000, guid: 8e941803a16e5d143a41d3bd802d0f70, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SampleTexture2D_ea50c5dce92848edad9942f7d6cff068_Texture_1:
+        m_Texture: {fileID: 2800000, guid: 8075408461b892046a7456f301f834c1, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _SpecGlossMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _Triplanar_332a3467240a496fa4d2428cbe667177_Texture_1:
+        m_Texture: {fileID: 2800000, guid: 8075408461b892046a7456f301f834c1, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     m_Floats:
+    - Vector1_05f1292aee40409dbde9a93522a743d3: 0.1
     - _AlphaClip: 0
     - _Blend: 0
     - _BumpScale: 1

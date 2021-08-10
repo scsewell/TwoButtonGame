@@ -243,6 +243,7 @@ namespace BoostBlasters.UI.RaceMenus
         public void UpdateUI()
         {
             // start countdown
+            /*
             float countdown = m_raceManager.CountdownTime;
             m_countdownText.gameObject.SetActive(-1 < countdown && countdown <= 3);
 
@@ -250,7 +251,8 @@ namespace BoostBlasters.UI.RaceMenus
             {
                 m_countdownText.text = (countdown > 0) ? Mathf.CeilToInt(countdown).ToString() : "GO!";
             }
-
+            */
+            
             int rank = m_racer.RaceResult.Rank;
             bool isSolo = m_raceManager.RacerCount == 1;
 
@@ -350,18 +352,18 @@ namespace BoostBlasters.UI.RaceMenus
             m_rankSubText.text = subText;
             m_finalRankSubText.text = subText;
 
-            if (rank != m_lastRank && m_raceManager.GetStartRelativeTime() > 0)
-            {
-                m_rankRect.localScale = 1.2f * Vector3.one;
-            }
-            else
-            {
-                m_rankRect.localScale = Vector3.Lerp(m_rankRect.localScale, Vector3.one, Time.deltaTime * 3);
-            }
+            // if (rank != m_lastRank && m_raceManager.GetStartRelativeTime() > 0)
+            // {
+            //     m_rankRect.localScale = 1.2f * Vector3.one;
+            // }
+            // else
+            // {
+            //     m_rankRect.localScale = Vector3.Lerp(m_rankRect.localScale, Vector3.one, Time.deltaTime * 3);
+            // }
 
             // timer
-            float raceTime = finished ? m_racer.RaceResult.FinishTime : m_raceManager.GetStartRelativeTime(Time.time);
-            m_timerText.text = UIUtils.FormatRaceTime(raceTime);
+            // float raceTime = finished ? m_racer.RaceResult.FinishTime : m_raceManager.GetStartRelativeTime(Time.time);
+            //m_timerText.text = UIUtils.FormatRaceTime(raceTime);
 
             string lapTimes = "";
             if (path.Laps > 1)
@@ -372,7 +374,7 @@ namespace BoostBlasters.UI.RaceMenus
                 }
                 if (!finished && m_racer.RaceResult.LapTimes.Count > 0)
                 {
-                    lapTimes += UIUtils.FormatRaceTime(raceTime - m_racer.RaceResult.LapTimes.Sum());
+                    //lapTimes += UIUtils.FormatRaceTime(raceTime - m_racer.RaceResult.LapTimes.Sum());
                 }
             }
             m_lapTimeText.text = lapTimes;

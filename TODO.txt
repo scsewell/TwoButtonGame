@@ -6,8 +6,6 @@ Short Term
 - Check font licenses
 - Character/Level version numbering (builtin charactesr and levels should match core game version)
 
-Scriptable build pipeline
-
 Migrate to URP
 - gate color should be a global shader property, instead of hooking into OnWillRenderObject
 
@@ -91,12 +89,12 @@ Camera can clip with the gates, perhaps use a fading material when close...
 What to do if a joystick disconnects in menu or game?
 
 ### Long Term ###
-AI (ML agents?)
 Multiplayer
-Tutorial
-Leaderboard (Steam has support, can implement regional boards, but is vulnerable to cheated values. Might be better to implement a custom server that can do basic validation...)
-Level preview camera shots in menu
 Ghosting (Race alongside replay)
+Tutorial
+Level preview camera shots in menu
+AI (ML agents?)
+Leaderboard (Steam has support, can implement regional boards, but is vulnerable to cheated values. Might be better to implement a custom server that can do basic validation...)
 
 Level Ideas (try to think of creative hazards)
 - City
@@ -126,7 +124,7 @@ Exit the Premises	3:24.419144
         New Character Physics
         New Levels
     ### Optional ###
-	Procedural Courses
+		Procedural Courses
         AI
         Replays
         Ghosting

@@ -1,20 +1,18 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-using UnityEngine;
-
-using Framework;
-using Framework.Audio;
-
-using BoostBlasters.Profiles;
-using BoostBlasters.Characters;
 using BoostBlasters.Races.Racers;
 using BoostBlasters.Replays;
 using BoostBlasters.UI.RaceMenus;
 
+using Framework;
+using Framework.StateMachines;
+
+using UnityEngine;
+
 namespace BoostBlasters.Races
 {
-    public class RaceManager : MonoBehaviour
+    public class RaceManager : StateMachineComponent<RaceManager, RaceState>
     {
         [Header("Prefabs")]
 
@@ -29,37 +27,11 @@ namespace BoostBlasters.Races
         [Header("Fade")]
 
         [SerializeField]
-        [Range(0.01f, 5f)]
-        private float m_fadeInTime = 1.0f;
+        [Range(0f, 1f)]
+        private float m_pauseFadeStrength = 0.65f;
         [SerializeField]
         [Range(0.01f, 5f)]
-        private float m_introFadeTime = 0.5f;
-        [SerializeField]
-        [Range(0.01f, 5f)]
-        private float m_replayFadeTime = 0.5f;
-        [SerializeField]
-        [Range(0.01f, 5f)]
-        private float m_fadeOutTime = 1.0f;
-
-        [Header("Countdown")]
-
-        [SerializeField]
-        [Range(0f, 10f)]
-        private int m_countdownDuration = 5;
-        [SerializeField]
-        [Range(0.5f, 5f)]
-        private float m_countdownScale = 1.65f;
-
-        [SerializeField] private AudioClip m_countdownSound = null;
-        [SerializeField] private AudioClip m_goSound = null;
-
-        [Header("Replay")]
-
-        [SerializeField]
-        [Range(0f, 30f)]
-        private float m_replayStartWait = 5.0f;
-        [SerializeField]
-        private AssetBundleMusicReference m_replayMusic = null;
+        private float m_quitFadeDuration = 1.0f;
 
         private RacePath m_racePath;
         public RacePath RacePath => m_racePath;
@@ -70,48 +42,23 @@ namespace BoostBlasters.Races
         private List<RacerCamera> m_cameras = new List<RacerCamera>();
 
         private RaceParameters m_raceParams;
-        private InRaceMenu m_raceMenu;
-        private IntroCamera m_intoCamera;
-        private ReplayCamera m_replayCamera;
-
-        private bool m_isQuiting;
-
-        private Recording m_raceRecording;
+        private Recording m_recording;
         private int m_fixedFramesSoFar;
 
-        private bool m_isInIntro;
-        private bool m_introSkipped;
+        private InRaceMenu m_menu;
         private bool m_musicStarted;
         private bool m_savedResults;
         private bool m_savedRecording;
 
-        private float m_raceLoadTime;
-        private float m_introEndTime;
-        private float m_introSkipTime;
-        private float m_raceStartTime;
-        private float m_replayStartTime;
-        private float m_quitStartTime;
-        private int m_countdownSecond;
-
-        public float TimeRaceLoad => m_raceLoadTime;
-        public float TimeIntroDuration => m_intoCamera.GetIntroSequenceLength();
-        public float TimeIntroEnd => m_introEndTime;
-        public float TimeIntroSkip => m_introSkipTime;
-        public float TimeRaceStart => m_raceStartTime;
-
-        public float CountdownTime => (m_raceStartTime - Time.time) / m_countdownScale;
+        private bool m_isPaused;
+        private bool m_isQuiting;
+        private float m_quitEndTime;
 
         public int RacerCount => m_raceParams.Racers.Length;
 
-        private enum State
-        {
-            Racing,
-            Paused,
-            Finished,
-            Replay,
-        }
+        /// <inheritdoc/>
+        protected override RaceState InitialState => GetState<IntroState>();
 
-        private State m_state;
 
         public void LoadRace(RaceParameters raceParams)
         {
@@ -120,22 +67,22 @@ namespace BoostBlasters.Races
             StartRace();
         }
 
-        public void LoadReplay(Recording recording)
-        {
-            m_raceParams = recording.Params;
-            InitRace();
+        //public void LoadReplay(Recording recording)
+        //{
+        //    m_raceParams = recording.Params;
+        //    InitRace();
 
-            m_state = State.Replay;
+        //    m_state = State.Replay;
 
-            m_raceRecording = recording;
-            m_replayStartTime = Time.time;
+        //    m_raceRecording = recording;
+        //    m_replayStartTime = Time.time;
 
-            ResetRace(0f);
+        //    ResetRace(0f);
 
-            AudioManager.Instance.PlayMusic(m_replayMusic);
-            m_musicStarted = true;
-            m_replayCamera.Activate();
-        }
+        //    AudioManager.Instance.PlayMusic(m_replayMusic);
+        //    m_musicStarted = true;
+        //    m_replayCamera.Activate();
+        //}
 
         public bool RestartRace()
         {
@@ -143,7 +90,6 @@ namespace BoostBlasters.Races
             {
                 AudioManager.Instance.StopSounds();
                 AudioManager.Instance.StopMusic();
-                m_intoCamera.StopIntroSequence();
 
                 StartRace();
 
@@ -154,44 +100,28 @@ namespace BoostBlasters.Races
 
         private void StartRace()
         {
-            m_state = State.Racing;
+            ResetRace();
 
-            m_raceRecording = new Recording(m_raceParams, m_racers.Select(r => r.RaceResult).ToArray());
-            m_replayStartTime = float.PositiveInfinity;
-
-            ResetRace(m_intoCamera.GetIntroSequenceLength());
-
-            m_isInIntro = true;
             m_musicStarted = false;
             m_savedResults = false;
             m_savedRecording = false;
-            m_intoCamera.PlayIntroSequence();
         }
 
-        private void ResetRace(float introLength)
+        private void ResetRace()
         {
-            m_countdownSecond = 0;
-            m_isInIntro = false;
-            m_introSkipped = false;
-
-            m_raceLoadTime = Time.time;
-            m_introEndTime = m_raceLoadTime + introLength;
-            m_introSkipTime = float.MaxValue;
-            m_raceStartTime = m_introEndTime + GetCountdownLength();
-
             m_racePath.ResetPath();
 
-            foreach (Racer racer in m_racers)
+            foreach (var racer in m_racers)
             {
                 racer.ResetRacer();
             }
 
-            foreach (RacerCamera cam in m_cameras)
+            foreach (var cam in m_cameras)
             {
                 cam.ResetCam();
             }
 
-            m_raceMenu.ResetUI();
+            m_menu.ResetUI();
 
             m_fixedFramesSoFar = 0;
         }
@@ -199,28 +129,28 @@ namespace BoostBlasters.Races
         private void InitRace()
         {
             m_racePath = FindObjectOfType<RacePath>().Init(m_raceParams.Laps);
-            m_raceMenu = Instantiate(m_raceMenuPrefab).Init(m_raceParams);
+            m_menu = Instantiate(m_raceMenuPrefab).Init(m_raceParams);
 
             Instantiate(m_clearCameraPrefab);
-            m_replayCamera = Instantiate(m_replayCameraPrefab);
-            m_intoCamera = Instantiate(m_introCameraPrefab).Init(m_raceParams.Level);
+            //m_replayCamera = Instantiate(m_replayCameraPrefab);
+            //m_intoCamera = Instantiate(m_introCameraPrefab);
 
             // get enough spawns for the racers
-            List<Transform> spawns = m_racePath.Spawns.Take(RacerCount).ToList();
+            var spawns = m_racePath.Spawns.Take(RacerCount).ToList();
 
             // create the racers
-            for (int i = 0; i < RacerCount; i++)
+            for (var i = 0; i < RacerCount; i++)
             {
-                RacerConfig config = m_raceParams.Racers[i];
+                var config = m_raceParams.Racers[i];
 
                 // spawn the racer at a random spawn
-                Transform spawn = spawns.RemoveRandom();
+                var spawn = spawns.RemoveRandom();
 
-                Racer racer = Instantiate(m_racerPrefab, spawn.position, spawn.rotation);
+                var racer = Instantiate(m_racerPrefab, spawn.position, spawn.rotation);
                 m_racers.Add(racer);
 
                 // create the graphics for the racer
-                GameObject graphics = Instantiate(config.Character.Graphics.Rig, racer.transform);
+                var graphics = Instantiate(config.Character.Graphics.Rig, racer.transform);
                 graphics.transform.localPosition = config.Character.Graphics.Offset;
                 graphics.transform.localRotation = Quaternion.identity;
 
@@ -243,23 +173,18 @@ namespace BoostBlasters.Races
 
         public void FixedUpdateRace()
         {
-            if (m_isInIntro && Time.time >= m_introEndTime)
-            {
-                m_isInIntro = false;
-                m_raceStartTime = m_introEndTime + GetCountdownLength();
-            }
-
-            bool isAfterStart = Time.time >= m_raceStartTime;
+            /*
+            var isAfterStart = Time.time >= m_raceStartTime;
 
             if (m_state == State.Replay)
             {
-                m_raceRecording.ApplyRecordedFrame(m_fixedFramesSoFar, m_racers, m_cameras, isAfterStart);
+                m_recording.ApplyRecordedFrame(m_fixedFramesSoFar, m_racers, m_cameras, isAfterStart);
             }
             else
             {
                 if (!m_isInIntro)
                 {
-                    m_raceRecording.Record(m_fixedFramesSoFar, m_racers);
+                    m_recording.Record(m_fixedFramesSoFar, m_racers);
                 }
                 m_racers.ForEach(p => p.ProcessPlaying(!m_isInIntro, isAfterStart));
             }
@@ -267,15 +192,15 @@ namespace BoostBlasters.Races
             m_cameras.ForEach(c => c.UpdateCamera());
             m_racePath.FixedUpdatePath();
 
-            foreach (Racer player in m_racers)
+            foreach (var player in m_racers)
             {
-                int rank = 1;
-                foreach (Racer other in m_racers)
+                var rank = 1;
+                foreach (var other in m_racers)
                 {
                     if (other != player)
                     {
-                        RaceResult pRes = player.RaceResult;
-                        RaceResult oRes = other.RaceResult;
+                        var pRes = player.RaceResult;
+                        var oRes = other.RaceResult;
                         if (pRes.Finished)
                         {
                             if (oRes.Finished && oRes.FinishTime < pRes.FinishTime)
@@ -285,7 +210,7 @@ namespace BoostBlasters.Races
                         }
                         else
                         {
-                            int progressDiff = other.WaypointsCompleted - player.WaypointsCompleted;
+                            var progressDiff = other.WaypointsCompleted - player.WaypointsCompleted;
 
                             if (progressDiff > 0)
                             {
@@ -293,8 +218,8 @@ namespace BoostBlasters.Races
                             }
                             else if (progressDiff == 0)
                             {
-                                float otherDist = Vector3.Distance(other.NextWaypoint.Position, other.transform.position);
-                                float playerDist = Vector3.Distance(player.NextWaypoint.Position, player.transform.position);
+                                var otherDist = Vector3.Distance(other.NextWaypoint.Position, other.transform.position);
+                                var playerDist = Vector3.Distance(player.NextWaypoint.Position, player.transform.position);
 
                                 if (otherDist < playerDist)
                                 {
@@ -313,7 +238,7 @@ namespace BoostBlasters.Races
 
                 SaveResults();
 
-                m_raceMenu.OnFinish();
+                m_menu.OnFinish();
                 m_replayStartTime = Time.time + m_replayStartWait;
             }
 
@@ -335,15 +260,15 @@ namespace BoostBlasters.Races
                     AudioManager.Instance.PlayMusic(m_replayMusic);
                 }
 
-                m_replayStartTime = Time.time + m_raceRecording.Duration + m_replayStartWait;
+                m_replayStartTime = Time.time + m_recording.Duration + m_replayStartWait;
                 ResetRace(0);
             }
+            */
         }
 
         public void UpdateRace()
         {
-            m_intoCamera.UpdateCamera(m_isInIntro);
-
+            /*
             m_racers.ForEach(p => p.UpdateRacer());
             m_racePath.UpdatePath();
 
@@ -355,50 +280,33 @@ namespace BoostBlasters.Races
                 m_musicStarted = true;
             }
 
-            int countdownSecond = Mathf.CeilToInt(CountdownTime);
-            if (countdownSecond != m_countdownSecond && 0 <= countdownSecond && countdownSecond <= 3)
-            {
-                AudioManager.Instance.PlaySound(countdownSecond == 0 ? m_goSound : m_countdownSound);
-            }
-            m_countdownSecond = countdownSecond;
-
             AudioManager.Instance.MusicPausable = Time.time - m_raceStartTime < 0f;
             AudioManager.Instance.MusicVolume = Mathf.MoveTowards(AudioManager.Instance.MusicVolume, 1f - GetFadeFactor(true), Time.unscaledDeltaTime / 0.5f);
 
-            bool showPlayerUI = !m_isInIntro && m_state != State.Replay;
-            bool allowQuit = m_state == State.Finished || m_state == State.Replay;
+            var showPlayerUI = !m_isInIntro && m_state != State.Replay;
+            var allowQuit = m_state == State.Finished || m_state == State.Replay;
 
-            m_raceMenu.UpdateUI(showPlayerUI, m_state == State.Paused, allowQuit, m_isQuiting);
+            m_menu.UpdateUI(showPlayerUI, m_state == State.Paused, allowQuit, m_isQuiting);
+            */
         }
 
         public void LateUpdateRace()
         {
-            bool showPlayerUI = !m_isInIntro && m_state != State.Replay;
+            /*
+            var showPlayerUI = !m_isInIntro && m_state != State.Replay;
 
             m_racers.ForEach(p => p.LateUpdateRacer());
             m_cameras.ForEach(c => c.SetCameraEnabled(showPlayerUI));
 
-            m_raceMenu.LateUpdateUI();
-        }
-
-        public bool SkipIntro()
-        {
-            if (m_isInIntro && !m_introSkipped)
-            {
-                m_introSkipped = true;
-                m_introSkipTime = Time.time;
-                m_introEndTime = m_introSkipTime + m_introFadeTime;
-
-                return true;
-            }
-            return false;
+            m_menu.LateUpdateUI();
+            */
         }
 
         public void Pause()
         {
-            if (m_state == State.Racing)
+            if (!m_isPaused)
             {
-                m_state = State.Paused;
+                m_isPaused = true;
                 AudioListener.pause = true;
                 Time.timeScale = 0;
             }
@@ -406,9 +314,9 @@ namespace BoostBlasters.Races
 
         public void Resume()
         {
-            if (m_state == State.Paused)
+            if (m_isPaused)
             {
-                m_state = State.Racing;
+                m_isPaused = false;
                 AudioListener.pause = false;
                 Time.timeScale = 1f;
             }
@@ -419,14 +327,14 @@ namespace BoostBlasters.Races
             if (!m_isQuiting)
             {
                 m_isQuiting = true;
-                m_quitStartTime = Time.unscaledTime;
+                m_quitEndTime = Time.unscaledTime + m_quitFadeDuration;
 
                 SaveResults();
                 SaveRecording();
 
                 Main.Instance.LoadMainMenu(() =>
                 {
-                    return GetFadeFactor(false) >= 0.99f;
+                    return Time.unscaledTime >= m_quitEndTime;
                 });
             }
         }
@@ -435,7 +343,7 @@ namespace BoostBlasters.Races
         {
             if (!m_savedResults)
             {
-                foreach (Racer racer in m_racers)
+                foreach (var racer in m_racers)
                 {
                     //racer.Config.Profile.AddRaceResult(m_raceParams.Level, racer.RaceResult);
                     m_savedResults = true;
@@ -447,53 +355,110 @@ namespace BoostBlasters.Races
         {
             if (!m_savedRecording && m_fixedFramesSoFar > 0)
             {
-                RecordingManager.SaveReplayAsync(m_raceRecording);
+                RecordingManager.SaveReplayAsync(m_recording);
                 m_savedRecording = true;
             }
         }
 
-        public float GetFadeFactor(bool audio)
+        private float GetFadeFactor(bool audio)
         {
-            float fac = 1f;
+            var fade = audio ? CurrentState.GetAudioFade() : CurrentState.GetScreenFade();
 
-            // fade screen when the scene is loaded or replay restarts
-            if (!audio || m_state != State.Replay)
+            if (m_isPaused)
             {
-                fac *= Mathf.Clamp01(Mathf.Abs(Time.time - m_raceLoadTime) / m_fadeInTime);
-                fac *= Mathf.Clamp01(Mathf.Abs(Time.time - m_replayStartTime) / m_replayFadeTime);
+                fade = FadeUtils.CombineFadeFactors(fade, m_pauseFadeStrength);
             }
-            // fade screen from intro animation end to race
-            if (!audio)
-            {
-                fac *= Mathf.Clamp01(Mathf.Abs(Time.time - m_introEndTime) / m_introFadeTime);
-            }
-            // fade out when exiting scene
             if (m_isQuiting)
             {
-                fac *= 1f - Mathf.Clamp01((Time.unscaledTime - m_quitStartTime) / m_fadeOutTime);
-            }
-            // fade view when paused
-            if (m_state == State.Paused)
-            {
-                fac *= 1f - 0.65f;
+                var f = FadeUtils.FadeOut(Time.unscaledTime, m_quitEndTime, m_quitFadeDuration);
+                fade = FadeUtils.CombineFadeFactors(fade, f);
             }
 
-            return Mathf.SmoothStep(1f, 0f, fac);
+            return Mathf.SmoothStep(1f, 0f, fade);
+        }
+    }
+
+    public abstract class RaceState : StateComponent<RaceManager, RaceState>
+    {
+        /// <summary>
+        /// Gets the strength of the screen fade-to-black in this state.
+        /// </summary>
+        /// <remarks>
+        /// This does not affect the UI.
+        /// </remarks>
+        /// <returns>The fade strength in the range [0,1], where 1 is fully obscured.</returns>
+        public virtual float GetScreenFade()
+        {
+            return 0f;
         }
 
-        public float GetStartRelativeTime()
+        /// <summary>
+        /// Gets the strength of the fade applied to all audio in this state.
+        /// </summary>
+        /// <returns>The fade strength in the range [0,1], where 1 is fully muted.</returns>
+        public virtual float GetAudioFade()
         {
-            return GetStartRelativeTime(Time.time);
+            return 0f;
+        }
+    }
+
+    public static class FadeUtils
+    {
+        /// <summary>
+        /// Computes a fading factor for a fade in starting at a give time.
+        /// </summary>
+        /// <param name="startTime">The time in seconds at which the fade in begins.</param>
+        /// <param name="duration">The duration of the fade in seconds.</param>
+        /// <returns>The fade strength in the range [0,1], where 1 is fully faded out.</returns>
+        public static float FadeIn(float startTime, float duration)
+        {
+            return FadeIn(Time.time, startTime, duration);
         }
 
-        public float GetStartRelativeTime(float time)
+        /// <summary>
+        /// Computes a fading factor for a fade in starting at a give time.
+        /// </summary>
+        /// <param name="time">The current time in seconds.</param>
+        /// <param name="startTime">The time in seconds at which the fade in begins.</param>
+        /// <param name="duration">The duration of the fade in seconds.</param>
+        /// <returns>The fade strength in the range [0,1], where 1 is fully faded out.</returns>
+        public static float FadeIn(float time, float startTime, float duration)
         {
-            return time - m_raceStartTime;
+            return 1f - Mathf.Clamp01((time - startTime) / duration);
         }
 
-        private float GetCountdownLength()
+        /// <summary>
+        /// Computes a fading factor for a fade out starting at a give time.
+        /// </summary>
+        /// <param name="endTime">The time in seconds at which the fade out ends.</param>
+        /// <param name="duration">The duration of the fade in seconds.</param>
+        /// <returns>The fade strength in the range [0,1], where 1 is fully faded out.</returns>
+        public static float FadeOut(float endTime, float duration)
         {
-            return (m_countdownScale * m_countdownDuration) + m_introFadeTime;
+            return FadeOut(Time.time, endTime, duration);
+        }
+
+        /// <summary>
+        /// Computes a fading factor for a fade out starting at a give time.
+        /// </summary>
+        /// <param name="time">The current time in seconds.</param>
+        /// <param name="endTime">The time in seconds at which the fade out ends.</param>
+        /// <param name="duration">The duration of the fade in seconds.</param>
+        /// <returns>The fade strength in the range [0,1], where 1 is fully faded out.</returns>
+        public static float FadeOut(float time, float endTime, float duration)
+        {
+            return Mathf.Clamp01((time - (endTime - duration)) / duration);
+        }
+
+        /// <summary>
+        /// Computes the combination of multiple fade factors.
+        /// </summary>
+        /// <param name="a">A fade strength in the range [0,1], where 1 is fully faded out.</param>
+        /// <param name="b">A fade strength in the range [0,1], where 1 is fully faded out.</param>
+        /// <returns>The combined fade strength.</returns>
+        public static float CombineFadeFactors(float a, float b)
+        {
+            return Mathf.Lerp(a, 1f, b);
         }
     }
 }

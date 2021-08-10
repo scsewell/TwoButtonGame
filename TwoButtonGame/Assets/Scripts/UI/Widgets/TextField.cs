@@ -129,7 +129,11 @@ namespace BoostBlasters.UI
                     s_OnSelect = (Action<BaseEventData>)Activator.CreateInstance(typeof(Action<BaseEventData>), this, methodPtr);
                 }
 
-                s_OnSelect(eventData);
+                Debug.LogError("Fix this!");
+                //s_OnSelect(eventData);
+                
+                // for now ignore issue
+                base.OnSelect(eventData);
             }
         }
 

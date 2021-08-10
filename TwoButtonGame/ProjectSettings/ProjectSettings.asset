@@ -131,6 +131,7 @@ PlayerSettings:
   preloadedAssets:
   - {fileID: 0}
   - {fileID: 11400000, guid: 78786a044509a71428680a159641ed08, type: 2}
+  - {fileID: 11400000, guid: 79f223bd384cf5d498cb05f8750c18ad, type: 2}
   metroInputSource: 0
   wsaTransparentSwapchain: 0
   m_HolographicPauseOnTrackingLoss: 1
@@ -150,7 +151,7 @@ PlayerSettings:
   applicationIdentifier:
     Android: com.DefaultCompany.TwoButtonGame
     Lumin: com.DefaultCompany.TwoButtonGame
-    Standalone: com.DefaultCompany.TwoButtonGame
+    Standalone: com.ScottSewell.BoostBlasters
     iPhone: com.DefaultCompany.TwoButtonGame
     tvOS: com.DefaultCompany.TwoButtonGame
   buildNumber:

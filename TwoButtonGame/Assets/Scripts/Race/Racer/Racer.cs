@@ -144,9 +144,6 @@ namespace BoostBlasters.Races.Racers
             return this;
         }
 
-        /// <summary>
-        /// Resets this 
-        /// </summary>
         public void ResetRacer()
         {
             m_movement.ResetMovement();

@@ -48,7 +48,7 @@ namespace BoostBlasters.Profiles
         }
 
         /// <summary>
-        /// Creates a new race result.
+        /// Creates a new <see cref="RaceResult"/> instance.
         /// </summary>
         /// <param name="finished">Did the racer complete the race.</param>
         /// <param name="rank">The placement rank (1 = first, etc).</param>
@@ -61,7 +61,7 @@ namespace BoostBlasters.Profiles
         }
 
         /// <summary>
-        /// Deserializes a race result.
+        /// Deserializes a <see cref="RaceResult"/> instance.
         /// </summary>
         /// <param name="reader">A data reader at a serialized race result.</param>
         public RaceResult(DataReader reader)

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 using Framework;
 using Framework.AssetBundles;
@@ -93,41 +92,6 @@ namespace BoostBlasters.Levels
         /// The time in seconds after starting the level intro to wait before starting the music.
         /// </summary>
         public float MusicDelay => m_musicDelay;
-
-        /// <summary>
-        /// A shot used for the level intro sequence.
-        /// </summary>
-        [Serializable]
-        public class CameraShot
-        {
-            [SerializeField]
-            [Tooltip("The camera animation for this shot.")]
-            private AnimationClip m_clip = null;
-
-            /// <summary>
-            /// The camera animation for this shot.
-            /// </summary>
-            public AnimationClip Clip => m_clip;
-
-            [SerializeField]
-            [Tooltip("The speed multipler applied to the clip.")]
-            [Range(0f, 2f)]
-            private float m_speed = 1f;
-
-            /// <summary>
-            /// The speed multipler applied to the clip.
-            /// </summary>
-            public float Speed => m_speed;
-        }
-
-        [SerializeField]
-        [Tooltip("The animations used for the intro camera shot sequence.")]
-        private CameraShot[] m_introSequence = null;
-
-        /// <summary>
-        /// The animations used for the intro camera shot sequence.
-        /// </summary>
-        public IEnumerable<CameraShot> IntroSequence => m_introSequence;
 
 
         public override string ToString() => Name;

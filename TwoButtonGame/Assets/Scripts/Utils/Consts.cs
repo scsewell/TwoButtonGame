@@ -40,7 +40,7 @@ namespace BoostBlasters
         public const string LEVELS = "level";
 
         /// <summary>
-        /// The path for bundles containing scenes refernced by level descriptions.
+        /// The path for bundles containing scenes referenced by level descriptions.
         /// </summary>
         public const string LEVEL_SCENES = "levelscene";
 
